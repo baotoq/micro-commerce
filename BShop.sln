@@ -13,9 +13,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.API", "src\Catalog.
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{F416D5F6-CEF9-4CB4-9F8F-0ED58CB7BD51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basket.API", "src\Basket.API\Basket.API.csproj", "{63C182D3-1FE2-4DC0-BEDC-C2DCB2402F92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basket.API", "src\Basket.API\Basket.API.csproj", "{63C182D3-1FE2-4DC0-BEDC-C2DCB2402F92}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basket.API.UnitTests", "tests\Basket.API.UnitTests\Basket.API.UnitTests.csproj", "{02C0CD7C-A522-457B-96D2-5BA59AAB51E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{D6A0823E-5FD0-4002-8C00-57F8B3DE4235}"
+	ProjectSection(SolutionItems) = preProject
+		src\Protos\basket.proto = src\Protos\basket.proto
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +57,7 @@ Global
 		{8CF087D8-E6E2-44D7-A083-2B3B3BB43AA6} = {3FA1450D-3421-4955-A1B9-C71E086B7405}
 		{63C182D3-1FE2-4DC0-BEDC-C2DCB2402F92} = {3FA1450D-3421-4955-A1B9-C71E086B7405}
 		{02C0CD7C-A522-457B-96D2-5BA59AAB51E6} = {C2DCDE16-9A73-44CA-A8F0-054FDF085EB2}
+		{D6A0823E-5FD0-4002-8C00-57F8B3DE4235} = {3FA1450D-3421-4955-A1B9-C71E086B7405}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4535079B-42C6-434C-B086-3D1ABC809B16}
