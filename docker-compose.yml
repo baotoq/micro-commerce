@@ -13,8 +13,8 @@ services:
       context: .
       dockerfile: src/Basket.API/Dockerfile
 
-  bshop.web:
-    image: ${DOCKER_REGISTRY-}bshopweb
-    build:
-      context: .
-      dockerfile: src/BShop.Web/Dockerfile
+#  bshop.web:
+#    image: ${DOCKER_REGISTRY-}bshopweb
+#    build:
+#      context: src/BShop.Web
+#      dockerfile: Dockerfile
