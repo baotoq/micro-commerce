@@ -7,6 +7,8 @@ services:
       - ASPNETCORE_URLS=http://+:80
     ports:
       - "6011:80"
+    networks:
+      - backend
 
   basket.api:
     environment:
@@ -19,7 +21,17 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - backend
 
-  bshop.web:
-    ports:
-      - "6010:80"
+#  bshop.web:
+#    environment:
+#      - NODE_ENV=development
+#   ports:
+#      - "6010:80"
+#    networks:
+#      - frontend
+
+networks:
+  frontend:
+  backend:

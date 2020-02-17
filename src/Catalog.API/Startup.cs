@@ -1,3 +1,5 @@
+using System;
+using Catalog.API.AppServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +22,13 @@ namespace Catalog.API
         {
             services.AddControllers();
             services.AddHealthChecks();
+
+            services.AddGrpcClient<Basket.API.Basket.BasketClient>(configure =>
+            {
+                configure.Address = new Uri("https://basket.api");
+            });
+
+            services.AddTransient<BasketClientService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
