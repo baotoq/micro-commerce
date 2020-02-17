@@ -2,20 +2,16 @@ syntax = "proto3";
 
 option csharp_namespace = "Basket.API";
 
-package greet;
+package basket;
 
-// The greeting service definition.
-service Greeter {
-  // Sends a greeting
+service Basket {
   rpc SayHello (HelloRequest) returns (HelloReply);
 }
 
-// The request message containing the user's name.
 message HelloRequest {
   string name = 1;
 }
 
-// The response message containing the greetings.
 message HelloReply {
   string message = 1;
 }

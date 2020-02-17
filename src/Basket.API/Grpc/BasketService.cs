@@ -1,22 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Basket.API
+namespace Basket.API.Grpc
 {
-    public class GreeterService : Greeter.GreeterBase
+    public class BasketService : Basket.BasketBase
     {
-        private readonly ILogger<GreeterService> _logger;
-        public GreeterService(ILogger<GreeterService> logger)
+        private readonly ILogger<BasketService> _logger;
+
+        public BasketService()
         {
-            _logger = logger;
+            _logger = NullLogger<BasketService>.Instance;
         }
 
         public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
         {
+            _logger.LogInformation("{@request}", request);
             return Task.FromResult(new HelloReply
             {
                 Message = "Hello " + request.Name
