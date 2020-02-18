@@ -1,6 +1,6 @@
 FROM node:10-alpine as build
 WORKDIR /app
-RUN ls -la
+
 COPY package*.json .
 COPY yarn.lock .
 RUN yarn
