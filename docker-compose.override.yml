@@ -24,13 +24,13 @@ services:
     networks:
       - backend
 
-#  bshop.web:
-#    environment:
-#      - NODE_ENV=development
-#   ports:
-#      - "6010:80"
-#    networks:
-#      - frontend
+  bshop.web:
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "6010:80"
+    networks:
+      - frontend
 
 networks:
   frontend:

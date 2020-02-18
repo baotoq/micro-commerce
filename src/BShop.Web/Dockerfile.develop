@@ -1,0 +1,8 @@
+FROM node:10-alpine
+EXPOSE 80
+
+WORKDIR /app
+
+COPY . .
+
+ENTRYPOINT ["yarn", "start"]
