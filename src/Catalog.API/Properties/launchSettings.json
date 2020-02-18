@@ -11,6 +11,7 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
+      "launchBrowser": false,
       "launchUrl": "health",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -18,6 +19,7 @@
     },
     "Catalog.API": {
       "commandName": "Project",
+      "launchBrowser": false,
       "launchUrl": "health",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -26,13 +28,9 @@
     },
     "Docker": {
       "commandName": "Docker",
+      "launchBrowser": false,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/health",
-      "environmentVariables": {},
-      "httpPort": 62728
+      "httpPort": 5002
     }
-    //"Azure Dev Spaces": {
-    //  "commandName": "AzureDevSpaces",
-    //  "launchBrowser": true
-    //}
   }
 }
