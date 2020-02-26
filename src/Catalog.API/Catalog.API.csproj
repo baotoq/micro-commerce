@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\.dockerignore" Link=".dockerignore">
+      <DependentUpon>$(DockerDefaultDockerfile)</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.24.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
