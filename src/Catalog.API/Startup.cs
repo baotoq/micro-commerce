@@ -1,5 +1,7 @@
 using System;
 using Catalog.API.AppServices;
+using Grpc.Health.V1;
+using Grpc.Net.ClientFactory;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,15 +23,19 @@ namespace Catalog.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddHealthChecks();
 
             AppContext.SetSwitch(
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            services.AddGrpcClient<Basket.API.Basket.BasketClient>(configure =>
+            var basketGrpcOptions = new Action<GrpcClientFactoryOptions>(options =>
             {
-                configure.Address = new Uri("http://basket.api:81");
+                options.Address = new Uri(Configuration["BasketUrl:Grpc"]);
             });
+
+            services.AddGrpcClient<Basket.API.Basket.BasketClient>(basketGrpcOptions);
+            services.AddGrpcClient<Health.HealthClient>(basketGrpcOptions);
+
+            services.AddHealthChecks().AddCheck<BasketHealthCheck>();
 
             services.AddTransient<BasketClientService>();
         }
