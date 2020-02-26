@@ -23,9 +23,12 @@ namespace Catalog.API
             services.AddControllers();
             services.AddHealthChecks();
 
+            AppContext.SetSwitch(
+                "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
             services.AddGrpcClient<Basket.API.Basket.BasketClient>(configure =>
             {
-                configure.Address = new Uri("https://basket.api");
+                configure.Address = new Uri("http://basket.api:81");
             });
 
             services.AddTransient<BasketClientService>();
