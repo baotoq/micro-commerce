@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:62727",
+      "applicationUrl": "http://localhost:58925",
       "sslPort": 0
     }
   },
@@ -11,7 +11,6 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": false,
       "launchUrl": "health",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -19,7 +18,6 @@
     },
     "Catalog.API": {
       "commandName": "Project",
-      "launchBrowser": false,
       "launchUrl": "health",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -28,9 +26,8 @@
     },
     "Docker": {
       "commandName": "Docker",
-      "launchBrowser": false,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/health",
-      "httpPort": 5002
+      "publishAllPorts": false
     }
   }
 }

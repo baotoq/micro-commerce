@@ -2,22 +2,15 @@
   "profiles": {
     "Basket.API": {
       "commandName": "Project",
-      "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "https://localhost:5001"
     },
-    //"Azure Dev Spaces": {
-    //  "commandName": "AzureDevSpaces",
-    //  "launchBrowser": true
-    //},
     "Docker": {
       "commandName": "Docker",
-      "launchBrowser": false,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/health",
-      "environmentVariables": {},
-      "httpPort": 5001
+      "publishAllPorts": false
     }
   }
 }

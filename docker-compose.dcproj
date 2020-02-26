@@ -1,12 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <ProjectGuid>f416d5f6-cef9-4cb4-9f8f-0ed58cb7bd51</ProjectGuid>
-    <DockerLaunchAction>None</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/health</DockerServiceUrl>
-    <DockerServiceName>bshop.web</DockerServiceName>
+    <ProjectGuid>5ff810d8-b96e-43b4-bcbb-78e459272f7d</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
