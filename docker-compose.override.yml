@@ -1,6 +1,15 @@
 version: '3.4'
 
 services:
+  sqldb:
+    environment:
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "5433:1433"
+    volumes:
+      - bshop-sqldb:/var/opt/mssql
+
   catalog.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -15,3 +24,6 @@ services:
     ports:
       - "6012:80"
       - "6013:81"
+
+volumes:
+  bshop-sqldb:

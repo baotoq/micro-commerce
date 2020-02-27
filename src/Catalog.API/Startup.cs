@@ -1,9 +1,13 @@
 using System;
 using Catalog.API.AppServices;
+using Catalog.API.Infrastructure;
 using Grpc.Health.V1;
 using Grpc.Net.ClientFactory;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,20 +26,11 @@ namespace Catalog.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
-            AppContext.SetSwitch(
-                "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
-            var basketGrpcOptions = new Action<GrpcClientFactoryOptions>(options =>
-            {
-                options.Address = new Uri(Configuration["BasketUrl:Grpc"]);
-            });
-
-            services.AddGrpcClient<Basket.API.Basket.BasketClient>(basketGrpcOptions);
-            services.AddGrpcClient<Health.HealthClient>(basketGrpcOptions);
-
-            services.AddHealthChecks().AddCheck<BasketHealthCheck>();
+            services
+                .AddCustomControllers(Configuration)
+                .AddCustomGrpcClient(Configuration)
+                .AddCustomDbContext(Configuration)
+                .AddCustomHealthChecks(Configuration);
 
             services.AddTransient<BasketClientService>();
         }
@@ -48,15 +43,56 @@ namespace Catalog.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
+            app.UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                    endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                    {
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                    });
+                });
+        }
+    }
 
-            app.UseAuthorization();
+    public static class CustomExtensionMethods
+    {
+        public static IServiceCollection AddCustomControllers(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddControllers();
+            return services;
+        }
 
-            app.UseEndpoints(endpoints =>
+        public static IServiceCollection AddCustomGrpcClient(this IServiceCollection services, IConfiguration configuration)
+        {
+            AppContext.SetSwitch(
+                "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
+            var basketGrpcOptions = new Action<GrpcClientFactoryOptions>(options =>
             {
-                endpoints.MapControllers();
-                endpoints.MapHealthChecks("/health");
+                options.Address = new Uri(configuration["BasketUrl:Grpc"]);
             });
+
+            services.AddGrpcClient<Basket.API.Basket.BasketClient>(basketGrpcOptions);
+            services.AddGrpcClient<Health.HealthClient>(basketGrpcOptions);
+
+            return services;
+        }
+
+        public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<CatalogContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("CatalogContext")));
+
+            return services;
+        }
+
+        public static IServiceCollection AddCustomHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHealthChecks().AddDbContextCheck<CatalogContext>();
+
+            return services;
         }
     }
 }
