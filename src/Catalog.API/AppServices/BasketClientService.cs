@@ -1,4 +1,5 @@
-﻿using Basket.API;
+﻿using System.Threading.Tasks;
+using Basket.API;
 
 namespace Catalog.API.AppServices
 {
@@ -9,8 +10,11 @@ namespace Catalog.API.AppServices
         public BasketClientService(Basket.API.Basket.BasketClient basketClient)
         {
             _basketClient = basketClient;
+        }
 
-            _basketClient.SayHello(new HelloRequest());
+        public async Task SayHello()
+        {
+            await _basketClient.SayHelloAsync(new HelloRequest());
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Health.V1;
+using Grpc.HealthCheck;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

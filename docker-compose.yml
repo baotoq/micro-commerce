@@ -1,11 +1,16 @@
 version: '3.4'
 
 services:
+  sqldb:
+    image: mcr.microsoft.com/mssql/server:2017-latest 
+
   catalog.api:
     image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
       dockerfile: src/Catalog.API/Dockerfile
+    depends_on:
+      - sqldb
 
   basket.api:
     image: ${DOCKER_REGISTRY-}basketapi
