@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-import { fetchTodos, toggleTodo, VisibilityFilters } from "../store/actions";
+import { fetchTodos, toggleTodo, VisibilityFilters } from "../../../store/actions";
 import TodoList from "../components/TodoList";
 
 const getVisibleTodos = createSelector(
