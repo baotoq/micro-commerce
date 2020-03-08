@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from "react-redux";
-import { setVisibilityFilter } from "../store/actions";
-import Link from "../components/Link";
+import { setVisibilityFilter } from "../../../store/actions";
+import Link from "./Link";
 
 const FilterLink = ({ filter, children }) => {
   const dispatch = useDispatch();
