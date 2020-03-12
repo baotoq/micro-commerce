@@ -26,7 +26,7 @@ namespace Catalog.API.Controllers
             await _basketClientService.SayHello();
             await _catalogContext.CatalogItems.AddAsync(new CatalogItem());
             await _catalogContext.SaveChangesAsync();
-            return Ok(await _catalogContext.CatalogItems.FirstAsync());
+            return Ok(await _catalogContext.CatalogItems.ToListAsync());
         }
     }
 }

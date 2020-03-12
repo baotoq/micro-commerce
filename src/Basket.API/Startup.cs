@@ -1,5 +1,4 @@
 ﻿using Basket.API.Grpc;
-using Grpc.HealthCheck;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +24,7 @@ namespace Basket.API
             {
                 options.EnableDetailedErrors = _env.IsDevelopment();
             });
+
             services.AddHealthChecks();
         }
 
@@ -43,7 +43,7 @@ namespace Basket.API
                 endpoints.MapHealthChecks("/health");
 
                 endpoints.MapGrpcService<BasketService>();
-                endpoints.MapGrpcService<HealthServiceImpl>();
+                endpoints.MapGrpcService<HealthCheckService>();
 
                 endpoints.MapGet("/", async context =>
                 {
