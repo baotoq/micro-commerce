@@ -1,5 +1,7 @@
 using System;
 using Catalog.API.AppServices;
+using Catalog.API.Grpc;
+using Catalog.API.HealthCheck;
 using Catalog.API.Infrastructure;
 using Grpc.Health.V1;
 using Grpc.Net.ClientFactory;
@@ -26,6 +28,8 @@ namespace Catalog.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddGrpc();
+
             services
                 .AddCustomControllers(Configuration)
                 .AddCustomGrpcClient(Configuration)
@@ -47,6 +51,7 @@ namespace Catalog.API
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
+                    endpoints.MapGrpcService<HealthCheckService>();
                     endpoints.MapControllers();
                     endpoints.MapHealthChecks("/health", new HealthCheckOptions
                     {
@@ -90,7 +95,9 @@ namespace Catalog.API
 
         public static IServiceCollection AddCustomHealthChecks(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddHealthChecks().AddDbContextCheck<CatalogContext>();
+            services.AddHealthChecks()
+                .AddDbContextCheck<CatalogContext>()
+                .AddTypeActivatedCheck<BasketHealthCheck>("basket", services.BuildServiceProvider().GetRequiredService<Health.HealthClient>());
 
             return services;
         }
