@@ -22,4 +22,4 @@ jobs:
     - name: Build with dotnet
       run: dotnet build ./BShop.sln --no-restore --configuration Release
     - name: Test with dotnet
-      run: dotnet test ./BShop.sln --no-build --configuration Release
+      run: dotnet test ./BShop.sln --no-build --configuration Release /p:CollectCoverage=true
