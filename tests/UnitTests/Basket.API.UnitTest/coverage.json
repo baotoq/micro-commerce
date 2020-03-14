@@ -1,0 +1,1141 @@
+{
+  "Basket.API.dll": {
+    "D:\\Project\\b-shop\\src\\Basket.API\\Program.cs": {
+      "Basket.API.Program": {
+        "System.Void Basket.API.Program::Main(System.String[])": {
+          "Lines": {
+            "10": 0,
+            "11": 0,
+            "12": 0
+          },
+          "Branches": []
+        },
+        "Microsoft.Extensions.Hosting.IHostBuilder Basket.API.Program::CreateHostBuilder(System.String[])": {
+          "Lines": {
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 0,
+            "24": 0
+          },
+          "Branches": [
+            {
+              "Line": 15,
+              "Offset": 12,
+              "EndOffset": 14,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 15,
+              "Offset": 12,
+              "EndOffset": 37,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 15,
+              "Offset": 50,
+              "EndOffset": 52,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 15,
+              "Offset": 50,
+              "EndOffset": 75,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Project\\b-shop\\src\\Basket.API\\Startup.cs": {
+      "Basket.API.Startup": {
+        "System.Void Basket.API.Startup::ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)": {
+          "Lines": {
+            "22": 0,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "26": 0,
+            "28": 0,
+            "29": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.Startup::Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)": {
+          "Lines": {
+            "33": 0,
+            "34": 0,
+            "35": 0,
+            "36": 0,
+            "37": 0,
+            "39": 0,
+            "41": 0,
+            "42": 0,
+            "43": 0,
+            "44": 0,
+            "45": 0,
+            "46": 0,
+            "47": 0,
+            "48": 0,
+            "49": 0,
+            "50": 0,
+            "51": 0,
+            "52": 0,
+            "53": 0
+          },
+          "Branches": [
+            {
+              "Line": 34,
+              "Offset": 14,
+              "EndOffset": 16,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 34,
+              "Offset": 14,
+              "EndOffset": 25,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 41,
+              "Offset": 39,
+              "EndOffset": 41,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 41,
+              "Offset": 39,
+              "EndOffset": 64,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 48,
+              "Offset": 39,
+              "EndOffset": 41,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 48,
+              "Offset": 39,
+              "EndOffset": 64,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void Basket.API.Startup::.ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment)": {
+          "Lines": {
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0
+          },
+          "Branches": []
+        }
+      },
+      "Basket.API.Startup/<>c/<<Configure>b__3_1>d": {
+        "System.Void Basket.API.Startup/<>c/<<Configure>b__3_1>d::MoveNext()": {
+          "Lines": {},
+          "Branches": [
+            {
+              "Line": 49,
+              "Offset": 8,
+              "EndOffset": 14,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 50,
+              "Offset": 58,
+              "EndOffset": 60,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 49,
+              "Offset": 8,
+              "EndOffset": 96,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 50,
+              "Offset": 58,
+              "EndOffset": 124,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Project\\b-shop\\src\\Basket.API\\obj\\Debug\\netcoreapp3.1\\Basket.cs": {
+      "Basket.API.BasketReflection": {
+        "Google.Protobuf.Reflection.FileDescriptor Basket.API.BasketReflection::get_Descriptor()": {
+          "Lines": {
+            "20": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.BasketReflection::.cctor()": {
+          "Lines": {
+            "24": 0,
+            "25": 0,
+            "26": 0,
+            "27": 0,
+            "28": 0,
+            "29": 0,
+            "30": 0,
+            "31": 0,
+            "32": 0,
+            "33": 0,
+            "34": 0,
+            "35": 0,
+            "36": 0,
+            "37": 0
+          },
+          "Branches": []
+        }
+      },
+      "Basket.API.HelloRequest": {
+        "Google.Protobuf.MessageParser`1<Basket.API.HelloRequest> Basket.API.HelloRequest::get_Parser()": {
+          "Lines": {
+            "46": 0
+          },
+          "Branches": []
+        },
+        "Google.Protobuf.Reflection.MessageDescriptor Basket.API.HelloRequest::get_Descriptor()": {
+          "Lines": {
+            "50": 0
+          },
+          "Branches": []
+        },
+        "Google.Protobuf.Reflection.MessageDescriptor Basket.API.HelloRequest::pb::Google.Protobuf.IMessage.get_Descriptor()": {
+          "Lines": {
+            "55": 0
+          },
+          "Branches": []
+        },
+        "Basket.API.HelloRequest Basket.API.HelloRequest::Clone()": {
+          "Lines": {
+            "72": 0,
+            "73": 0,
+            "74": 0
+          },
+          "Branches": []
+        },
+        "System.String Basket.API.HelloRequest::get_Name()": {
+          "Lines": {
+            "81": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.HelloRequest::set_Name(System.String)": {
+          "Lines": {
+            "82": 0,
+            "83": 0,
+            "84": 0
+          },
+          "Branches": []
+        },
+        "System.Boolean Basket.API.HelloRequest::Equals(System.Object)": {
+          "Lines": {
+            "88": 0,
+            "89": 0,
+            "90": 0
+          },
+          "Branches": []
+        },
+        "System.Boolean Basket.API.HelloRequest::Equals(Basket.API.HelloRequest)": {
+          "Lines": {
+            "93": 0,
+            "94": 0,
+            "95": 0,
+            "97": 0,
+            "98": 0,
+            "100": 0,
+            "101": 0,
+            "102": 0
+          },
+          "Branches": [
+            {
+              "Line": 94,
+              "Offset": 7,
+              "EndOffset": 9,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 94,
+              "Offset": 7,
+              "EndOffset": 14,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 97,
+              "Offset": 20,
+              "EndOffset": 22,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 97,
+              "Offset": 20,
+              "EndOffset": 27,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 100,
+              "Offset": 46,
+              "EndOffset": 48,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 0
+            },
+            {
+              "Line": 100,
+              "Offset": 46,
+              "EndOffset": 52,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Int32 Basket.API.HelloRequest::GetHashCode()": {
+          "Lines": {
+            "105": 0,
+            "106": 0,
+            "107": 0,
+            "108": 0,
+            "109": 0,
+            "110": 0,
+            "111": 0,
+            "112": 0
+          },
+          "Branches": [
+            {
+              "Line": 107,
+              "Offset": 19,
+              "EndOffset": 21,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 107,
+              "Offset": 19,
+              "EndOffset": 35,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 108,
+              "Offset": 46,
+              "EndOffset": 48,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 108,
+              "Offset": 46,
+              "EndOffset": 64,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.String Basket.API.HelloRequest::ToString()": {
+          "Lines": {
+            "115": 0,
+            "116": 0,
+            "117": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.HelloRequest::WriteTo(Google.Protobuf.CodedOutputStream)": {
+          "Lines": {
+            "120": 0,
+            "121": 0,
+            "122": 0,
+            "123": 0,
+            "124": 0,
+            "125": 0,
+            "126": 0,
+            "127": 0,
+            "128": 0
+          },
+          "Branches": [
+            {
+              "Line": 121,
+              "Offset": 17,
+              "EndOffset": 19,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 121,
+              "Offset": 17,
+              "EndOffset": 43,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 125,
+              "Offset": 54,
+              "EndOffset": 56,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 125,
+              "Offset": 54,
+              "EndOffset": 71,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Int32 Basket.API.HelloRequest::CalculateSize()": {
+          "Lines": {
+            "131": 0,
+            "132": 0,
+            "133": 0,
+            "134": 0,
+            "135": 0,
+            "136": 0,
+            "137": 0,
+            "138": 0,
+            "139": 0,
+            "140": 0
+          },
+          "Branches": [
+            {
+              "Line": 133,
+              "Offset": 19,
+              "EndOffset": 21,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 133,
+              "Offset": 19,
+              "EndOffset": 39,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 136,
+              "Offset": 50,
+              "EndOffset": 52,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 136,
+              "Offset": 50,
+              "EndOffset": 68,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void Basket.API.HelloRequest::MergeFrom(Basket.API.HelloRequest)": {
+          "Lines": {
+            "143": 0,
+            "144": 0,
+            "145": 0,
+            "147": 0,
+            "148": 0,
+            "149": 0,
+            "150": 0,
+            "151": 0
+          },
+          "Branches": [
+            {
+              "Line": 144,
+              "Offset": 7,
+              "EndOffset": 9,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 144,
+              "Offset": 7,
+              "EndOffset": 12,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 147,
+              "Offset": 28,
+              "EndOffset": 30,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 147,
+              "Offset": 28,
+              "EndOffset": 45,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void Basket.API.HelloRequest::MergeFrom(Google.Protobuf.CodedInputStream)": {
+          "Lines": {
+            "154": 0,
+            "156": 0,
+            "157": 0,
+            "159": 0,
+            "160": 0,
+            "161": 0,
+            "162": 0,
+            "163": 0,
+            "166": 0,
+            "167": 0
+          },
+          "Branches": [
+            {
+              "Line": 156,
+              "Offset": 65,
+              "EndOffset": 3,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 157,
+              "Offset": 11,
+              "EndOffset": 15,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 157,
+              "Offset": 11,
+              "EndOffset": 35,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 156,
+              "Offset": 65,
+              "EndOffset": 67,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void Basket.API.HelloRequest::.ctor()": {
+          "Lines": {
+            "59": 0,
+            "61": 0,
+            "78": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.HelloRequest::.ctor(Basket.API.HelloRequest)": {
+          "Lines": {
+            "66": 0,
+            "67": 0,
+            "68": 0,
+            "69": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.HelloRequest::.cctor()": {
+          "Lines": {
+            "43": 0
+          },
+          "Branches": []
+        }
+      },
+      "Basket.API.HelloReply": {
+        "Google.Protobuf.MessageParser`1<Basket.API.HelloReply> Basket.API.HelloReply::get_Parser()": {
+          "Lines": {
+            "175": 0
+          },
+          "Branches": []
+        },
+        "Google.Protobuf.Reflection.MessageDescriptor Basket.API.HelloReply::get_Descriptor()": {
+          "Lines": {
+            "179": 0
+          },
+          "Branches": []
+        },
+        "Google.Protobuf.Reflection.MessageDescriptor Basket.API.HelloReply::pb::Google.Protobuf.IMessage.get_Descriptor()": {
+          "Lines": {
+            "184": 0
+          },
+          "Branches": []
+        },
+        "Basket.API.HelloReply Basket.API.HelloReply::Clone()": {
+          "Lines": {
+            "201": 0,
+            "202": 0,
+            "203": 0
+          },
+          "Branches": []
+        },
+        "System.String Basket.API.HelloReply::get_Message()": {
+          "Lines": {
+            "210": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.HelloReply::set_Message(System.String)": {
+          "Lines": {
+            "211": 0,
+            "212": 0,
+            "213": 0
+          },
+          "Branches": []
+        },
+        "System.Boolean Basket.API.HelloReply::Equals(System.Object)": {
+          "Lines": {
+            "217": 0,
+            "218": 0,
+            "219": 0
+          },
+          "Branches": []
+        },
+        "System.Boolean Basket.API.HelloReply::Equals(Basket.API.HelloReply)": {
+          "Lines": {
+            "222": 0,
+            "223": 0,
+            "224": 0,
+            "226": 0,
+            "227": 0,
+            "229": 0,
+            "230": 0,
+            "231": 0
+          },
+          "Branches": [
+            {
+              "Line": 223,
+              "Offset": 7,
+              "EndOffset": 9,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 223,
+              "Offset": 7,
+              "EndOffset": 14,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 226,
+              "Offset": 20,
+              "EndOffset": 22,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 226,
+              "Offset": 20,
+              "EndOffset": 27,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 229,
+              "Offset": 46,
+              "EndOffset": 48,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 0
+            },
+            {
+              "Line": 229,
+              "Offset": 46,
+              "EndOffset": 52,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Int32 Basket.API.HelloReply::GetHashCode()": {
+          "Lines": {
+            "234": 0,
+            "235": 0,
+            "236": 0,
+            "237": 0,
+            "238": 0,
+            "239": 0,
+            "240": 0,
+            "241": 0
+          },
+          "Branches": [
+            {
+              "Line": 236,
+              "Offset": 19,
+              "EndOffset": 21,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 236,
+              "Offset": 19,
+              "EndOffset": 35,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 237,
+              "Offset": 46,
+              "EndOffset": 48,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 237,
+              "Offset": 46,
+              "EndOffset": 64,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.String Basket.API.HelloReply::ToString()": {
+          "Lines": {
+            "244": 0,
+            "245": 0,
+            "246": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.HelloReply::WriteTo(Google.Protobuf.CodedOutputStream)": {
+          "Lines": {
+            "249": 0,
+            "250": 0,
+            "251": 0,
+            "252": 0,
+            "253": 0,
+            "254": 0,
+            "255": 0,
+            "256": 0,
+            "257": 0
+          },
+          "Branches": [
+            {
+              "Line": 250,
+              "Offset": 17,
+              "EndOffset": 19,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 250,
+              "Offset": 17,
+              "EndOffset": 43,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 254,
+              "Offset": 54,
+              "EndOffset": 56,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 254,
+              "Offset": 54,
+              "EndOffset": 71,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Int32 Basket.API.HelloReply::CalculateSize()": {
+          "Lines": {
+            "260": 0,
+            "261": 0,
+            "262": 0,
+            "263": 0,
+            "264": 0,
+            "265": 0,
+            "266": 0,
+            "267": 0,
+            "268": 0,
+            "269": 0
+          },
+          "Branches": [
+            {
+              "Line": 262,
+              "Offset": 19,
+              "EndOffset": 21,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 262,
+              "Offset": 19,
+              "EndOffset": 39,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 265,
+              "Offset": 50,
+              "EndOffset": 52,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 265,
+              "Offset": 50,
+              "EndOffset": 68,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void Basket.API.HelloReply::MergeFrom(Basket.API.HelloReply)": {
+          "Lines": {
+            "272": 0,
+            "273": 0,
+            "274": 0,
+            "276": 0,
+            "277": 0,
+            "278": 0,
+            "279": 0,
+            "280": 0
+          },
+          "Branches": [
+            {
+              "Line": 273,
+              "Offset": 7,
+              "EndOffset": 9,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 273,
+              "Offset": 7,
+              "EndOffset": 12,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 276,
+              "Offset": 28,
+              "EndOffset": 30,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 276,
+              "Offset": 28,
+              "EndOffset": 45,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void Basket.API.HelloReply::MergeFrom(Google.Protobuf.CodedInputStream)": {
+          "Lines": {
+            "283": 0,
+            "285": 0,
+            "286": 0,
+            "288": 0,
+            "289": 0,
+            "290": 0,
+            "291": 0,
+            "292": 0,
+            "295": 0,
+            "296": 0
+          },
+          "Branches": [
+            {
+              "Line": 285,
+              "Offset": 65,
+              "EndOffset": 3,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 286,
+              "Offset": 11,
+              "EndOffset": 15,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 286,
+              "Offset": 11,
+              "EndOffset": 35,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 285,
+              "Offset": 65,
+              "EndOffset": 67,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void Basket.API.HelloReply::.ctor()": {
+          "Lines": {
+            "188": 0,
+            "190": 0,
+            "207": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.HelloReply::.ctor(Basket.API.HelloReply)": {
+          "Lines": {
+            "195": 0,
+            "196": 0,
+            "197": 0,
+            "198": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.HelloReply::.cctor()": {
+          "Lines": {
+            "172": 0
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\Project\\b-shop\\src\\Basket.API\\obj\\Debug\\netcoreapp3.1\\BasketGrpc.cs": {
+      "Basket.API.Basket": {
+        "Google.Protobuf.Reflection.ServiceDescriptor Basket.API.Basket::get_Descriptor()": {
+          "Lines": {
+            "28": 0
+          },
+          "Branches": []
+        },
+        "Grpc.Core.ServerServiceDefinition Basket.API.Basket::BindService(Basket.API.Basket/BasketBase)": {
+          "Lines": {
+            "45": 0,
+            "46": 0,
+            "47": 0,
+            "48": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.Basket::BindService(Grpc.Core.ServiceBinderBase,Basket.API.Basket/BasketBase)": {
+          "Lines": {
+            "55": 0,
+            "56": 0,
+            "57": 0
+          },
+          "Branches": [
+            {
+              "Line": 56,
+              "Offset": 8,
+              "EndOffset": 10,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 56,
+              "Offset": 8,
+              "EndOffset": 25,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void Basket.API.Basket::.cctor()": {
+          "Lines": {
+            "13": 0,
+            "15": 0,
+            "16": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 0
+          },
+          "Branches": []
+        }
+      },
+      "Basket.API.Basket/BasketBase": {
+        "System.Threading.Tasks.Task`1<Basket.API.HelloReply> Basket.API.Basket/BasketBase::SayHello(Basket.API.HelloRequest,Grpc.Core.ServerCallContext)": {
+          "Lines": {
+            "36": 0,
+            "37": 0
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\Project\\b-shop\\src\\Basket.API\\Grpc\\BasketService.cs": {
+      "Basket.API.Grpc.BasketService": {
+        "System.Threading.Tasks.Task`1<Basket.API.HelloReply> Basket.API.Grpc.BasketService::SayHello(Basket.API.HelloRequest,Grpc.Core.ServerCallContext)": {
+          "Lines": {
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "21": 0,
+            "22": 0,
+            "23": 0,
+            "24": 0
+          },
+          "Branches": []
+        },
+        "System.Void Basket.API.Grpc.BasketService::.ctor()": {
+          "Lines": {
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\Project\\b-shop\\src\\Basket.API\\Grpc\\HealthCheckService.cs": {
+      "Basket.API.Grpc.HealthCheckService": {
+        "System.Void Basket.API.Grpc.HealthCheckService::.ctor(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckService)": {
+          "Lines": {
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0
+          },
+          "Branches": []
+        }
+      },
+      "Basket.API.Grpc.HealthCheckService/<Check>d__2": {
+        "System.Void Basket.API.Grpc.HealthCheckService/<Check>d__2::MoveNext()": {
+          "Lines": {
+            "19": 0,
+            "20": 0,
+            "22": 0,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "26": 0,
+            "27": 0,
+            "29": 0,
+            "30": 0
+          },
+          "Branches": [
+            {
+              "Line": 19,
+              "Offset": 14,
+              "EndOffset": 25,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 22,
+              "Offset": 183,
+              "EndOffset": 187,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 22,
+              "Offset": 183,
+              "EndOffset": 192,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 19,
+              "Offset": 14,
+              "EndOffset": 292,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Health.V1;
-using Grpc.HealthCheck;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Catalog.API
+namespace Catalog.API.HealthCheck
 {
     public class BasketHealthCheck : IHealthCheck
     {
@@ -22,9 +20,13 @@ namespace Catalog.API
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
         {
-            var health = await _healthClient.CheckAsync(new HealthCheckRequest());
+            //var health = await _healthClient.CheckAsync(new HealthCheckRequest());
+            var health = new HealthCheckResponse
+            {
+                Status = HealthCheckResponse.Types.ServingStatus.Serving
+            };
 
-            _logger.LogInformation("Health Status: {Status}", health.Status);
+            _logger.LogInformation("Basket HealthCheck Status: {Status}", health.Status);
 
             return health.Status switch
             {
