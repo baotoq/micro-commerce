@@ -20,13 +20,16 @@ namespace Catalog.API.Controllers
             _catalogContext = catalogContext;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
         {
-            await _basketClientService.SayHello();
-            await _catalogContext.CatalogItems.AddAsync(new CatalogItem());
-            await _catalogContext.SaveChangesAsync();
-            return Ok(await _catalogContext.CatalogItems.FirstAsync());
+            return Ok(await _catalogContext.CatalogItems.FindAsync(id));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _catalogContext.CatalogItems.ToListAsync());
         }
     }
 }
