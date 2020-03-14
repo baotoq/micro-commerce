@@ -18,4 +18,4 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Build with dotnet
-      run: ls -la
+      run: dotnet build Bshop.sln --configuration Release
