@@ -17,5 +17,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
+    - name: Restore with dotnet
+      run: dotnet restore
     - name: Build with dotnet
-      run: dotnet build BShop.sln --configuration Release
+      run: dotnet build ./BShop.sln --no-restore --configuration Release
+    - name: Test with dotnet
+      run: dotnet test ./BShop.sln --no-build --configuration Release
