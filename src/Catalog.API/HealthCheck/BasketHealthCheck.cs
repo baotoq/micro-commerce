@@ -5,7 +5,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Catalog.API
+namespace Catalog.API.HealthCheck
 {
     public class BasketHealthCheck : IHealthCheck
     {

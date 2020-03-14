@@ -1,6 +1,7 @@
 using System;
 using Catalog.API.AppServices;
 using Catalog.API.Grpc;
+using Catalog.API.HealthCheck;
 using Catalog.API.Infrastructure;
 using Grpc.Health.V1;
 using Grpc.Net.ClientFactory;
@@ -96,7 +97,7 @@ namespace Catalog.API
         {
             services.AddHealthChecks()
                 .AddDbContextCheck<CatalogContext>()
-                .AddCheck("basket", new BasketHealthCheck(services.BuildServiceProvider().GetRequiredService<Health.HealthClient>()));
+                .AddTypeActivatedCheck<BasketHealthCheck>("basket", services.BuildServiceProvider().GetRequiredService<Health.HealthClient>());
 
             return services;
         }
