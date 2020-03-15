@@ -21,22 +21,24 @@ steps:
     command: 'restore'
     projects: '$(solution)'
     feedsToUse: 'select'
+
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
     command: 'build'
     projects: '$(solution)'
     arguments: '--no-restore'
+
 - task: DotNetCoreCLI@2
   displayName: Test
   inputs:
     command: 'test'
     projects: '$(solution)'
-    arguments: '--no-build /p:CollectCoverage=true --logger trx'
-    testRunTitle: 'UnitTest'
+    arguments: '--no-build /p:CollectCoverage=true --results-directory . --logger trx'
+
 - task: PublishTestResults@2
   displayName: 'Publish Test Results **/*.trx'
   condition: succeededOrFailed()
   inputs:
     testResultsFormat: VSTest
-    testResultsFiles: '**/*.trx'
+    testResultsFiles: '**/tests/*.trx'
