@@ -20,7 +20,6 @@ steps:
   inputs:
     command: 'restore'
     projects: '$(solution)'
-    feedsToUse: 'select'
 
 - task: DotNetCoreCLI@2
   displayName: Build
@@ -34,11 +33,6 @@ steps:
   inputs:
     command: 'test'
     projects: '$(solution)'
-    arguments: '--no-build /p:CollectCoverage=true'
-
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results **/*.trx'
-  condition: succeededOrFailed()
-  inputs:
-    testResultsFormat: VSTest
-    testResultsFiles: '$(Agent.TempDirectory)/*.trx'
+    arguments: '/p:CollectCoverage=true'
+    nobuild: true
+    publishTestResults: true
