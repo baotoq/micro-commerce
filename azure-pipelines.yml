@@ -32,5 +32,11 @@ steps:
   inputs:
     command: 'test'
     projects: '$(solution)'
-    arguments: '--no-build /p:CollectCoverage=true'
+    arguments: '--no-build /p:CollectCoverage=true --logger trx'
     testRunTitle: 'UnitTest'
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results **/*.trx'
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFormat: VSTest
+    testResultsFiles: '**/*.trx'
