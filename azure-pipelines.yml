@@ -34,11 +34,11 @@ steps:
   inputs:
     command: 'test'
     projects: '$(solution)'
-    arguments: '--no-build /p:CollectCoverage=true --results-directory . --logger trx'
+    arguments: '--no-build /p:CollectCoverage=true'
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results **/*.trx'
   condition: succeededOrFailed()
   inputs:
     testResultsFormat: VSTest
-    testResultsFiles: '**/tests/*.trx'
+    testResultsFiles: '$(Agent.TempDirectory)/*.trx'
