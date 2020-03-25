@@ -6,6 +6,7 @@ using Catalog.API.Infrastructure;
 using Grpc.Health.V1;
 using Grpc.Net.ClientFactory;
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -13,13 +14,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace Catalog.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _env;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
+            _env = env;
             Configuration = configuration;
         }
 
@@ -28,7 +33,7 @@ namespace Catalog.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
+            services.AddGrpc(options => options.EnableDetailedErrors = _env.IsDevelopment());
 
             services
                 .AddCustomControllers(Configuration)
@@ -36,28 +41,43 @@ namespace Catalog.API
                 .AddCustomDbContext(Configuration)
                 .AddCustomHealthChecks(Configuration);
 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = Configuration["IdentityUrl"];
+
+                    options.RequireHttpsMetadata = false;
+
+                    options.ApiName = "catalog-api";
+                });
+
             services.AddTransient<BasketClientService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting()
-                .UseAuthorization()
-                .UseEndpoints(endpoints =>
+            app.UseSerilogRequestLogging();
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
                 {
-                    endpoints.MapGrpcService<HealthCheckService>();
-                    endpoints.MapControllers();
-                    endpoints.MapHealthChecks("/health", new HealthCheckOptions
-                    {
-                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                    });
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
+
+                endpoints.MapGrpcService<HealthCheckService>();
+            });
         }
     }
 
