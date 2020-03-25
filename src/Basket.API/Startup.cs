@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace Basket.API
 {
@@ -36,10 +37,10 @@ namespace Basket.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSerilogRequestLogging();
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
-            {
+            { 
                 endpoints.MapHealthChecks("/health");
 
                 endpoints.MapGrpcService<BasketService>();
