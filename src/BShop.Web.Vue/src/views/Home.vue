@@ -9,11 +9,6 @@
 import { Component, Vue } from "vue-property-decorator";
 import HelloWorld from "@/components/HelloWorld.vue";
 
-@Component({
-  name: "Home",
-  components: {
-    HelloWorld
-  }
-})
+@Component({ name: "Home", components: { HelloWorld } })
 export default class Home extends Vue {}
 </script>
