@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Models;
-using IdentityServer4.Test;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,49 +13,6 @@ using Serilog;
 
 namespace Identity.API
 {
-    public static class Config
-    {
-        public static IEnumerable<IdentityResource> Ids => new IdentityResource[]
-        {
-            new IdentityResources.OpenId()
-        };
-
-        public static IEnumerable<ApiResource> ApiResources => new[]
-        {
-            new ApiResource("catalog-api", "Catalog API")
-        };
-
-        public static IEnumerable<Client> Clients => new[]
-        {
-            new Client
-            {
-                ClientId = "client",
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
-                ClientSecrets =
-                {
-                    new Secret("secret".Sha256())
-                },
-                AllowedScopes = { "catalog-api" }
-            }
-        };
-
-        public static List<TestUser> TestUsers => new List<TestUser>
-        {
-            new TestUser
-            {
-                SubjectId = "1",
-                Username = "alice",
-                Password = "password"
-            },
-            new TestUser
-            {
-                SubjectId = "2",
-                Username = "bob",
-                Password = "password"
-            }
-        };
-    }
-
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -77,9 +31,9 @@ namespace Identity.API
 
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddInMemoryApiResources(Config.ApiResources)
-                .AddInMemoryClients(Config.Clients)
-                .AddTestUsers(Config.TestUsers)
+                .AddInMemoryApiResources(IdentityConfiguration.ApiResources)
+                .AddInMemoryClients(IdentityConfiguration.Clients)
+                .AddTestUsers(IdentityConfiguration.TestUsers)
                 .AddDeveloperSigningCredential();
         }
 
