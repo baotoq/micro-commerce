@@ -9,14 +9,13 @@
       <label for="password">Password</label>
       <input type="text" name="password" v-model="password" />
     </div>
-    <button @click="login({ userName, password })">Login</button>
+    <button @click="login(userName, password)">Login</button>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { namespace } from "vuex-class";
-import { LoginPayload } from "../store/types";
 
 const authModule = namespace("auth");
 
@@ -25,8 +24,8 @@ export default class Login extends Vue {
   private userName = "";
   private password = "";
 
-  @authModule.Action
-  private login!: ({ userName, password }: LoginPayload) => void;
+  @authModule.Action("login")
+  private login!: (userName: string, password: string) => Promise<void>;
 }
 </script>
 
