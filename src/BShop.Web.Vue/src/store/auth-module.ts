@@ -1,8 +1,10 @@
 import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators";
-import { LoginPayload } from "./types";
+import { AuthService } from "../services/auth-service";
+
+const authService = new AuthService();
 
 @Module({ namespaced: true })
-export default class Auth extends VuexModule {
+export class AuthModule extends VuexModule {
   userName?: string = undefined;
 
   @Mutation
@@ -11,10 +13,8 @@ export default class Auth extends VuexModule {
   }
 
   @Action({ commit: "loginSuccess" })
-  login({ userName, password }: LoginPayload) {
-    console.log(userName);
-    console.log(password);
-
-    return { token: "12312312312" };
+  async login(userName: string, password: string) {
+    const token = await authService.login({ userName, password });
+    return { token };
   }
 }
