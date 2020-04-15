@@ -1,14 +1,26 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <hello-world msg="Welcome to Your Vue.js App"></hello-world>
+    <catalog :catalogs="catalogs"></catalog>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "@/components/HelloWorld.vue";
+import { namespace } from "vuex-class";
+import Catalog from "@/components/Catalog.vue";
 
-@Component({ name: "Home", components: { HelloWorld } })
-export default class Home extends Vue {}
+const catalogModule = namespace("catalog");
+
+@Component({ name: "Home", components: { Catalog } })
+export default class Home extends Vue {
+  @catalogModule.State("catalogs")
+  private catalogs!: any;
+
+  @catalogModule.Action("fetchAll")
+  private featchAllCatalogs!: () => Promise<void>;
+
+  async mounted() {
+    await this.featchAllCatalogs();
+  }
+}
 </script>

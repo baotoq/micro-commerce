@@ -2,7 +2,8 @@ import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 import { RootState } from "./types";
 
-import auth from "./auth";
+import { AuthModule } from "./auth-module";
+import { CatalogModule } from "./catalog-module";
 
 Vue.use(Vuex);
 
@@ -11,7 +12,8 @@ const store: StoreOptions<RootState> = {
     version: "1.0.0"
   },
   modules: {
-    auth
+    auth: AuthModule,
+    catalog: CatalogModule
   }
 };
 
