@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BShop.API.Categories.Queries.GetAll
 {
-    public class GetAllCategoriesQuery : IRequest<IList<CategoryDto>>
+    public class GetAllCategoriesQuery : IRequest<List<CategoryDto>>
     {
     }
 }

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BShop.API.Categories.Queries.GetAll
 {
-    public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuery, IList<CategoryDto>>
+    public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuery, List<CategoryDto>>
     {
         private readonly ApplicationDbContext _context;
 
@@ -18,7 +18,7 @@ namespace BShop.API.Categories.Queries.GetAll
             _context = context;
         }
 
-        public async Task<IList<CategoryDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
+        public async Task<List<CategoryDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
         {
             var result = await _context.Categories
                 .Select(x => new CategoryDto { Id = x.Id, Name = x.Name })
