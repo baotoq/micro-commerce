@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BShop.API.Data;
 using IdentityServer4.AccessTokenValidation;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +65,8 @@ namespace BShop.API
 
             services.AddControllers();
             services.AddHealthChecks();
+
+            services.AddMediatR(typeof(Startup));
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>

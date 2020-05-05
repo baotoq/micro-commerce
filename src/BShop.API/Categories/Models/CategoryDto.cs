@@ -1,6 +1,6 @@
-﻿namespace BShop.API.Controllers.ViewModels
+﻿namespace BShop.API.Categories.Models
 {
-    public class CategoryViewModel
+    public class CategoryDto
     {
         public int Id { get; set; }
 
