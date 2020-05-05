@@ -23,6 +23,8 @@ namespace Identity.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -38,14 +40,16 @@ namespace Identity.API
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
+                    options.UserInteraction.ErrorUrl = "/error";
                 })
                 .AddInMemoryIdentityResources(IdentityServerConfiguration.Ids)
                 .AddInMemoryApiResources(IdentityServerConfiguration.Apis)
-                .AddInMemoryClients(IdentityServerConfiguration.Clients)
+                .AddInMemoryClients(IdentityServerConfiguration.Clients(Configuration))
                 .AddAspNetIdentity<IdentityUser>()
                 .AddDeveloperSigningCredential(); // not recommended for production - you need to store your key material somewhere secure
 
             services.AddRazorPages();
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +62,7 @@ namespace Identity.API
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("/error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -70,12 +74,19 @@ namespace Identity.API
 
             app.UseRouting();
 
+            app.UseCors(builder => builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin());
+
             app.UseIdentityServer();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapRazorPages();
             });
         }

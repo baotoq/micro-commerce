@@ -1,16 +1,13 @@
 using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using BShop.API.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -28,6 +25,8 @@ namespace BShop.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -35,38 +34,46 @@ namespace BShop.API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "BShop API", Version = "v1"});
+                c.AddSecurityDefinition(IdentityServerAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            TokenUrl = new Uri($"{Configuration["Identity:Uri"]}/connect/token"),
+                            AuthorizationUrl = new Uri($"{Configuration["Identity:Uri"]}/connect/authorize"),
+                            Scopes =
+                            {
+                                { "bshop-api", "BShop API" }
+                            }
+                        },
+                    },
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = IdentityServerAuthenticationDefaults.AuthenticationScheme }
+                        },
+                        new List<string> { "bshop-api" }
+                    }
+                });
             });
 
             services.AddControllers();
+            services.AddHealthChecks();
 
-            services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
                 {
-                    options.TokenValidationParameters =
-                        new TokenValidationParameters
-                        {
-                            LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
-                            ValidateAudience = false,
-                            ValidateIssuer = false,
-                            ValidateActor = false,
-                            ValidateLifetime = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("secrect")),
-                        };
+                    options.Authority = Configuration["Identity:Uri"];
+                    options.ApiName = "bshop-api";
+                    options.ApiSecret = "secret";
 
-                    options.Authority = "http://localhost:5001";
-                    options.Audience = "bshop-api";
-                    options.RequireHttpsMetadata = false; // for Demo only
-                    options.SaveToken = true;
-
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnTokenValidated = context =>
-                        {
-                            context.HttpContext.User = context.Principal;
-                            return Task.CompletedTask;
-                        }
-                    };
+                    options.EnableCaching = true;
+                    options.CacheDuration = TimeSpan.FromMinutes(10); // that's the default
                 });
         }
 
@@ -77,23 +84,41 @@ namespace BShop.API
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
             app.UseSerilogRequestLogging();
+
+            app.UseHttpsRedirection();
 
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
             {
+                c.OAuthClientId("swagger");
+                c.OAuthClientSecret("secret");
+                c.OAuthUsePkce();
                 c.RoutePrefix =  string.Empty;
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "BShop API V1");
             });
 
             app.UseRouting();
 
+            app.UseCors(builder => builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin());
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
             });
         }
