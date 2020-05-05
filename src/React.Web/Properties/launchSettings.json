@@ -3,15 +3,15 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:2129",
-      "sslPort": 44397
+      "applicationUrl": "http://localhost:3770",
+      "sslPort": 44399
     }
   },
   "profiles": {
-    "Identity.API": {
+    "React.Web": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "https://localhost:6001;http://localhost:6000",
+      "applicationUrl": "https://localhost:7001;http://localhost:7000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
