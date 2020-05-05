@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 namespace BShop.API
 {
@@ -29,7 +30,7 @@ namespace BShop.API
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "MyShop API", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "BShop API", Version = "v1"});
             });
         }
 
@@ -41,12 +42,14 @@ namespace BShop.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSerilogRequestLogging();
+
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
             {
-                c.RoutePrefix = "";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix =  string.Empty;
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "BShop API V1");
             });
 
             app.UseRouting();
