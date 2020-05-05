@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
 using IdentityServer4;
 using IdentityServer4.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Identity.API.Configurations
 {
@@ -17,23 +17,41 @@ namespace Identity.API.Configurations
         public static IEnumerable<ApiResource> Apis =>
             new[]
             {
-                new ApiResource("bshop-api", "BShop API")
+                new ApiResource
+                {
+                    Name = "bshop-api",
+                    ApiSecrets = { new Secret("secret".Sha256()) },
+                    Scopes = { new Scope("bshop-api") }
+                }
             };
 
-        public static IEnumerable<Client> Clients =>
+        public static IEnumerable<Client> Clients(IConfiguration configuration) =>
             new[]
             {
                 new Client
                 {
-                    ClientId = "bshop.ro",
-                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    ClientId = "swagger",
                     ClientSecrets = { new Secret("secret".Sha256()) },
-                    AllowedScopes = { "bshop-api" }
+                    AllowedGrantTypes = GrantTypes.Code,
+
+                    RequireConsent = false,
+                    RequirePkce = true,
+
+                    RedirectUris =           { $"{configuration["Client:Swagger:Uri"]}/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{configuration["Client:Swagger:Uri"]}/oauth2-redirect.html" },
+                    AllowedCorsOrigins =     { $"{configuration["Client:Swagger:Uri"]}" },
+
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "bshop-api"
+                    }
                 },
                 new Client
                 {
-                    ClientName = "react_code_client",
-                    ClientId = "react_code_client",
+                    ClientName = "react-web",
+                    ClientId = "react-web",
                     AccessTokenType = AccessTokenType.Reference,
                     AllowedGrantTypes = GrantTypes.Code,
                     AllowAccessTokensViaBrowser = true,
@@ -42,23 +60,23 @@ namespace Identity.API.Configurations
                     RequireConsent = false,
                     RequirePkce = true,
 
-                    RedirectUris = new List<string>
+                    RedirectUris =
                     {
-                        $"http://localhost:3000/authentication/login-callback",
-                        $"http://localhost:3000/silent-renew.html",
-                        $"http://localhost:3000"
+                        $"{configuration["Client:React:Uri"]}/authentication/login-callback",
+                        $"{configuration["Client:React:Uri"]}/silent-renew.html",
+                        $"{configuration["Client:React:Uri"]}"
                     },
-                    PostLogoutRedirectUris = new List<string>
+                    PostLogoutRedirectUris =
                     {
-                        $"http://localhost:3000/unauthorized",
-                        $"http://localhost:3000/authentication/logout-callback",
-                        $"http://localhost:3000"
+                        $"{configuration["Client:React:Uri"]}/unauthorized",
+                        $"{configuration["Client:React:Uri"]}/authentication/logout-callback",
+                        $"{configuration["Client:React:Uri"]}"
                     },
-                    AllowedCorsOrigins = new List<string>
+                    AllowedCorsOrigins =
                     {
-                        $"http://localhost:3000"
+                        $"{configuration["Client:React:Uri"]}"
                     },
-                    AllowedScopes = new List<string>
+                    AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,

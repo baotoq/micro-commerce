@@ -12,9 +12,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace BShop.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
-    [Authorize("Bearer")]
+    [Route("api/categories")]
     public class CategoriesController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -26,8 +26,8 @@ namespace BShop.API.Controllers
             _context = context;
         }
 
-        [HttpGet]
         [AllowAnonymous]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryViewModel>>> GetAll()
         {
             var response = await _context.Categories
@@ -39,8 +39,8 @@ namespace BShop.API.Controllers
             return response;
         }
 
-        [HttpGet("{id}")]
         [AllowAnonymous]
+        [HttpGet("{id}")]
         public async Task<ActionResult<CategoryViewModel>> Get(int id)
         {
             var category = await _context.Categories.FindAsync(id);
