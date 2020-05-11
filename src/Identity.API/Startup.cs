@@ -49,7 +49,7 @@ namespace Identity.API
                 .AddDeveloperSigningCredential(); // not recommended for production - you need to store your key material somewhere secure
 
             services.AddRazorPages();
-            services.AddHealthChecks();
+            services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
