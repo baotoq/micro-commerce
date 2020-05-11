@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { NavItem, NavLink } from "reactstrap";
 
 interface IProps {
   isAuthenticated: boolean;
@@ -9,34 +10,34 @@ interface IProps {
 const LoginMenu = ({ isAuthenticated, userName }: IProps) => {
   if (isAuthenticated) {
     return (
-      <ul className="navbar-nav">
-        <li className="nav-item">
-          <a className="nav-link text-dark" href="/">
+      <>
+        <NavItem>
+          <NavLink tag={Link} to="/">
             Hello {userName}
-          </a>
-        </li>
-        <li className="nav-item">
-          <Link to="/authentication/logout" className="nav-link text-dark">
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink tag={Link} to="/authentication/logout">
             Logout
-          </Link>
-        </li>
-      </ul>
+          </NavLink>
+        </NavItem>
+      </>
     );
   }
 
   return (
-    <ul className="navbar-nav">
-      <li className="nav-item">
-        <a className="nav-link text-dark" href="/">
+    <>
+      <NavItem>
+        <NavLink tag={Link} to="/">
           Register
-        </a>
-      </li>
-      <li className="nav-item">
-        <Link to="/authentication/login" className="nav-link text-dark">
+        </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink tag={Link} to="/authentication/login">
           Login
-        </Link>
-      </li>
-    </ul>
+        </NavLink>
+      </NavItem>
+    </>
   );
 };
 
