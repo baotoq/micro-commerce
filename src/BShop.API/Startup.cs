@@ -64,7 +64,7 @@ namespace BShop.API
             });
 
             services.AddControllers();
-            services.AddHealthChecks();
+            services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
             services.AddMediatR(typeof(Startup));
 
