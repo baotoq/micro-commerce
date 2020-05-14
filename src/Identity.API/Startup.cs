@@ -67,7 +67,7 @@ namespace Identity.API
                 app.UseHsts();
             }
 
-            app.UseSerilogRequestLogging();
+            //app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
