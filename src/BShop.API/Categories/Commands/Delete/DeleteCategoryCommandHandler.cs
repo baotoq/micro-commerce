@@ -2,29 +2,30 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BShop.API.Data;
+using BShop.API.Data.Models;
 
 namespace BShop.API.Categories.Commands.Delete
 {
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Category> _repository;
 
-        public DeleteCategoryCommandHandler(ApplicationDbContext context)
+        public DeleteCategoryCommandHandler(IRepository<Category> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            var category = await _context.Categories.FindAsync(request.Id, cancellationToken);
+            var category = await _repository.FindAsync(cancellationToken, request.Id);
 
             if (category == null)
             {
                 return false;
             }
 
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync(cancellationToken);
+            _repository.Remove(category);
+            await _repository.SaveChangesAsync(cancellationToken);
 
             return true;
         }

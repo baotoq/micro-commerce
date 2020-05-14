@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BShop.API.Categories.Models;
 using BShop.API.Data;
+using BShop.API.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,16 +12,16 @@ namespace BShop.API.Categories.Queries.GetAll
 {
     public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuery, List<CategoryDto>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Category> _repository;
 
-        public GetAllCategoriesQueryHandler(ApplicationDbContext context)
+        public GetAllCategoriesQueryHandler(IRepository<Category> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public async Task<List<CategoryDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
         {
-            var result = await _context.Categories
+            var result = await _repository.Query()
                 .Select(x => new CategoryDto { Id = x.Id, Name = x.Name })
                 .ToListAsync(cancellationToken);
 

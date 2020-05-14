@@ -9,11 +9,11 @@ namespace BShop.API.Categories.Commands.Create
 {
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Category> _repository;
 
-        public CreateCategoryCommandHandler(ApplicationDbContext context)
+        public CreateCategoryCommandHandler(IRepository<Category> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -23,8 +23,8 @@ namespace BShop.API.Categories.Commands.Create
                 Name = request.Name
             };
 
-            await _context.Categories.AddAsync(category, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _repository.AddAsync(category, cancellationToken);
+            await _repository.SaveChangesAsync(cancellationToken);
 
             return new CategoryDto
             {
