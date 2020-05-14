@@ -1,4 +1,4 @@
-﻿namespace BShop.API.Categories.Models
+﻿namespace BShop.API.Features.Categories.Models
 {
     public class CategoryDto
     {

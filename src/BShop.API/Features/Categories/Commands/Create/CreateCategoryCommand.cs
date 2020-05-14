@@ -1,7 +1,7 @@
-﻿using BShop.API.Categories.Models;
+﻿using BShop.API.Features.Categories.Models;
 using MediatR;
 
-namespace BShop.API.Categories.Commands.Create
+namespace BShop.API.Features.Categories.Commands.Create
 {
     public class CreateCategoryCommand : IRequest<CategoryDto>
     {

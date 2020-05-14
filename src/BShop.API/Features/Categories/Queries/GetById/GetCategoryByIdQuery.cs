@@ -1,7 +1,7 @@
-﻿using BShop.API.Categories.Models;
+﻿using BShop.API.Features.Categories.Models;
 using MediatR;
 
-namespace BShop.API.Categories.Queries.GetById
+namespace BShop.API.Features.Categories.Queries.GetById
 {
     public class GetCategoryByIdQuery : IRequest<CategoryDto>
     {

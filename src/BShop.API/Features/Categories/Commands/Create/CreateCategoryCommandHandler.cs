@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using BShop.API.Categories.Models;
 using BShop.API.Data;
 using BShop.API.Data.Models;
+using BShop.API.Features.Categories.Models;
 
-namespace BShop.API.Categories.Commands.Create
+namespace BShop.API.Features.Categories.Commands.Create
 {
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
     {

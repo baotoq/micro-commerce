@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using BShop.API.Categories.Models;
+using BShop.API.Features.Categories.Models;
 using MediatR;
 
-namespace BShop.API.Categories.Commands.Put
+namespace BShop.API.Features.Categories.Commands.Put
 {
     public class PutCategoryCommand : IRequest<CategoryDto>
     {
