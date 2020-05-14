@@ -1,10 +1,10 @@
-﻿using MediatR;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using BShop.API.Data;
 using BShop.API.Data.Models;
+using MediatR;
 
-namespace BShop.API.Categories.Commands.Delete
+namespace BShop.API.Features.Categories.Commands.Delete
 {
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>
     {

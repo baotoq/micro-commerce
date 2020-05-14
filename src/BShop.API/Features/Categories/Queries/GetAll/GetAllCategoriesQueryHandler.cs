@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BShop.API.Categories.Models;
 using BShop.API.Data;
 using BShop.API.Data.Models;
+using BShop.API.Features.Categories.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BShop.API.Categories.Queries.GetAll
+namespace BShop.API.Features.Categories.Queries.GetAll
 {
     public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuery, List<CategoryDto>>
     {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using BShop.API.Categories.Models;
+using BShop.API.Features.Categories.Models;
 using MediatR;
 
-namespace BShop.API.Categories.Queries.GetAll
+namespace BShop.API.Features.Categories.Queries.GetAll
 {
     public class GetAllCategoriesQuery : IRequest<List<CategoryDto>>
     {

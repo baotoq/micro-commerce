@@ -1,22 +1,22 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using BShop.API.Categories.Models;
 using BShop.API.Data;
 using BShop.API.Data.Models;
+using BShop.API.Features.Categories.Models;
 using MediatR;
 
-namespace BShop.API.Categories.Queries.GetById
+namespace BShop.API.Features.Categories.Commands.Put
 {
-    public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, CategoryDto>
+    public class PutCategoryCommandHandler : IRequestHandler<PutCategoryCommand, CategoryDto>
     {
         private readonly IRepository<Category> _repository;
 
-        public GetCategoryByIdQueryHandler(IRepository<Category> repository)
+        public PutCategoryCommandHandler(IRepository<Category> repository)
         {
             _repository = repository;
         }
 
-        public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
+        public async Task<CategoryDto> Handle(PutCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = await _repository.FindAsync(cancellationToken, request.Id);
 
@@ -24,6 +24,9 @@ namespace BShop.API.Categories.Queries.GetById
             {
                 return null;
             }
+
+            category.Name = request.Name;
+            await _repository.SaveChangesAsync(cancellationToken);
 
             return new CategoryDto
             {
