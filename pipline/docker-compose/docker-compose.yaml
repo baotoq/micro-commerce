@@ -1,0 +1,52 @@
+version: "3"
+services:
+  sqldb:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      - SA_PASSWORD=P@ssw0rd
+      - ACCEPT_EULA=Y
+    volumes:
+      - sqldb-data:/var/opt/mssql
+    ports:
+      - "${SQL_DATABASE_PORT}:1443"
+    networks:
+      - backend
+
+  identity-api:
+    image: identity-api
+    build:
+      context: ../../src
+      dockerfile: Identity.API/Dockerfile
+    depends_on:
+      - sqldb
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "${IDENTITY_API_PORT}:80"
+    networks:
+      - backend
+      - frontend
+
+  bshop-api:
+    image: bshop-api
+    build:
+      context: ../../src
+      dockerfile: BShop.API/Dockerfile
+    depends_on:
+      - sqldb
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "${BSHOP_API_PORT}:80"
+    networks:
+      - backend
+      - frontend
+
+volumes:
+  sqldb-data:
+
+networks:
+  frontend:
+  backend:
