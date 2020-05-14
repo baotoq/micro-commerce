@@ -28,7 +28,7 @@ namespace BShop.API.UnitTests.Categories
         }
 
         [Fact]
-        public async Task GetAllAsync_Success()
+        public async Task GetAll_Success()
         {
             _mockMediator
                 .Setup(_ => _.Send(It.IsAny<GetAllCategoriesQuery>(), CancellationToken.None))
@@ -38,13 +38,13 @@ namespace BShop.API.UnitTests.Categories
                     new CategoryDto()
                 });
 
-            var act = await _sut.GetAllAsync(CancellationToken.None);
+            var act = await _sut.GetAll(CancellationToken.None);
 
             act.Value.Should().HaveCount(2);
         }
 
         [Fact]
-        public async Task GetAsync_Success()
+        public async Task Get_Success()
         {
             var dto = new CategoryDto
             {
@@ -56,13 +56,13 @@ namespace BShop.API.UnitTests.Categories
                 .Setup(_ => _.Send(It.IsAny<GetCategoryByIdQuery>(), CancellationToken.None))
                 .ReturnsAsync(dto);
 
-            var act = await _sut.GetAsync(1, CancellationToken.None);
+            var act = await _sut.Get(1, CancellationToken.None);
 
             act.Value.Should().BeEquivalentTo(dto);
         }
 
         [Fact]
-        public async Task PostAsync_Success()
+        public async Task Post_Success()
         {
             var dto = new CategoryDto
             {
@@ -74,7 +74,7 @@ namespace BShop.API.UnitTests.Categories
                 .Setup(_ => _.Send(It.IsAny<CreateCategoryCommand>(), CancellationToken.None))
                 .ReturnsAsync(dto);
 
-            var act = await _sut.PostAsync(new CreateCategoryCommand
+            var act = await _sut.Post(new CreateCategoryCommand
             {
                 Name = "test"
             }, CancellationToken.None);
@@ -84,7 +84,7 @@ namespace BShop.API.UnitTests.Categories
         }
 
         [Fact]
-        public async Task PutAsync_Success()
+        public async Task Put_Success()
         {
             var dto = new CategoryDto
             {
@@ -96,7 +96,7 @@ namespace BShop.API.UnitTests.Categories
                 .Setup(_ => _.Send(It.IsAny<PutCategoryCommand>(), CancellationToken.None))
                 .ReturnsAsync(dto);
 
-            var act = await _sut.PutAsync(1, new PutCategoryCommand
+            var act = await _sut.Put(1, new PutCategoryCommand
             {
                 Name = "test"
             }, CancellationToken.None);
@@ -105,13 +105,13 @@ namespace BShop.API.UnitTests.Categories
         }
 
         [Fact]
-        public async Task DeleteAsync_Success()
+        public async Task Delete_Success()
         {
             _mockMediator
                 .Setup(_ => _.Send(It.IsAny<DeleteCategoryCommand>(), CancellationToken.None))
                 .ReturnsAsync(true);
 
-            var act = await _sut.DeleteAsync(1, CancellationToken.None);
+            var act = await _sut.Delete(1, CancellationToken.None);
 
             act.Should().BeOfType<NoContentResult>();
         }

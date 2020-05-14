@@ -4,9 +4,9 @@ namespace BShop.API.Categories.Commands.Delete
 {
     public class DeleteCategoryCommand : IRequest<bool>
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
-        public DeleteCategoryCommand(int id)
+        public DeleteCategoryCommand(long id)
         {
             Id = id;
         }

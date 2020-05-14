@@ -19,9 +19,9 @@ namespace BShop.API.Data.Migrations
 
             modelBuilder.Entity("BShop.API.Data.Models.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
@@ -34,9 +34,9 @@ namespace BShop.API.Data.Migrations
 
             modelBuilder.Entity("BShop.API.Data.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("BrandId")
@@ -61,11 +61,11 @@ namespace BShop.API.Data.Migrations
 
             modelBuilder.Entity("BShop.API.Data.Models.ProductCategory", b =>
                 {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("ProductId", "CategoryId");
 

@@ -9,16 +9,16 @@ namespace BShop.API.Categories.Commands.Put
 {
     public class PutCategoryCommandHandler : IRequestHandler<PutCategoryCommand, CategoryDto>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Category> _repository;
 
-        public PutCategoryCommandHandler(ApplicationDbContext context)
+        public PutCategoryCommandHandler(IRepository<Category> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public async Task<CategoryDto> Handle(PutCategoryCommand request, CancellationToken cancellationToken)
         {
-            var category = await _context.Categories.FindAsync(request.Id);
+            var category = await _repository.FindAsync(cancellationToken, request.Id);
 
             if (category == null)
             {
@@ -26,7 +26,7 @@ namespace BShop.API.Categories.Commands.Put
             }
 
             category.Name = request.Name;
-            await _context.SaveChangesAsync(cancellationToken);
+            await _repository.SaveChangesAsync(cancellationToken);
 
             return new CategoryDto
             {

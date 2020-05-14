@@ -10,7 +10,7 @@ namespace BShop.API.Data.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true)
                 },
@@ -23,7 +23,7 @@ namespace BShop.API.Data.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     Price = table.Column<decimal>(nullable: false),
@@ -40,8 +40,8 @@ namespace BShop.API.Data.Migrations
                 name: "ProductCategory",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(nullable: false),
-                    CategoryId = table.Column<int>(nullable: false)
+                    ProductId = table.Column<long>(nullable: false),
+                    CategoryId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
