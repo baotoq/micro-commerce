@@ -5,9 +5,9 @@ namespace BShop.API.Categories.Queries.GetById
 {
     public class GetCategoryByIdQuery : IRequest<CategoryDto>
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
-        public GetCategoryByIdQuery(int id)
+        public GetCategoryByIdQuery(long id)
         {
             Id = id;
         }

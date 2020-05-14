@@ -2,22 +2,23 @@
 using System.Threading.Tasks;
 using BShop.API.Categories.Models;
 using BShop.API.Data;
+using BShop.API.Data.Models;
 using MediatR;
 
 namespace BShop.API.Categories.Queries.GetById
 {
     public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, CategoryDto>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Category> _repository;
 
-        public GetCategoryByIdQueryHandler(ApplicationDbContext context)
+        public GetCategoryByIdQueryHandler(IRepository<Category> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
-            var category = await _context.Categories.FindAsync(request.Id);
+            var category = await _repository.FindAsync(cancellationToken, request.Id);
 
             if (category == null)
             {
