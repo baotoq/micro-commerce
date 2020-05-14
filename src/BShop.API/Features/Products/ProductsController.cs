@@ -1,39 +1,39 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using BShop.API.Features.Categories.Commands.Create;
-using BShop.API.Features.Categories.Commands.Delete;
-using BShop.API.Features.Categories.Commands.Put;
-using BShop.API.Features.Categories.Models;
-using BShop.API.Features.Categories.Queries.GetAll;
-using BShop.API.Features.Categories.Queries.GetById;
+using BShop.API.Features.Products.Commands.Create;
+using BShop.API.Features.Products.Commands.Delete;
+using BShop.API.Features.Products.Commands.Put;
+using BShop.API.Features.Products.Models;
+using BShop.API.Features.Products.Queries.GetAll;
+using BShop.API.Features.Products.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace BShop.API.Features.Categories
+namespace BShop.API.Features.Products
 {
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class CategoriesController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
 
-        public CategoriesController(IMediator mediator)
+        public ProductsController(IMediator mediator)
         {
-            _logger = NullLogger<CategoriesController>.Instance;
+            _logger = NullLogger<ProductsController>.Instance;
             _mediator = mediator;
         }
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<List<CategoryDto>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<ProductDto>>> GetAll(CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetAllCategoriesQuery(), cancellationToken);
+            var result = await _mediator.Send(new GetAllProductsQuery(), cancellationToken);
 
             _logger.LogInformation("{@result}", result);
 
@@ -42,9 +42,9 @@ namespace BShop.API.Features.Categories
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryDto>> Get(long id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ProductDto>> Get(long id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
+            var result = await _mediator.Send(new GetProductByIdQuery(id), cancellationToken);
 
             if (result == null)
             {
@@ -57,7 +57,7 @@ namespace BShop.API.Features.Categories
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryDto>> Post(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<ActionResult<ProductDto>> Post(CreateProductCommand request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
 
@@ -65,7 +65,7 @@ namespace BShop.API.Features.Categories
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(long id, PutCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Put(long id, PutProductCommand request, CancellationToken cancellationToken)
         {
             request.Id = id;
             var result = await _mediator.Send(request, cancellationToken);
@@ -81,7 +81,7 @@ namespace BShop.API.Features.Categories
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new DeleteCategoryCommand(id), cancellationToken);
+            var result = await _mediator.Send(new DeleteProductCommand(id), cancellationToken);
 
             if (!result)
             {
