@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using BShop.API.Categories.Commands.Create;
-using BShop.API.Categories.Commands.Delete;
-using BShop.API.Categories.Commands.Put;
-using BShop.API.Categories.Models;
-using BShop.API.Categories.Queries.GetAll;
-using BShop.API.Categories.Queries.GetById;
+using BShop.API.Features.Categories.Commands.Create;
+using BShop.API.Features.Categories.Commands.Delete;
+using BShop.API.Features.Categories.Commands.Put;
+using BShop.API.Features.Categories.Models;
+using BShop.API.Features.Categories.Queries.GetAll;
+using BShop.API.Features.Categories.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace BShop.API.Categories
+namespace BShop.API.Features.Categories
 {
     [Authorize]
     [ApiController]

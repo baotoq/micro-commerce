@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using BShop.API.Categories;
-using BShop.API.Categories.Commands.Create;
-using BShop.API.Categories.Commands.Delete;
-using BShop.API.Categories.Commands.Put;
-using BShop.API.Categories.Models;
-using BShop.API.Categories.Queries.GetAll;
-using BShop.API.Categories.Queries.GetById;
+
+using BShop.API.Features.Categories;
+using BShop.API.Features.Categories.Commands.Create;
+using BShop.API.Features.Categories.Commands.Delete;
+using BShop.API.Features.Categories.Commands.Put;
+using BShop.API.Features.Categories.Models;
+using BShop.API.Features.Categories.Queries.GetAll;
+using BShop.API.Features.Categories.Queries.GetById;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
