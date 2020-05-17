@@ -22,6 +22,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=identity-api;User Id=sa;Password=P@ssw0rd;
+      - Client:Swagger:Uri=http://${EXTERNAL_HOST_IP}:${BSHOP_API_PORT}
+      - Client:React:Uri=http://${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
     ports:
       - "${IDENTITY_API_PORT}:80"
     networks:
@@ -38,6 +41,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=bshop-api;User Id=sa;Password=P@ssw0rd;
+      - Identity:Uri=http://${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
     ports:
       - "${BSHOP_API_PORT}:80"
     networks:
