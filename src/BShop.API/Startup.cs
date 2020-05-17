@@ -74,7 +74,7 @@ namespace BShop.API
                     options.Authority = Configuration["Identity:Uri"];
                     options.ApiName = "bshop-api";
                     options.ApiSecret = "secret";
-
+                    options.RequireHttpsMetadata = false;
                     options.EnableCaching = true;
                     options.CacheDuration = TimeSpan.FromMinutes(10); // that's the default
                 });
@@ -88,6 +88,7 @@ namespace BShop.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -104,10 +105,10 @@ namespace BShop.API
 
             app.UseSwaggerUI(c =>
             {
+                c.RoutePrefix =  string.Empty;
                 c.OAuthClientId("swagger");
                 c.OAuthClientSecret("secret");
                 c.OAuthUsePkce();
-                c.RoutePrefix =  string.Empty;
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "BShop API V1");
             });
 
