@@ -8,22 +8,22 @@ namespace BShop.API.Data
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
-        private readonly DbContext _context;
-        private readonly IServiceProvider _serviceProvider;
+        protected DbContext Context { get; }
+        protected IServiceProvider ServiceProvider { get; }
 
         public UnitOfWork(DbContext context, IServiceProvider serviceProvider)
         {
-            _context = context;
-            _serviceProvider = serviceProvider;
+            Context = context;
+            ServiceProvider = serviceProvider;
         }
 
         public IRepository<TEntity> Repository<TEntity>() where TEntity : Entity
-            => _serviceProvider.GetRequiredService<IRepository<TEntity>>();
+            => ServiceProvider.GetRequiredService<IRepository<TEntity>>();
 
-        public int SaveChanges() => _context.SaveChanges();
+        public int SaveChanges() => Context.SaveChanges();
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-            => _context.SaveChangesAsync(cancellationToken);
+            => Context.SaveChangesAsync(cancellationToken);
 
         public void Dispose()
         {
@@ -33,7 +33,7 @@ namespace BShop.API.Data
 
         protected virtual void Dispose(bool disposing)
         {
-            _context?.Dispose();
+            Context?.Dispose();
         }
     }
 }

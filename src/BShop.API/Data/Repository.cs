@@ -8,15 +8,14 @@ namespace BShop.API.Data
 {
     public class Repository<T> : IRepository<T> where T : Entity
     {
+        protected DbContext Context { get; }
+        protected DbSet<T> DbSet { get; }
+
         public Repository(DbContext context)
         {
             Context = context;
             DbSet = Context.Set<T>();
         }
-
-        protected DbContext Context { get; }
-
-        protected DbSet<T> DbSet { get; }
 
         public IQueryable<T> Query()
         {
