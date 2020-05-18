@@ -8,11 +8,13 @@ namespace BShop.API.Features.Categories.Commands.Delete
 {
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Category> _repository;
 
-        public DeleteCategoryCommandHandler(IRepository<Category> repository)
+        public DeleteCategoryCommandHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
+            _repository = _unitOfWork.Repository<Category>();
         }
 
         public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
@@ -25,7 +27,7 @@ namespace BShop.API.Features.Categories.Commands.Delete
             }
 
             _repository.Remove(category);
-            await _repository.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;
         }

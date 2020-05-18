@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BShop.API.Data
 {
@@ -19,11 +18,5 @@ namespace BShop.API.Data
         void AddRange(IEnumerable<T> entity);
 
         void Remove(T entity);
-
-        IDbContextTransaction BeginTransaction();
-
-        void SaveChanges();
-
-        Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

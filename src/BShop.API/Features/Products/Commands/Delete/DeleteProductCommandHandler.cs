@@ -8,11 +8,13 @@ namespace BShop.API.Features.Products.Commands.Delete
 {
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, bool>
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Product> _repository;
 
-        public DeleteProductCommandHandler(IRepository<Product> repository)
+        public DeleteProductCommandHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
+            _repository = _unitOfWork.Repository<Product>();
         }
 
         public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -25,7 +27,7 @@ namespace BShop.API.Features.Products.Commands.Delete
             }
 
             _repository.Remove(product);
-            await _repository.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;
         }
