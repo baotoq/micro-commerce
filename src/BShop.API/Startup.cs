@@ -26,7 +26,6 @@ namespace BShop.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
 
             services.AddScoped<DbContext, ApplicationDbContext>();
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -36,6 +35,7 @@ namespace BShop.API
 
             services.AddSwagger(Configuration);
 
+            services.AddCors();
             services.AddControllers();
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
@@ -72,16 +72,7 @@ namespace BShop.API
 
             app.UseHttpsRedirection();
 
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
-            {
-                c.RoutePrefix = string.Empty;
-                c.OAuthClientId("swagger");
-                c.OAuthClientSecret("secret");
-                c.OAuthUsePkce();
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "BShop API V1");
-            });
+            app.UseSwaggerDefault();
 
             app.UseRouting();
 
@@ -134,6 +125,20 @@ namespace BShop.API
                         new List<string> { "bshop-api" }
                     }
                 });
+            });
+        }
+
+        public static void UseSwaggerDefault(this IApplicationBuilder app)
+        {
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.RoutePrefix = string.Empty;
+                c.OAuthClientId("swagger");
+                c.OAuthClientSecret("secret");
+                c.OAuthUsePkce();
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "BShop API V1");
             });
         }
     }
