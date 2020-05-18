@@ -9,11 +9,13 @@ namespace BShop.API.Features.Categories.Commands.Put
 {
     public class PutCategoryCommandHandler : IRequestHandler<PutCategoryCommand, CategoryDto>
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Category> _repository;
 
-        public PutCategoryCommandHandler(IRepository<Category> repository)
+        public PutCategoryCommandHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
+            _repository = _unitOfWork.Repository<Category>();
         }
 
         public async Task<CategoryDto> Handle(PutCategoryCommand request, CancellationToken cancellationToken)
@@ -26,7 +28,7 @@ namespace BShop.API.Features.Categories.Commands.Put
             }
 
             category.Name = request.Name;
-            await _repository.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new CategoryDto
             {

@@ -9,11 +9,13 @@ namespace BShop.API.Features.Products.Commands.Put
 {
     public class PutProductCommandHandler : IRequestHandler<PutProductCommand, ProductDto>
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Product> _repository;
 
-        public PutProductCommandHandler(IRepository<Product> repository)
+        public PutProductCommandHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
+            _repository = _unitOfWork.Repository<Product>();
         }
 
         public async Task<ProductDto> Handle(PutProductCommand request, CancellationToken cancellationToken)
@@ -26,7 +28,7 @@ namespace BShop.API.Features.Products.Commands.Put
             }
 
             product.Name = request.Name;
-            await _repository.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new ProductDto
             {
