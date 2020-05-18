@@ -3,13 +3,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BShop.API.Data
 {
     public class Repository<T> : IRepository<T> where T : Entity
     {
-        public Repository(ApplicationDbContext context)
+        public Repository(DbContext context)
         {
             Context = context;
             DbSet = Context.Set<T>();
@@ -47,21 +46,6 @@ namespace BShop.API.Data
         public void Remove(T entity)
         {
             DbSet.Remove(entity);
-        }
-
-        public IDbContextTransaction BeginTransaction()
-        {
-            return Context.Database.BeginTransaction();
-        }
-
-        public void SaveChanges()
-        {
-            Context.SaveChanges();
-        }
-
-        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            return Context.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -28,40 +28,13 @@ namespace BShop.API
         {
             services.AddCors();
 
+            services.AddScoped<DbContext, ApplicationDbContext>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+            services.AddUnitOfWork();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "BShop API", Version = "v1"});
-                c.AddSecurityDefinition(IdentityServerAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows
-                    {
-                        AuthorizationCode = new OpenApiOAuthFlow
-                        {
-                            TokenUrl = new Uri($"{Configuration["Identity:Uri"]}/connect/token"),
-                            AuthorizationUrl = new Uri($"{Configuration["Identity:Uri"]}/connect/authorize"),
-                            Scopes =
-                            {
-                                { "bshop-api", "BShop API" }
-                            }
-                        },
-                    },
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = IdentityServerAuthenticationDefaults.AuthenticationScheme }
-                        },
-                        new List<string> { "bshop-api" }
-                    }
-                });
-            });
+            services.AddSwagger(Configuration);
 
             services.AddControllers();
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
@@ -78,8 +51,6 @@ namespace BShop.API
                     options.EnableCaching = true;
                     options.CacheDuration = TimeSpan.FromMinutes(10); // that's the default
                 });
-
-            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -105,7 +76,7 @@ namespace BShop.API
 
             app.UseSwaggerUI(c =>
             {
-                c.RoutePrefix =  string.Empty;
+                c.RoutePrefix = string.Empty;
                 c.OAuthClientId("swagger");
                 c.OAuthClientSecret("secret");
                 c.OAuthUsePkce();
@@ -126,6 +97,43 @@ namespace BShop.API
             {
                 endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
+            });
+        }
+    }
+
+    public static class StartupConfigureServices
+    {
+        public static void AddSwagger(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BShop API", Version = "v1" });
+                c.AddSecurityDefinition(IdentityServerAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            TokenUrl = new Uri($"{configuration["Identity:Uri"]}/connect/token"),
+                            AuthorizationUrl = new Uri($"{configuration["Identity:Uri"]}/connect/authorize"),
+                            Scopes =
+                            {
+                                { "bshop-api", "BShop API" }
+                            }
+                        },
+                    },
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = IdentityServerAuthenticationDefaults.AuthenticationScheme }
+                        },
+                        new List<string> { "bshop-api" }
+                    }
+                });
             });
         }
     }

@@ -9,11 +9,13 @@ namespace BShop.API.Features.Products.Commands.Create
 {
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Product> _repository;
 
-        public CreateProductCommandHandler(IRepository<Product> repository)
+        public CreateProductCommandHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
+            _repository = _unitOfWork.Repository<Product>();
         }
 
         public async Task<ProductDto> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -33,7 +35,7 @@ namespace BShop.API.Features.Products.Commands.Create
             }
 
             await _repository.AddAsync(product, cancellationToken);
-            await _repository.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new ProductDto
             {

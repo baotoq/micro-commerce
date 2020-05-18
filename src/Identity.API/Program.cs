@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Identity.API.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,15 +30,16 @@ namespace Identity.API
     {
         public static IHost MigrateDatabase<T>(this IHost webHost) where T : DbContext
         {
-            using (var scope = webHost.Services.CreateScope())
+            Task.Run(async () =>
             {
+                using var scope = webHost.Services.CreateScope();
                 var services = scope.ServiceProvider;
                 try
                 {
                     var context = services.GetRequiredService<T>();
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogInformation("Start migrate database");
-                    context.Database.Migrate();
+                    await context.Database.MigrateAsync();
                     logger.LogInformation("Migrating database was successful");
                 }
                 catch (Exception ex)
@@ -45,7 +47,7 @@ namespace Identity.API
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred while migrating the database");
                 }
-            }
+            });
             return webHost;
         }
     }
