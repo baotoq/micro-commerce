@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
 using BShop.API.Features.Categories;
 using BShop.API.Features.Categories.Commands.Create;
 using BShop.API.Features.Categories.Commands.Delete;
