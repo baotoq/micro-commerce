@@ -1,4 +1,4 @@
-﻿namespace BShop.API.Data
+﻿namespace BShop.API.Data.Models.Common
 {
     public abstract class Entity
     {

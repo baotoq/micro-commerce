@@ -1,4 +1,8 @@
-﻿using BShop.API.Data.Models;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using BShop.API.Data.Models;
+using BShop.API.Data.Models.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace BShop.API.Data
@@ -13,6 +17,25 @@ namespace BShop.API.Data
             : base(options)
         {
         }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<AuditEntity>())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.Created = DateTime.Now;
+                        break;
+                    case EntityState.Modified:
+                        entry.Entity.LastModified = DateTime.Now;
+                        break;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
