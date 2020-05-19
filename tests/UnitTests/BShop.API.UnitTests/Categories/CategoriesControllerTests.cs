@@ -11,6 +11,7 @@ using BShop.API.Features.Categories.Queries.GetById;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
 
@@ -24,7 +25,7 @@ namespace BShop.API.UnitTests.Categories
         public CategoriesControllerTests()
         {
             _mockMediator = new Mock<IMediator>();
-            _sut = new CategoriesController(_mockMediator.Object);
+            _sut = new CategoriesController(_mockMediator.Object, NullLogger<CategoriesController>.Instance);
         }
 
         [Fact]

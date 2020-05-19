@@ -11,7 +11,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace BShop.API.Features.Categories
 {
@@ -20,12 +19,12 @@ namespace BShop.API.Features.Categories
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<CategoriesController> _logger;
         private readonly IMediator _mediator;
 
-        public CategoriesController(IMediator mediator)
+        public CategoriesController(IMediator mediator, ILogger<CategoriesController> logger)
         {
-            _logger = NullLogger<CategoriesController>.Instance;
+            _logger = logger;
             _mediator = mediator;
         }
 

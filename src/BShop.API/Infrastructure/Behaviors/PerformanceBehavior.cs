@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace BShop.API.Infrastructure.Behaviours
+namespace BShop.API.Infrastructure.Behaviors
 {
-    public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly Stopwatch _timer;
-        private readonly ILogger<PerformanceBehaviour<TRequest, TResponse>> _logger;
+        private readonly ILogger<PerformanceBehavior<TRequest, TResponse>> _logger;
 
-        public PerformanceBehaviour(ILogger<PerformanceBehaviour<TRequest, TResponse>> logger)
+        public PerformanceBehavior(ILogger<PerformanceBehavior<TRequest, TResponse>> logger)
         {
             _timer = new Stopwatch();
 
