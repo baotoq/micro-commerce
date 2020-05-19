@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BShop.API.Data.Models.Common;
 
 namespace BShop.API.Data
 {

@@ -43,8 +43,6 @@ namespace Identity.API.Configurations
 
                     AllowedScopes = new List<string>
                     {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
                         "bshop-api"
                     }
                 },
