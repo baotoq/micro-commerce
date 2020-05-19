@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BShop.API.Data;
+using BShop.API.Infrastructure;
 using IdentityServer4.AccessTokenValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,20 +27,19 @@ namespace BShop.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddScoped<DbContext, ApplicationDbContext>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddUnitOfWork();
 
+            services.AddInfrastructure();
+
             services.AddSwagger(Configuration);
 
             services.AddCors();
             services.AddControllers();
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
-
-            services.AddMediatR(typeof(Startup));
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
@@ -51,6 +51,9 @@ namespace BShop.API
                     options.EnableCaching = true;
                     options.CacheDuration = TimeSpan.FromMinutes(10); // that's the default
                 });
+
+            services.AddAccessTokenManagement()
+                .ConfigureBackchannelHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
