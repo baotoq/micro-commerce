@@ -1,6 +1,5 @@
-﻿using BShop.API.Infrastructure.Behaviours;
+﻿using BShop.API.Infrastructure.Behaviors;
 using MediatR;
-using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BShop.API.Infrastructure
@@ -10,8 +9,8 @@ namespace BShop.API.Infrastructure
         public static void AddInfrastructure(this IServiceCollection services)
         {
             services.AddMediatR(typeof(Startup));
-            services.AddTransient(typeof(IRequestPreProcessor<>), typeof(LoggingBehaviour<>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
         }
     }
 }
