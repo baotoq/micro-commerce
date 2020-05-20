@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk, RootState } from "../";
 
+import categoryService from "../../services/category-service";
+
 interface Category {
   id: number;
   name: string;
@@ -27,30 +29,8 @@ export const categories = createSlice({
 export const { fetchCategories } = categories.actions;
 
 export const fetchCategoriesAsync = (): AppThunk => async (dispatch) => {
-  dispatch(
-    fetchCategories([
-      {
-        id: 1,
-        name: "Apple",
-      },
-      {
-        id: 2,
-        name: "Samsung",
-      },
-      {
-        id: 3,
-        name: "Nokia",
-      },
-      {
-        id: 4,
-        name: "Xiaomi",
-      },
-      {
-        id: 5,
-        name: "Huawei",
-      },
-    ])
-  );
+  const data = await categoryService.findAll();
+  dispatch(fetchCategories(data));
 };
 
 export const selectCategories = (state: RootState) => state.categories.categories;
