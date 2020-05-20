@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
-import { loginAsync, logoutAsync, completeLoginAsync, completeLogoutAsync } from "../store/auth-slice";
+import { loginAsync, logoutAsync, completeLoginAsync, completeLogoutAsync } from "../../store/slices/auth-slice";
 
 const Auth = () => {
   const history = useHistory();
