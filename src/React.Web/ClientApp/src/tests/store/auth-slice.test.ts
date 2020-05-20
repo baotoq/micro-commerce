@@ -1,4 +1,4 @@
-import authReducer, { loginSuccess, logoutSuccess } from "../../store/auth-slice";
+import authReducer, { loginSuccess, logoutSuccess } from "../../store/slices/auth-slice";
 
 describe("auth reducer", () => {
   it("should return the initial state", () => {

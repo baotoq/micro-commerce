@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppThunk, RootState } from "./store";
+import { AppThunk, RootState } from "../";
 
-import authService from "../services/auth-service";
+import authService from "../../services/auth-service";
 
 interface IUser {
   name: string;

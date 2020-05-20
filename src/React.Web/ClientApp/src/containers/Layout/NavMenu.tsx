@@ -14,13 +14,15 @@ import {
   DropdownToggle,
   UncontrolledDropdown,
 } from "reactstrap";
-import LoginMenu from "../components/LoginMenu";
+import LoginMenu from "./LoginMenu";
 
-import { selectIsAuthenticated, selectUser } from "../store/auth-slice";
+import { selectIsAuthenticated, selectUser } from "../../store/slices/auth-slice";
+import { selectCategories } from "../../store/slices/categories-slice";
 
 const NavMenu = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const userName = useSelector(selectUser)?.name;
+  const categories = useSelector(selectCategories);
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
@@ -44,10 +46,9 @@ const NavMenu = () => {
                 Categories
               </DropdownToggle>
               <DropdownMenu right>
-                <DropdownItem>Option 1</DropdownItem>
-                <DropdownItem>Option 2</DropdownItem>
-                <DropdownItem divider />
-                <DropdownItem>Reset</DropdownItem>
+                {categories.map((category) => (
+                  <DropdownItem key={category.id}>{category.name}</DropdownItem>
+                ))}
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
