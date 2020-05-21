@@ -3,7 +3,6 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
-
 WORKDIR /src/Identity.API
 
 COPY ["Identity.API/Identity.API.csproj", "/src/Identity.API/"]
