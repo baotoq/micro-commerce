@@ -20,7 +20,7 @@ services:
     depends_on:
       - sqldb
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=identity-api;User Id=sa;Password=P@ssw0rd;
       - Client:Swagger:Uri=http://${EXTERNAL_HOST_IP}:${BSHOP_API_PORT}
@@ -39,7 +39,7 @@ services:
     depends_on:
       - sqldb
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=bshop-api;User Id=sa;Password=P@ssw0rd;
       - Identity:Uri=http://${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
@@ -55,9 +55,9 @@ services:
       context: ../../src
       dockerfile: React.Web/Dockerfile
       args:
-        - REACT_APP_BASE_URL=http://${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
+        - REACT_APP_BASE_URI=http://${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
         - REACT_APP_IDENTITY_URI=http://${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
-        - REACT_APP_RESOURCE_URI=http://bshop-api
+        - REACT_APP_RESOURCE_URI=http://${EXTERNAL_HOST_IP}:${BSHOP_API_PORT}
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
