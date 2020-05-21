@@ -49,6 +49,23 @@ services:
       - backend
       - frontend
 
+  react-web:
+    image: react-web
+    build:
+      context: ../../src
+      dockerfile: React.Web/Dockerfile
+      args:
+        - REACT_APP_BASE_URL=http://${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
+        - REACT_APP_IDENTITY_URI=http://${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
+        - REACT_APP_RESOURCE_URI=http://bshop-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "${REACT_WEB_PORT}:80"
+    networks:
+      - frontend
+
 volumes:
   sqldb-data:
 
