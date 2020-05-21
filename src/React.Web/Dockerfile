@@ -3,12 +3,13 @@ EXPOSE 80
 EXPOSE 443
 
 FROM node:12-alpine AS client
-ARG REACT_APP_BASE_URL
-ARG REACT_APP_IDENTITY_URI
-ARG REACT_APP_RESOURCE_URI
 WORKDIR /src
 COPY ["React.Web/ClientApp", "."]
-RUN npm install 
+RUN npm install
+
+ARG REACT_APP_BASE_URI
+ARG REACT_APP_IDENTITY_URI
+ARG REACT_APP_RESOURCE_URI
 RUN npm run build
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
