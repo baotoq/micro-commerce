@@ -25,8 +25,8 @@ httpClient.interceptors.request.use(
 httpClient.interceptors.response.use(
   (response) => {
     // do something with the response data
-    console.log("Response was received");
     console.log(response);
+    console.log("Response was received");
     return response;
   },
   (error) => {

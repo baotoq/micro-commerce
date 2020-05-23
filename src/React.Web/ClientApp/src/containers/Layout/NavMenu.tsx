@@ -17,7 +17,7 @@ import {
 import LoginMenu from "./LoginMenu";
 
 import { selectIsAuthenticated, selectUser } from "../../store/slices/auth-slice";
-import { selectCategories } from "../../store/slices/categories-slice";
+import { selectCategories } from "../../store/slices/category-slice";
 
 const NavMenu = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -47,7 +47,7 @@ const NavMenu = () => {
               </DropdownToggle>
               <DropdownMenu right>
                 {categories.map((category) => (
-                  <DropdownItem key={category.id}>{category.name}</DropdownItem>
+                  <DropdownItem key={category.id} tag={Link} to={`/category/${category.id}`}>{category.name}</DropdownItem>
                 ))}
               </DropdownMenu>
             </UncontrolledDropdown>
