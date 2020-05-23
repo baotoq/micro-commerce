@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppThunk, RootState } from "../";
+import { AppThunk, RootState } from "..";
 
 import categoryService from "../../services/category-service";
 
@@ -8,16 +8,16 @@ interface Category {
   name: string;
 }
 
-interface CategoriesState {
+interface CategoryState {
   categories: Category[];
 }
 
-const initialState: CategoriesState = {
+const initialState: CategoryState = {
   categories: [],
 };
 
-export const categories = createSlice({
-  name: "categories",
+export const category = createSlice({
+  name: "category",
   initialState,
   reducers: {
     fetchCategories: (state, { payload }: PayloadAction<Category[]>) => {
@@ -26,13 +26,13 @@ export const categories = createSlice({
   },
 });
 
-export const { fetchCategories } = categories.actions;
+export const { fetchCategories } = category.actions;
 
 export const fetchCategoriesAsync = (): AppThunk => async (dispatch) => {
   const data = await categoryService.findAll();
   dispatch(fetchCategories(data));
 };
 
-export const selectCategories = (state: RootState) => state.categories.categories;
+export const selectCategories = (state: RootState) => state.category.categories;
 
-export default categories.reducer;
+export default category.reducer;
