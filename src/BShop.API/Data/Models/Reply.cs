@@ -12,12 +12,12 @@ namespace BShop.API.Data.Models
 
         public long UserId { get; set; }
 
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
 
         public ReplyStatus Status { get; set; }
 
         public long ReviewId { get; set; }
 
-        public Review Review { get; set; }
+        public Review? Review { get; set; }
     }
 }

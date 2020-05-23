@@ -34,18 +34,29 @@ namespace BShop.API
             {
                 using var scope = webHost.Services.CreateScope();
                 var services = scope.ServiceProvider;
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                var context = services.GetRequiredService<T>();
+
                 try
                 {
-                    var context = services.GetRequiredService<T>();
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("Start migrate database");
+                    logger.LogInformation("Start migrating database");
                     await context.Database.MigrateAsync();
                     logger.LogInformation("Migrating database was successful");
                 }
                 catch (Exception ex)
                 {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred while migrating the database");
+                }
+
+                try
+                {
+                    logger.LogInformation("Start seeding database");
+                    await context.InitializeDataAsync();
+                    logger.LogInformation("Seeding database was successful");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred while seeding the database");
                 }
             });
             return webHost;

@@ -2,8 +2,8 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BShop.API.Features.Categories.Commands.Create;
-using BShop.API.Features.Categories.Models;
+using BShop.API.Application.Categories.Commands.Create;
+using BShop.API.Application.Categories.Models;
 using BShop.API.FunctionalTests.Infrastructure;
 using FluentAssertions;
 using Xunit;
