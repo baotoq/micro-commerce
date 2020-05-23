@@ -29,7 +29,7 @@ export const category = createSlice({
 export const { fetchCategories } = category.actions;
 
 export const fetchCategoriesAsync = (): AppThunk => async (dispatch) => {
-  const data = await categoryService.findAll();
+  const data = await categoryService.findAllAsync();
   dispatch(fetchCategories(data));
 };
 

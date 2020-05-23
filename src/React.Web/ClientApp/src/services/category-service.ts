@@ -6,12 +6,12 @@ export interface CategoryResponse {
 }
 
 class CategoryService {
-  public async find(id: number) {
+  public async findAsync(id: number) {
     const { data } = await httpClient.get<CategoryResponse>(`/api/categories/${id}`);
     return data;
   }
 
-  public async findAll() {
+  public async findAllAsync() {
     const { data } = await httpClient.get<CategoryResponse[]>("/api/categories");
     return data;
   }
