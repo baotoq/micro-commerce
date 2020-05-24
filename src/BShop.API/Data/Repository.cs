@@ -23,9 +23,9 @@ namespace BShop.API.Data
             return DbSet;
         }
 
-        public ValueTask<T> FindAsync(CancellationToken cancellationToken = default, params object[] keyValues)
+        public ValueTask<T?> FindAsync(long id, CancellationToken cancellationToken = default)
         {
-            return DbSet.FindAsync(keyValues, cancellationToken);
+            return DbSet.FindAsync(new object[] { id }, cancellationToken);
         }
 
         public void Add(T entity)

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BShop.API.Application.Products.Models;
 using BShop.API.Data;
 using BShop.API.Data.Models;
+using BShop.API.Infrastructure.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ namespace BShop.API.Application.Products.Queries.GetById
 
             if (product == null)
             {
-                return null;
+                throw new NotFoundException(nameof(Product), request.Id);
             }
 
             return new ProductDto
@@ -37,7 +38,7 @@ namespace BShop.API.Application.Products.Queries.GetById
                 Categories = product.ProductCategories.Select(s => new ProductCategoryDto
                 {
                     Id = s.CategoryId,
-                    Name = s.Category.Name
+                    Name = s.Category!.Name
                 }).ToList()
             };
         }
