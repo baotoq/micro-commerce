@@ -10,7 +10,7 @@ namespace BShop.API.Data
     {
         IQueryable<T> Query();
 
-        ValueTask<T> FindAsync(CancellationToken cancellationToken = default, params object[] keyValues);
+        ValueTask<T?> FindAsync(long id, CancellationToken cancellationToken = default);
 
         void Add(T entity);
 

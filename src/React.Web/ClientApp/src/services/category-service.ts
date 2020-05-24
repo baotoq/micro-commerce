@@ -3,6 +3,7 @@ import { httpClient } from "./http-client";
 export interface CategoryResponse {
   id: number;
   name: string;
+  products: [{ id: number, name: string }]
 }
 
 class CategoryService {
