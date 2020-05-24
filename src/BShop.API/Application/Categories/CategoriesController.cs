@@ -45,11 +45,6 @@ namespace BShop.API.Application.Categories
         {
             var result = await _mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
 
-            if (result == null)
-            {
-                return NotFound();
-            }
-
             _logger.LogInformation("{@result}", result);
 
             return result;
@@ -67,12 +62,7 @@ namespace BShop.API.Application.Categories
         public async Task<IActionResult> Put(long id, PutCategoryCommand request, CancellationToken cancellationToken)
         {
             request.Id = id;
-            var result = await _mediator.Send(request, cancellationToken);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
+            await _mediator.Send(request, cancellationToken);
 
             return NoContent();
         }
@@ -80,12 +70,7 @@ namespace BShop.API.Application.Categories
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new DeleteCategoryCommand(id), cancellationToken);
-
-            if (!result)
-            {
-                return NotFound();
-            }
+            await _mediator.Send(new DeleteCategoryCommand(id), cancellationToken);
 
             return NoContent();
         }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BShop.API.Data;
 using BShop.API.Data.Models;
+using BShop.API.Infrastructure.Exceptions;
 using MediatR;
 
 namespace BShop.API.Application.Categories.Commands.Delete
@@ -19,11 +20,11 @@ namespace BShop.API.Application.Categories.Commands.Delete
 
         public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            var category = await _repository.FindAsync(cancellationToken, request.Id);
+            var category = await _repository.FindAsync(request.Id, cancellationToken);
 
             if (category == null)
             {
-                return false;
+                throw new NotFoundException(nameof(Category), request.Id);
             }
 
             _repository.Remove(category);

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BShop.API.Data;
 using BShop.API.Data.Models;
+using BShop.API.Infrastructure.Exceptions;
 using MediatR;
 
 namespace BShop.API.Application.Products.Commands.Delete
@@ -19,11 +20,11 @@ namespace BShop.API.Application.Products.Commands.Delete
 
         public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _repository.FindAsync(cancellationToken, request.Id);
+            var product = await _repository.FindAsync(request.Id, cancellationToken);
 
             if (product == null)
             {
-                return false;
+                throw new NotFoundException(nameof(Product), request.Id);
             }
 
             _repository.Remove(product);

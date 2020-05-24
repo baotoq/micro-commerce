@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using BShop.API.Data;
 using BShop.API.Infrastructure;
 using IdentityServer4.AccessTokenValidation;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +37,7 @@ namespace BShop.API
             services.AddSwagger(Configuration);
 
             services.AddCors();
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -101,6 +100,7 @@ namespace BShop.API
         {
             services.AddSwaggerGen(c =>
             {
+                c.CustomSchemaIds(s => s.FullName);
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BShop API", Version = "v1" });
                 c.AddSecurityDefinition(IdentityServerAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {

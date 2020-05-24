@@ -9,9 +9,9 @@ namespace BShop.API.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<Product>? Products { get; set; }
+        public DbSet<Product> Products { get; set; } = null!;
 
-        public DbSet<Category>? Categories { get; set; }
+        public DbSet<Category> Categories { get; set; } = null!;
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -46,12 +46,12 @@ namespace BShop.API.Data
 
             modelBuilder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Product)
-                .WithMany(p => p.ProductCategories)
+                .WithMany(p => p!.ProductCategories)
                 .HasForeignKey(pc => pc.ProductId);
 
             modelBuilder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Category)
-                .WithMany(c => c.ProductCategories)
+                .WithMany(c => c!.ProductCategories)
                 .HasForeignKey(pc => pc.CategoryId);
         }
     }

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import categoryService from "../../services/category-service";
+import categoryService, { CategoryResponse } from "../../services/category-service";
 
 const Category = () => {
   const { id } = useParams<{ id: string }>();
-  const [category, setCategory] = useState<{ id: number; name: string }>();
+  const [category, setCategory] = useState<CategoryResponse>();
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -19,11 +19,18 @@ const Category = () => {
     <div>
       {category && (
         <div>
-          Category {category.id}, name {category.name},
+          Category {category.id}, name {category.name}
+          {category.products.map((product) => (
+            <Product key={product.id} product={product} />
+          ))}
         </div>
       )}
     </div>
   );
+};
+
+const Product = ({ product }) => {
+  return <div>{product.name}</div>;
 };
 
 export default Category;
