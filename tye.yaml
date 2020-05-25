@@ -1,0 +1,5 @@
+services:
+- name: identity-api
+  project: src/Identity.API/Identity.API.csproj
+- name: bshop-api
+  project: src/BShop.API/BShop.API.csproj

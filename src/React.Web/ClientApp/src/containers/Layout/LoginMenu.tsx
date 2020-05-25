@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { NavItem, NavLink } from "reactstrap";
+
+import Nav from "react-bootstrap/Nav";
+import NavBar from "react-bootstrap/NavBar";
 
 interface IProps {
   isAuthenticated: boolean;
@@ -10,8 +12,12 @@ interface IProps {
 const LoginMenu = ({ isAuthenticated, userName }: IProps) => {
   if (isAuthenticated) {
     return (
-      <>
-        <NavItem>
+      <Nav>
+        <Nav.Link href="#deets">More deets</Nav.Link>
+        <Nav.Link eventKey={2} href="#memes">
+          Dank memes
+        </Nav.Link>
+        {/* <NavItem>
           <NavLink tag={Link} to="/">
             Hello {userName}
           </NavLink>
@@ -20,14 +26,21 @@ const LoginMenu = ({ isAuthenticated, userName }: IProps) => {
           <NavLink tag={Link} to="/authentication/logout">
             Logout
           </NavLink>
-        </NavItem>
-      </>
+        </NavItem> */}
+      </Nav>
     );
   }
 
   return (
-    <>
-      <NavItem>
+    <Nav>
+      <Navbar.Text>
+        Signed in as: <a href="#login">Mark Otto</a>
+      </Navbar.Text>
+      <Nav.Link href="#deets">More deets</Nav.Link>
+      <Nav.Link eventKey={2} href="#memes">
+        Dank memes
+      </Nav.Link>
+      {/* <NavItem>
         <NavLink tag={Link} to="/">
           Register
         </NavLink>
@@ -36,8 +49,8 @@ const LoginMenu = ({ isAuthenticated, userName }: IProps) => {
         <NavLink tag={Link} to="/authentication/login">
           Login
         </NavLink>
-      </NavItem>
-    </>
+      </NavItem> */}
+    </Nav>
   );
 };
 
