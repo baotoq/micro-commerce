@@ -30,7 +30,14 @@ const Category = () => {
 };
 
 const Product = ({ product }) => {
-  return <div>{product.name}</div>;
+  return (
+    <div>
+      <div>{product.name}</div>
+      <div>
+        <img alt="" src={product.imageFileName} />
+      </div>
+    </div>
+  );
 };
 
 export default Category;
