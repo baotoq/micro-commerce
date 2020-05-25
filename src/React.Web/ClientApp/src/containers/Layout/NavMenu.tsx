@@ -1,20 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import {
-  Collapse,
-  Navbar,
-  NavbarBrand,
-  NavbarToggler,
-  NavItem,
-  NavLink,
-  Nav,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
-} from "reactstrap";
 import LoginMenu from "./LoginMenu";
+
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
 
 import { selectIsAuthenticated, selectUser } from "../../store/slices/auth-slice";
 import { selectCategories } from "../../store/slices/category-slice";
@@ -24,12 +15,27 @@ const NavMenu = () => {
   const userName = useSelector(selectUser)?.name;
   const categories = useSelector(selectCategories);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
-
   return (
     <header>
-      <Navbar color="light" light expand="md">
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar.Brand as={Link} to={`/`}>
+          BShop
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-auto">
+            <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
+              {categories.map((category) => (
+                <NavDropdown.Item key={category.id} as={Link} to={`/category/${category.id}`}>
+                  {category.name}
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
+          </Nav>
+          <LoginMenu isAuthenticated={isAuthenticated} userName={userName} />
+        </Navbar.Collapse>
+      </Navbar>
+      {/* <Navbar color="light" light expand="md">
         <NavbarBrand tag={Link} to="/">
           React.Web
         </NavbarBrand>
@@ -56,7 +62,7 @@ const NavMenu = () => {
             <LoginMenu isAuthenticated={isAuthenticated} userName={userName} />
           </Nav>
         </Collapse>
-      </Navbar>
+      </Navbar> */}
     </header>
   );
 };
