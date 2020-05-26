@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Row, Col } from "react-bootstrap";
+import Product from "./Product";
+
 import categoryService, { CategoryResponse } from "../../services/category-service";
 
 const Category = () => {
@@ -19,23 +22,15 @@ const Category = () => {
     <div>
       {category && (
         <div>
-          Category {category.id}, name {category.name}
-          {category.products.map((product) => (
-            <Product key={product.id} product={product} />
-          ))}
+          <Row>
+            {category.products.map((product) => (
+              <Col md={3} key={product.id} className="mb-3">
+                <Product product={product} />
+              </Col>
+            ))}
+          </Row>
         </div>
       )}
-    </div>
-  );
-};
-
-const Product = ({ product }) => {
-  return (
-    <div>
-      <div>{product.name}</div>
-      <div>
-        <img alt="" src={product.imageFileName} />
-      </div>
     </div>
   );
 };
