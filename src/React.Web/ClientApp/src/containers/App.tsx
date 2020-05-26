@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+
+import { Container, Jumbotron } from "react-bootstrap";
 
 import NavMenu from "./Layout/NavMenu";
 
@@ -21,14 +23,17 @@ const App = () => {
   return (
     <BrowserRouter basename={"/"}>
       <NavMenu />
-      <div className="container">
+      <Jumbotron>
+        <h1 className="display-4 text-primary">BShop</h1>
+      </Jumbotron>
+      <Container fluid>
         <Switch>
           <Route path="/authentication/:action" component={Auth} />
           <Route path="/category/:id" component={Category} />
-          <Route path="/product" component={Product} />
+          <Route path="/product/:id" component={Product} />
           <Route path="/" component={Home} />
         </Switch>
-      </div>
+      </Container>
     </BrowserRouter>
   );
 };

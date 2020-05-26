@@ -1,10 +1,12 @@
 import { User, UserManager, UserManagerSettings } from "oidc-client";
 
+const webBaseUri = window.location.origin
+
 const oidcSettings: UserManagerSettings = {
   authority: process.env.REACT_APP_IDENTITY_URI,
   client_id: "react-web",
-  redirect_uri: `${process.env.REACT_APP_BASE_URI}/authentication/login-callback`,
-  post_logout_redirect_uri: `${process.env.REACT_APP_BASE_URI}/authentication/logout-callback`,
+  redirect_uri: `${webBaseUri}/authentication/login-callback`,
+  post_logout_redirect_uri: `${webBaseUri}/authentication/logout-callback`,
   response_type: "code",
   scope: "bshop-api openid profile",
   automaticSilentRenew: true,
