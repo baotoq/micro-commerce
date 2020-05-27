@@ -34,7 +34,7 @@ namespace BShop.API.Data
 
         protected virtual void Dispose(bool disposing)
         {
-            Context?.Dispose();
+            Context.Dispose();
         }
     }
 }

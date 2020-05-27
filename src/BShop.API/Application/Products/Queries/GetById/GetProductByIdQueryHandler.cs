@@ -26,6 +26,9 @@ namespace BShop.API.Application.Products.Queries.GetById
                 {
                     Id = p.Id,
                     Name = p.Name,
+                    Price = p.Price,
+                    ImageUri = p.ImageUri,
+                    Description = p.Description,
                     Categories = p.ProductCategories.Select(s => new ProductCategoryDto
                     {
                         Id = s.CategoryId,
