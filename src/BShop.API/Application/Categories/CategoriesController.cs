@@ -34,8 +34,6 @@ namespace BShop.API.Application.Categories
         {
             var result = await _mediator.Send(new GetAllCategoriesQuery(), cancellationToken);
 
-            _logger.LogInformation("{@result}", result);
-
             return result;
         }
 
@@ -44,8 +42,6 @@ namespace BShop.API.Application.Categories
         public async Task<ActionResult<CategoryDto>> Get(long id, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
-
-            _logger.LogInformation("{@result}", result);
 
             return result;
         }
