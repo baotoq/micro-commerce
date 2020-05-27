@@ -22,8 +22,19 @@ namespace BShop.API.Application.Categories.Queries.GetById
         public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
             var category = await _repository.Query()
-                .Include(s => s.ProductCategories)
-                .ThenInclude(s => s.Product)
+                .Select(s => new CategoryDto
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Products = s.ProductCategories.Select(s => new ProductDto
+                    {
+                        Id = s.Product!.Id,
+                        Name = s.Product.Name,
+                        Price = s.Product.Price,
+                        Description = s.Product.Description,
+                        ImageFileName = s.Product.ImageFileName
+                    }).ToList()
+                })
                 .SingleOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
             if (category == null)
@@ -31,19 +42,7 @@ namespace BShop.API.Application.Categories.Queries.GetById
                 throw new NotFoundException(nameof(Category), request.Id);
             }
 
-            return new CategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name,
-                Products = category.ProductCategories.Select(s => new ProductDto
-                {
-                    Id = s.Product!.Id,
-                    Name = s.Product.Name,
-                    Price = s.Product.Price,
-                    Description = s.Product.Description,
-                    ImageFileName = s.Product.ImageFileName,
-                }).ToList()
-            };
+            return category;
         }
     }
 }
