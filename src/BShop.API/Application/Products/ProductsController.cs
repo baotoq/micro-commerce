@@ -10,8 +10,6 @@ using BShop.API.Application.Products.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace BShop.API.Application.Products
 {
@@ -20,12 +18,10 @@ namespace BShop.API.Application.Products
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly ILogger _logger;
         private readonly IMediator _mediator;
 
         public ProductsController(IMediator mediator)
         {
-            _logger = NullLogger<ProductsController>.Instance;
             _mediator = mediator;
         }
 
@@ -35,8 +31,6 @@ namespace BShop.API.Application.Products
         {
             var result = await _mediator.Send(new GetAllProductsQuery(), cancellationToken);
 
-            _logger.LogInformation("{@result}", result);
-
             return result;
         }
 
@@ -45,13 +39,6 @@ namespace BShop.API.Application.Products
         public async Task<ActionResult<ProductDto>> Get(long id, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetProductByIdQuery(id), cancellationToken);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            _logger.LogInformation("{@result}", result);
 
             return result;
         }
@@ -68,12 +55,7 @@ namespace BShop.API.Application.Products
         public async Task<IActionResult> Put(long id, PutProductCommand request, CancellationToken cancellationToken)
         {
             request.Id = id;
-            var result = await _mediator.Send(request, cancellationToken);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
+            await _mediator.Send(request, cancellationToken);
 
             return NoContent();
         }
@@ -81,12 +63,7 @@ namespace BShop.API.Application.Products
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new DeleteProductCommand(id), cancellationToken);
-
-            if (!result)
-            {
-                return NotFound();
-            }
+            await _mediator.Send(new DeleteProductCommand(id), cancellationToken);
 
             return NoContent();
         }

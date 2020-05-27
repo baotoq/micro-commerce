@@ -2,21 +2,21 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BShop.API.Application.Categories.Commands.Create;
-using BShop.API.Application.Categories.Models;
+using BShop.API.Application.Products.Commands.Create;
 using BShop.API.Application.Products.Commands.Put;
+using BShop.API.Application.Products.Models;
 using BShop.API.FunctionalTests.Infrastructure;
 using FluentAssertions;
 using Xunit;
 
 namespace BShop.API.FunctionalTests
 {
-    public class CategoriesApiTests : IClassFixture<TestWebApplicationFactory<Startup>>
+    public class ProductsApiTests : IClassFixture<TestWebApplicationFactory<Startup>>
     {
-        private const string Uri = "api/categories";
+        private const string Uri = "api/products";
         private readonly TestWebApplicationFactory<Startup> _factory;
 
-        public CategoriesApiTests(TestWebApplicationFactory<Startup> factory)
+        public ProductsApiTests(TestWebApplicationFactory<Startup> factory)
         {
             _factory = factory;
         }
@@ -32,7 +32,7 @@ namespace BShop.API.FunctionalTests
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = await response.Content.ReadAsAsync<IEnumerable<CategoryDto>>();
+            var result = await response.Content.ReadAsAsync<IEnumerable<ProductDto>>();
             result.Should().NotBeNullOrEmpty();
         }
 
@@ -43,11 +43,11 @@ namespace BShop.API.FunctionalTests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync($"{Uri}/1");
+            var response = await client.GetAsync("api/categories/1");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = await response.Content.ReadAsAsync<CategoryDto>();
+            var result = await response.Content.ReadAsAsync<ProductDto>();
             result.Should().NotBeNull();
         }
 
@@ -56,7 +56,7 @@ namespace BShop.API.FunctionalTests
         {
             // Arrange
             var client = _factory.CreateClient();
-            var command = new CreateCategoryCommand { Name = "Test no authentication" };
+            var command = new CreateProductCommand { Name = "Test no authentication" };
 
             // Act
             var response = await client.PostAsJsonAsync(Uri, command);
@@ -70,15 +70,15 @@ namespace BShop.API.FunctionalTests
         {
             // Arrange
             var client = _factory.CreateAuthenticatedClient();
-            var command = new CreateCategoryCommand { Name = "Created" };
+            var command = new CreateProductCommand { Name = "Created" };
 
             // Act
             var response = await client.PostAsJsonAsync(Uri, command);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var result = await response.Content.ReadAsAsync<CategoryDto>();
-            result.Should().BeEquivalentTo(new CategoryDto
+            var result = await response.Content.ReadAsAsync<ProductDto>();
+            result.Should().BeEquivalentTo(new ProductDto
             {
                 Name = "Created"
             }, s => s.Excluding(p => p.Id));

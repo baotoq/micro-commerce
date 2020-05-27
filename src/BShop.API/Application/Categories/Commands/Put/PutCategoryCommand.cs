@@ -1,10 +1,9 @@
 ﻿using System.Text.Json.Serialization;
-using BShop.API.Application.Categories.Models;
 using MediatR;
 
 namespace BShop.API.Application.Categories.Commands.Put
 {
-    public class PutCategoryCommand : IRequest<CategoryDto>
+    public class PutCategoryCommand : IRequest
     {
         [JsonIgnore]
         public long Id { get; set; }

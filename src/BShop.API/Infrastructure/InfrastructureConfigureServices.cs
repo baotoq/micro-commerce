@@ -1,4 +1,6 @@
-﻿using BShop.API.Infrastructure.Behaviors;
+﻿using System.Reflection;
+using BShop.API.Infrastructure.Behaviors;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,9 +10,11 @@ namespace BShop.API.Infrastructure
     {
         public static void AddInfrastructure(this IServiceCollection services)
         {
-            services.AddMediatR(typeof(Startup));
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         }
     }
 }

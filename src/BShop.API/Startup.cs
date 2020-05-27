@@ -27,9 +27,19 @@ namespace BShop.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<DbContext, ApplicationDbContext>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+
+            if (Configuration.GetValue<bool>("UseInMemoryDatabase"))
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseInMemoryDatabase("BShop.API.Db"));
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString("DefaultConnection")));
+            }
+           
             services.AddUnitOfWork();
 
             services.AddInfrastructure();

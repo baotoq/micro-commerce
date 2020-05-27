@@ -22,8 +22,16 @@ namespace BShop.API.Application.Products.Queries.GetById
         public async Task<ProductDto> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
             var product = await _repository.Query()
-                .Include(s => s.ProductCategories)
-                .ThenInclude(s => s.Category)
+                .Select(p => new ProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Categories = p.ProductCategories.Select(s => new ProductCategoryDto
+                    {
+                        Id = s.CategoryId,
+                        Name = s.Category!.Name
+                    }).ToList()
+                })
                 .SingleOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
             if (product == null)
@@ -31,16 +39,7 @@ namespace BShop.API.Application.Products.Queries.GetById
                 throw new NotFoundException(nameof(Product), request.Id);
             }
 
-            return new ProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Categories = product.ProductCategories.Select(s => new ProductCategoryDto
-                {
-                    Id = s.CategoryId,
-                    Name = s.Category!.Name
-                }).ToList()
-            };
+            return product;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace BShop.API.Data
                 var productFaker = new Faker<Product>()
                     .RuleFor(s => s.Name, s => s.Commerce.Product())
                     .RuleFor(s => s.Description, s => s.Commerce.ProductAdjective())
-                    .RuleFor(s => s.ImageFileName, s => s.Image.PicsumUrl())
+                    .RuleFor(s => s.ImageUri, s => s.Image.PicsumUrl())
                     .RuleFor(s => s.Price, s => decimal.Parse(s.Commerce.Price()));
 
                 var categories = categoryFaker.Generate(10);
