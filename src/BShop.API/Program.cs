@@ -39,9 +39,12 @@ namespace BShop.API
 
                 try
                 {
-                    logger.LogInformation("Start migrating database");
-                    await context.Database.MigrateAsync();
-                    logger.LogInformation("Migrating database was successful");
+                    if (context.Database.IsSqlServer())
+                    {
+                        logger.LogInformation("Start migrating database");
+                        await context.Database.MigrateAsync();
+                        logger.LogInformation("Migrating database was successful");
+                    }
                 }
                 catch (Exception ex)
                 {

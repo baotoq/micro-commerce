@@ -9,6 +9,12 @@ namespace BShop.API.Application.Products.Models
 
         public string? Name { get; set; }
 
+        public decimal Price { get; set; }
+
+        public string? Description { get; set; }
+
+        public string? ImageUri { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public IList<ProductCategoryDto>? Categories { get; set; }
     }
