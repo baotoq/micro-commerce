@@ -11,7 +11,7 @@ namespace BShop.API.Data.Models
 
         public string? Description { get; set; }
 
-        public string? ImageFileName { get; set; }
+        public string? ImageUri { get; set; }
 
         public IList<ProductCategory> ProductCategories { get; protected set; } = new List<ProductCategory>();
 

@@ -10,7 +10,6 @@ using BShop.API.Application.Categories.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace BShop.API.Application.Categories
 {
@@ -19,12 +18,10 @@ namespace BShop.API.Application.Categories
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly ILogger<CategoriesController> _logger;
         private readonly IMediator _mediator;
 
-        public CategoriesController(IMediator mediator, ILogger<CategoriesController> logger)
+        public CategoriesController(IMediator mediator)
         {
-            _logger = logger;
             _mediator = mediator;
         }
 

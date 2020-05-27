@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using BShop.API.Application.Products.Models;
 using BShop.API.Data;
 using BShop.API.Data.Models;
 using BShop.API.Infrastructure.Exceptions;
@@ -8,7 +7,7 @@ using MediatR;
 
 namespace BShop.API.Application.Products.Commands.Put
 {
-    public class PutProductCommandHandler : IRequestHandler<PutProductCommand, ProductDto>
+    public class PutProductCommandHandler : IRequestHandler<PutProductCommand, Unit>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Product> _repository;
@@ -19,7 +18,8 @@ namespace BShop.API.Application.Products.Commands.Put
             _repository = _unitOfWork.Repository<Product>();
         }
 
-        public async Task<ProductDto> Handle(PutProductCommand request, CancellationToken cancellationToken)
+
+        public async Task<Unit> Handle(PutProductCommand request, CancellationToken cancellationToken)
         {
             var product = await _repository.FindAsync(request.Id, cancellationToken);
 
@@ -31,11 +31,7 @@ namespace BShop.API.Application.Products.Commands.Put
             product.Name = request.Name;
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return new ProductDto
-            {
-                Id = product.Id,
-                Name = product.Name
-            };
+            return Unit.Value;
         }
     }
 }

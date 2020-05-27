@@ -7,7 +7,7 @@ using MediatR;
 
 namespace BShop.API.Application.Categories.Commands.Delete
 {
-    public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>
+    public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, Unit>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Category> _repository;
@@ -18,7 +18,7 @@ namespace BShop.API.Application.Categories.Commands.Delete
             _repository = _unitOfWork.Repository<Category>();
         }
 
-        public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = await _repository.FindAsync(request.Id, cancellationToken);
 
@@ -30,7 +30,7 @@ namespace BShop.API.Application.Categories.Commands.Delete
             _repository.Remove(category);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return true;
+            return Unit.Value;
         }
     }
 }

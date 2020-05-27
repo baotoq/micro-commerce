@@ -22,17 +22,17 @@ namespace BShop.API.Application.Categories.Queries.GetById
         public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
             var category = await _repository.Query()
-                .Select(s => new CategoryDto
+                .Select(c => new CategoryDto
                 {
-                    Id = s.Id,
-                    Name = s.Name,
-                    Products = s.ProductCategories.Select(s => new ProductDto
+                    Id = c.Id,
+                    Name = c.Name,
+                    Products = c.ProductCategories.Select(s => new ProductDto
                     {
                         Id = s.Product!.Id,
                         Name = s.Product.Name,
                         Price = s.Product.Price,
                         Description = s.Product.Description,
-                        ImageFileName = s.Product.ImageFileName
+                        ImageUri = s.Product.ImageUri
                     }).ToList()
                 })
                 .SingleOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
