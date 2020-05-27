@@ -54,22 +54,22 @@ namespace BShop.API.FunctionalTests.Infrastructure
     {
         public static void InitializeDbForTests(this ApplicationDbContext context)
         {
-            context.Categories.AddRange(GetSeedingCategories());
-            context.SaveChanges();
-        }
-
-        public static void ReinitializeDbForTests(ApplicationDbContext context)
-        {
-            context.Categories.RemoveRange(context.Categories);
-            InitializeDbForTests(context);
-        }
-
-        public static List<Category> GetSeedingCategories()
-        {
-            return new List<Category>
+            var categories = new List<Category>
             {
-                new Category { Name = "Test category 1" },
+                new Category
+                {
+                    Name = "Test category 1"
+                },
             };
+
+            context.Categories.AddRange(categories);
+
+            context.Products.Add(new Product
+            {
+                Name = "Test product 1"
+            });
+
+            context.SaveChanges();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace BShop.API.Application.Products.Models
 {
@@ -8,6 +9,7 @@ namespace BShop.API.Application.Products.Models
 
         public string? Name { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public IList<ProductCategoryDto>? Categories { get; set; }
     }
 }

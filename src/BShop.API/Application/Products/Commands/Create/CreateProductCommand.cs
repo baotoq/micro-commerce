@@ -8,6 +8,6 @@ namespace BShop.API.Application.Products.Commands.Create
     {
         public string? Name { get; set; }
 
-        public IList<long>? CategoryIds { get; set; }
+        public IList<long> CategoryIds { get; set; } = new List<long>();
     }
 }

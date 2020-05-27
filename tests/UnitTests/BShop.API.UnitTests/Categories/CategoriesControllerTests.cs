@@ -11,7 +11,6 @@ using BShop.API.Application.Categories.Queries.GetById;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
 
@@ -25,7 +24,7 @@ namespace BShop.API.UnitTests.Categories
         public CategoriesControllerTests()
         {
             _mockMediator = new Mock<IMediator>();
-            _sut = new CategoriesController(_mockMediator.Object, NullLogger<CategoriesController>.Instance);
+            _sut = new CategoriesController(_mockMediator.Object);
         }
 
         [Fact]
@@ -87,15 +86,9 @@ namespace BShop.API.UnitTests.Categories
         [Fact]
         public async Task Put_Success()
         {
-            var dto = new CategoryDto
-            {
-                Id = 1,
-                Name = "test"
-            };
-
             _mockMediator
                 .Setup(_ => _.Send(It.IsAny<PutCategoryCommand>(), CancellationToken.None))
-                .ReturnsAsync(dto);
+                .ReturnsAsync(Unit.Value);
 
             var act = await _sut.Put(1, new PutCategoryCommand
             {
@@ -110,7 +103,7 @@ namespace BShop.API.UnitTests.Categories
         {
             _mockMediator
                 .Setup(_ => _.Send(It.IsAny<DeleteCategoryCommand>(), CancellationToken.None))
-                .ReturnsAsync(true);
+                .ReturnsAsync(Unit.Value);
 
             var act = await _sut.Delete(1, CancellationToken.None);
 

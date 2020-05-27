@@ -5,7 +5,7 @@ export interface ProductResponse {
   name: string;
   price: number;
   description: string;
-  imageFileName: string;
+  imageUri: string;
   categories: [{ id: number, name: string }]
 }
 
