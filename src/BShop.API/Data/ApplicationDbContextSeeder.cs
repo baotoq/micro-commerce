@@ -16,18 +16,18 @@ namespace BShop.API.Data
                 var categoriesName = new Commerce().Categories(20).Distinct().ToList();
 
                 var categoryFaker = new Faker<Category>()
-                    .RuleFor(_ => _.Name, _ =>
+                    .RuleFor(s => s.Name, s =>
                     {
-                        var c = _.PickRandom(categoriesName);
+                        var c = s.PickRandom(categoriesName);
                         categoriesName.Remove(c);
                         return c;
                     });
 
                 var productFaker = new Faker<Product>()
-                    .RuleFor(_ => _.Name, _ => _.Commerce.Product())
-                    .RuleFor(_ => _.Description, _ => _.Commerce.ProductAdjective())
-                    .RuleFor(_ => _.ImageFileName, _ => _.Image.PicsumUrl())
-                    .RuleFor(_ => _.Price, _ => decimal.Parse(_.Commerce.Price()));
+                    .RuleFor(s => s.Name, s => s.Commerce.Product())
+                    .RuleFor(s => s.Description, s => s.Commerce.ProductAdjective())
+                    .RuleFor(s => s.ImageFileName, s => s.Image.PicsumUrl())
+                    .RuleFor(s => s.Price, s => decimal.Parse(s.Commerce.Price()));
 
                 var categories = categoryFaker.Generate(10);
 

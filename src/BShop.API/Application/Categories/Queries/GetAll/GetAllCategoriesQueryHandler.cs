@@ -22,7 +22,7 @@ namespace BShop.API.Application.Categories.Queries.GetAll
         public async Task<List<CategoryDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
         {
             var result = await _repository.Query()
-                .Select(x => new CategoryDto { Id = x.Id, Name = x.Name })
+                .Select(s => new CategoryDto { Id = s.Id, Name = s.Name })
                 .ToListAsync(cancellationToken);
 
             return result;
