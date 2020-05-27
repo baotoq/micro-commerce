@@ -30,14 +30,13 @@ namespace BShop.API
 
             if (Configuration.GetValue<bool>("UseInMemoryDatabase"))
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseInMemoryDatabase("BShop.API.Db"));
+                services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("BShop.API.Db"));
             }
             else
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(
-                        Configuration.GetConnectionString("DefaultConnection")));
+                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                        provider => provider.EnableRetryOnFailure()));
             }
            
             services.AddUnitOfWork();

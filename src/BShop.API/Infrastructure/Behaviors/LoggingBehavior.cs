@@ -16,9 +16,9 @@ namespace BShop.API.Infrastructure.Behaviors
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            _logger.LogInformation("Handling {requestName}, {@request}", typeof(TRequest).Name, request);
+            _logger.LogInformation("Handling {requestName}, {@request}", typeof(TRequest), request);
             var response = await next();
-            _logger.LogInformation("Handled {requestName}, {@response}", typeof(TResponse).Name, response);
+            _logger.LogInformation("Handled {requestName}, {@response}", typeof(TResponse), response);
 
             return response;
         }
