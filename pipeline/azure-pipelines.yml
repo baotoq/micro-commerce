@@ -36,3 +36,11 @@ steps:
     arguments: '/p:CollectCoverage=true'
     nobuild: true
     publishTestResults: true
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'b-shop'
+    repository: 'bshop-api'
+    command: 'build'
+    Dockerfile: '**/Identity.API/Dockerfile'
+    buildContext: '**/src'
