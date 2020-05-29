@@ -48,7 +48,7 @@ stages:
           inputs:
             command: test
             projects: $(solution)
-            arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./coverage --logger trx
+            arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/coverage --logger trx
             nobuild: true
             publishTestResults: true
         
@@ -56,4 +56,4 @@ stages:
           displayName: Publish code coverage report
           inputs:
             codeCoverageTool: Cobertura
-            summaryFileLocation: ./**/coverage.cobertura.xml
+            summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
