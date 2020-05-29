@@ -29,10 +29,10 @@ namespace BShop.API.Application.Products.Queries.GetById
                     Price = p.Price,
                     ImageUri = p.ImageUri,
                     Description = p.Description,
-                    Categories = p.ProductCategories.Select(s => new ProductCategoryDto
+                    Categories = p.ProductCategories.Select(s => new CategoryDto
                     {
                         Id = s.CategoryId,
-                        Name = s.Category!.Name
+                        Name = s.Category.Name
                     }).ToList()
                 })
                 .SingleOrDefaultAsync(s => s.Id == request.Id, cancellationToken);

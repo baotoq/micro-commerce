@@ -1,6 +1,6 @@
 ﻿namespace BShop.API.Application.Products.Models
 {
-    public class ProductCategoryDto
+    public class CategoryDto
     {
         public long Id { get; set; }
 
