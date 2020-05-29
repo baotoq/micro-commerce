@@ -16,6 +16,6 @@ namespace BShop.API.Application.Products.Models
         public string? ImageUri { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public IList<ProductCategoryDto>? Categories { get; set; }
+        public IList<CategoryDto>? Categories { get; set; }
     }
 }

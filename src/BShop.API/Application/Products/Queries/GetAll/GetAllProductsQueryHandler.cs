@@ -22,7 +22,19 @@ namespace BShop.API.Application.Products.Queries.GetAll
         public async Task<List<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
             var result = await _repository.Query()
-                .Select(x => new ProductDto { Id = x.Id, Name = x.Name })
+                .Select(s => new ProductDto
+                { 
+                    Id = s.Id,
+                    Name = s.Name,
+                    Price = s.Price,
+                    ImageUri = s.ImageUri,
+                    Description = s.Description,
+                    Categories = s.ProductCategories.Select(c => new CategoryDto
+                    {
+                        Id = c.CategoryId,
+                        Name = c.Category.Name
+                    }).ToList()
+                })
                 .ToListAsync(cancellationToken);
 
             return result;
