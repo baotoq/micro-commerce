@@ -11,12 +11,12 @@ trigger:
       - tests
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 variables:
   solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  buildPlatform: Any CPU
+  buildConfiguration: Release
 
 stages:
 - stage: Build_and_Run_Tests
@@ -27,30 +27,32 @@ stages:
         - task: DotNetCoreCLI@2
           displayName: Restore
           inputs:
-            command: 'restore'
-            projects: '$(solution)'
+            command: restore
+            projects: $(solution)
 
         - task: DotNetCoreCLI@2
           displayName: Build
           inputs:
-            command: 'build'
-            projects: '$(solution)'
-            arguments: '--no-restore'
+            command: build
+            projects: $(solution)
+            arguments: --no-restore
 
     - job: Run_Tests
       displayName: Run tests
+      dependsOn: Build
+      condition: succeeded()
       steps:
         - task: DotNetCoreCLI@2
           displayName: Test
           inputs:
-            command: 'test'
-            projects: '$(solution)'
-            arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/ --logger trx'
+            command: test
+            projects: $(solution)
+            arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/ --logger trx
             nobuild: true
             publishTestResults: true
         
         - task: PublishCodeCoverageResults@1
-          displayName: 'Publish code coverage report'
+          displayName: Publish code coverage report
           inputs:
-            codeCoverageTool: 'Cobertura'
-            summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
+            codeCoverageTool: Cobertura
+            summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
