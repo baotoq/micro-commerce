@@ -14,7 +14,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  solution: '**/*.sln'
+  solution: ./**/*.sln
   buildPlatform: Any CPU
   buildConfiguration: Release
 
@@ -47,7 +47,7 @@ stages:
           inputs:
             command: test
             projects: $(solution)
-            arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/ --logger trx
+            arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./coverage --logger trx
             nobuild: true
             publishTestResults: true
         
@@ -55,4 +55,4 @@ stages:
           displayName: Publish code coverage report
           inputs:
             codeCoverageTool: Cobertura
-            summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
+            summaryFileLocation: ./**/coverage.cobertura.xml
