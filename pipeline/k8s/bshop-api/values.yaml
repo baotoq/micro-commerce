@@ -9,11 +9,12 @@
 replicaCount: 1
 
 image:
-  repository: bshop-api
+  repository: bshopacr/bshop-api
   tag: latest
-  pullPolicy: Never
+  pullPolicy: IfNotPresent
 
-imagePullSecrets: []
+imagePullSecrets:
+- name: acr-secret
 nameOverride: bshop-api
 fullnameOverride: bshop-api
 

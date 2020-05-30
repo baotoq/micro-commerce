@@ -9,11 +9,12 @@
 replicaCount: 1
 
 image:
-  repository: react-web
+  repository: bshopacr/react-web
   tag: latest
-  pullPolicy: Never
+  pullPolicy: IfNotPresent
 
-imagePullSecrets: []
+imagePullSecrets:
+- name: acr-secret
 nameOverride: react-web
 fullnameOverride: react-web
 

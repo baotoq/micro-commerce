@@ -1,0 +1,34 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- template: ../variables.yml
+
+jobs:
+- job: Deploy
+  displayName: Build and push docker image
+  steps:
+  - task: Bash@3
+    displayName: Add helm repositories
+    inputs:
+      targetType: inline
+      script: |
+        helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+  - task: HelmDeploy@0
+    inputs:
+      connectionType: Azure Resource Manager
+      azureSubscription: $(azureSubscription)
+      azureResourceGroup: $(azureResourceGroup)
+      kubernetesCluster: $(kubernetesCluster)
+      namespace: $(namespace)
+      command: upgrade
+      chartType: Name
+      chartName: 'stable/mssql-linux'
+      releaseName: 'mssql'
+      install: true
+      waitForExecution: false
+
+

@@ -1,0 +1,59 @@
+trigger:
+  branches:
+    include:
+    - master
+    exclude:
+    - ref/tags/*
+  paths:
+    include:
+    - src/BShop.API
+    - tests/**/BShop.API**
+    - pipeline
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- template: ../variables.yml
+
+stages:
+- stage: Build_and_Push_Image
+  jobs:
+  - job: Build_and_Push_Image
+    displayName: Build and push docker image
+    steps:
+    - template: ../build-images.yml
+      parameters:
+        services: [bshop-api]
+    - template: ../push-images.yml
+      parameters:
+        services: [bshop-api]
+
+- stage: Deploy_Helm_Chart
+  jobs:
+  - job: Deploy_Helm_Chart
+    displayName: Deploy Helm Chart
+    steps:
+    - task: HelmDeploy@0
+      displayName: Helm package
+      inputs:
+        command: package
+        chartPath: pipeline/k8s/bshop-api
+        destination: $(Build.ArtifactStagingDirectory)
+        save: false
+        arguments: --version $(Build.BuildNumber)
+
+    - task: HelmDeploy@0
+      displayName: Helm install
+      inputs:
+        connectionType: Azure Resource Manager
+        azureSubscription: $(azureSubscription)
+        azureResourceGroup: $(azureResourceGroup)
+        kubernetesCluster: $(kubernetesCluster)
+        namespace: $(namespace)
+        releaseName: bshop-api
+        command: upgrade
+        chartType: FilePath
+        chartPath: $(Build.ArtifactStagingDirectory)/bshop-api-$(Build.BuildNumber).tgz
+        install: true
+        waitForExecution: false
