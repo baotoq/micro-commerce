@@ -4,9 +4,9 @@ trigger:
     - master
     exclude:
     - ref/tags/*
-    paths:
-      include:
-      - pipeline
+  paths:
+    include:
+    - pipeline
 
 pool:
   vmImage: ubuntu-latest
