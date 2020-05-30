@@ -13,7 +13,8 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-imagePullSecrets: []
+imagePullSecrets:
+- name: acr-secret
 nameOverride: react-web
 fullnameOverride: react-web
 
