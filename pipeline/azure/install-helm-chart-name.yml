@@ -1,6 +1,7 @@
 parameters:
   chartName: ''
   releaseName: ''
+  valueFile: ''
   namespace: ''
   kubernetesServiceConnection: 'bshopcluster'
 
@@ -21,5 +22,6 @@ steps:
     command: upgrade
     chartType: Name
     chartName: ${{ parameters.chartName }}
+    valueFile: ${{ parameters.valueFile }}
     install: true
     waitForExecution: false
