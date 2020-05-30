@@ -1,5 +1,12 @@
 trigger:
-- master
+  branches:
+    include:
+    - master
+    exclude:
+    - ref/tags/*
+    paths:
+      include:
+      - pipeline
 
 pool:
   vmImage: ubuntu-latest
