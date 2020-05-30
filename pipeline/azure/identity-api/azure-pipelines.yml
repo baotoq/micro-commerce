@@ -44,5 +44,5 @@ stages:
 
     - template: ../install-helm-chart.yml
       parameters:
-        service: react-web
-        namespace: identity-api
+        service: identity-api
+        namespace: bshop
