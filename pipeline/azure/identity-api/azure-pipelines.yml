@@ -1,0 +1,28 @@
+trigger:
+  branches:
+    include:
+    - master
+    exclude:
+    - ref/tags/*
+  paths:
+    include:
+    - src/Identity.API
+    - tests/**/Identity.API**
+    - pipeline
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  imageName: bshop-api
+
+jobs:
+- job: Build_and_Push_Image
+  displayName: Build and push docker image
+  steps:
+  - template: ../build-images.yml
+    parameters:
+      services: [$(imageName)]
+  - template: ../push-images.yml
+    parameters:
+      services: [$(imageName)]

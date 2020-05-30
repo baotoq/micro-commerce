@@ -1,0 +1,27 @@
+trigger:
+  branches:
+    include:
+    - master
+    exclude:
+    - ref/tags/*
+  paths:
+    include:
+    - src/React.Web
+    - pipeline
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  imageName: react-web
+
+jobs:
+- job: Build_and_Push_Image
+  displayName: Build and push docker image
+  steps:
+  - template: ../build-images.yml
+    parameters:
+      services: [$(imageName)]
+  - template: ../push-images.yml
+    parameters:
+      services: [$(imageName)]

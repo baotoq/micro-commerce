@@ -1,0 +1,5 @@
+variables:
+  azureSubscription: 'b-shop - Azure'
+  azureResourceGroup: 'b-shop-rg'
+  kubernetesCluster: 'b-shop'
+  namespace: 'bshop'
