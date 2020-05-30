@@ -1,3 +1,5 @@
 acceptEula:
-  value: "y"
+  value: "Y"
 sapassword: P@ssw0rd
+edition:
+  value: Developer
