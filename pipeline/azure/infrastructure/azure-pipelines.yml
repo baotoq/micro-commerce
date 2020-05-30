@@ -15,8 +15,8 @@ variables:
 - template: ../variables.yml
 
 jobs:
-- job: Deploy_Mssql
-  displayName: Deploy Mssql
+- job: Install_Mssql
+  displayName: Install Mssql linux
   steps:
   - template: ../install-helm-chart-name.yml
     parameters:
@@ -24,3 +24,12 @@ jobs:
       chartName: stable/mssql-linux
       valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/mssql-linux/values.yaml
       namespace: bshop
+- job : Install_Nginx
+  displayName: Install NginX ingress controller
+  steps:
+  - template: ../install-helm-chart-name.yml
+    parameters:
+      releaseName: nginx-ingress
+      chartName: stable/nginx-ingress
+      valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/nginx-ingress/values.yaml
+      namespace: default
