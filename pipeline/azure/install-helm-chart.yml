@@ -1,0 +1,18 @@
+parameters:
+  service: ''
+  namespace: ''
+  kubernetesServiceConnection: 'bshopcluster'
+
+steps:
+- task: HelmDeploy@0
+  displayName: Helm install ${{ parameters.service }}
+  inputs:
+    connectionType: Kubernetes Service Connection
+    kubernetesServiceConnection: ${{ parameters.kubernetesServiceConnection }}
+    namespace: ${{ parameters.namespace }}
+    releaseName: ${{ parameters.service }}
+    command: upgrade
+    chartType: FilePath
+    chartPath: $(Build.ArtifactStagingDirectory)/${{ parameters.service }}-$(Build.BuildNumber).tgz
+    install: true
+    waitForExecution: false

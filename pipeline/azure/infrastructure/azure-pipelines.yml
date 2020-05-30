@@ -8,27 +8,11 @@ variables:
 - template: ../variables.yml
 
 jobs:
-- job: Deploy
-  displayName: Build and push docker image
+- job: Deploy_Mssql
+  displayName: Deploy Mssql
   steps:
-  - task: Bash@3
-    displayName: Add helm repositories
-    inputs:
-      targetType: inline
-      script: |
-        helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-  - task: HelmDeploy@0
-    inputs:
-      connectionType: Azure Resource Manager
-      azureSubscription: $(azureSubscription)
-      azureResourceGroup: $(azureResourceGroup)
-      kubernetesCluster: $(kubernetesCluster)
-      namespace: $(namespace)
-      command: upgrade
-      chartType: Name
-      chartName: 'stable/mssql-linux'
-      releaseName: 'mssql'
-      install: true
-      waitForExecution: false
-
-
+  - template: ../install-helm-chart-name.yml
+    parameters:
+      releaseName: mssql
+      chartName: stable/mssql-linux
+      namespace: bshop

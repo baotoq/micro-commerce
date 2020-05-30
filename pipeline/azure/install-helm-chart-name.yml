@@ -1,0 +1,25 @@
+parameters:
+  chartName: ''
+  releaseName: ''
+  namespace: ''
+  kubernetesServiceConnection: 'bshopcluster'
+
+steps:
+- task: Bash@3
+  displayName: Add helm chart repositories
+  inputs:
+    targetType: inline
+    script: |
+      helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+- task: HelmDeploy@0
+  displayName: Helm install ${{ parameters.chartName }}
+  inputs:
+    connectionType: Kubernetes Service Connection
+    kubernetesServiceConnection: ${{ parameters.kubernetesServiceConnection }}
+    namespace: ${{ parameters.namespace }}
+    releaseName: ${{ parameters.releaseName }}
+    command: upgrade
+    chartType: Name
+    chartName: ${{ parameters.chartName }}
+    install: true
+    waitForExecution: false
