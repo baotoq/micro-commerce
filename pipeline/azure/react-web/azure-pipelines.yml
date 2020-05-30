@@ -13,15 +13,35 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  imageName: react-web
+- template: ../variables.yml
 
-jobs:
-- job: Build_and_Push_Image
+stages:
+- stage: Build_and_Push_Image
   displayName: Build and push docker image
-  steps:
-  - template: ../build-images.yml
-    parameters:
-      services: [$(imageName)]
-  - template: ../push-images.yml
-    parameters:
-      services: [$(imageName)]
+  jobs:
+  - job: Build_and_Push_Image
+    displayName: Build and push docker image
+    steps:
+    - template: ../compose.yml
+      parameters:
+        action: build
+        services: [react-web]
+    - template: ../compose.yml
+      parameters:
+        action: push
+        services: [react-web]
+
+- stage: Deploy_Helm_Chart
+  displayName: Deploy helm chart
+  jobs:
+  - job: Deploy_Helm_Chart
+    displayName: Deploy helm chart
+    steps:
+    - template: ../package-helm-chart.yml
+      parameters:
+        service: react-web
+
+    - template: ../install-helm-chart.yml
+      parameters:
+        service: react-web
+        namespace: bshop

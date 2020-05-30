@@ -1,0 +1,12 @@
+parameters:
+  service: ''
+
+steps:
+- task: HelmDeploy@0
+  displayName: Helm package
+  inputs:
+    command: package
+    chartPath: pipeline/k8s/${{ parameters.service }}
+    destination: $(Build.ArtifactStagingDirectory)
+    save: false
+    arguments: --version $(Build.BuildNumber)

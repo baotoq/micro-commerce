@@ -18,42 +18,31 @@ variables:
 
 stages:
 - stage: Build_and_Push_Image
+  displayName: Build and push docker image
   jobs:
   - job: Build_and_Push_Image
     displayName: Build and push docker image
     steps:
-    - template: ../build-images.yml
+    - template: ../compose.yml
       parameters:
+        action: build
         services: [bshop-api]
-    - template: ../push-images.yml
+    - template: ../compose.yml
       parameters:
+        action: push
         services: [bshop-api]
 
 - stage: Deploy_Helm_Chart
+  displayName: Deploy helm chart
   jobs:
   - job: Deploy_Helm_Chart
-    displayName: Deploy Helm Chart
+    displayName: Deploy helm chart
     steps:
-    - task: HelmDeploy@0
-      displayName: Helm package
-      inputs:
-        command: package
-        chartPath: pipeline/k8s/bshop-api
-        destination: $(Build.ArtifactStagingDirectory)
-        save: false
-        arguments: --version $(Build.BuildNumber)
+    - template: ../package-helm-chart.yml
+      parameters:
+        service: bshop-api
 
-    - task: HelmDeploy@0
-      displayName: Helm install
-      inputs:
-        connectionType: Azure Resource Manager
-        azureSubscription: $(azureSubscription)
-        azureResourceGroup: $(azureResourceGroup)
-        kubernetesCluster: $(kubernetesCluster)
-        namespace: $(namespace)
-        releaseName: bshop-api
-        command: upgrade
-        chartType: FilePath
-        chartPath: $(Build.ArtifactStagingDirectory)/bshop-api-$(Build.BuildNumber).tgz
-        install: true
-        waitForExecution: false
+    - template: ../install-helm-chart.yml
+      parameters:
+        service: bshop-api
+        namespace: bshop
