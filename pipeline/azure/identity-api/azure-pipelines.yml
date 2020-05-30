@@ -8,7 +8,8 @@ trigger:
     include:
     - src/Identity.API
     - tests/**/Identity.API**
-    - pipeline
+    - pipeline/k8s/identity-api
+    - pipeline/azure/identity-api
 
 pool:
   vmImage: ubuntu-latest

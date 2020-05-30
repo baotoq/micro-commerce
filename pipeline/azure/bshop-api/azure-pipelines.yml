@@ -8,7 +8,8 @@ trigger:
     include:
     - src/BShop.API
     - tests/**/BShop.API**
-    - pipeline
+    - pipeline/k8s/bshop-api
+    - pipeline/azure/bshop-api
 
 pool:
   vmImage: ubuntu-latest
