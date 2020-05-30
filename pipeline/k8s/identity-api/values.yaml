@@ -13,8 +13,7 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-imagePullSecrets:
-- name: acr-secret
+imagePullSecrets: []
 nameOverride: identity-api
 fullnameOverride: identity-api
 
