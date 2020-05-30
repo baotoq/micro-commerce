@@ -1,2 +1,0 @@
-# helm install mssql stable/mssql-linux --set acceptEula.value=Y --set edition.value=Developer --set sapassword=P@ssw0rd --namespace=b-shop
-

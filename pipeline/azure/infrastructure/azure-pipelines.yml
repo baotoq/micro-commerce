@@ -22,5 +22,5 @@ jobs:
     parameters:
       releaseName: mssql
       chartName: stable/mssql-linux
-      valueFile: $(Build.SourcesDirectory)/k8s/infrastructure/mssql-linux/values.yaml
+      valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/mssql-linux/values.yaml
       namespace: bshop
