@@ -6,7 +6,7 @@ trigger:
     - ref/tags/*
   paths:
     include:
-    - pipeline
+    - pipeline/azure/infrastructure
 
 pool:
   vmImage: ubuntu-latest
