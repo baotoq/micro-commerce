@@ -9,7 +9,7 @@
 replicaCount: 1
 
 image:
-  repository: bshopacr/react-web
+  repository: bshopacr.azurecr.io/react-web
   tag: latest
   pullPolicy: IfNotPresent
 

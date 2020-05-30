@@ -9,7 +9,7 @@
 replicaCount: 1
 
 image:
-  repository: bshopacr/identity-api
+  repository: bshopacr.azurecr.io/identity-api
   tag: latest
   pullPolicy: IfNotPresent
 
