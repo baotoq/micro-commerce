@@ -7,7 +7,8 @@ trigger:
   paths:
     include:
     - src/React.Web
-    - pipeline
+    - pipeline/k8s/react-web
+    - pipeline/azure/react-web
 
 pool:
   vmImage: ubuntu-latest
