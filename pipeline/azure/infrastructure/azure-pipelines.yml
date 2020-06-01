@@ -14,22 +14,39 @@ pool:
 variables:
 - template: ../variables.yml
 
-jobs:
-- job: Install_Mssql
-  displayName: Install Mssql linux
-  steps:
-  - template: ../install-helm-chart-name.yml
-    parameters:
-      releaseName: mssql
-      chartName: stable/mssql-linux
-      valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/mssql-linux/values.yaml
-      namespace: bshop
-- job : Install_Nginx
-  displayName: Install NginX ingress controller
-  steps:
-  - template: ../install-helm-chart-name.yml
-    parameters:
-      releaseName: nginx-ingress
-      chartName: stable/nginx-ingress
-      valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/nginx-ingress/values.yaml
-      namespace: default
+stages:
+  - stage: Install_Mssql
+    displayName: Install Mssql Linux
+    jobs:
+    - job: Install_Mssql
+      steps:
+      - template: ../install-helm-chart-name.yml
+        parameters:
+          releaseName: mssql
+          chartName: stable/mssql-linux
+          valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/mssql-linux/values.yaml
+          namespace: bshop
+
+  - stage: Install_Nginx_Ingress
+    displayName: Install Nginx ingress controller
+    jobs:
+    - job : Install_Nginx_Ingress
+      steps:
+      - template: ../install-helm-chart-name.yml
+        parameters:
+          releaseName: nginx-ingress
+          chartName: stable/nginx-ingress
+          valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/nginx-ingress/values.yaml
+          namespace: default
+
+  - stage: Install_SonarQube
+    displayName: Install SonarQube
+    jobs:
+    - job : Install_SonarQube
+      steps:
+      - template: ../install-helm-chart-name.yml
+        parameters:
+          releaseName: sonarqube
+          chartName: stable/sonarqube
+          valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/sonarqube/values.yaml
+          namespace: default
