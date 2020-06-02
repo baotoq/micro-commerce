@@ -1,0 +1,39 @@
+parameters:
+  projectKey: ''
+  projectPath: ''
+  runTest: true
+
+steps:
+- task: SonarQubePrepare@4
+  displayName: Prepare analysis on SonarQube
+  continueOnError: true
+  inputs:
+    SonarQube: sonar
+    projectKey: ${{ parameters.projectKey }}
+
+- task: DotNetCoreCLI@2
+  displayName: Build project
+  inputs:
+    command: build
+    projects: src/${{ parameters.projectPath }}/*.csproj
+
+${{ if eq(parameters.runTest, true) }}:
+- task: DotNetCoreCLI@2
+  displayName: Run unit tests
+  inputs:
+    command: test
+    projects: tests/UnitTests/${{ parameters.projectPath }}.UnitTests/*.csproj
+    arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/coverage --logger trx
+    nobuild: true
+    publishTestResults: true
+
+- task: PublishCodeCoverageResults@1
+  displayName: Publish code coverage report
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
+
+- task: SonarQubeAnalyze@4
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  continueOnError: true
+  displayName: Run Code Analysis and publish to SonarQube
