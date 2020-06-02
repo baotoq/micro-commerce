@@ -17,15 +17,15 @@ steps:
     command: build
     projects: src/${{ parameters.projectPath }}/*.csproj
 
-${{ if eq(parameters.runTest, true) }}:
-- task: DotNetCoreCLI@2
-  displayName: Run unit tests
-  inputs:
-    command: test
-    projects: tests/UnitTests/${{ parameters.projectPath }}.UnitTests/*.csproj
-    arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/coverage --logger trx
-    nobuild: true
-    publishTestResults: true
+  ${{ if eq(parameters.runTest, true) }}:
+    - task: DotNetCoreCLI@2
+      displayName: Run unit tests
+      inputs:
+        command: test
+        projects: tests/UnitTests/${{ parameters.projectPath }}.UnitTests/*.csproj
+        arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/coverage --logger trx
+        nobuild: true
+        publishTestResults: true
 
 - task: PublishCodeCoverageResults@1
   displayName: Publish code coverage report
