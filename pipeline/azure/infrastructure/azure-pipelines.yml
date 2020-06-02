@@ -1,13 +1,3 @@
-trigger:
-  branches:
-    include:
-    - master
-    exclude:
-    - ref/tags/*
-  paths:
-    include:
-    - pipeline/azure/infrastructure
-
 pool:
   vmImage: ubuntu-latest
 
