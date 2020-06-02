@@ -18,6 +18,17 @@ variables:
 - template: ../variables.yml
 
 stages:
+- stage: Build_and_Run_Tests
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - template: ../build-test-sonar-scan.yml
+      parameters:
+        projectName: identity-api
+        projectPath: Identity.API
+        runTest: false
+
 - stage: Build_and_Push_Image
   displayName: Build and push docker image
   jobs:
