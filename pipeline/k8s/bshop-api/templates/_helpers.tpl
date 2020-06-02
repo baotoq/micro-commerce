@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "bshop-api.name" -}}
+{{- define "catalog-api.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "bshop-api.fullname" -}}
+{{- define "catalog-api.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -27,16 +27,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "bshop-api.chart" -}}
+{{- define "catalog-api.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "bshop-api.labels" -}}
-helm.sh/chart: {{ include "bshop-api.chart" . }}
-{{ include "bshop-api.selectorLabels" . }}
+{{- define "catalog-api.labels" -}}
+helm.sh/chart: {{ include "catalog-api.chart" . }}
+{{ include "catalog-api.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -46,17 +46,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "bshop-api.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "bshop-api.name" . }}
+{{- define "catalog-api.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "catalog-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "bshop-api.serviceAccountName" -}}
+{{- define "catalog-api.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "bshop-api.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "catalog-api.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

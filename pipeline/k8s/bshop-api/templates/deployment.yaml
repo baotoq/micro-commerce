@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "bshop-api.fullname" . }}
+  name: {{ include "catalog-api.fullname" . }}
   labels:
-    {{- include "bshop-api.labels" . | nindent 4 }}
+    {{- include "catalog-api.labels" . | nindent 4 }}
 spec:
 {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
 {{- end }}
   selector:
     matchLabels:
-      {{- include "bshop-api.selectorLabels" . | nindent 6 }}
+      {{- include "catalog-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "bshop-api.selectorLabels" . | nindent 8 }}
+        {{- include "catalog-api.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

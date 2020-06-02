@@ -1,27 +1,27 @@
-# Default values for bshop-api.
+# Default values for catalog-api.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 # helm package .
 # helm lint -f ./values.yaml .
-# helm upgrade bshop-api --install -f ./values.yaml --namespace=b-shop .
+# helm upgrade catalog-api --install -f ./values.yaml --namespace=b-shop .
 
 replicaCount: 1
 
 image:
-  repository: bshopacr.azurecr.io/bshop-api
+  repository: bshopacr.azurecr.io/catalog-api
   tag: latest
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
 - name: acr-secret
-nameOverride: bshop-api
-fullnameOverride: bshop-api
+nameOverride: catalog-api
+fullnameOverride: catalog-api
 
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
-  ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux,1433;Database=bshop-api;User Id=sa;Password=P@ssw0rd;
+  ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux,1433;Database=catalog-api;User Id=sa;Password=P@ssw0rd;
 
 service:
   type: ClusterIP

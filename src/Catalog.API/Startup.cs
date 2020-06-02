@@ -30,7 +30,7 @@ namespace Catalog.API
 
             if (Configuration.GetValue<bool>("UseInMemoryDatabase"))
             {
-                services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("BShop.API.Db"));
+                services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("Catalog.API.DB"));
             }
             else
             {
@@ -53,7 +53,7 @@ namespace Catalog.API
                 .AddIdentityServerAuthentication(options =>
                 {
                     options.Authority = Configuration["Identity:Uri"];
-                    options.ApiName = "bshop-api";
+                    options.ApiName = "catalog-api";
                     options.ApiSecret = "secret";
                     options.RequireHttpsMetadata = false;
                     options.EnableCaching = true;
@@ -110,7 +110,7 @@ namespace Catalog.API
             services.AddSwaggerGen(c =>
             {
                 c.CustomSchemaIds(s => s.FullName);
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BShop API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog API", Version = "v1" });
                 c.AddSecurityDefinition(IdentityServerAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.OAuth2,
@@ -122,7 +122,7 @@ namespace Catalog.API
                             AuthorizationUrl = new Uri($"{configuration["Identity:Uri"]}/connect/authorize"),
                             Scopes =
                             {
-                                { "bshop-api", "BShop API" }
+                                { "catalog-api", "Catalog API" }
                             }
                         },
                     },
@@ -134,7 +134,7 @@ namespace Catalog.API
                         {
                             Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = IdentityServerAuthenticationDefaults.AuthenticationScheme }
                         },
-                        new List<string> { "bshop-api" }
+                        new List<string> { "catalog-api" }
                     }
                 });
             });
