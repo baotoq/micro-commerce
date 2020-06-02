@@ -25,6 +25,13 @@ stages:
     - job: Build
       displayName: Build
       steps:
+        - task: SonarQubePrepare@4
+          displayName: Prepare analysis on SonarQube
+          continueOnError: true
+          inputs:
+            SonarQube: sonar
+            projectKey: bshop
+
         - task: DotNetCoreCLI@2
           displayName: Restore
           inputs:
@@ -37,6 +44,11 @@ stages:
             command: build
             projects: $(solution)
             arguments: --no-restore
+
+        - task: SonarQubeAnalyze@4
+          condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+          continueOnError: true
+          displayName: Run Code Analysis
 
     - job: Run_Tests
       displayName: Run tests
