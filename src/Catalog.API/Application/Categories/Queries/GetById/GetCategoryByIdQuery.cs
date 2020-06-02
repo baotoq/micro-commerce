@@ -1,0 +1,15 @@
+﻿using Catalog.API.Application.Categories.Models;
+using MediatR;
+
+namespace Catalog.API.Application.Categories.Queries.GetById
+{
+    public class GetCategoryByIdQuery : IRequest<CategoryDto>
+    {
+        public long Id { get; set; }
+
+        public GetCategoryByIdQuery(long id)
+        {
+            Id = id;
+        }
+    }
+}
