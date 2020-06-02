@@ -25,7 +25,7 @@ stages:
     steps:
     - template: ../build-test-sonar-scan.yml
       parameters:
-        projectName: catalog-api
+        projectKey: catalog-api
         projectPath: Catalog.API
 
 - stage: Build_and_Push_Image
