@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Image, Button } from "react-bootstrap";
+
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import Image from "material-ui-image";
 
 import productService, { ProductResponse } from "../../services/product-service";
 
@@ -19,19 +22,19 @@ const Product = () => {
   return (
     <div>
       {product && (
-        <Row>
-          <Col md={6}>
-            <Image src={product.imageUri} fluid />
-          </Col>
-          <Col md={6}>
+        <Grid container spacing={3}>
+          <Grid item md={6}>
+            <Image src={product.imageUri} aspectRatio={16 / 9} />
+          </Grid>
+          <Grid item md={6}>
             <h1>{product.name}</h1>
             <p>{product.description}</p>
             <h3>${product.price}</h3>
-            <Button variant="primary" className="mr-2">
+            <Button variant="contained" color="primary">
               Add to Cart
             </Button>
-          </Col>
-        </Row>
+          </Grid>
+        </Grid>
       )}
     </div>
   );

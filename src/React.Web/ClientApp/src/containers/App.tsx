@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 
-import { Container, Jumbotron } from "react-bootstrap";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Container from "@material-ui/core/Container";
 
 import NavMenu from "./Layout/NavMenu";
 
@@ -23,10 +24,9 @@ const App = () => {
   return (
     <BrowserRouter basename={"/"}>
       <NavMenu />
-      <Jumbotron>
-        <h1 className="display-4 text-primary">BShop</h1>
-      </Jumbotron>
-      <Container fluid>
+      <CssBaseline />
+      <div style={{ marginBottom: "10px" }}></div>
+      <Container maxWidth="lg">
         <Switch>
           <Route path="/authentication/:action" component={Auth} />
           <Route path="/category/:id" component={Category} />
