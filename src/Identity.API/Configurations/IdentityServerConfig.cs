@@ -19,9 +19,9 @@ namespace Identity.API.Configurations
             {
                 new ApiResource
                 {
-                    Name = "bshop-api",
+                    Name = "catalog-api",
                     ApiSecrets = { new Secret("secret".Sha256()) },
-                    Scopes = { new Scope("bshop-api") }
+                    Scopes = { new Scope("catalog-api") }
                 }
             };
 
@@ -43,7 +43,7 @@ namespace Identity.API.Configurations
 
                     AllowedScopes = new List<string>
                     {
-                        "bshop-api"
+                        "catalog-api"
                     }
                 },
                 new Client
@@ -78,7 +78,7 @@ namespace Identity.API.Configurations
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "bshop-api"
+                        "catalog-api"
                     }
                 }
             };

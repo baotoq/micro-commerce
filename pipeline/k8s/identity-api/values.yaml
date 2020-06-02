@@ -21,7 +21,7 @@ fullnameOverride: identity-api
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
-  ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux,1433;Database=bshop-api;User Id=sa;Password=P@ssw0rd;
+  ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux,1433;Database=identity-api;User Id=sa;Password=P@ssw0rd;
 
 service:
   type: ClusterIP

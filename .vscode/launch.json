@@ -27,14 +27,14 @@
       }
     },
     {
-      "name": "BShop.API",
+      "name": "Catalog.API",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/src/BShop.API/bin/Debug/netcoreapp3.1/BShop.API.dll",
+      "program": "${workspaceFolder}/src/Catalog.API/bin/Debug/netcoreapp3.1/Catalog.API.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/src/BShop.API",
+      "cwd": "${workspaceFolder}/src/Catalog.API",
       "stopAtEntry": false,
       // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
       "serverReadyAction": {
