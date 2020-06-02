@@ -4,7 +4,7 @@
 
 # helm package .
 # helm lint -f ./values.yaml .
-# helm upgrade identity-api --install -f ./values.yaml --namespace=b-shop .
+# helm upgrade identity-api --install -f ./values.yaml --namespace=bshop .
 
 replicaCount: 1
 
