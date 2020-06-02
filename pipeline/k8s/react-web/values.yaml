@@ -4,7 +4,7 @@
 
 # helm package .
 # helm lint -f ./values.yaml .
-# helm upgrade react-web --install -f ./values.yaml --namespace=b-shop .
+# helm upgrade react-web --install -f ./values.yaml --namespace=bshop .
 
 replicaCount: 1
 
