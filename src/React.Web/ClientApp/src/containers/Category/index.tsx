@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col } from "react-bootstrap";
+
+import Grid from "@material-ui/core/Grid";
+
 import Product from "./Product";
 
 import categoryService, { CategoryResponse } from "../../services/category-service";
@@ -22,13 +24,13 @@ const Category = () => {
     <div>
       {category && (
         <div>
-          <Row>
+          <Grid container spacing={2}>
             {category.products.map((product) => (
-              <Col md={3} key={product.id} className="mb-3">
+              <Grid key={product.id} item>
                 <Product product={product} />
-              </Col>
+              </Grid>
             ))}
-          </Row>
+          </Grid>
         </div>
       )}
     </div>
