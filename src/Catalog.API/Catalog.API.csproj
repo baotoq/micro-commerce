@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>BShop.API-71648faa-fb10-4c7f-a981-a61285623946</UserSecretsId>
+    <UserSecretsId>Catalog.API-71648faa-fb10-4c7f-a981-a61285623946</UserSecretsId>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

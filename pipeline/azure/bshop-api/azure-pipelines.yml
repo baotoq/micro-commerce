@@ -6,10 +6,10 @@ trigger:
     - ref/tags/*
   paths:
     include:
-    - src/BShop.API
-    - tests/**/BShop.API**
-    - pipeline/k8s/bshop-api
-    - pipeline/azure/bshop-api
+    - src/Catalog.API
+    - tests/**/Catalog.API**
+    - pipeline/k8s/catalog-api
+    - pipeline/azure/catalog-api
 
 pool:
   vmImage: ubuntu-latest
@@ -27,11 +27,11 @@ stages:
     - template: ../compose.yml
       parameters:
         action: build
-        services: [bshop-api]
+        services: [catalog-api]
     - template: ../compose.yml
       parameters:
         action: push
-        services: [bshop-api]
+        services: [catalog-api]
 
 - stage: Deploy_Helm_Chart
   displayName: Deploy helm chart
@@ -41,9 +41,9 @@ stages:
     steps:
     - template: ../package-helm-chart.yml
       parameters:
-        service: bshop-api
+        service: catalog-api
 
     - template: ../install-helm-chart.yml
       parameters:
-        service: bshop-api
+        service: catalog-api
         namespace: bshop
