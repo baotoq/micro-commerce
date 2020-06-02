@@ -57,7 +57,7 @@ services:
       args:
         - REACT_APP_BASE_URI=http://${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
         - REACT_APP_IDENTITY_URI=http://${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
-        - REACT_APP_RESOURCE_URI=http://${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
+        - REACT_APP_CATALOG_URI=http://${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80

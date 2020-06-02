@@ -9,7 +9,7 @@ RUN npm install
 
 ARG REACT_APP_BASE_URI
 ARG REACT_APP_IDENTITY_URI
-ARG REACT_APP_RESOURCE_URI
+ARG REACT_APP_CATALOG_URI
 RUN npm run build
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
