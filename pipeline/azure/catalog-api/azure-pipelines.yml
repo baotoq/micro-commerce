@@ -20,41 +20,13 @@ variables:
 stages:
 - stage: Build_and_Run_Tests
   jobs:
-    - job: Build
-      displayName: Build
-      steps:
-      - task: SonarQubePrepare@4
-        displayName: Prepare analysis on SonarQube
-        continueOnError: true
-        inputs:
-          SonarQube: sonar
-          projectKey: bshop
-
-      - task: DotNetCoreCLI@2
-        displayName: Build project
-        inputs:
-          command: build
-          projects: src/Catalog.API/*.csproj
-
-      - task: DotNetCoreCLI@2
-        displayName: Run unit tests
-        inputs:
-          command: test
-          projects: tests/UnitTests/Catalog.API.UnitTests/*.csproj
-          arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/coverage --logger trx
-          nobuild: true
-          publishTestResults: true
-      
-      - task: PublishCodeCoverageResults@1
-        displayName: Publish code coverage report
-        inputs:
-          codeCoverageTool: Cobertura
-          summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
-
-      - task: SonarQubeAnalyze@4
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-        continueOnError: true
-        displayName: Run Code Analysis and publish to SonarQube
+  - job: Build
+    displayName: Build
+    steps:
+    - template: ../build-test-sonar-scan.yml
+      parameters:
+        projectName: catalog-api
+        projectPath: Catalog.API
 
 - stage: Build_and_Push_Image
   displayName: Build and push docker image
