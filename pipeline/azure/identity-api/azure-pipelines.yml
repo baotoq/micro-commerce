@@ -25,7 +25,7 @@ stages:
     steps:
     - template: ../build-test-sonar-scan.yml
       parameters:
-        projectName: identity-api
+        projectKey: identity-api
         projectPath: Identity.API
         runTest: false
 

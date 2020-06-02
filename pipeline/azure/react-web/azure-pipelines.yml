@@ -24,7 +24,7 @@ stages:
     steps:
     - template: ../build-test-sonar-scan.yml
       parameters:
-        projectName: react-web
+        projectKey: react-web
         projectPath: Catalog.API
         runTest: false
 
