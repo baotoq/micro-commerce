@@ -1,0 +1,6 @@
+image:
+  repository: bshopacr.azurecr.io/react-web
+  tag: latest
+
+imagePullSecrets:
+  - name: arc-secret

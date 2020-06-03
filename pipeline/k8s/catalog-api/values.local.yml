@@ -1,0 +1,15 @@
+# helm upgrade catalog-api --install -f ./values.yaml -f values.local.yml --namespace=bshop .
+
+image:
+  repository: catalog-api
+  tag: latest
+
+imagePullSecrets: []
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: catalog-api.com
+      paths: ["/"]

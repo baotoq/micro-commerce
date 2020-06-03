@@ -3,18 +3,17 @@
 # Declare variables to be passed into your templates.
 
 # helm package .
-# helm lint -f ./values.yaml .
+# helm lint -f ./values.yaml -f values.local.yml .
 # helm upgrade catalog-api --install -f ./values.yaml --namespace=bshop .
 
 replicaCount: 1
 
 image:
-  repository: bshopacr.azurecr.io/catalog-api
+  repository: catalog-api
   tag: latest
   pullPolicy: IfNotPresent
 
-imagePullSecrets:
-- name: acr-secret
+imagePullSecrets: []
 nameOverride: catalog-api
 fullnameOverride: catalog-api
 
