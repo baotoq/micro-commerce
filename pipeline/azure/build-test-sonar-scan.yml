@@ -24,7 +24,6 @@ steps:
       command: test
       projects: tests/UnitTests/${{ parameters.projectPath }}.UnitTests/*.csproj
       arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/coverage --logger trx
-      nobuild: true
       publishTestResults: true
 
 - task: PublishCodeCoverageResults@1

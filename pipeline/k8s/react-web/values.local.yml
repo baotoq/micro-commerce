@@ -1,0 +1,15 @@
+# helm upgrade react-web --install -f ./values.yaml -f values.local.yml --namespace=bshop .
+
+image:
+  repository: react-web
+  tag: latest
+
+imagePullSecrets: []
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: react-web.com
+      paths: ["/"]

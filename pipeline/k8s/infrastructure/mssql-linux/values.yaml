@@ -1,3 +1,5 @@
+# helm upgrade mssql stable/mssql-linux --install -f ./values.yaml --namespace=bshop
+
 acceptEula:
   value: "Y"
 sapassword: P@ssw0rd
