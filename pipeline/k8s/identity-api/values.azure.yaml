@@ -1,0 +1,6 @@
+image:
+  repository: bshopacr.azurecr.io/identity-api
+  tag: latest
+
+imagePullSecrets:
+  - name: arc-secret

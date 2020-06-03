@@ -9,12 +9,11 @@
 replicaCount: 1
 
 image:
-  repository: bshopacr.azurecr.io/identity-api
+  repository: identity-api
   tag: latest
   pullPolicy: IfNotPresent
 
-imagePullSecrets:
-- name: acr-secret
+imagePullSecrets: []
 nameOverride: identity-api
 fullnameOverride: identity-api
 
