@@ -2,7 +2,7 @@ parameters:
   service: ''
   namespace: ''
   overrideValues: ''
-  valueFile: values.yaml
+  valueFile: ''
   kubernetesServiceConnection: 'bshopcluster'
 
 steps:
