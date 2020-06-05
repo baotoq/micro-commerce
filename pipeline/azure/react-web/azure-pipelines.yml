@@ -57,3 +57,4 @@ stages:
       parameters:
         service: react-web
         namespace: bshop
+        overrideValues: values.azure.yaml
