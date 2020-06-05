@@ -1,9 +1,10 @@
 parameters:
-  service: ''
-  namespace: ''
-  overrideValues: ''
-  valueFile: ''
-  kubernetesServiceConnection: 'bshopcluster'
+  service:
+  namespace:
+  overrideValues:
+  valueFile: 
+  kubernetesServiceConnection: bshopcluster
+  arguments:
 
 steps:
 - task: HelmDeploy@0
@@ -20,3 +21,4 @@ steps:
     valueFile: ${{ parameters.valueFile }}
     install: true
     waitForExecution: false
+    arguments: ${{ parameters.arguments }}
