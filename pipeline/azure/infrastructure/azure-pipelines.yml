@@ -17,8 +17,8 @@ stages:
       parameters:
         releaseName: mssql
         chartName: stable/mssql-linux
-        valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/mssql-linux/values.yaml
         namespace: bshop
+        valueFile: pipeline/k8s/infrastructure/mssql-linux/values.yaml
 
 - stage: Install_Nginx_Ingress
   displayName: Install Nginx ingress controller
@@ -30,8 +30,8 @@ stages:
       parameters:
         releaseName: nginx-ingress
         chartName: stable/nginx-ingress
-        valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/nginx-ingress/values.yaml
         namespace: default
+        valueFile: pipeline/k8s/infrastructure/nginx-ingress/values.yaml
 
 - stage: Install_SonarQube
   displayName: Install SonarQube
@@ -43,5 +43,5 @@ stages:
       parameters:
         releaseName: sonarqube
         chartName: stable/sonarqube
-        valueFile: $(Build.SourcesDirectory)/pipeline/k8s/infrastructure/sonarqube/values.yaml
         namespace: default
+        valueFile: pipeline/k8s/infrastructure/sonarqube/values.yaml

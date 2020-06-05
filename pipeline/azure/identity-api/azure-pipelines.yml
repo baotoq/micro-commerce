@@ -58,4 +58,5 @@ stages:
       parameters:
         service: identity-api
         namespace: bshop
-        overrideValues: values.azure.yaml
+        overrideValues: pipeline/k8s/identity-api/values.azure.yaml
+        valueFile: pipeline/k8s/identity-api/values.yaml

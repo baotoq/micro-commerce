@@ -57,4 +57,5 @@ stages:
       parameters:
         service: catalog-api
         namespace: bshop
-        overrideValues: values.azure.yaml
+        overrideValues: pipeline/k8s/catalog-api/values.azure.yaml
+        valueFile: pipeline/k8s/catalog-api/values.yaml
