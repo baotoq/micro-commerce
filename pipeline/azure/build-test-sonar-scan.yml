@@ -1,6 +1,6 @@
 parameters:
-  projectKey: ''
-  projectPath: ''
+  projectKey:
+  projectPath:
   runTest: true
 
 steps:

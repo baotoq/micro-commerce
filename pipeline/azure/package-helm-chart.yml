@@ -1,5 +1,5 @@
 parameters:
-  service: ''
+  service:
 
 steps:
 - task: HelmDeploy@0

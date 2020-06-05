@@ -1,8 +1,8 @@
 parameters:
-  chartName: ''
-  releaseName: ''
-  valueFile: ''
-  namespace: ''
+  chartName:
+  releaseName:
+  valueFile:
+  namespace:
   kubernetesServiceConnection: 'bshopcluster'
 
 steps:

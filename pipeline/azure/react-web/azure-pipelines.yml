@@ -57,5 +57,5 @@ stages:
       parameters:
         service: react-web
         namespace: bshop
-        overrideValues: pipeline/k8s/react-web/values.azure.yaml
         valueFile: pipeline/k8s/react-web/values.yaml
+        arguments: -f pipeline/k8s/react-web/values.azure.yaml
