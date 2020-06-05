@@ -28,12 +28,7 @@ namespace Catalog.API.Application.Products.Queries.GetAll
                     Name = s.Name,
                     Price = s.Price,
                     ImageUri = s.ImageUri,
-                    Description = s.Description,
-                    Categories = s.ProductCategories.Select(c => new CategoryDto
-                    {
-                        Id = c.CategoryId,
-                        Name = c.Category.Name
-                    }).ToList()
+                    Description = s.Description
                 })
                 .ToListAsync(cancellationToken);
 

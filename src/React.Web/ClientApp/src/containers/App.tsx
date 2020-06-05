@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
@@ -23,8 +23,8 @@ const App = () => {
 
   return (
     <BrowserRouter basename={"/"}>
-      <NavMenu />
       <CssBaseline />
+      <NavMenu />
       <div style={{ marginBottom: "10px" }}></div>
       <Container maxWidth="lg">
         <Switch>
