@@ -1,5 +1,5 @@
 parameters:
-  action: ''
+  action:
   services: []
   registryEndpoint: 'bshopacr'
 
