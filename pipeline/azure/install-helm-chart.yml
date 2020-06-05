@@ -1,6 +1,8 @@
 parameters:
   service: ''
   namespace: ''
+  overrideValues: ''
+  valueFile: values.yaml
   kubernetesServiceConnection: 'bshopcluster'
 
 steps:
@@ -14,5 +16,7 @@ steps:
     command: upgrade
     chartType: FilePath
     chartPath: $(Build.ArtifactStagingDirectory)/${{ parameters.service }}-$(Build.BuildNumber).tgz
+    overrideValues: ${{ parameters.overrideValues }}
+    valueFile: ${{ parameters.valueFile }}
     install: true
     waitForExecution: false
