@@ -58,3 +58,4 @@ stages:
       parameters:
         service: identity-api
         namespace: bshop
+        overrideValues: values.azure.yaml
