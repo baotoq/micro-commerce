@@ -6,10 +6,14 @@ image:
 
 imagePullSecrets: []
 
+env:
+  Client__Swagger__Uri: http://localhost/catalog
+  Client__React__Uri: http://localhost/react
+
 ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: nginx
   hosts:
-    - host: identity-api.com
-      paths: ["/"]
+    - host: localhost
+      paths: ["/identity"]
