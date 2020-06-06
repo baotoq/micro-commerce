@@ -11,5 +11,5 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
   hosts:
-    - host: react-web.com
-      paths: ["/"]
+    - host: localhost
+      paths: ["/react"]

@@ -6,10 +6,13 @@ image:
 
 imagePullSecrets: []
 
+env:
+  Identity__Uri: http://localhost/identity
+
 ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: nginx
   hosts:
-    - host: catalog-api.com
-      paths: ["/"]
+    - host: localhost
+      paths: ["/catalog"]

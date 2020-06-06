@@ -43,6 +43,8 @@ namespace React.Web
                 app.UseHsts();
             }
 
+            app.UsePathBase(Configuration["PATH_BASE"]);
+
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
