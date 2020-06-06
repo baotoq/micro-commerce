@@ -20,7 +20,10 @@ fullnameOverride: identity-api
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
+  PATH_BASE: /identity
   ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux,1433;Database=identity-api;User Id=sa;Password=P@ssw0rd;
+  Client__Swagger__Uri: http://swagger
+  Client__React__Uri: http://react-web
 
 service:
   type: ClusterIP

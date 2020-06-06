@@ -79,6 +79,8 @@ namespace Catalog.API
                 app.UseHsts();
             }
 
+            app.UsePathBase(Configuration["PATH_BASE"]);
+
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
@@ -150,7 +152,7 @@ namespace Catalog.API
                 c.OAuthClientId("swagger");
                 c.OAuthClientSecret("secret");
                 c.OAuthUsePkce();
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "BShop API V1");
+                c.SwaggerEndpoint("swagger/v1/swagger.json", "Catalog API V1");
             });
         }
     }

@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # helm package .
-# helm lint -f ./values.yaml -f values.local.yml .
+# helm lint -f ./values.yaml .
 # helm upgrade catalog-api --install -f ./values.yaml --namespace=bshop .
 
 replicaCount: 1
@@ -20,7 +20,9 @@ fullnameOverride: catalog-api
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
+  PATH_BASE: /catalog
   ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux,1433;Database=catalog-api;User Id=sa;Password=P@ssw0rd;
+  Identity__Uri: http://identity-api
 
 service:
   type: ClusterIP
