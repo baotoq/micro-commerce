@@ -1,1 +1,1 @@
-helm upgrade --install sonarqube stable/sonarqube
+# helm upgrade --install sonarqube stable/sonarqube

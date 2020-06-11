@@ -9,6 +9,7 @@ trigger:
     - src/React.Web
     - pipeline/k8s/react-web
     - pipeline/azure/react-web
+pr: none
 
 pool:
   vmImage: ubuntu-latest
