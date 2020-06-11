@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Catalog.API.Application
+namespace Catalog.API.ApiControllers
 {
     [AllowAnonymous]
     [ApiController]

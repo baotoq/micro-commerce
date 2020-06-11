@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Identity.API.Application.Roles
+namespace Identity.API.ApiControllers
 {
     [Authorize(IdentityServerConstants.LocalApi.PolicyName)]
     [ApiController]
