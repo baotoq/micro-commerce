@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Catalog.API.Application.Categories;
+using Catalog.API.ApiControllers;
 using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Commands.Delete;
 using Catalog.API.Application.Categories.Commands.Put;

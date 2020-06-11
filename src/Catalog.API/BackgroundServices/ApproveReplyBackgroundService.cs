@@ -11,38 +11,38 @@ using UnitOfWork;
 
 namespace Catalog.API.BackgroundServices
 {
-    public class ApproveReviewBackgroundService : BaseBackgroundService
+    public class ApproveReplyBackgroundService : BaseBackgroundService
     {
 
-        public ApproveReviewBackgroundService(IServiceProvider services) : base(services)
+        public ApproveReplyBackgroundService(IServiceProvider services) : base(services)
         {
         }
 
-        public override string BackgroundName { get; } = "Approve reviews job";
+        public override string BackgroundName { get; } = "Approve replies job";
         public override TimeSpan DelayTime { get; } = TimeSpan.FromMinutes(1);
 
         public override async Task ProcessAsync(CancellationToken cancellationToken)
         {
             using var scope = ServiceProvider.CreateScope();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ApproveReviewBackgroundService>>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ApproveReplyBackgroundService>>();
 
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
             var utcNow = DateTime.UtcNow;
 
-            var reviews = await unitOfWork.Repository<Review>()
+            var replies = await unitOfWork.Repository<Reply>()
                 .Query()
-                .Where(s => s.ReviewStatus == ReviewStatus.Pending && s.CreatedDate.AddMinutes(5) <= utcNow)
+                .Where(s => s.ReplyStatus == ReplyStatus.Pending && s.CreatedDate.AddMinutes(5) <= utcNow)
                 .ToListAsync(cancellationToken);
 
-            foreach (var review in reviews)
+            foreach (var review in replies)
             {
-                review.ReviewStatus = ReviewStatus.Approved;
+                review.ReplyStatus = ReplyStatus.Approved;
             }
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            logger.LogInformation("Approved {count} reviews with Id: {reviews}", reviews.Count, reviews.Select(s => s.Id));
+            logger.LogInformation("Approved {count} replies with Id: {replies}", replies.Count, replies.Select(s => s.Id));
         }
     }
 }

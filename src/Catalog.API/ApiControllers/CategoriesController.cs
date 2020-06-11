@@ -11,7 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Catalog.API.Application.Categories
+namespace Catalog.API.ApiControllers
 {
     [Authorize]
     [ApiController]
