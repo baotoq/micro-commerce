@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Catalog.API.Data.Models.Common;
+using UnitOfWork.Models;
 
 namespace Catalog.API.Data.Models
 {

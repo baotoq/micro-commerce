@@ -1,5 +1,5 @@
-﻿using Catalog.API.Data.Models.Common;
-using Catalog.API.Data.Models.Enums;
+﻿using Catalog.API.Data.Models.Enums;
+using UnitOfWork.Models;
 
 namespace Catalog.API.Data.Models
 {
@@ -7,14 +7,14 @@ namespace Catalog.API.Data.Models
     {
         public Reply()
         {
-            Status = ReplyStatus.Pending;
+            ReplyStatus = ReplyStatus.Pending;
         }
 
         public long UserId { get; set; }
 
         public string? Comment { get; set; }
 
-        public ReplyStatus Status { get; set; }
+        public ReplyStatus ReplyStatus { get; set; }
 
         public long ReviewId { get; set; }
 

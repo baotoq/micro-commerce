@@ -1,13 +1,17 @@
 using Identity.API.Configurations;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Identity.API.Data;
+using Identity.API.Data.Models;
+using Identity.API.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Shared.MediatR;
+using UnitOfWork;
 
 namespace Identity.API
 {
@@ -23,13 +27,15 @@ namespace Identity.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            services.AddMediatR().AddValidators();
+
+            services.AddUnitOfWork<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                    provider => provider.EnableRetryOnFailure()));
 
             services
-                .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddRoles<IdentityRole>()
+                .AddDefaultIdentity<User>()
+                .AddRoles<Role>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer(options =>
@@ -43,11 +49,15 @@ namespace Identity.API
                 .AddInMemoryIdentityResources(IdentityServerConfiguration.Ids)
                 .AddInMemoryApiResources(IdentityServerConfiguration.Apis)
                 .AddInMemoryClients(IdentityServerConfiguration.Clients(Configuration))
-                .AddAspNetIdentity<IdentityUser>()
+                .AddAspNetIdentity<User>()
+                .AddProfileService<ProfileService>()
                 .AddDeveloperSigningCredential(); // not recommended for production - you need to store your key material somewhere secure
+
+            services.AddLocalApiAuthentication();
 
             services.AddCors();
             services.AddRazorPages();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
         }
 
@@ -87,6 +97,7 @@ namespace Identity.API
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapDefaultControllerRoute();
                 endpoints.MapHealthChecks("/health");
                 endpoints.MapRazorPages();
             });

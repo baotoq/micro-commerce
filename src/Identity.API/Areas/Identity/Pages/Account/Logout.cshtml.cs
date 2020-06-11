@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Identity.API.Data.Models;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -8,16 +9,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Identity.API.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LogoutModel : PageModel
     {
-        private readonly ILogger<LogoutModel> _logger;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IEventService _events;
 
@@ -25,9 +23,8 @@ namespace Identity.API.Areas.Identity.Pages.Account
 
         public LoggedOutViewModel LoggedOutVm { get; set; }
 
-        public LogoutModel(SignInManager<IdentityUser> signInManager, IIdentityServerInteractionService interaction, IEventService events)
+        public LogoutModel(SignInManager<User> signInManager, IIdentityServerInteractionService interaction, IEventService events)
         {
-            _logger = NullLogger<LogoutModel>.Instance;
             _signInManager = signInManager;
             _interaction = interaction;
             _events = events;

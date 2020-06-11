@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Catalog.API.BackgroundServices;
 using Catalog.API.Data;
-using Catalog.API.Infrastructure;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Shared.MediatR;
+using UnitOfWork;
 
 namespace Catalog.API
 {
@@ -26,28 +28,13 @@ namespace Catalog.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<DbContext, ApplicationDbContext>();
+            services.AddMediatR().AddValidators();
 
-            if (Configuration.GetValue<bool>("UseInMemoryDatabase"))
-            {
-                services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("Catalog.API.DB"));
-            }
-            else
-            {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
-                        provider => provider.EnableRetryOnFailure()));
-            }
-           
-            services.AddUnitOfWork();
-
-            services.AddInfrastructure();
+            services.AddUnitOfWork<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                    provider => provider.EnableRetryOnFailure()));
 
             services.AddSwagger(Configuration);
-
-            services.AddCors();
-            services.AddControllers().AddNewtonsoftJson();
-            services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
@@ -62,6 +49,12 @@ namespace Catalog.API
 
             services.AddAccessTokenManagement()
                 .ConfigureBackchannelHttpClient();
+
+            services.AddCors();
+            services.AddControllers().AddNewtonsoftJson();
+            services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
+
+            services.AddHostedService<ApproveReviewBackgroundService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Models;
-using Catalog.API.Data;
 using Catalog.API.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using UnitOfWork;
 
 namespace Catalog.API.Application.Categories.Queries.GetAll
 {
