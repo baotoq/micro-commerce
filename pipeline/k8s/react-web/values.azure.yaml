@@ -2,5 +2,18 @@ image:
   repository: bshopacr.azurecr.io/react-web
   tag: latest
 
-imagePullSecrets:
-  - name: arc-secret
+env:
+  PATH_BASE:
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: true
+  hosts:
+    - host: bshop.dongnai-vn.com
+      paths: ["/"]
+  tls:
+    - secretName: react-tls
+      hosts:
+        - bshop.dongnai-vn.com

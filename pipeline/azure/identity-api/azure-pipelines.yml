@@ -10,6 +10,7 @@ trigger:
     - tests/**/Identity.API**
     - pipeline/k8s/identity-api
     - pipeline/azure/identity-api
+pr: none
 
 pool:
   vmImage: ubuntu-latest

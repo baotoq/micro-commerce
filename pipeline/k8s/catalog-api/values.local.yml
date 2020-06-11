@@ -4,8 +4,6 @@ image:
   repository: catalog-api
   tag: latest
 
-imagePullSecrets: []
-
 env:
   Identity__Uri: http://localhost/identity
 
