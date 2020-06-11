@@ -3,15 +3,16 @@ import { AppThunk, RootState } from "../";
 
 import authService from "../../services/auth-service";
 
-interface IUser {
+interface User {
+  id: string;
   name: string;
 }
 
-interface IAuthState {
-  user?: IUser;
+interface AuthState {
+  user?: User;
 }
 
-const initialState: IAuthState = {
+const initialState: AuthState = {
   user: undefined,
 };
 
@@ -19,7 +20,7 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    loginSuccess: (state, { payload }: PayloadAction<IUser>) => {
+    loginSuccess: (state, { payload }: PayloadAction<User>) => {
       state.user = payload;
     },
     logoutSuccess: (state) => {
@@ -37,7 +38,7 @@ export const loginAsync = (): AppThunk => async (dispatch) => {
 export const completeLoginAsync = (): AppThunk => async (dispatch) => {
   await authService.completeLoginAsync(window.location.href);
   const user = await authService.getUserAsync();
-  dispatch(loginSuccess({ name: user?.profile.name } as IUser));
+  dispatch(loginSuccess({ id: user?.profile.sub, name: user?.profile.name } as User));
 };
 
 export const logoutAsync = (): AppThunk => async (dispatch) => {

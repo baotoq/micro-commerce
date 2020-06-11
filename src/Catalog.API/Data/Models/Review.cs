@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Catalog.API.Data.Models.Common;
 using Catalog.API.Data.Models.Enums;
+using UnitOfWork.Models;
 
 namespace Catalog.API.Data.Models
 {
@@ -14,7 +14,7 @@ namespace Catalog.API.Data.Models
 
         public int Rating { get; set; }
 
-        public ReviewStatus Status { get; set; } = ReviewStatus.Pending;
+        public ReviewStatus ReviewStatus { get; set; } = ReviewStatus.Pending;
 
         public IList<Reply> Replies { get; protected set; } = new List<Reply>();
 

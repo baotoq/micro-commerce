@@ -7,6 +7,8 @@ namespace Identity.API.Configurations
 {
     public static class IdentityServerConfiguration
     {
+        public const string CatalogApi = "catalog-api";
+
         public static IEnumerable<IdentityResource> Ids =>
             new IdentityResource[]
             {
@@ -19,10 +21,11 @@ namespace Identity.API.Configurations
             {
                 new ApiResource
                 {
-                    Name = "catalog-api",
+                    Name = CatalogApi,
                     ApiSecrets = { new Secret("secret".Sha256()) },
-                    Scopes = { new Scope("catalog-api") }
-                }
+                    Scopes = { new Scope(CatalogApi) }
+                },
+                new ApiResource(IdentityServerConstants.LocalApi.ScopeName),
             };
 
         public static IEnumerable<Client> Clients(IConfiguration configuration) =>
@@ -43,7 +46,7 @@ namespace Identity.API.Configurations
 
                     AllowedScopes = new List<string>
                     {
-                        "catalog-api"
+                        CatalogApi
                     }
                 },
                 new Client
@@ -78,7 +81,8 @@ namespace Identity.API.Configurations
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "catalog-api"
+                        IdentityServerConstants.LocalApi.ScopeName,
+                        CatalogApi
                     }
                 }
             };

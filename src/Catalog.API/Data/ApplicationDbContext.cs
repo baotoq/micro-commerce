@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
-using Catalog.API.Data.Models.Common;
 using Microsoft.EntityFrameworkCore;
+using UnitOfWork.Models;
 
 namespace Catalog.API.Data
 {
@@ -25,10 +25,10 @@ namespace Catalog.API.Data
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.Created = DateTime.Now;
+                        entry.Entity.CreatedDate = DateTime.UtcNow;
                         break;
                     case EntityState.Modified:
-                        entry.Entity.LastModified = DateTime.Now;
+                        entry.Entity.LastModified = DateTime.UtcNow;
                         break;
                 }
             }
