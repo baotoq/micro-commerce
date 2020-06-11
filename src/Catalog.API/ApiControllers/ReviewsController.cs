@@ -10,7 +10,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Catalog.API.Application.Reviews
+namespace Catalog.API.ApiControllers
 {
     [Authorize]
     [ApiController]

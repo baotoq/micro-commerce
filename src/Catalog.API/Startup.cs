@@ -55,6 +55,7 @@ namespace Catalog.API
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
             services.AddHostedService<ApproveReviewBackgroundService>();
+            services.AddHostedService<ApproveReplyBackgroundService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

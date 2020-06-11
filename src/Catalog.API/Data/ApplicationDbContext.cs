@@ -26,6 +26,7 @@ namespace Catalog.API.Data
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedDate = DateTime.UtcNow;
+                        entry.Entity.LastModified = DateTime.UtcNow;
                         break;
                     case EntityState.Modified:
                         entry.Entity.LastModified = DateTime.UtcNow;
