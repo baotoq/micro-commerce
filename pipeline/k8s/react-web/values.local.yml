@@ -4,8 +4,6 @@ image:
   repository: react-web
   tag: latest
 
-imagePullSecrets: []
-
 ingress:
   enabled: true
   annotations:

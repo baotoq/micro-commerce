@@ -4,8 +4,6 @@ image:
   repository: identity-api
   tag: latest
 
-imagePullSecrets: []
-
 env:
   Client__Swagger__Uri: http://localhost/catalog
   Client__React__Uri: http://localhost/react

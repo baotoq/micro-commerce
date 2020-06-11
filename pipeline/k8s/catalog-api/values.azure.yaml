@@ -2,5 +2,19 @@ image:
   repository: bshopacr.azurecr.io/catalog-api
   tag: latest
 
-imagePullSecrets:
-  - name: arc-secret
+env:
+  PATH_BASE:
+  Identity__Uri: https://idm.dongnai-vn.com
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: true
+  hosts:
+    - host: api.dongnai-vn.com
+      paths: ["/"]
+  tls:
+    - secretName: catalog-tls
+      hosts:
+        - api.dongnai-vn.com
