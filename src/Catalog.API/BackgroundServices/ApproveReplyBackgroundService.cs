@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Catalog.API.Data.Models;
-using Catalog.API.Data.Models.Enums;
-using Microsoft.EntityFrameworkCore;
+using Catalog.API.Application.Replies.Commands.ApprovePendingReplies;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using UnitOfWork;
 
 namespace Catalog.API.BackgroundServices
 {
@@ -24,25 +20,10 @@ namespace Catalog.API.BackgroundServices
         public override async Task ProcessAsync(CancellationToken cancellationToken)
         {
             using var scope = ServiceProvider.CreateScope();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ApproveReplyBackgroundService>>();
 
-            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-            var utcNow = DateTime.UtcNow;
-
-            var replies = await unitOfWork.Repository<Reply>()
-                .Query()
-                .Where(s => s.ReplyStatus == ReplyStatus.Pending && s.CreatedDate.AddMinutes(5) <= utcNow)
-                .ToListAsync(cancellationToken);
-
-            foreach (var review in replies)
-            {
-                review.ReplyStatus = ReplyStatus.Approved;
-            }
-
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-
-            logger.LogInformation("Approved {count} replies with Id: {replies}", replies.Count, replies.Select(s => s.Id));
+            await mediator.Send(new ApprovePendingRepliesCommand(TimeSpan.FromMinutes(5)), cancellationToken);
         }
     }
 }
