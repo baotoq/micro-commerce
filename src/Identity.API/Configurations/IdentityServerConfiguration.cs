@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
@@ -7,24 +9,18 @@ namespace Identity.API.Configurations
 {
     public static class IdentityServerConfiguration
     {
-        public const string CatalogApi = "catalog-api";
-
-        public static IEnumerable<IdentityResource> Ids =>
+        public static IEnumerable<IdentityResource> IdentityResources =>
             new IdentityResource[]
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
+                new IdentityConstants.IdentityResources.Roles()
             };
 
-        public static IEnumerable<ApiResource> Apis =>
+        public static IEnumerable<ApiResource> ApiResources =>
             new[]
             {
-                new ApiResource
-                {
-                    Name = CatalogApi,
-                    ApiSecrets = { new Secret("secret".Sha256()) },
-                    Scopes = { new Scope(CatalogApi) }
-                },
+                new ApiResource(IdentityConstants.ApiResource.CatalogApi) { ApiSecrets = { new Secret("secret".Sha256()) } },
                 new ApiResource(IdentityServerConstants.LocalApi.ScopeName),
             };
 
@@ -40,13 +36,14 @@ namespace Identity.API.Configurations
                     RequireConsent = false,
                     RequirePkce = true,
 
-                    RedirectUris =           { $"{configuration["Client:Swagger:Uri"]}/oauth2-redirect.html" },
-                    PostLogoutRedirectUris = { $"{configuration["Client:Swagger:Uri"]}/oauth2-redirect.html" },
-                    AllowedCorsOrigins =     { $"{configuration["Client:Swagger:Uri"]}" },
+                    RedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/oauth2-redirect.html").ToList(),
+                    PostLogoutRedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/oauth2-redirect.html").ToList(),
+                    AllowedCorsOrigins = configuration.GetSection("Client:Swagger:Uri").Get<string[]>(),
 
                     AllowedScopes = new List<string>
                     {
-                        CatalogApi
+                        IdentityConstants.ApiResource.CatalogApi,
+                        IdentityServerConstants.LocalApi.ScopeName
                     }
                 },
                 new Client
@@ -65,7 +62,7 @@ namespace Identity.API.Configurations
                     {
                         $"{configuration["Client:React:Uri"]}/authentication/login-callback",
                         $"{configuration["Client:React:Uri"]}/silent-renew.html",
-                        $"{configuration["Client:React:Uri"]}"
+                        $"{configuration["Client:React:Uri"]}",
                     },
                     PostLogoutRedirectUris =
                     {
@@ -82,7 +79,8 @@ namespace Identity.API.Configurations
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.LocalApi.ScopeName,
-                        CatalogApi
+                        IdentityConstants.IdentityResources.Roles.ScopeName,
+                        IdentityConstants.ApiResource.CatalogApi
                     }
                 }
             };
