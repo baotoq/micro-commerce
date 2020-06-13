@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Catalog.API.Data.Models;
-using Catalog.API.Data.Models.Enums;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using UnitOfWork;
+using Catalog.API.Application.Reviews.Commands.ApprovePendingReviews;
 
 namespace Catalog.API.BackgroundServices
 {
@@ -24,25 +20,10 @@ namespace Catalog.API.BackgroundServices
         public override async Task ProcessAsync(CancellationToken cancellationToken)
         {
             using var scope = ServiceProvider.CreateScope();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ApproveReviewBackgroundService>>();
 
-            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-            var utcNow = DateTime.UtcNow;
-
-            var reviews = await unitOfWork.Repository<Review>()
-                .Query()
-                .Where(s => s.ReviewStatus == ReviewStatus.Pending && s.CreatedDate.AddMinutes(5) <= utcNow)
-                .ToListAsync(cancellationToken);
-
-            foreach (var review in reviews)
-            {
-                review.ReviewStatus = ReviewStatus.Approved;
-            }
-
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-
-            logger.LogInformation("Approved {count} reviews with Id: {reviews}", reviews.Count, reviews.Select(s => s.Id));
+            await mediator.Send(new ApprovePendingReviewsCommand(TimeSpan.FromMinutes(5)), cancellationToken);
         }
     }
 }

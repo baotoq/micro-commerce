@@ -25,7 +25,7 @@ namespace Catalog.API.ApiControllers
         {
             _logger.LogInformation("Start seeding database");
             await _context.InitializeDataAsync();
-            _logger.LogInformation("Seeding database was successful");
+            _logger.LogInformation("Seeding database successful");
 
             return Ok();
         }
