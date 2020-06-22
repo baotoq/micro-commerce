@@ -31,7 +31,7 @@ namespace Catalog.API.Application.Products.Commands.Create
                 {
                     CategoryId = categoryId
                 };
-                product.ProductCategories.Add(productCategory);
+                product.Categories.Add(productCategory);
             }
 
             await _repository.AddAsync(product, cancellationToken);

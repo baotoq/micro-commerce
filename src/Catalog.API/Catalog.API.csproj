@@ -4,7 +4,6 @@
     <ProjectGuid>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectGuid>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>Catalog.API-71648faa-fb10-4c7f-a981-a61285623946</UserSecretsId>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +31,5 @@
     <ProjectReference Include="..\BuildingBlocks\Shared\Shared.csproj" />
     <ProjectReference Include="..\BuildingBlocks\UnitOfWork\UnitOfWork.csproj" />
   </ItemGroup>
-
 
 </Project>

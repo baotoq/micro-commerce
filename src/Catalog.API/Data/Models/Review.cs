@@ -6,20 +6,25 @@ namespace Catalog.API.Data.Models
 {
     public class Review : AuditEntity
     {
-        public long UserId { get; set; }
+        public Review()
+        {
+            ReviewStatus = ReviewStatus.Pending;
+        }
 
-        public string? Title { get; set; }
+        public long CreatedById { get; set; }
 
-        public string? Comment { get; set; }
+        public string Title { get; set; }
+
+        public string Comment { get; set; }
 
         public int Rating { get; set; }
 
-        public ReviewStatus ReviewStatus { get; set; } = ReviewStatus.Pending;
+        public ReviewStatus ReviewStatus { get; set; }
 
         public IList<Reply> Replies { get; protected set; } = new List<Reply>();
 
         public long ProductId { get; set; }
 
-        public Product? Product { get; set; }
+        public Product Product { get; set; }
     }
 }

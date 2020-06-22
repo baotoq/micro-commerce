@@ -8,6 +8,6 @@ namespace Catalog.API.Application.Categories.Commands.Put
         [JsonIgnore]
         public long Id { get; set; }
 
-        public string? Name { get; set; }
+        public string Name { get; set; }
     }
 }

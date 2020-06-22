@@ -29,7 +29,7 @@ namespace Catalog.API.Application.Products.Queries.GetById
                     Price = p.Price,
                     ImageUri = p.ImageUri,
                     Description = p.Description,
-                    Categories = p.ProductCategories.Select(s => new CategoryDto
+                    Categories = p.Categories.Select(s => new CategoryDto
                     {
                         Id = s.CategoryId,
                         Name = s.Category.Name
