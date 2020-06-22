@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Catalog.API.Application.Reviews.Commands.ChangeReviewStatus;
-using Catalog.API.Application.Reviews.Commands.Create;
-using Catalog.API.Application.Reviews.Queries.FindByReviewStatus;
+using Catalog.API.Application.Reviews.Commands;
+using Catalog.API.Application.Reviews.Queries;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
 using MediatR;

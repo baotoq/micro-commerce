@@ -8,7 +8,7 @@ const oidcSettings: UserManagerSettings = {
   redirect_uri: `${webBaseUri}/authentication/login-callback`,
   post_logout_redirect_uri: `${webBaseUri}/authentication/logout-callback`,
   response_type: "code",
-  scope: "catalog-api IdentityServerApi openid profile",
+  scope: "catalog-api IdentityServerApi openid profile roles",
   automaticSilentRenew: true,
   includeIdTokenInSilentRenew: true,
 };

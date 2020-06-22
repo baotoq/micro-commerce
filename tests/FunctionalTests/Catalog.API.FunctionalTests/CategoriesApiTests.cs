@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Application.Products.Commands.Put;
+using Catalog.API.Common;
 using Catalog.API.FunctionalTests.Infrastructure;
 using FluentAssertions;
 using Xunit;
@@ -22,7 +23,7 @@ namespace Catalog.API.FunctionalTests
         }
 
         [Fact]
-        public async Task GetAll_Success()
+        public async Task Find_Success()
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -32,12 +33,12 @@ namespace Catalog.API.FunctionalTests
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = await response.Content.ReadAsAsync<IEnumerable<CategoryDto>>();
+            var result = await response.Content.ReadAsAsync<CursorPaged<CategoryDto>>();
             result.Should().NotBeNullOrEmpty();
         }
 
         [Fact]
-        public async Task Get_Success()
+        public async Task FindById_Success()
         {
             // Arrange
             var client = _factory.CreateClient();

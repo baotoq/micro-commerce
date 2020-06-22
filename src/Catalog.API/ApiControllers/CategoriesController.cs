@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Catalog.API.ApiControllers.Models;
 using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Commands.Delete;
 using Catalog.API.Application.Categories.Commands.Put;
 using Catalog.API.Application.Categories.Models;
-using Catalog.API.Application.Categories.Queries.GetAll;
-using Catalog.API.Application.Categories.Queries.GetById;
+using Catalog.API.Application.Categories.Queries;
+using Catalog.API.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,20 +27,43 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<List<CategoryDto>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<CursorPaged<CategoryDto>>> Find(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
         {
-            var result = await _mediator.Send(new GetAllCategoriesQuery(), cancellationToken);
+            var result = await _mediator.Send(new FindCategoriesQuery
+            {
+                Page = page,
+                PageSize = pageSize
+            }, cancellationToken);
 
             return result;
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryDto>> Get(long id, CancellationToken cancellationToken)
+        public async Task<ActionResult<CategoryDto>> FindById(long id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
+            var result = await _mediator.Send(new FindCategoryByIdQuery(id), cancellationToken);
 
             return result;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id}/products")]
+        public async Task<ActionResult> FindProducts(long id, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+        {
+            var result = await _mediator.Send(new FindProductsByCategoryIdQuery
+            {
+                Id = id,
+                Page = page,
+                PageSize = pageSize
+            }, cancellationToken);
+
+            return Ok(new PagedDto<OffsetPaged<ProductDto>>
+            {
+                Data = result,
+                TotalPages = result.TotalPages,
+                TotalCount = result.TotalCount
+            });
         }
 
         [HttpPost]
@@ -48,7 +71,7 @@ namespace Catalog.API.ApiControllers
         {
             var result = await _mediator.Send(request, cancellationToken);
 
-            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]

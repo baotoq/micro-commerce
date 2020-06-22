@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Catalog.API.Application.Reviews.Commands.ApprovePendingReviews;
+using Catalog.API.Application.Reviews.Commands;
 
 namespace Catalog.API.BackgroundServices
 {
@@ -23,7 +23,10 @@ namespace Catalog.API.BackgroundServices
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-            await mediator.Send(new ApprovePendingReviewsCommand(TimeSpan.FromMinutes(5)), cancellationToken);
+            await mediator.Send(new ApprovePendingReviewsCommand
+            {
+                AgeForApproveInMinutes = 5
+            }, cancellationToken);
         }
     }
 }

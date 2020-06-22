@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Catalog.API.Application.Replies.Commands.ApprovePendingReplies;
+using Catalog.API.Application.Replies.Commands;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,7 +23,10 @@ namespace Catalog.API.BackgroundServices
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-            await mediator.Send(new ApprovePendingRepliesCommand(TimeSpan.FromMinutes(5)), cancellationToken);
+            await mediator.Send(new ApprovePendingRepliesCommand
+            {
+                AgeForApproveInMinutes = 5
+            }, cancellationToken);
         }
     }
 }
