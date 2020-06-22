@@ -22,7 +22,7 @@ namespace Catalog.API.FunctionalTests
         }
 
         [Fact]
-        public async Task GetAll_Success()
+        public async Task Find_Success()
         {
             // Arrange
             var client = _factory.CreateClient();

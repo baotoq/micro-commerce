@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Bogus;
+using Bogus.DataSets;
 using Catalog.API.Data;
+using Catalog.API.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,7 +28,39 @@ namespace Catalog.API.ApiControllers
         public async Task<IActionResult> Seed()
         {
             _logger.LogInformation("Start seeding database");
-            await _context.InitializeDataAsync();
+            var categoriesName = new Commerce().Categories(20).Distinct().ToList();
+
+            var categoryFaker = new Faker<Category>()
+                .RuleFor(s => s.Name, s =>
+                {
+                    var c = s.PickRandom(categoriesName);
+                    categoriesName.Remove(c);
+                    return c;
+                });
+
+            var productFaker = new Faker<Product>()
+                .RuleFor(s => s.Name, s => s.Commerce.Product())
+                .RuleFor(s => s.Description, s => s.Lorem.Paragraph())
+                .RuleFor(s => s.ImageUri, s => s.Image.PicsumUrl())
+                .RuleFor(s => s.Price, s => decimal.Parse(s.Commerce.Price()));
+
+            var categories = categoryFaker.Generate(10);
+
+            foreach (var category in categories)
+            {
+                var products = productFaker.Generate(Randomizer.Seed.Next(10, 30));
+                foreach (var product in products)
+                {
+                    category.Products.Add(new ProductCategory
+                    {
+                        Product = product
+                    });
+                }
+            }
+
+            await _context.Set<Category>().AddRangeAsync(categories);
+
+            await _context.SaveChangesAsync();
             _logger.LogInformation("Seeding database successful");
 
             return Ok();

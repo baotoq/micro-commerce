@@ -7,9 +7,9 @@ namespace Catalog.API.Application.Categories.Models
     {
         public long Id { get; set; }
 
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public IList<ProductDto>? Products { get; set; }
+        public List<ProductDto> Products { get; set; }
     }
 }

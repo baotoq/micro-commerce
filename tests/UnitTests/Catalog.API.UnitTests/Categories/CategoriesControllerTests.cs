@@ -6,8 +6,8 @@ using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Commands.Delete;
 using Catalog.API.Application.Categories.Commands.Put;
 using Catalog.API.Application.Categories.Models;
-using Catalog.API.Application.Categories.Queries.GetAll;
-using Catalog.API.Application.Categories.Queries.GetById;
+using Catalog.API.Application.Categories.Queries;
+using Catalog.API.Common;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -28,23 +28,23 @@ namespace Catalog.API.UnitTests.Categories
         }
 
         [Fact]
-        public async Task GetAll_Success()
+        public async Task Find_Success()
         {
             _mockMediator
-                .Setup(_ => _.Send(It.IsAny<GetAllCategoriesQuery>(), CancellationToken.None))
-                .ReturnsAsync(new List<CategoryDto>
-                {
+                .Setup(_ => _.Send(It.IsAny<FindCategoriesQuery>(), CancellationToken.None))
+                .ReturnsAsync(new CursorPaged<CategoryDto>
+                { 
                     new CategoryDto(),
                     new CategoryDto()
                 });
 
-            var act = await _sut.GetAll(CancellationToken.None);
+            var act = await _sut.Find();
 
             act.Value.Should().HaveCount(2);
         }
 
         [Fact]
-        public async Task Get_Success()
+        public async Task FindById_Success()
         {
             var dto = new CategoryDto
             {
@@ -53,10 +53,10 @@ namespace Catalog.API.UnitTests.Categories
             };
 
             _mockMediator
-                .Setup(_ => _.Send(It.IsAny<GetCategoryByIdQuery>(), CancellationToken.None))
+                .Setup(_ => _.Send(It.IsAny<FindCategoryByIdQuery>(), CancellationToken.None))
                 .ReturnsAsync(dto);
 
-            var act = await _sut.Get(1, CancellationToken.None);
+            var act = await _sut.FindById(1, CancellationToken.None);
 
             act.Value.Should().BeEquivalentTo(dto);
         }

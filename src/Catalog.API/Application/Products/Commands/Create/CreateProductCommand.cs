@@ -6,7 +6,7 @@ namespace Catalog.API.Application.Products.Commands.Create
 {
     public class CreateProductCommand : IRequest<ProductDto>
     {
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         public IList<long> CategoryIds { get; set; } = new List<long>();
     }

@@ -10,14 +10,14 @@ namespace Catalog.API.Data.Models
             ReplyStatus = ReplyStatus.Pending;
         }
 
-        public long UserId { get; set; }
+        public long CreatedById { get; set; }
 
-        public string? Comment { get; set; }
+        public string Comment { get; set; }
 
         public ReplyStatus ReplyStatus { get; set; }
 
         public long ReviewId { get; set; }
 
-        public Review? Review { get; set; }
+        public Review Review { get; set; }
     }
 }

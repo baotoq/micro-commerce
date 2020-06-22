@@ -13,6 +13,18 @@ namespace Catalog.API.Data
 
         public DbSet<Category> Categories { get; set; } = null!;
 
+        public DbSet<Review> Reviews { get; set; } = null!;
+
+        public DbSet<Reply> Replies { get; set; } = null!;
+
+        public DbSet<Cart> Carts { get; set; } = null!;
+
+        public DbSet<CartItem> CartItems { get; set; } = null!;
+
+        public DbSet<Order> Orders { get; set; } = null!;
+
+        public DbSet<OrderItem> OrderItems { get; set; } = null!;
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -47,12 +59,12 @@ namespace Catalog.API.Data
 
             modelBuilder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Product)
-                .WithMany(p => p!.ProductCategories)
+                .WithMany(p => p!.Categories)
                 .HasForeignKey(pc => pc.ProductId);
 
             modelBuilder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Category)
-                .WithMany(c => c!.ProductCategories)
+                .WithMany(c => c!.Products)
                 .HasForeignKey(pc => pc.CategoryId);
         }
     }

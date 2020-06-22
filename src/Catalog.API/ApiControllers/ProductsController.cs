@@ -5,7 +5,7 @@ using Catalog.API.Application.Products.Commands.Create;
 using Catalog.API.Application.Products.Commands.Delete;
 using Catalog.API.Application.Products.Commands.Put;
 using Catalog.API.Application.Products.Models;
-using Catalog.API.Application.Products.Queries.GetAll;
+using Catalog.API.Application.Products.Queries;
 using Catalog.API.Application.Products.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -27,9 +27,13 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<List<ProductDto>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<ProductDto>>> Find(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
         {
-            var result = await _mediator.Send(new GetAllProductsQuery(), cancellationToken);
+            var result = await _mediator.Send(new FindProductsQuery
+            {
+                Page = page,
+                PageSize = pageSize
+            }, cancellationToken);
 
             return result;
         }
