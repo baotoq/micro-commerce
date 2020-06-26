@@ -8,9 +8,19 @@ using Microsoft.EntityFrameworkCore;
 using Shared.MediatR.Exceptions;
 using UnitOfWork;
 
-namespace Catalog.API.Application.Products.Queries.GetById
+namespace Catalog.API.Application.Products.Queries
 {
-    public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductDto>
+    public class FindProductByIdQuery : IRequest<ProductDto>
+    {
+        public long Id { get; set; }
+
+        public FindProductByIdQuery(long id)
+        {
+            Id = id;
+        }
+    }
+
+    public class GetProductByIdQueryHandler : IRequestHandler<FindProductByIdQuery, ProductDto>
     {
         private readonly IRepository<Product> _repository;
 
@@ -19,7 +29,7 @@ namespace Catalog.API.Application.Products.Queries.GetById
             _repository = repository;
         }
 
-        public async Task<ProductDto> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
+        public async Task<ProductDto> Handle(FindProductByIdQuery request, CancellationToken cancellationToken)
         {
             var product = await _repository.Query()
                 .Select(p => new ProductDto

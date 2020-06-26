@@ -1,24 +1,33 @@
-﻿using System.Threading;
+﻿using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using MediatR;
 using Shared.MediatR.Exceptions;
 using UnitOfWork;
 
-namespace Catalog.API.Application.Categories.Commands.Delete
+namespace Catalog.API.Application.Categories.Commands
 {
-    public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, Unit>
+    public class PutCategoryCommand : IRequest
+    {
+        [JsonIgnore]
+        public long Id { get; set; }
+
+        public string Name { get; set; }
+    }
+
+    public class PutCategoryCommandHandler : IRequestHandler<PutCategoryCommand, Unit>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Category> _repository;
 
-        public DeleteCategoryCommandHandler(IUnitOfWork unitOfWork)
+        public PutCategoryCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.Repository<Category>();
         }
 
-        public async Task<Unit> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(PutCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = await _repository.FindAsync(request.Id, cancellationToken);
 
@@ -27,7 +36,7 @@ namespace Catalog.API.Application.Categories.Commands.Delete
                 throw new NotFoundException(nameof(Category), request.Id);
             }
 
-            _repository.Remove(category);
+            category.Name = request.Name;
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
