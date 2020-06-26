@@ -2,12 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Models;
-using Catalog.API.Common;
 using Catalog.API.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.MediatR.Exceptions;
 using UnitOfWork;
+using UnitOfWork.Common;
 
 namespace Catalog.API.Application.Categories.Queries
 {

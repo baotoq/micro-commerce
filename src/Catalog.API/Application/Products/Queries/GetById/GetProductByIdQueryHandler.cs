@@ -28,6 +28,8 @@ namespace Catalog.API.Application.Products.Queries.GetById
                     Name = p.Name,
                     Price = p.Price,
                     ImageUri = p.ImageUri,
+                    ReviewsCount = p.ReviewsCount,
+                    RatingAverage = p.RatingAverage,
                     Description = p.Description,
                     Categories = p.Categories.Select(s => new CategoryDto
                     {

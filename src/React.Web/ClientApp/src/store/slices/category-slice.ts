@@ -35,7 +35,7 @@ export const { fetchCategories, changeActiveTab } = category.actions;
 
 export const fetchCategoriesAsync = (): AppThunk => async (dispatch) => {
   const data = await categoryService.findAllAsync();
-  dispatch(fetchCategories(data));
+  dispatch(fetchCategories(data.data));
 };
 
 export const selectCategories = (state: RootState) => state.category.categories;

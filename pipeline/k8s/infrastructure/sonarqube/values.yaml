@@ -1,1 +1,15 @@
-# helm upgrade --install sonarqube stable/sonarqube
+# helm upgrade --install sonar oteemocharts/sonarqube
+
+ingress:
+  enabled: false
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+  hosts:
+    - name: sonar.dongnai-vn.com
+      path: /
+  tls: 
+    - hosts:
+        - sonar.dongnai-vn.com
+      secretName: sonar-tls

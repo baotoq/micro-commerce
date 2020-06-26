@@ -19,13 +19,16 @@ namespace Catalog.API.BackgroundServices
             _logger = services.GetRequiredService<ILogger<BaseBackgroundService>>();
         }
 
+        public virtual TimeSpan StartDelay { get; } = TimeSpan.Zero;
+        public virtual TimeSpan DelayTime { get; } = TimeSpan.FromMinutes(1);
         public abstract string BackgroundName { get; }
-        public abstract TimeSpan DelayTime { get; }
         public abstract Task ProcessAsync(CancellationToken cancellationToken);
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("{BackgroundName} is running", BackgroundName);
+
+            await Task.Delay(StartDelay, stoppingToken);
 
             while (!stoppingToken.IsCancellationRequested)
             {

@@ -1,4 +1,5 @@
 import axios from "axios";
+import AuthService from "./auth-service";
 
 const httpClient = axios.create({
   baseURL: process.env.REACT_APP_CATALOG_URI,
@@ -9,10 +10,11 @@ const httpClient = axios.create({
 });
 
 httpClient.interceptors.request.use(
-  (config) => {
+  async (config) => {
     // perform a task before the request is sent
     console.log("Request was sent");
-
+    const user = await AuthService.getUserAsync();
+    config.headers.Authorization = `Bearer ${user?.access_token}`;
     return config;
   },
   (error) => {

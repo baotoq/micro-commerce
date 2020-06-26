@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Reviews.Commands;
+using Catalog.API.Application.Reviews.Models;
 using Catalog.API.Application.Reviews.Queries;
-using Catalog.API.Data.Models;
-using Catalog.API.Data.Models.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UnitOfWork.Common;
 
 namespace Catalog.API.ApiControllers
 {
@@ -25,12 +25,9 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<List<Review>>> FindByReviewStatus([FromRoute] ReviewStatus reviewStatus, CancellationToken cancellationToken)
+        public async Task<ActionResult<CursorPaged<ReviewDto, DateTime?>>> FindByReviewStatus([FromQuery] FindByReviewStatusQuery request, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new FindByReviewStatusQuery
-            {
-                ReviewStatus = reviewStatus
-            }, cancellationToken);
+            var result = await _mediator.Send(request, cancellationToken);
 
             return result;
         }

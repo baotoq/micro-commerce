@@ -42,7 +42,7 @@ stages:
     steps:
     - template: ../install-helm-chart-name.yml
       parameters:
-        releaseName: sonarqube
-        chartName: stable/sonarqube
+        releaseName: sonar
+        chartName: oteemocharts/sonarqube
         namespace: default
         valueFile: pipeline/k8s/infrastructure/sonarqube/values.yaml

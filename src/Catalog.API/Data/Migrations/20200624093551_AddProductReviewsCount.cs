@@ -2,17 +2,12 @@
 
 namespace Catalog.API.Data.Migrations
 {
-    public partial class UpdateProduct : Migration
+    public partial class AddProductReviewsCount : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<double>(
-                name: "RatingAverage",
-                table: "Products",
-                nullable: true);
-
             migrationBuilder.AddColumn<int>(
-                name: "StockQuantity",
+                name: "ReviewsCount",
                 table: "Products",
                 nullable: false,
                 defaultValue: 0);
@@ -21,11 +16,7 @@ namespace Catalog.API.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "RatingAverage",
-                table: "Products");
-
-            migrationBuilder.DropColumn(
-                name: "StockQuantity",
+                name: "ReviewsCount",
                 table: "Products");
         }
     }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Products.Commands.Create;
 using Catalog.API.Application.Products.Commands.Delete;
@@ -10,6 +9,7 @@ using Catalog.API.Application.Products.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UnitOfWork.Common;
 
 namespace Catalog.API.ApiControllers
 {
@@ -27,13 +27,9 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<List<ProductDto>>> Find(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<OffsetPaged<ProductDto>>> Find([FromQuery] FindProductsQuery request, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new FindProductsQuery
-            {
-                Page = page,
-                PageSize = pageSize
-            }, cancellationToken);
+            var result = await _mediator.Send(request, cancellationToken);
 
             return result;
         }

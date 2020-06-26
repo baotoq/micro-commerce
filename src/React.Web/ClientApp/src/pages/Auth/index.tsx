@@ -2,21 +2,12 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { loginAsync, logoutAsync, completeLoginAsync, completeLogoutAsync } from "../../store/slices/auth-slice";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Loading from "../../components/Loading";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      margin: "auto",
-    },
-  })
-);
 const Auth = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { action } = useParams<{ action: string }>();
-  const classes = useStyles();
 
   useEffect(() => {
     switch (action) {
@@ -40,8 +31,8 @@ const Auth = () => {
   }, [dispatch, history, action]);
 
   return (
-    <div className={classes.root}>
-      <CircularProgress />
+    <div>
+      <Loading open={true}/>
     </div>
   );
 };
