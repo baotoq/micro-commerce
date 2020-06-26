@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Catalog.API.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200620171551_UpdateProduct")]
-    partial class UpdateProduct
+    [Migration("20200624082730_UpdateProductQuanity")]
+    partial class UpdateProductQuanity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,9 @@ namespace Catalog.API.Data.Migrations
 
                     b.Property<DateTime>("LastModified")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("LockedOnCheckout")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -156,6 +159,9 @@ namespace Catalog.API.Data.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("CartMaxQuantity")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -177,6 +183,9 @@ namespace Catalog.API.Data.Migrations
                     b.Property<double?>("RatingAverage")
                         .HasColumnType("float");
 
+                    b.Property<int>("SellQuantity")
+                        .HasColumnType("int");
+
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
@@ -197,7 +206,7 @@ namespace Catalog.API.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("ProductCategory");
+                    b.ToTable("ProductCategories");
                 });
 
             modelBuilder.Entity("Catalog.API.Data.Models.Reply", b =>

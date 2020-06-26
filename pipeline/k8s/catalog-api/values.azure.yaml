@@ -15,6 +15,6 @@ ingress:
     - host: api.dongnai-vn.com
       paths: ["/"]
   tls:
-    - secretName: catalog-tls
-      hosts:
+    - hosts:
         - api.dongnai-vn.com
+      secretName: catalog-tls

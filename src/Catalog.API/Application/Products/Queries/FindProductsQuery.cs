@@ -1,23 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Products.Models;
-using Catalog.API.Common;
 using Catalog.API.Data.Models;
 using MediatR;
+using Shared.MediatR.Models;
 using UnitOfWork;
+using UnitOfWork.Common;
 
 namespace Catalog.API.Application.Products.Queries
 {
-    public class FindProductsQuery : IRequest<List<ProductDto>>
+    public class FindProductsQuery : OffsetPagedQuery, IRequest<OffsetPaged<ProductDto>>
     {
-        public int Page { get; set; }
-
-        public int PageSize { get; set; }
     }
 
-    public class FindProductsQueryHandler : IRequestHandler<FindProductsQuery, List<ProductDto>>
+    public class FindProductsQueryHandler : IRequestHandler<FindProductsQuery, OffsetPaged<ProductDto>>
     {
         private readonly IRepository<Product> _repository;
 
@@ -26,7 +23,7 @@ namespace Catalog.API.Application.Products.Queries
             _repository = repository;
         }
 
-        public async Task<List<ProductDto>> Handle(FindProductsQuery request, CancellationToken cancellationToken)
+        public async Task<OffsetPaged<ProductDto>> Handle(FindProductsQuery request, CancellationToken cancellationToken)
         {
             var paged = await _repository.Query().Select(s => new ProductDto
             {
@@ -34,6 +31,8 @@ namespace Catalog.API.Application.Products.Queries
                 Name = s.Name,
                 Price = s.Price,
                 ImageUri = s.ImageUri,
+                ReviewsCount = s.ReviewsCount,
+                RatingAverage = s.RatingAverage,
                 Description = s.Description
             }).ToPagedAsync(request.Page, request.PageSize, cancellationToken);
 

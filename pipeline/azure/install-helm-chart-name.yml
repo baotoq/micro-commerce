@@ -11,7 +11,8 @@ steps:
   inputs:
     targetType: inline
     script: |
-      helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+      helm repo add stable https://kubernetes-charts.storage.googleapis.com
+      helm repo add oteemocharts https://oteemo.github.io/charts
 - task: HelmDeploy@0
   displayName: Helm install ${{ parameters.chartName }}
   inputs:

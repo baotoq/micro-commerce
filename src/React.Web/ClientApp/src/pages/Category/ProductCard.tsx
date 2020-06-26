@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -10,6 +11,8 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Image from "material-ui-image";
 
+import { addToCart } from "../../store/slices/cart-slice";
+
 const useStyles = makeStyles({
   root: {
     maxWidth: 210,
@@ -20,12 +23,13 @@ const useStyles = makeStyles({
   },
 });
 
-const Product = ({
-  product,
-}: {
+interface ProductCardProps {
   product: { id: number; name: string; price: number; description: string; imageUri: string };
-}) => {
+}
+
+const ProductCard = ({ product }: ProductCardProps) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   return (
     <Card className={classes.root}>
@@ -41,7 +45,7 @@ const Product = ({
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" color="primary">
+        <Button size="small" color="primary" onClick={() => dispatch(addToCart(product))}>
           Add to Cart
         </Button>
       </CardActions>
@@ -49,4 +53,4 @@ const Product = ({
   );
 };
 
-export default Product;
+export default ProductCard;

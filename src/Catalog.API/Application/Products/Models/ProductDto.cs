@@ -11,6 +11,10 @@ namespace Catalog.API.Application.Products.Models
 
         public decimal Price { get; set; }
 
+        public int ReviewsCount { get; set; }
+
+        public double? RatingAverage { get; set; }
+
         public string Description { get; set; }
 
         public string ImageUri { get; set; }

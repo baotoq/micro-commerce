@@ -14,7 +14,7 @@ namespace Catalog.API.BackgroundServices
         {
         }
 
-        public override string BackgroundName { get; } = "Approve reviews job";
+        public override string BackgroundName { get; } = nameof(ApproveReviewBackgroundService);
         public override TimeSpan DelayTime { get; } = TimeSpan.FromMinutes(1);
 
         public override async Task ProcessAsync(CancellationToken cancellationToken)
@@ -23,10 +23,7 @@ namespace Catalog.API.BackgroundServices
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-            await mediator.Send(new ApprovePendingReviewsCommand
-            {
-                AgeForApproveInMinutes = 5
-            }, cancellationToken);
+            await mediator.Send(new ApprovePendingReviewsCommand(), cancellationToken);
         }
     }
 }

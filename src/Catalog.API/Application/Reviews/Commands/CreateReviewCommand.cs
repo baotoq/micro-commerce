@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
+using Catalog.API.Services;
+using FluentValidation;
 using MediatR;
 using UnitOfWork;
 
@@ -9,21 +11,30 @@ namespace Catalog.API.Application.Reviews.Commands
     public class CreateReviewCommand : IRequest<Unit>
     {
         public string Title { get; set; }
-
         public string Comment { get; set; }
-
         public int Rating { get; set; }
-
         public long ProductId { get; set; }
+    }
+
+    public class CreateReviewCommandValidator : AbstractValidator<CreateReviewCommand>
+    {
+        public CreateReviewCommandValidator()
+        {
+            RuleFor(s => s.Title).NotEmpty().MinimumLength(10);
+            RuleFor(s => s.Comment).NotEmpty().MinimumLength(10);
+            RuleFor(s => s.Rating).InclusiveBetween(1, 5);
+        }
     }
 
     public class CreateReviewCommandHandler : IRequestHandler<CreateReviewCommand, Unit>
     {
+        private readonly IIdentityService _identityService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Review> _repository;
 
-        public CreateReviewCommandHandler(IUnitOfWork unitOfWork, IRepository<Review> repository)
+        public CreateReviewCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork, IRepository<Review> repository)
         {
+            _identityService = identityService;
             _unitOfWork = unitOfWork;
             _repository = repository;
         }
@@ -35,7 +46,8 @@ namespace Catalog.API.Application.Reviews.Commands
                 Title = request.Title,
                 Comment = request.Comment,
                 Rating = request.Rating,
-                ProductId = request.ProductId
+                ProductId = request.ProductId,
+                CreatedById = _identityService.GetCurrentUserId()
             }, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

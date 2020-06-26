@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Catalog.API.BackgroundServices;
 using Catalog.API.Data;
+using Catalog.API.Services;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -43,12 +44,9 @@ namespace Catalog.API
                     options.ApiName = "catalog-api";
                     options.ApiSecret = "secret";
                     options.RequireHttpsMetadata = false;
-                    options.EnableCaching = true;
-                    options.CacheDuration = TimeSpan.FromMinutes(10); // that's the default
                 });
 
-            services.AddAccessTokenManagement()
-                .ConfigureBackchannelHttpClient();
+            services.AddHttpContextAccessor();
 
             services.AddCors();
             services.AddControllers().AddNewtonsoftJson();
@@ -56,6 +54,8 @@ namespace Catalog.API
 
             services.AddHostedService<ApproveReviewBackgroundService>();
             services.AddHostedService<ApproveReplyBackgroundService>();
+
+            services.AddScoped<IIdentityService, IdentityService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

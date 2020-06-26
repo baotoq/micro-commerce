@@ -2,11 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk, RootState } from "../";
 
 import authService from "../../services/auth-service";
-
-interface User {
-  id: string;
-  name: string;
-}
+import { User } from "../../models";
 
 interface AuthState {
   user?: User;
