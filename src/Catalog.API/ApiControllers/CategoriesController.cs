@@ -1,15 +1,14 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Catalog.API.ApiControllers.Models;
 using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Commands.Delete;
 using Catalog.API.Application.Categories.Commands.Put;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Application.Categories.Queries;
-using Catalog.API.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UnitOfWork.Common;
 
 namespace Catalog.API.ApiControllers
 {
@@ -27,13 +26,9 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<CursorPaged<CategoryDto>>> Find(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<CursorPaged<CategoryDto, long?>>> Find([FromQuery] FindCategoriesQuery request, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new FindCategoriesQuery
-            {
-                Page = page,
-                PageSize = pageSize
-            }, cancellationToken);
+            var result = await _mediator.Send(request, cancellationToken);
 
             return result;
         }
@@ -49,7 +44,7 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet("{id}/products")]
-        public async Task<ActionResult> FindProducts(long id, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<OffsetPaged<ProductDto>>> FindProducts(long id, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
         {
             var result = await _mediator.Send(new FindProductsByCategoryIdQuery
             {
@@ -58,12 +53,7 @@ namespace Catalog.API.ApiControllers
                 PageSize = pageSize
             }, cancellationToken);
 
-            return Ok(new PagedDto<OffsetPaged<ProductDto>>
-            {
-                Data = result,
-                TotalPages = result.TotalPages,
-                TotalCount = result.TotalCount
-            });
+            return result;
         }
 
         [HttpPost]

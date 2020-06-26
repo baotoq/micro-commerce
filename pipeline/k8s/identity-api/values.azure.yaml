@@ -16,6 +16,6 @@ ingress:
     - host: idm.dongnai-vn.com
       paths: ["/"]
   tls:
-    - secretName: identity-tls
-      hosts:
+    - hosts:
         - idm.dongnai-vn.com
+      secretName: identity-tls

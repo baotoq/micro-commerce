@@ -5,9 +5,9 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 WORKDIR /src
-COPY ["Catalog.API/Catalog.API.csproj", "Catalog.API/"]
-COPY ["BuildingBlocks/UnitOfWork/UnitOfWork.csproj", "BuildingBlocks/UnitOfWork/"]
-COPY ["BuildingBlocks/Shared/Shared.csproj", "BuildingBlocks/Shared/"]
+COPY ["Catalog.API/*.csproj", "Catalog.API/"]
+COPY ["BuildingBlocks/UnitOfWork/*.csproj", "BuildingBlocks/UnitOfWork/"]
+COPY ["BuildingBlocks/Shared/*.csproj", "BuildingBlocks/Shared/"]
 RUN dotnet restore "Catalog.API/Catalog.API.csproj"
 
 COPY ["Catalog.API/", "Catalog.API/"]

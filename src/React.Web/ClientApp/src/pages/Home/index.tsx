@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import { changeActiveTab } from "../../store/slices/category-slice";
 
-import Product from "../Category/Product";
+import ProductCard from "../Category/ProductCard";
 import Grid from "@material-ui/core/Grid";
 import productService, { ProductResponse } from "../../services/product-service";
 
@@ -25,7 +25,7 @@ const Home = () => {
       <Grid container spacing={2}>
         {products.map((product) => (
           <Grid key={product.id} item>
-            <Product product={product} />
+            <ProductCard product={product} />
           </Grid>
         ))}
       </Grid>

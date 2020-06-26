@@ -13,34 +13,37 @@ namespace Catalog.API.Application.Reviews.Commands
 {
     public class ApprovePendingReviewsCommand : IRequest<Unit>
     {
-        public int AgeForApproveInMinutes { get; set; }
     }
 
     public class ApprovePendingReviewsCommandHandler : IRequestHandler<ApprovePendingReviewsCommand, Unit>
     {
-        private readonly ILogger<ApprovePendingReviewsCommandHandler> _logger;
+        private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<Review> _repository;
+        private readonly IRepository<Review> _reviewRepository;
 
-        public ApprovePendingReviewsCommandHandler(ILogger<ApprovePendingReviewsCommandHandler> logger, IUnitOfWork unitOfWork, IRepository<Review> repository)
+        public ApprovePendingReviewsCommandHandler(ILogger<ApprovePendingReviewsCommandHandler> logger, IUnitOfWork unitOfWork, IRepository<Review> reviewRepository)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
-            _repository = repository;
+            _reviewRepository = reviewRepository;
         }
 
         public async Task<Unit> Handle(ApprovePendingReviewsCommand request, CancellationToken cancellationToken)
         {
-            var utcNow = DateTime.UtcNow;
+            var durationToApprove = DateTimeOffset.Now.AddMinutes(-5);
 
-            var reviews = await _repository
-                .Query()
-                .Where(s => s.ReviewStatus == ReviewStatus.Pending && s.CreatedDate.AddMinutes(request.AgeForApproveInMinutes) <= utcNow)
+            var reviews = await _reviewRepository.Query()
+                .Include(s => s.Product)
+                .Where(s => s.ReviewStatus == ReviewStatus.Pending && s.CreatedDate < durationToApprove)
                 .ToListAsync(cancellationToken);
 
             foreach (var review in reviews)
             {
                 review.ReviewStatus = ReviewStatus.Approved;
+
+                var product = review.Product;
+                review.Product.RatingAverage = ((product.RatingAverage ?? 0 * product.ReviewsCount) + review.Rating) / (product.ReviewsCount + 1);
+                review.Product.ReviewsCount += 1;
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

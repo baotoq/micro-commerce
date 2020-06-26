@@ -13,6 +13,8 @@ namespace Catalog.API.Data
 
         public DbSet<Category> Categories { get; set; } = null!;
 
+        public DbSet<ProductCategory> ProductCategories { get; set; } = null!;
+
         public DbSet<Review> Reviews { get; set; } = null!;
 
         public DbSet<Reply> Replies { get; set; } = null!;

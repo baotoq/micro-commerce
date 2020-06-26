@@ -13,12 +13,11 @@ namespace Catalog.API.Application.Replies.Commands
 {
     public class ApprovePendingRepliesCommand : IRequest<Unit>
     {
-        public int AgeForApproveInMinutes { get; set; }
     }
 
     public class ApprovePendingRepliesCommandHandler : IRequestHandler<ApprovePendingRepliesCommand, Unit>
     {
-        private readonly ILogger<ApprovePendingRepliesCommandHandler> _logger;
+        private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Reply> _repository;
 
@@ -31,11 +30,11 @@ namespace Catalog.API.Application.Replies.Commands
 
         public async Task<Unit> Handle(ApprovePendingRepliesCommand request, CancellationToken cancellationToken)
         {
-            var utcNow = DateTime.UtcNow;
+            var durationToApprove = DateTimeOffset.Now.AddMinutes(-5);
 
             var reviews = await _repository
                 .Query()
-                .Where(s => s.ReplyStatus == ReplyStatus.Pending && s.CreatedDate.AddMinutes(request.AgeForApproveInMinutes) <= utcNow)
+                .Where(s => s.ReplyStatus == ReplyStatus.Pending && s.CreatedDate < durationToApprove)
                 .ToListAsync(cancellationToken);
 
             foreach (var review in reviews)
