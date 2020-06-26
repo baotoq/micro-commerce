@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Models;
-using Catalog.API.Application.Products.Commands.Put;
-using Catalog.API.Common;
+using Catalog.API.Application.Products.Commands;
 using Catalog.API.FunctionalTests.Infrastructure;
 using FluentAssertions;
+using UnitOfWork.Common;
 using Xunit;
 
 namespace Catalog.API.FunctionalTests
@@ -33,8 +32,8 @@ namespace Catalog.API.FunctionalTests
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = await response.Content.ReadAsAsync<CursorPaged<CategoryDto>>();
-            result.Should().NotBeNullOrEmpty();
+            var result = await response.Content.ReadAsAsync<CursorPaged<CategoryDto, long?>>();
+            result.Data.Should().NotBeNullOrEmpty();
         }
 
         [Fact]

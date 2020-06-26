@@ -2,16 +2,15 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.ApiControllers;
+using Catalog.API.Application.Categories.Commands;
 using Catalog.API.Application.Categories.Commands.Create;
-using Catalog.API.Application.Categories.Commands.Delete;
-using Catalog.API.Application.Categories.Commands.Put;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Application.Categories.Queries;
-using Catalog.API.Common;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using UnitOfWork.Common;
 using Xunit;
 
 namespace Catalog.API.UnitTests.Categories
@@ -32,15 +31,18 @@ namespace Catalog.API.UnitTests.Categories
         {
             _mockMediator
                 .Setup(_ => _.Send(It.IsAny<FindCategoriesQuery>(), CancellationToken.None))
-                .ReturnsAsync(new CursorPaged<CategoryDto>
-                { 
-                    new CategoryDto(),
-                    new CategoryDto()
+                .ReturnsAsync(new CursorPaged<CategoryDto, long?>
+                {
+                    Data = new List<CategoryDto>
+                    {
+                        new CategoryDto(),
+                        new CategoryDto()
+                    }
                 });
 
-            var act = await _sut.Find();
+            var act = await _sut.Find(new FindCategoriesQuery(), CancellationToken.None);
 
-            act.Value.Should().HaveCount(2);
+            act.Value.Data.Should().HaveCount(2);
         }
 
         [Fact]

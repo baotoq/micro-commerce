@@ -1,11 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Catalog.API.Application.Products.Commands.Create;
-using Catalog.API.Application.Products.Commands.Delete;
-using Catalog.API.Application.Products.Commands.Put;
+using Catalog.API.Application.Products.Commands;
 using Catalog.API.Application.Products.Models;
 using Catalog.API.Application.Products.Queries;
-using Catalog.API.Application.Products.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,9 +33,9 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDto>> Get(long id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ProductDto>> FindById(long id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetProductByIdQuery(id), cancellationToken);
+            var result = await _mediator.Send(new FindProductByIdQuery(id), cancellationToken);
 
             return result;
         }
@@ -48,7 +45,7 @@ namespace Catalog.API.ApiControllers
         {
             var result = await _mediator.Send(request, cancellationToken);
 
-            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]

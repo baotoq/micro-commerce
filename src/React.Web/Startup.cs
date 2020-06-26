@@ -43,7 +43,7 @@ namespace React.Web
                 app.UseHsts();
             }
 
-            app.UsePathBase(Configuration["PATH_BASE"]);
+            app.UsePathBase(Configuration["PathBase"]);
 
             app.UseSerilogRequestLogging();
 
