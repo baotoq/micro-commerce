@@ -2,11 +2,27 @@
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Data.Models;
+using FluentValidation;
 using MediatR;
 using UnitOfWork;
 
 namespace Catalog.API.Application.Categories.Commands.Create
 {
+    public class CreateCategoryCommand : IRequest<CategoryDto>
+    {
+        public string Name { get; set; }
+    }
+
+    public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>
+    {
+        public CreateCategoryCommandValidator()
+        {
+            RuleFor(s => s.Name)
+                .NotEmpty()
+                .MinimumLength(5);
+        }
+    }
+
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -1,12 +1,20 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Products.Models;
 using Catalog.API.Data.Models;
 using MediatR;
 using UnitOfWork;
 
-namespace Catalog.API.Application.Products.Commands.Create
+namespace Catalog.API.Application.Products.Commands
 {
+    public class CreateProductCommand : IRequest<ProductDto>
+    {
+        public string Name { get; set; }
+
+        public IList<long> CategoryIds { get; set; } = new List<long>();
+    }
+
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
     {
         private readonly IUnitOfWork _unitOfWork;
