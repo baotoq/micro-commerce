@@ -14,7 +14,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       var response = await productService.findAllAsync();
-      setProducts(response);
+      setProducts(response.data);
     };
     dispatch(changeActiveTab(0));
     fetchProducts();
