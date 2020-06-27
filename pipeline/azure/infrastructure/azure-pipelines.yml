@@ -44,5 +44,5 @@ stages:
       parameters:
         releaseName: sonar
         chartName: oteemocharts/sonarqube
-        namespace: infra
+        namespace: default
         valueFile: pipeline/k8s/infrastructure/sonarqube/values.yaml

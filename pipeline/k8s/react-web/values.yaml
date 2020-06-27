@@ -20,7 +20,7 @@ fullnameOverride: react-web
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
-  PathBase: /react
+  PATH_BASE: /react
 
 service:
   type: ClusterIP
