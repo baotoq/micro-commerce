@@ -7,7 +7,8 @@ import Pagination from "@material-ui/lab/Pagination";
 
 import ProductCard from "./ProductCard";
 
-import categoryService, { ProductResponse, OffsetPaged } from "../../services/category-service";
+import categoryService, { ProductResponse } from "../../services/category-service";
+import { OffsetPaged } from "../../models";
 
 import { changeActiveTab } from "../../store/slices/category-slice";
 import { setLoading } from "../../store/slices/app-slice";

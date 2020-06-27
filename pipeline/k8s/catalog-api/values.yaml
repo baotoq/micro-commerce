@@ -20,7 +20,7 @@ fullnameOverride: catalog-api
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
-  PathBase: /catalog
+  PATH_BASE: /catalog
   ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux,1433;Database=catalog-api;User Id=sa;Password=P@ssw0rd;
   Identity__Uri: http://identity-api
 
