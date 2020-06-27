@@ -5,6 +5,7 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
+    cert-manager.io/issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/proxy-body-size: "8m"
   hosts:
     - name: sonar.dongnai-vn.com

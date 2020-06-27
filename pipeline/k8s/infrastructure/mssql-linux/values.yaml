@@ -9,7 +9,7 @@ edition:
 resources:
   limits:
     cpu: 1
-    memory: 1.0Gi
+    memory: 1.5Gi
   requests:
     cpu: 0.5
-    memory: 1.5Gi
+    memory: 1Gi
