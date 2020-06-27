@@ -1,4 +1,5 @@
 import { httpClient } from "./http-client";
+import { CursorPaged, OffsetPaged } from "../models/index";
 
 export interface CategoryResponse {
   id: number;
@@ -12,18 +13,6 @@ export interface ProductResponse {
   price: number;
   description: string;
   imageUri: string;
-}
-
-export interface OffsetPaged<T> {
-  data: T[],
-  totalPages: number
-  totalCount: number,
-}
-
-export interface CursorPaged<T> {
-  data: T[],
-  previousPageToken: number
-  nextPageToken: number
 }
 
 class CategoryService {

@@ -1,4 +1,5 @@
 import { httpClient } from "./http-client";
+import { OffsetPaged } from "../models/index";
 
 export interface ProductResponse {
   id: number;
@@ -16,7 +17,7 @@ class ProductService {
   }
 
   public async findAllAsync() {
-    const { data } = await httpClient.get<ProductResponse[]>("/api/products");
+    const { data } = await httpClient.get<OffsetPaged<ProductResponse>>("/api/products");
     return data;
   }
 }
