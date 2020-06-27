@@ -10,6 +10,7 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
+    cert-manager.io/issuer: "letsencrypt-prod"
   hosts:
     - host: bshop.dongnai-vn.com
       paths: ["/"]
