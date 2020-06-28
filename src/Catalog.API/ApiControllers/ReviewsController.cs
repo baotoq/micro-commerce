@@ -25,7 +25,7 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<CursorPaged<ReviewDto, DateTime?>>> FindByReviewStatus([FromQuery] FindByReviewStatusQuery request, CancellationToken cancellationToken)
+        public async Task<ActionResult<CursorPaged<ReviewDto, DateTime?>>> FindReviews([FromQuery] FindReviewsQuery request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
 

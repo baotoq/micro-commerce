@@ -12,4 +12,11 @@ export interface CursorPaged<T> {
   data: T[];
   previousPageToken: number;
   nextPageToken: number;
+  totalPages: number;
+}
+
+export enum ReviewStatus {
+  Pending,
+  Approved,
+  NotApproved,
 }

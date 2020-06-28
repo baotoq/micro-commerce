@@ -7,7 +7,8 @@ export interface ProductResponse {
   price: number;
   description: string;
   imageUri: string;
-  categories: [{ id: number, name: string }]
+  ratingAverage: number;
+  categories: [{ id: number; name: string }];
 }
 
 class ProductService {
