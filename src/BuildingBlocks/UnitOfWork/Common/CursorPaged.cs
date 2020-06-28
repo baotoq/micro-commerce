@@ -7,5 +7,6 @@ namespace UnitOfWork.Common
         public List<T> Data { get; set; }
         public TToken PreviousPageToken { get; set; }
         public TToken NextPageToken { get; set; }
+        public int TotalPages { get; set; }
     }
 }

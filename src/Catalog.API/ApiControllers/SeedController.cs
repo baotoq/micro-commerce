@@ -42,7 +42,9 @@ namespace Catalog.API.ApiControllers
                 .RuleFor(s => s.Name, s => s.Commerce.Product())
                 .RuleFor(s => s.Description, s => s.Lorem.Paragraph())
                 .RuleFor(s => s.ImageUri, s => s.Image.PicsumUrl())
-                .RuleFor(s => s.Price, s => decimal.Parse(s.Commerce.Price()));
+                .RuleFor(s => s.Price, s => decimal.Parse(s.Commerce.Price()))
+                .RuleFor(s => s.ReviewsCount, s => s.Random.Int(1, 10))
+                .RuleFor(s => s.RatingAverage, s => s.Random.Double(0, 5));
 
             var categories = categoryFaker.Generate(10);
 
