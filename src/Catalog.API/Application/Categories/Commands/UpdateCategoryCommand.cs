@@ -8,7 +8,7 @@ using UnitOfWork;
 
 namespace Catalog.API.Application.Categories.Commands
 {
-    public class PutCategoryCommand : IRequest
+    public class UpdateCategoryCommand : IRequest
     {
         [JsonIgnore]
         public long Id { get; set; }
@@ -16,18 +16,18 @@ namespace Catalog.API.Application.Categories.Commands
         public string Name { get; set; }
     }
 
-    public class PutCategoryCommandHandler : IRequestHandler<PutCategoryCommand, Unit>
+    public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, Unit>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Category> _repository;
 
-        public PutCategoryCommandHandler(IUnitOfWork unitOfWork)
+        public UpdateCategoryCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.Repository<Category>();
         }
 
-        public async Task<Unit> Handle(PutCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = await _repository.FindAsync(request.Id, cancellationToken);
 

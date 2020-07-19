@@ -1,6 +1,5 @@
 ﻿using Catalog.API.Application.Carts.Commands;
 using MediatR;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;

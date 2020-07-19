@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Catalog.API.Data;
@@ -11,8 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Catalog.API.FunctionalTests.Infrastructure
 {
-    public class TestWebApplicationFactory<TStartup>
-        : WebApplicationFactory<TStartup> where TStartup : class
+    public class TestWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -70,12 +69,14 @@ namespace Catalog.API.FunctionalTests.Infrastructure
 
             context.Products.Add(new Product
             {
-                Name = "Test product 1"
+                Name = "Test product 1",
+                ImageUri = "image.jpg"
             });
 
             context.Products.Add(new Product
             {
-                Name = "Test product 2"
+                Name = "Test product 2",
+                ImageUri = "image2.jpg"
             });
 
             context.SaveChanges();

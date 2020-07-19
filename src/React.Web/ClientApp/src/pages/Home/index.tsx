@@ -5,7 +5,7 @@ import { changeActiveTab } from "../../store/slices/category-slice";
 
 import ProductCard from "../Category/ProductCard";
 import Grid from "@material-ui/core/Grid";
-import productService, { ProductResponse } from "../../services/product-service";
+import ProductService, { ProductResponse } from "../../services/product-service";
 
 const Home = () => {
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -13,7 +13,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      var response = await productService.findAllAsync();
+      var response = await ProductService.findAsync();
       setProducts(response.data);
     };
     dispatch(changeActiveTab(0));

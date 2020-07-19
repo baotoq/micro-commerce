@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk, RootState } from "../";
-
+import { push } from "connected-react-router";
+import { setLoading } from "./app-slice";
 import authService from "../../services/auth-service";
 import { User } from "../../models";
 
@@ -31,19 +32,32 @@ export const loginAsync = (): AppThunk => async (dispatch) => {
   await authService.loginAsync();
 };
 
-export const completeLoginAsync = (): AppThunk => async (dispatch) => {
+export const completeLoginAsync = (): AppThunk<Promise<void>> => async (dispatch) => {
+  dispatch(setLoading(true));
   await authService.completeLoginAsync(window.location.href);
   const user = await authService.getUserAsync();
-  dispatch(loginSuccess({ id: user?.profile.sub, name: user?.profile.name } as User));
+  dispatch(loginSuccess({ id: user?.profile.sub, name: user?.profile.name, role: user?.profile.role } as User));
+  dispatch(setLoading(false));
+  dispatch(push("/"));
 };
 
 export const logoutAsync = (): AppThunk => async (dispatch) => {
   await authService.logoutAsync();
-  dispatch(logoutSuccess());
 };
 
 export const completeLogoutAsync = (): AppThunk => async (dispatch) => {
+  dispatch(setLoading(true));
   await authService.completeLogoutAsync(window.location.href);
+  dispatch(logoutSuccess());
+  dispatch(setLoading(false));
+  dispatch(push("/"));
+};
+
+export const checkLoginAsync = (): AppThunk => async (dispatch) => {
+  const user = await authService.getUserAsync();
+  if (user) {
+    dispatch(loginSuccess({ id: user.profile.sub, name: user.profile.name, role: user.profile.role } as User));
+  }
 };
 
 export const selectIsAuthenticated = (state: RootState) => !!state.auth.user;

@@ -12,6 +12,7 @@ namespace Catalog.API.Application.Products.Queries
 {
     public class FindProductsQuery : OffsetPagedQuery, IRequest<OffsetPaged<ProductDto>>
     {
+        public string QueryString { get; set; }
     }
 
     public class FindProductsQueryHandler : IRequestHandler<FindProductsQuery, OffsetPaged<ProductDto>>
@@ -25,7 +26,17 @@ namespace Catalog.API.Application.Products.Queries
 
         public async Task<OffsetPaged<ProductDto>> Handle(FindProductsQuery request, CancellationToken cancellationToken)
         {
-            var paged = await _repository.Query().Select(s => new ProductDto
+            var filterQuery = _repository.Query();
+
+            if (!string.IsNullOrEmpty(request.QueryString))
+            {
+                request.QueryString = request.QueryString.ToLowerInvariant();
+                filterQuery = filterQuery.Where(
+                    s => s.Name.ToLower().Contains(request.QueryString) ||
+                         s.Description.ToLower().Contains(request.QueryString));
+            }
+
+            var paged = await filterQuery.Select(s => new ProductDto
             {
                 Id = s.Id,
                 Name = s.Name,

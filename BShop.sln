@@ -8,6 +8,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C2DCDE16-9A73-44CA-A8F0-054FDF085EB2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{D6A0823E-5FD0-4002-8C00-57F8B3DE4235}"
+	ProjectSection(SolutionItems) = preProject
+		src\Protos\catalog.proto = src\Protos\catalog.proto
+		src\Protos\common.proto = src\Protos\common.proto
+		src\Protos\identity.proto = src\Protos\identity.proto
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.API", "src\Identity.API\Identity.API.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7556}"
 EndProject
@@ -36,6 +41,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity.API", "Identity.API", "{08783EB8-0295-4158-8355-A3865969981D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.API.UnitTests", "tests\Identity.API\Identity.API.UnitTests\Identity.API.UnitTests.csproj", "{1B174BFB-C797-4B08-BC89-43B0EB2159D9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.API.FunctionalTests", "tests\Identity.API\Identity.API.FunctionalTests\Identity.API.FunctionalTests.csproj", "{7EF3D595-2856-413B-BDC5-B1AF933963FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +86,14 @@ Global
 		{0F873801-2F29-4392-A893-FDC948FF3BC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F873801-2F29-4392-A893-FDC948FF3BC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F873801-2F29-4392-A893-FDC948FF3BC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B174BFB-C797-4B08-BC89-43B0EB2159D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B174BFB-C797-4B08-BC89-43B0EB2159D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B174BFB-C797-4B08-BC89-43B0EB2159D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B174BFB-C797-4B08-BC89-43B0EB2159D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF3D595-2856-413B-BDC5-B1AF933963FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF3D595-2856-413B-BDC5-B1AF933963FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF3D595-2856-413B-BDC5-B1AF933963FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF3D595-2856-413B-BDC5-B1AF933963FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,6 +111,9 @@ Global
 		{150AB567-87FB-49EE-8E69-218B145A649A} = {7A78FDB0-64E5-4341-878B-C165E0389DAE}
 		{3DCA040E-AB02-41BF-AACF-8808C0BDC2FF} = {C2DCDE16-9A73-44CA-A8F0-054FDF085EB2}
 		{0F873801-2F29-4392-A893-FDC948FF3BC3} = {3DCA040E-AB02-41BF-AACF-8808C0BDC2FF}
+		{08783EB8-0295-4158-8355-A3865969981D} = {C2DCDE16-9A73-44CA-A8F0-054FDF085EB2}
+		{1B174BFB-C797-4B08-BC89-43B0EB2159D9} = {08783EB8-0295-4158-8355-A3865969981D}
+		{7EF3D595-2856-413B-BDC5-B1AF933963FB} = {08783EB8-0295-4158-8355-A3865969981D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4535079B-42C6-434C-B086-3D1ABC809B16}

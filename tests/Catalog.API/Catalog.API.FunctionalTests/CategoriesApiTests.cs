@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Catalog.API.Application.Categories.Commands;
 using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Models;
-using Catalog.API.Application.Products.Commands;
 using Catalog.API.FunctionalTests.Infrastructure;
 using FluentAssertions;
 using UnitOfWork.Common;
@@ -32,7 +32,7 @@ namespace Catalog.API.FunctionalTests
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var result = await response.Content.ReadAsAsync<CursorPaged<CategoryDto, long?>>();
+            var result = await response.Content.ReadAsAsync<OffsetPaged<CategoryDto>>();
             result.Data.Should().NotBeNullOrEmpty();
         }
 
@@ -85,11 +85,11 @@ namespace Catalog.API.FunctionalTests
         }
 
         [Fact]
-        public async Task Put_Authenticated_Success()
+        public async Task Update_Authenticated_Success()
         {
             // Arrange
             var client = _factory.CreateAuthenticatedClient();
-            var command = new PutProductCommand { Name = "Changed" };
+            var command = new UpdateCategoryCommand { Name = "Changed" };
 
             // Act
             var response = await client.PutAsJsonAsync($"{Uri}/1", command);

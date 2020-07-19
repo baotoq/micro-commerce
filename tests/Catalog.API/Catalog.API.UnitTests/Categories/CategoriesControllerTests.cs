@@ -31,7 +31,7 @@ namespace Catalog.API.UnitTests.Categories
         {
             _mockMediator
                 .Setup(_ => _.Send(It.IsAny<FindCategoriesQuery>(), CancellationToken.None))
-                .ReturnsAsync(new CursorPaged<CategoryDto, long?>
+                .ReturnsAsync(new OffsetPaged<CategoryDto>
                 {
                     Data = new List<CategoryDto>
                     {
@@ -40,7 +40,7 @@ namespace Catalog.API.UnitTests.Categories
                     }
                 });
 
-            var act = await _sut.Find(new FindCategoriesQuery(), CancellationToken.None);
+            var act = await _sut.FindCategories(new FindCategoriesQuery(), CancellationToken.None);
 
             act.Value.Data.Should().HaveCount(2);
         }
@@ -58,13 +58,13 @@ namespace Catalog.API.UnitTests.Categories
                 .Setup(_ => _.Send(It.IsAny<FindCategoryByIdQuery>(), CancellationToken.None))
                 .ReturnsAsync(dto);
 
-            var act = await _sut.FindById(1, CancellationToken.None);
+            var act = await _sut.FindCategoryById(1, CancellationToken.None);
 
             act.Value.Should().BeEquivalentTo(dto);
         }
 
         [Fact]
-        public async Task Post_Success()
+        public async Task Create_Success()
         {
             var dto = new CategoryDto
             {
@@ -76,7 +76,7 @@ namespace Catalog.API.UnitTests.Categories
                 .Setup(_ => _.Send(It.IsAny<CreateCategoryCommand>(), CancellationToken.None))
                 .ReturnsAsync(dto);
 
-            var act = await _sut.Post(new CreateCategoryCommand
+            var act = await _sut.CreateCategory(new CreateCategoryCommand
             {
                 Name = "test"
             }, CancellationToken.None);
@@ -89,10 +89,10 @@ namespace Catalog.API.UnitTests.Categories
         public async Task Put_Success()
         {
             _mockMediator
-                .Setup(_ => _.Send(It.IsAny<PutCategoryCommand>(), CancellationToken.None))
+                .Setup(_ => _.Send(It.IsAny<UpdateCategoryCommand>(), CancellationToken.None))
                 .ReturnsAsync(Unit.Value);
 
-            var act = await _sut.Put(1, new PutCategoryCommand
+            var act = await _sut.UpdateCategory(1, new UpdateCategoryCommand
             {
                 Name = "test"
             }, CancellationToken.None);
@@ -107,7 +107,7 @@ namespace Catalog.API.UnitTests.Categories
                 .Setup(_ => _.Send(It.IsAny<DeleteCategoryCommand>(), CancellationToken.None))
                 .ReturnsAsync(Unit.Value);
 
-            var act = await _sut.Delete(1, CancellationToken.None);
+            var act = await _sut.DeleteCategory(1, CancellationToken.None);
 
             act.Should().BeOfType<NoContentResult>();
         }

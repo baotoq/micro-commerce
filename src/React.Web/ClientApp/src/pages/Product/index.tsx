@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import CustomerReviews from "./CustomerReviews";
@@ -9,15 +10,18 @@ import Image from "material-ui-image";
 
 import Rating from "@material-ui/lab/Rating";
 
-import productService, { ProductResponse } from "../../services/product-service";
+import ProductService, { ProductResponse } from "../../services/product-service";
+
+import { addToCart } from "../../store/slices/cart-slice";
 
 const Product = () => {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch();
   const [product, setProduct] = useState<ProductResponse>();
 
   useEffect(() => {
     const fetchProduct = async () => {
-      var response = await productService.findAsync(+id);
+      var response = await ProductService.findByIdAsync(+id);
       setProduct(response);
     };
 
@@ -36,12 +40,12 @@ const Product = () => {
               <Rating name="read-only" value={product.ratingAverage} readOnly />
               <p>{product.description}</p>
               <h3>${product.price}</h3>
-              <Button variant="contained" color="primary">
+              <Button variant="contained" color="primary" onClick={() => dispatch(addToCart(product))}>
                 Add to Cart
               </Button>
             </Grid>
           </Grid>
-          <CustomerReviews />
+          <CustomerReviews productId={product.id} />
         </div>
       )}
     </div>

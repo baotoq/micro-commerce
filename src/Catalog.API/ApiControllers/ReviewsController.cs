@@ -24,8 +24,17 @@ namespace Catalog.API.ApiControllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
-        public async Task<ActionResult<CursorPaged<ReviewDto, DateTime?>>> FindReviews([FromQuery] FindReviewsQuery request, CancellationToken cancellationToken)
+        [HttpGet("cursor")]
+        public async Task<ActionResult<CursorPaged<ReviewDto, DateTime?>>> FindReviews([FromQuery] FindReviewsCursorQuery request, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(request, cancellationToken);
+
+            return result;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("offset")]
+        public async Task<ActionResult<OffsetPaged<ReviewDto>>> FindReviews([FromQuery] FindReviewsOffsetQuery request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
 
@@ -40,9 +49,10 @@ namespace Catalog.API.ApiControllers
             return Ok();
         }
 
-        [HttpPost("change-review-status")]
-        public async Task<ActionResult> ChangeReviewStatus(ChangeReviewStatusCommand request, CancellationToken cancellationToken)
+        [HttpPost("{id}/change-review-status")]
+        public async Task<ActionResult> ChangeReviewStatus(long id, ChangeReviewStatusCommand request, CancellationToken cancellationToken)
         {
+            request.Id = id;
             await _mediator.Send(request, cancellationToken);
 
             return Ok();

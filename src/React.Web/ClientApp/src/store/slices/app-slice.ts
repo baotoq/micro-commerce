@@ -21,6 +21,6 @@ export const appSlice = createSlice({
 
 export const { setLoading } = appSlice.actions;
 
-export const selectLoading = (state: RootState) => !!state.app.loading;
+export const selectLoading = (state: RootState) => state.app.loading;
 
 export default appSlice.reducer;

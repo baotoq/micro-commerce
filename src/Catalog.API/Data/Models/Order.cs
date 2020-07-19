@@ -10,7 +10,7 @@ namespace Catalog.API.Data.Models
             OrderStatus = OrderStatus.New;
         }
 
-        public long CustomerId { get; set; }
+        public string CustomerId { get; set; }
 
         public decimal SubTotal { get; set; }
 

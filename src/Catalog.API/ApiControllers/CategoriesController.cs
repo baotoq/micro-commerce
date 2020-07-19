@@ -25,7 +25,7 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<CursorPaged<CategoryDto, long?>>> Find([FromQuery] FindCategoriesQuery request, CancellationToken cancellationToken)
+        public async Task<ActionResult<OffsetPaged<CategoryDto>>> FindCategories([FromQuery] FindCategoriesQuery request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
 
@@ -34,7 +34,7 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryDto>> FindById(long id, CancellationToken cancellationToken)
+        public async Task<ActionResult<CategoryDto>> FindCategoryById(long id, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new FindCategoryByIdQuery(id), cancellationToken);
 
@@ -56,15 +56,15 @@ namespace Catalog.API.ApiControllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryDto>> Post(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<ActionResult<CategoryDto>> CreateCategory(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
 
-            return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(FindCategoryById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(long id, PutCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateCategory(long id, UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
             request.Id = id;
             await _mediator.Send(request, cancellationToken);
@@ -73,7 +73,7 @@ namespace Catalog.API.ApiControllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteCategory(long id, CancellationToken cancellationToken)
         {
             await _mediator.Send(new DeleteCategoryCommand(id), cancellationToken);
 

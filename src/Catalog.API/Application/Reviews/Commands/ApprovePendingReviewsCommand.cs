@@ -30,7 +30,7 @@ namespace Catalog.API.Application.Reviews.Commands
 
         public async Task<Unit> Handle(ApprovePendingReviewsCommand request, CancellationToken cancellationToken)
         {
-            var durationToApprove = DateTimeOffset.Now.AddMinutes(-5);
+            var durationToApprove = DateTime.UtcNow.AddMinutes(-5);
 
             var reviews = await _reviewRepository.Query()
                 .Include(s => s.Product)
@@ -42,13 +42,12 @@ namespace Catalog.API.Application.Reviews.Commands
                 review.ReviewStatus = ReviewStatus.Approved;
 
                 var product = review.Product;
-                review.Product.RatingAverage = ((product.RatingAverage ?? 0 * product.ReviewsCount) + review.Rating) / (product.ReviewsCount + 1);
-                review.Product.ReviewsCount += 1;
+                product.RatingAverage = (product.ReviewsCount * (product.RatingAverage ?? 0) + review.Rating) / (++product.ReviewsCount);
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            _logger.LogInformation("Approved {count} reviews with Id: {reviews}", reviews.Count, reviews.Select(s => s.Id));
+            _logger.LogInformation("Approved {Count} reviews with Id: {ReviewIds}", reviews.Count, reviews.Select(s => s.Id));
 
             return Unit.Value;
         }

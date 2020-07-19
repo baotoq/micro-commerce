@@ -5,7 +5,7 @@ namespace Catalog.API.Application
 {
     public static class QueryableExtensions
     {
-        public static IQueryable<Cart> FindActiveCart(this IQueryable<Cart> queryable, long customerId)
+        public static IQueryable<Cart> FindActiveCart(this IQueryable<Cart> queryable, string customerId)
         {
             return queryable.Where(s => s.CustomerId == customerId && s.IsActive);
         }
