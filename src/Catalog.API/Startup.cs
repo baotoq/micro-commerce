@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using Catalog.API.BackgroundServices;
 using Catalog.API.Data;
+using Catalog.API.Grpc;
 using Catalog.API.Services;
+using Grpc.HealthCheck;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,23 +14,37 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Shared.FileStorage;
 using Shared.MediatR;
 using UnitOfWork;
+using static Bshop.V1.Identity.IdentityService;
 
 namespace Catalog.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            Environment = env;
         }
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddGrpc(options =>
+            {
+                options.EnableDetailedErrors = Environment.IsDevelopment();
+            });
+
+            services.AddGrpcClient<IdentityServiceClient>(options =>
+            {
+                options.Address = new Uri(Configuration["Identity:Uri"]);
+            }).EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
+            
             services.AddMediatR().AddValidators();
 
             services.AddUnitOfWork<ApplicationDbContext>(options =>
@@ -56,12 +72,13 @@ namespace Catalog.API
             services.AddHostedService<ApproveReplyBackgroundService>();
 
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddFileStorage(Environment.WebRootPath);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
@@ -79,6 +96,8 @@ namespace Catalog.API
 
             app.UseHttpsRedirection();
 
+            app.UseFileServer();
+
             app.UseSwaggerDefault();
 
             app.UseRouting();
@@ -95,6 +114,8 @@ namespace Catalog.API
             {
                 endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
+                endpoints.MapGrpcService<HealthServiceImpl>();
+                endpoints.MapGrpcService<CatalogGrpcService>();
             });
         }
     }

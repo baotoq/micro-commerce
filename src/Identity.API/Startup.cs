@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +15,8 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Shared.MediatR;
 using UnitOfWork;
+using Grpc.HealthCheck;
+using Identity.API.Grpc;
 
 namespace Identity.API
 {
@@ -37,6 +39,11 @@ namespace Identity.API
                         provider.EnableRetryOnFailure();
                         provider.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
                     });
+
+            services.AddGrpc(options =>
+            {
+                options.EnableDetailedErrors = true;
+            });
 
             services.AddMediatR().AddValidators();
 
@@ -110,8 +117,11 @@ namespace Identity.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
-                endpoints.MapHealthChecks("/health");
                 endpoints.MapRazorPages();
+                endpoints.MapHealthChecks("/health");
+                endpoints.MapGrpcService<HealthServiceImpl>();
+                endpoints.MapGrpcService<PingGrpcService>();
+                endpoints.MapGrpcService<IdentityGrpcService>();
             });
         }
     }

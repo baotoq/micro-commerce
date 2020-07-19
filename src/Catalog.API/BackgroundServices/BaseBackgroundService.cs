@@ -21,12 +21,11 @@ namespace Catalog.API.BackgroundServices
 
         public virtual TimeSpan StartDelay { get; } = TimeSpan.Zero;
         public virtual TimeSpan DelayTime { get; } = TimeSpan.FromMinutes(1);
-        public abstract string BackgroundName { get; }
         public abstract Task ProcessAsync(CancellationToken cancellationToken);
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("{BackgroundName} is running", BackgroundName);
+            _logger.LogInformation("{BackgroundName} is running", GetType().Name);
 
             await Task.Delay(StartDelay, stoppingToken);
 
@@ -36,17 +35,17 @@ namespace Catalog.API.BackgroundServices
                 {
                     try
                     {
-                        _logger.LogInformation("{BackgroundName} is doing background work", BackgroundName);
+                        _logger.LogInformation("{BackgroundName} is doing background work", GetType().Name);
                         await ProcessAsync(stoppingToken);
-                        _logger.LogInformation("{BackgroundName} have done background work", BackgroundName);
+                        _logger.LogInformation("{BackgroundName} had done background work", GetType().Name);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "{BackgroundName} error occurred executing", BackgroundName);
+                        _logger.LogError(ex, "{BackgroundName} error occurred executing", GetType().Name);
                     }
                 }
 
-                _logger.LogInformation("{BackgroundName} is waiting {delay} before next execute", BackgroundName, DelayTime);
+                _logger.LogInformation("{BackgroundName} was waiting {Delay} before next execution", GetType().Name, DelayTime);
                 await Task.Delay(DelayTime, stoppingToken);
             }
         }

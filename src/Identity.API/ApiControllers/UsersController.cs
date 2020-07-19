@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Identity.API.Application.Roles.Queries;
-using Identity.API.Data.Models;
+using Identity.API.Application.Users.Models;
 using IdentityServer4;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UnitOfWork.Common;
 
 namespace Identity.API.ApiControllers
 {
@@ -23,11 +23,27 @@ namespace Identity.API.ApiControllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<User>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<OffsetPaged<UserDto>>> FindUsers([FromQuery] FindUsersQuery query, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetAllUsersQuery(), cancellationToken);
+            var result = await _mediator.Send(query, cancellationToken);
 
             return result;
+        }
+
+        [HttpPut("{userId}/role/{roleId}")]
+        public async Task<IActionResult> UpdateUserRole(string userId, string roleId, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new UpdateUserRoleCommand(userId, roleId), cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
+
+            return NoContent();
         }
     }
 }

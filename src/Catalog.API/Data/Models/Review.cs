@@ -11,7 +11,7 @@ namespace Catalog.API.Data.Models
             ReviewStatus = ReviewStatus.Pending;
         }
 
-        public long CreatedById { get; set; }
+        public string CreatedById { get; set; }
 
         public string Title { get; set; }
 

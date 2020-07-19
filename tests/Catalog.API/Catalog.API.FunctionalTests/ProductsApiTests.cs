@@ -1,10 +1,13 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Catalog.API.Application.Products.Commands;
 using Catalog.API.Application.Products.Models;
 using Catalog.API.FunctionalTests.Infrastructure;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using UnitOfWork.Common;
 using Xunit;
 
@@ -69,7 +72,16 @@ namespace Catalog.API.FunctionalTests
         {
             // Arrange
             var client = _factory.CreateAuthenticatedClient();
-            var command = new CreateProductCommand { Name = "Created" };
+            var command = new CreateProductCommand
+            { 
+                Name = "Created",
+                Price = 100,
+                Description = "Short description",
+                CartMaxQuantity = 10,
+                StockQuantity = 100,
+                SellQuantity = 50,
+                Image = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("This is a dummy file")), 0, 0, "Data", "dummy.txt")
+            };
 
             // Act
             var response = await client.PostAsJsonAsync(Uri, command);
@@ -80,15 +92,15 @@ namespace Catalog.API.FunctionalTests
             result.Should().BeEquivalentTo(new ProductDto
             {
                 Name = "Created"
-            }, s => s.Excluding(p => p.Id));
+            }, s => s.Including(p => p.Name));
         }
 
         [Fact]
-        public async Task Put_Authenticated_Success()
+        public async Task Update_Authenticated_Success()
         {
             // Arrange
             var client = _factory.CreateAuthenticatedClient();
-            var command = new PutProductCommand { Name = "Changed" };
+            var command = new UpdateProductCommand { Name = "Changed" };
 
             // Act
             var response = await client.PutAsJsonAsync($"{Uri}/1", command);

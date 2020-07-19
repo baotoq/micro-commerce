@@ -5,6 +5,7 @@ using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Shared.MediatR.Exceptions;
 using UnitOfWork;
 
@@ -12,6 +13,7 @@ namespace Catalog.API.Application.Reviews.Commands
 {
     public class ChangeReviewStatusCommand : IRequest<Unit>
     {
+        [JsonIgnore]
         public long Id { get; set; }
         public ReviewStatus ReviewStatus { get; set; }
     }

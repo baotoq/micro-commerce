@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk, RootState } from "..";
 
-import categoryService from "../../services/category-service";
+import CategoryService from "../../services/category-service";
 
 interface Category {
   id: number;
@@ -34,7 +34,7 @@ export const category = createSlice({
 export const { fetchCategories, changeActiveTab } = category.actions;
 
 export const fetchCategoriesAsync = (): AppThunk => async (dispatch) => {
-  const data = await categoryService.findAllAsync();
+  const data = await CategoryService.findAsync();
   dispatch(fetchCategories(data.data));
 };
 

@@ -11,7 +11,7 @@ namespace Catalog.API.Data.Models
             LockedOnCheckout = false;
         }
 
-        public long CustomerId { get; set; }
+        public string CustomerId { get; set; }
 
         public bool IsActive { get; set; }
 

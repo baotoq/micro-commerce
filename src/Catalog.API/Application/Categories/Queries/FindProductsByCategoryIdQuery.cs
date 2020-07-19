@@ -4,20 +4,16 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Data.Models;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Shared.MediatR.Exceptions;
+using Shared.MediatR.Models;
 using UnitOfWork;
 using UnitOfWork.Common;
 
 namespace Catalog.API.Application.Categories.Queries
 {
-    public class FindProductsByCategoryIdQuery : IRequest<OffsetPaged<ProductDto>>
+    public class FindProductsByCategoryIdQuery : OffsetPagedQuery, IRequest<OffsetPaged<ProductDto>>
     {
         public long Id { get; set; }
-
-        public int Page { get; set; }
-
-        public int PageSize { get; set; }
     }
 
     public class FindProductsByCategoryIdQueryHandler : IRequestHandler<FindProductsByCategoryIdQuery, OffsetPaged<ProductDto>>
@@ -50,7 +46,6 @@ namespace Catalog.API.Application.Categories.Queries
                     Description = s.Description,
                     ImageUri = s.ImageUri
                 })
-                .AsNoTracking()
                 .ToPagedAsync(request.Page, request.PageSize, cancellationToken);
 
             return products;

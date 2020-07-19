@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Identity.API.Application.Roles;
 using Identity.API.Application.Roles.Queries;
-using Identity.API.Data.Models;
 using IdentityServer4;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -23,9 +23,9 @@ namespace Identity.API.ApiControllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Role>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<RoleDto>>> FindRoles(CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetAllRolesQuery(), cancellationToken);
+            var result = await _mediator.Send(new FindRolesQuery(), cancellationToken);
 
             return result;
         }

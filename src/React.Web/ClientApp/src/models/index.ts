@@ -1,22 +1,29 @@
 export * from "./category";
 export * from "./product";
 export * from "./user";
+export * from "./review";
+export * from "./role";
 
 export interface OffsetPaged<T> {
   data: T[];
+  currentPage: number;
+  nextPage: number;
   totalPages: number;
   totalCount: number;
 }
 
-export interface CursorPaged<T> {
+export interface CursorPaged<T, TToken> {
   data: T[];
-  previousPageToken: number;
-  nextPageToken: number;
-  totalPages: number;
+  previousPageToken: TToken;
+  nextPageToken: TToken;
 }
 
-export enum ReviewStatus {
-  Pending,
-  Approved,
-  NotApproved,
+export interface OffsetPagedQuery {
+  page: number;
+  pageSize: number;
+}
+
+export interface CursorPagedQuery<TToken> {
+  pageToken: TToken;
+  pageSize?: number;
 }

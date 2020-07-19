@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using MediatR;
+using Shared.FileStorage;
 using Shared.MediatR.Exceptions;
 using UnitOfWork;
 
@@ -21,11 +22,13 @@ namespace Catalog.API.Application.Products.Commands
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Product> _repository;
+        private readonly IStorageService _storageService;
 
-        public DeleteProductCommandHandler(IUnitOfWork unitOfWork)
+        public DeleteProductCommandHandler(IUnitOfWork unitOfWork, IStorageService storageService)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.Repository<Product>();
+            _storageService = storageService;
         }
 
         public async Task<Unit> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -39,6 +42,8 @@ namespace Catalog.API.Application.Products.Commands
 
             _repository.Remove(product);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _storageService.DeleteAsync(product.ImageUri, cancellationToken);
 
             return Unit.Value;
         }

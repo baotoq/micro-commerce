@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useParams, useHistory } from "react-router-dom";
-
+import { useParams } from "react-router-dom";
+import { push } from "connected-react-router";
 import Grid from "@material-ui/core/Grid";
 import Pagination from "@material-ui/lab/Pagination";
 
@@ -11,12 +11,12 @@ import categoryService, { ProductResponse } from "../../services/category-servic
 import { OffsetPaged } from "../../models";
 
 import { changeActiveTab } from "../../store/slices/category-slice";
-import { setLoading } from "../../store/slices/app-slice";
+
+import { useAsync, usePrevious } from "../../hooks";
 
 const Category = () => {
   const pageSize = 10;
 
-  const history = useHistory();
   const { id, page } = useParams<{ id: string; page: string }>();
   const previousId = usePrevious(id);
 
@@ -29,7 +29,7 @@ const Category = () => {
   );
 
   const handleChange = async (event: React.ChangeEvent<unknown>, value: number) =>
-    history.push(`/category/${id}/page/${value}`);
+    dispatch(push(`/category/${id}/page/${value}`));
 
   useEffect(() => {
     execute();
@@ -58,50 +58,6 @@ const Category = () => {
       </div>
     </div>
   );
-};
-
-const usePrevious = <T extends {}>(value: T) => {
-  // The ref object is a generic container whose current property is mutable ...
-  // ... and can hold any value, similar to an instance property on a class
-  const ref = useRef<T>();
-
-  // Store current value in ref
-  useEffect(() => {
-    ref.current = value;
-  }, [value]); // Only re-run if value changes
-
-  // Return previous value (happens before update in useEffect above)
-  return ref.current;
-};
-
-const useAsync = <T extends {}>(asyncFunction: () => Promise<T>, initValue: T, immediate = true) => {
-  const [pending, setPending] = useState(false);
-  const [value, setValue] = useState(initValue);
-  const [error, setError] = useState<Error | null>(null);
-  const dispatch = useDispatch();
-
-  const execute = useCallback(async () => {
-    dispatch(setLoading(true));
-    setPending(true);
-    setError(null);
-    try {
-      var response = await asyncFunction();
-      setValue(response);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setPending(false);
-      dispatch(setLoading(false));
-    }
-  }, [asyncFunction]);
-
-  useEffect(() => {
-    if (immediate) {
-      execute();
-    }
-  }, [execute, immediate]);
-
-  return { execute, pending, value, error };
 };
 
 export default Category;
