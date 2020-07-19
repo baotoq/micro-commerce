@@ -24,7 +24,7 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<OffsetPaged<ProductDto>>> Find([FromQuery] FindProductsQuery request, CancellationToken cancellationToken)
+        public async Task<ActionResult<OffsetPaged<ProductDto>>> FindProducts([FromQuery] FindProductsQuery request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
 
@@ -33,7 +33,7 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDto>> FindById(long id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ProductDto>> FindProductById(long id, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new FindProductByIdQuery(id), cancellationToken);
 
@@ -41,15 +41,15 @@ namespace Catalog.API.ApiControllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProductDto>> Post(CreateProductCommand request, CancellationToken cancellationToken)
+        public async Task<ActionResult<ProductDto>> CreateProduct([FromForm] CreateProductCommand request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
 
-            return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(FindProductById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(long id, PutProductCommand request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateProduct(long id, [FromForm] UpdateProductCommand request, CancellationToken cancellationToken)
         {
             request.Id = id;
             await _mediator.Send(request, cancellationToken);

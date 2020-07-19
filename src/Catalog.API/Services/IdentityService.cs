@@ -5,7 +5,7 @@ namespace Catalog.API.Services
 {
     public interface IIdentityService
     {
-        long GetCurrentUserId();
+        string GetCurrentUserId();
     }
 
     public class IdentityService : IIdentityService
@@ -17,9 +17,9 @@ namespace Catalog.API.Services
             HttpContext = context.HttpContext;
         }
 
-        public long GetCurrentUserId()
+        public string GetCurrentUserId()
         {
-            return long.Parse(HttpContext.User.FindFirstValue("sub"));
+            return HttpContext.User.FindFirstValue("sub");
         }
     }
 }

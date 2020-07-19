@@ -25,9 +25,6 @@ const LoginMenu = ({ isAuthenticated, userName }: LoginMenuProps) => {
   if (isAuthenticated) {
     return (
       <div>
-        <Button color="inherit" component={Link} to="/">
-          {userName}
-        </Button>
         <IconButton
           aria-label="account of current user"
           aria-controls="menu-appbar"
@@ -52,7 +49,7 @@ const LoginMenu = ({ isAuthenticated, userName }: LoginMenuProps) => {
           open={open}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>Profile</MenuItem>
+          <MenuItem onClick={handleClose}>{userName}</MenuItem>
           <MenuItem onClick={handleClose} component={Link} to="/authentication/logout">
             Logout
           </MenuItem>

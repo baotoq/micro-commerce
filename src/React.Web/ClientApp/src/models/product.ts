@@ -4,5 +4,6 @@ export interface Product {
   price: number;
   description: string;
   imageUri: string;
+  ratingAverage: number;
   categories?: [{ id: number, name: string }] | undefined
 }

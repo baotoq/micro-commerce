@@ -9,7 +9,8 @@ namespace Catalog.API.FunctionalTests.Infrastructure
 {
     public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public TestAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
+        public TestAuthenticationHandler(
+            IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         {

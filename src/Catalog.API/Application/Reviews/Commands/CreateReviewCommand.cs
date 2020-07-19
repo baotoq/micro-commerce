@@ -19,10 +19,8 @@ namespace Catalog.API.Application.Reviews.Commands
     public class CreateReviewCommandValidator : AbstractValidator<CreateReviewCommand>
     {
         public CreateReviewCommandValidator()
-        {
-            RuleFor(s => s.Title).NotEmpty().MinimumLength(10);
-            RuleFor(s => s.Comment).NotEmpty().MinimumLength(10);
-            RuleFor(s => s.Rating).InclusiveBetween(1, 5);
+        {  
+            RuleFor(s => s.Rating).InclusiveBetween(0, 5);
         }
     }
 

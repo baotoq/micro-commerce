@@ -10,6 +10,7 @@
 | catalog-api  | [![Build Status](https://bao2703.visualstudio.com/b-shop/_apis/build/status/catalog-api?branchName=master)](https://bao2703.visualstudio.com/b-shop/_build/latest?definitionId=5&branchName=master)  |
 | react-web    | [![Build Status](https://bao2703.visualstudio.com/b-shop/_apis/build/status/react-web?branchName=master)](https://bao2703.visualstudio.com/b-shop/_build/latest?definitionId=7&branchName=master)    |
 
+
 This is a simplified a commerce made in a micro-services architecture, using:
 
 * .NET Core 3.1

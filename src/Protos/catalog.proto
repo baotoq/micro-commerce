@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package bshop.v1.catalog;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+service CatalogService {
+}

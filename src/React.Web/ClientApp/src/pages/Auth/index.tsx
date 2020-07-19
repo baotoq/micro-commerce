@@ -1,11 +1,9 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { loginAsync, logoutAsync, completeLoginAsync, completeLogoutAsync } from "../../store/slices/auth-slice";
-import Loading from "../../components/Loading";
 
 const Auth = () => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const { action } = useParams<{ action: string }>();
 
@@ -16,25 +14,19 @@ const Auth = () => {
         break;
       case "login-callback":
         dispatch(completeLoginAsync());
-        history.push("/");
         break;
       case "logout":
         dispatch(logoutAsync());
         break;
       case "logout-callback":
         dispatch(completeLogoutAsync());
-        history.push("/");
         break;
       default:
         break;
     }
-  }, [dispatch, history, action]);
+  }, [dispatch, action]);
 
-  return (
-    <div>
-      <Loading open={true}/>
-    </div>
-  );
+  return <div></div>;
 };
 
 export default Auth;

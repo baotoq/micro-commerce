@@ -1,5 +1,8 @@
-import { httpClient } from "./http-client";
-import { CursorPaged, OffsetPaged } from "../models/index";
+import { createHttpClient } from "./http-client";
+import { OffsetPaged, OffsetPagedQuery } from "../models/index";
+
+const httpClient = createHttpClient(process.env.REACT_APP_CATALOG_URI);
+const resource = "/api/categories";
 
 export interface CategoryResponse {
   id: number;
@@ -15,19 +18,31 @@ export interface ProductResponse {
   imageUri: string;
 }
 
+export interface FindCategoriesQuery extends OffsetPagedQuery {
+  queryString?: string;
+}
+
 class CategoryService {
   public async findProductsByCategoryIdAsync(id: number, page: number, pageSize: number) {
     const params = {
       page,
-      pageSize
+      pageSize,
     };
-    const { data } = await httpClient.get<OffsetPaged<ProductResponse>>(`/api/categories/${id}/products`, { params });
+    const { data } = await httpClient.get<OffsetPaged<ProductResponse>>(`${resource}/${id}/products`, { params });
     return data;
   }
-
-  public async findAllAsync() {
-    const { data } = await httpClient.get<CursorPaged<CategoryResponse>>("/api/categories");
+  public async findAsync(query?: FindCategoriesQuery) {
+    const { data } = await httpClient.get<OffsetPaged<CategoryResponse>>(resource, { params: query });
     return data;
+  }
+  public async createAsync(name: string) {
+    await httpClient.post(`${resource}`, { name });
+  }
+  public async updateAsync(id: number, name: string) {
+    await httpClient.put(`${resource}/${id}`, { name });
+  }
+  public async deleteAsync(id: number) {
+    await httpClient.delete(`${resource}/${id}`);
   }
 }
 

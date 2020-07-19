@@ -14,7 +14,6 @@ namespace Catalog.API.BackgroundServices
         {
         }
 
-        public override string BackgroundName { get; } = nameof(ApproveReviewBackgroundService);
         public override TimeSpan DelayTime { get; } = TimeSpan.FromMinutes(1);
 
         public override async Task ProcessAsync(CancellationToken cancellationToken)

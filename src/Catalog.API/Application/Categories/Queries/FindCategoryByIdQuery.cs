@@ -45,7 +45,6 @@ namespace Catalog.API.Application.Categories.Queries
                         ImageUri = s.Product.ImageUri
                     }).ToList()
                 })
-                .AsNoTracking()
                 .SingleOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
             if (category == null)

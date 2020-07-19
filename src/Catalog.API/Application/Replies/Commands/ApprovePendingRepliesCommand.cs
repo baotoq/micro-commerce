@@ -30,7 +30,7 @@ namespace Catalog.API.Application.Replies.Commands
 
         public async Task<Unit> Handle(ApprovePendingRepliesCommand request, CancellationToken cancellationToken)
         {
-            var durationToApprove = DateTimeOffset.Now.AddMinutes(-5);
+            var durationToApprove = DateTime.UtcNow.AddMinutes(-5);
 
             var reviews = await _repository
                 .Query()

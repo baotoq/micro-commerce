@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package bshop.v1.identity;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+service IdentityService {
+  rpc GetUsersByIds (GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
+}
+
+message GetUsersByIdsRequest {
+  repeated string ids = 1;
+}
+
+message GetUsersByIdsResponse {
+  message User {
+    string id = 1;
+    string user_name = 2;
+    string email = 3;
+  }
+
+  repeated User users = 1;
+}

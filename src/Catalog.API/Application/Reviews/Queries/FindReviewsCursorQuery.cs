@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bshop.V1.Identity;
 using Catalog.API.Application.Reviews.Models;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
@@ -10,26 +11,29 @@ using Microsoft.EntityFrameworkCore;
 using Shared.MediatR.Models;
 using UnitOfWork;
 using UnitOfWork.Common;
+using static Bshop.V1.Identity.IdentityService;
 
 namespace Catalog.API.Application.Reviews.Queries
 {
-    public class FindReviewsQuery : CursorPagedQuery<DateTime>, IRequest<CursorPaged<ReviewDto, DateTime?>>
+    public class FindReviewsCursorQuery : CursorPagedQuery<DateTime>, IRequest<CursorPaged<ReviewDto, DateTime?>>
     {
-        public override DateTime PageToken { get; set; } = DateTime.Now;
+        public override DateTime PageToken { get; set; } = DateTime.UtcNow;
         public ReviewStatus? ReviewStatus { get; set; }
         public long? ProductId { get; set; }
     }
 
-    public class FindReviewsQueryHandler : IRequestHandler<FindReviewsQuery, CursorPaged<ReviewDto, DateTime?>>
+    public class FindReviewsCursorQueryHandler : IRequestHandler<FindReviewsCursorQuery, CursorPaged<ReviewDto, DateTime?>>
     {
         private readonly IRepository<Review> _repository;
+        private readonly IdentityServiceClient _identityServiceClient;
 
-        public FindReviewsQueryHandler(IRepository<Review> repository)
+        public FindReviewsCursorQueryHandler(IRepository<Review> repository, IdentityServiceClient identityServiceClient)
         {
             _repository = repository;
+            _identityServiceClient = identityServiceClient;
         }
 
-        public async Task<CursorPaged<ReviewDto, DateTime?>> Handle(FindReviewsQuery request, CancellationToken cancellationToken)
+        public async Task<CursorPaged<ReviewDto, DateTime?>> Handle(FindReviewsCursorQuery request, CancellationToken cancellationToken)
         {
             var filterQuery = _repository.Query();
 
@@ -73,15 +77,19 @@ namespace Catalog.API.Application.Reviews.Queries
                 .Select(s => new { s.CreatedDate })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            var totalPages = (int)Math.Ceiling((double)await filterQuery.CountAsync(cancellationToken) / request.PageSize);
-
             var paged = new CursorPaged<ReviewDto, DateTime?>
             {
                 Data = result.ToList(),
                 PreviousPageToken = previous?.CreatedDate,
-                NextPageToken = next?.CreatedDate,
-                TotalPages = totalPages
+                NextPageToken = next?.CreatedDate
             };
+
+            var response = await _identityServiceClient.GetUsersByIdsAsync(new GetUsersByIdsRequest
+            {
+                Ids = { paged.Data.Select(s => s.CreatedById).Distinct() }
+            });
+
+            paged.Data.ForEach(s => s.CreatedByUserName = response.Users.SingleOrDefault(x => x.Id == s.CreatedById).UserName);
 
             return paged;
         }
