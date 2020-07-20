@@ -8,6 +8,7 @@ WORKDIR /src
 COPY ["Identity.API/*.csproj", "Identity.API/"]
 COPY ["BuildingBlocks/UnitOfWork/*.csproj", "BuildingBlocks/UnitOfWork/"]
 COPY ["BuildingBlocks/Shared/*.csproj", "BuildingBlocks/Shared/"]
+COPY ["Protos/", "Protos/"]
 RUN dotnet restore "Identity.API/Identity.API.csproj"
 
 COPY ["Identity.API/", "/src/Identity.API/"]
