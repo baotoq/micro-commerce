@@ -8,6 +8,7 @@ WORKDIR /src
 COPY ["Catalog.API/*.csproj", "Catalog.API/"]
 COPY ["BuildingBlocks/UnitOfWork/*.csproj", "BuildingBlocks/UnitOfWork/"]
 COPY ["BuildingBlocks/Shared/*.csproj", "BuildingBlocks/Shared/"]
+COPY ["Protos/", "Protos/"]
 RUN dotnet restore "Catalog.API/Catalog.API.csproj"
 
 COPY ["Catalog.API/", "Catalog.API/"]
