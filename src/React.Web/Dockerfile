@@ -29,5 +29,5 @@ RUN dotnet publish --no-build -c Release -o ./publish
 FROM base AS final
 WORKDIR /app
 COPY --from=client ["/src/React.Web/ClientApp/build/", "ClientApp/build/"]
-COPY --from=publish ["/src/React.Web/publish/", "."]
+COPY --from=build ["/src/React.Web/publish/", "."]
 ENTRYPOINT ["dotnet", "React.Web.dll"]
