@@ -79,6 +79,19 @@ namespace Catalog.API.FunctionalTests.Infrastructure
                 ImageUri = "image2.jpg"
             });
 
+            context.Reviews.Add(new Review
+            {
+                Title = "Test review 1",
+                Rating = 2
+            });
+
+            context.Reviews.Add(new Review
+            {
+                Title = "Test review 2",
+                Rating = 5,
+                ProductId = 1
+            });
+
             context.SaveChanges();
         }
     }

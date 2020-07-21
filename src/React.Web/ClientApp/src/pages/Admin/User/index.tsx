@@ -42,8 +42,8 @@ const Index = () => {
         addRowPosition: "first"
       }}
       editable={{
-        isEditHidden: (rowData) => rowData.id === user.id,
-        isDeleteHidden: (rowData) => rowData.id === user.id,
+        isEditHidden: (rowData) => rowData.id === user?.id,
+        isDeleteHidden: (rowData) => rowData.id === user?.id,
         onRowUpdate: async (newData, oldData) => {
           if (oldData) {
             await UserService.updateAsync(oldData.id, newData.roleId);

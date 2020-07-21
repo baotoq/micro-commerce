@@ -72,6 +72,8 @@ namespace Catalog.API.FunctionalTests
         {
             // Arrange
             var client = _factory.CreateAuthenticatedClient();
+            await using var file = new MemoryStream(Encoding.UTF8.GetBytes("This is a dummy file"));
+
             var command = new CreateProductCommand
             { 
                 Name = "Created",
@@ -79,12 +81,22 @@ namespace Catalog.API.FunctionalTests
                 Description = "Short description",
                 CartMaxQuantity = 10,
                 StockQuantity = 100,
-                SellQuantity = 50,
-                Image = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("This is a dummy file")), 0, 0, "Data", "dummy.txt")
+                SellQuantity = 50
+            };
+
+            var content = new MultipartFormDataContent
+            {
+                { new ByteArrayContent(file.ToArray()), nameof(command.Image), "dummy.jpg" },
+                { new StringContent(command.Name), nameof(command.Name) },
+                { new StringContent(command.Price.ToString()), nameof(command.Price) },
+                { new StringContent(command.Description), nameof(command.Description) },
+                { new StringContent(command.CartMaxQuantity.ToString()), nameof(command.CartMaxQuantity) },
+                { new StringContent(command.StockQuantity.ToString()), nameof(command.StockQuantity) },
+                { new StringContent(command.SellQuantity.ToString()), nameof(command.SellQuantity) },
             };
 
             // Act
-            var response = await client.PostAsJsonAsync(Uri, command);
+            var response = await client.PostAsync(Uri, content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -100,10 +112,28 @@ namespace Catalog.API.FunctionalTests
         {
             // Arrange
             var client = _factory.CreateAuthenticatedClient();
-            var command = new UpdateProductCommand { Name = "Changed" };
+            var command = new UpdateProductCommand
+            {
+                Name = "Changed",
+                Price = 100,
+                Description = "Short description",
+                CartMaxQuantity = 10,
+                StockQuantity = 100,
+                SellQuantity = 50
+            };
+
+            var content = new MultipartFormDataContent
+            {
+                { new StringContent(command.Name), nameof(command.Name) },
+                { new StringContent(command.Price.ToString()), nameof(command.Price) },
+                { new StringContent(command.Description), nameof(command.Description) },
+                { new StringContent(command.CartMaxQuantity.ToString()), nameof(command.CartMaxQuantity) },
+                { new StringContent(command.StockQuantity.ToString()), nameof(command.StockQuantity) },
+                { new StringContent(command.SellQuantity.ToString()), nameof(command.SellQuantity) },
+            };
 
             // Act
-            var response = await client.PutAsJsonAsync($"{Uri}/1", command);
+            var response = await client.PutAsync($"{Uri}/1", content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);

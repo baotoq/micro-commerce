@@ -49,6 +49,14 @@ namespace Catalog.API.ApiControllers
             return Ok();
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteReview(long id, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new DeleteReviewCommand(id), cancellationToken);
+
+            return Ok();
+        }
+
         [HttpPost("{id}/change-review-status")]
         public async Task<ActionResult> ChangeReviewStatus(long id, ChangeReviewStatusCommand request, CancellationToken cancellationToken)
         {
