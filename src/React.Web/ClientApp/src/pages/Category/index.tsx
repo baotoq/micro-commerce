@@ -7,8 +7,8 @@ import Pagination from "@material-ui/lab/Pagination";
 
 import ProductCard from "./ProductCard";
 
-import categoryService, { ProductResponse } from "../../services/category-service";
-import { OffsetPaged } from "../../models";
+import categoryService from "../../services/category-service";
+import { OffsetPaged, Product } from "../../models";
 
 import { changeActiveTab } from "../../store/slices/category-slice";
 
@@ -22,9 +22,9 @@ const Category = () => {
 
   const dispatch = useDispatch();
 
-  const { execute, pending, value, error } = useAsync<OffsetPaged<ProductResponse>>(
+  const { execute, pending, value, error } = useAsync<OffsetPaged<Product>>(
     () => categoryService.findProductsByCategoryIdAsync(+id, +page, pageSize),
-    { data: [], totalPages: 0, totalCount: 0 },
+    { data: [], totalPages: 0, totalCount: 0, nextPage: 0, currentPage: 1 },
     false
   );
 

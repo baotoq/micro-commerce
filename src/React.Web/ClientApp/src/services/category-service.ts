@@ -1,22 +1,8 @@
 import { createHttpClient } from "./http-client";
-import { OffsetPaged, OffsetPagedQuery } from "../models/index";
+import { OffsetPaged, OffsetPagedQuery, Category, Product } from "../models/index";
 
 const httpClient = createHttpClient(process.env.REACT_APP_CATALOG_URI);
 const resource = "/api/categories";
-
-export interface CategoryResponse {
-  id: number;
-  name: string;
-  products: ProductResponse[];
-}
-
-export interface ProductResponse {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  imageUri: string;
-}
 
 export interface FindCategoriesQuery extends OffsetPagedQuery {
   queryString?: string;
@@ -28,11 +14,11 @@ class CategoryService {
       page,
       pageSize,
     };
-    const { data } = await httpClient.get<OffsetPaged<ProductResponse>>(`${resource}/${id}/products`, { params });
+    const { data } = await httpClient.get<OffsetPaged<Product>>(`${resource}/${id}/products`, { params });
     return data;
   }
   public async findAsync(query?: FindCategoriesQuery) {
-    const { data } = await httpClient.get<OffsetPaged<CategoryResponse>>(resource, { params: query });
+    const { data } = await httpClient.get<OffsetPaged<Category>>(resource, { params: query });
     return data;
   }
   public async createAsync(name: string) {

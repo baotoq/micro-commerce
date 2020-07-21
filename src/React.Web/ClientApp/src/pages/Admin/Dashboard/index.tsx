@@ -1,5 +1,5 @@
 import React from "react";
-import Chart from "react-google-charts";
+// import Chart from "react-google-charts";
 const index = () => {
   const data = [
     ["Year", "Sales"],

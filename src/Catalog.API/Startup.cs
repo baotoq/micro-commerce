@@ -115,6 +115,7 @@ namespace Catalog.API
                 endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<HealthServiceImpl>();
+                endpoints.MapGrpcService<PingGrpcService>();
                 endpoints.MapGrpcService<CatalogGrpcService>();
             });
         }
