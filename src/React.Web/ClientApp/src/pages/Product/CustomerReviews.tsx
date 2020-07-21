@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import { selectIsAuthenticated } from "../../store/slices/auth-slice";
-import ReviewService, { ReviewResponse } from "../../services/review-service";
+import ReviewService from "../../services/review-service";
 import { Review, ReviewStatus, CursorPaged } from "../../models";
 
 import Rating from "@material-ui/lab/Rating";
@@ -34,7 +34,7 @@ const CustomerReviews = ({ productId }: { productId: number }) => {
   const { value: comment, bind: bindComment } = useStringInput("");
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  const [reviews, setReviews] = React.useState<CursorPaged<ReviewResponse, Date>>();
+  const [reviews, setReviews] = React.useState<CursorPaged<Review, Date>>();
   const [pageToken, setPageToken] = React.useState<Date>(new Date(Date.now()));
 
   const [open, setOpen] = React.useState(false);

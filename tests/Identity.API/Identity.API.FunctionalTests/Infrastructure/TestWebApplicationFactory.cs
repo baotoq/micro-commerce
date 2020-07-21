@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Identity.API.Data;
+using Identity.API.Data.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +32,8 @@ namespace Identity.API.FunctionalTests.Infrastructure
 
                 var scopedServices = scope.ServiceProvider;
                 var context = scopedServices.GetRequiredService<ApplicationDbContext>();
+                var userManager = scopedServices.GetRequiredService<UserManager<User>>();
+                var roleManager = scopedServices.GetRequiredService<RoleManager<Role>>();
                 var logger = scopedServices.GetRequiredService<ILogger<TestWebApplicationFactory<TStartup>>>();
 
                 context.Database.EnsureCreated();
@@ -37,6 +41,12 @@ namespace Identity.API.FunctionalTests.Infrastructure
                 try
                 {
                     context.InitializeDbForTests();
+                    userManager.CreateAsync(new User
+                    {
+                        Email = "admin@gmail.com",
+                        UserName = "admin@gmail.com"
+                    }, "1qazZAQ!");
+                    roleManager.CreateAsync(new Role { Name = "Admin" });
                 }
                 catch (Exception ex)
                 {

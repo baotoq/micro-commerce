@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 });
 
 interface ProductCardProps {
-  product: { id: number; name: string; price: number; description: string; imageUri: string };
+  product: { id: number; name: string; price: number; description: string; imageUri: string, ratingAverage: number };
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {

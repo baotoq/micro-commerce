@@ -1,15 +1,8 @@
-﻿using System.Threading.Tasks;
-using Bshop.Catalog.V1;
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
+﻿using Bshop.V1.Catalog;
 
 namespace Catalog.API.Grpc
 {
     public class CatalogGrpcService : CatalogService.CatalogServiceBase
     {
-        public override Task<Empty> Ping(Empty request, ServerCallContext context)
-        {
-            return Task.FromResult(new Empty());
-        }
     }
 }

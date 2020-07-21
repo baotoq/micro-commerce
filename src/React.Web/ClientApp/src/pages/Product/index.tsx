@@ -10,14 +10,15 @@ import Image from "material-ui-image";
 
 import Rating from "@material-ui/lab/Rating";
 
-import ProductService, { ProductResponse } from "../../services/product-service";
+import ProductService from "../../services/product-service";
+import { Product } from "../../models";
 
 import { addToCart } from "../../store/slices/cart-slice";
 
-const Product = () => {
+const Index = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
-  const [product, setProduct] = useState<ProductResponse>();
+  const [product, setProduct] = useState<Product>();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -52,4 +53,4 @@ const Product = () => {
   );
 };
 
-export default Product;
+export default Index;

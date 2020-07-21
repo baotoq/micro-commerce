@@ -11,7 +11,7 @@ COPY ["BuildingBlocks/Shared/*.csproj", "BuildingBlocks/Shared/"]
 COPY ["Protos/", "Protos/"]
 RUN dotnet restore "Identity.API/Identity.API.csproj"
 
-COPY ["Identity.API/", "/src/Identity.API/"]
+COPY ["Identity.API/", "Identity.API/"]
 COPY ["BuildingBlocks/UnitOfWork/", "BuildingBlocks/UnitOfWork/"]
 COPY ["BuildingBlocks/Shared/", "BuildingBlocks/Shared/"]
 

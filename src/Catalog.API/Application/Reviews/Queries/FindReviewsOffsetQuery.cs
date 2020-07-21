@@ -13,7 +13,6 @@ using static Bshop.V1.Identity.IdentityService;
 
 namespace Catalog.API.Application.Reviews.Queries
 {
-   
     public class FindReviewsOffsetQuery : OffsetPagedQuery, IRequest<OffsetPaged<ReviewDto>>
     {
         public ReviewStatus? ReviewStatus { get; set; }
