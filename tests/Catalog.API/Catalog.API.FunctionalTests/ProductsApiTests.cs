@@ -5,9 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Catalog.API.Application.Products.Commands;
 using Catalog.API.Application.Products.Models;
+using Catalog.API.Data;
+using Catalog.API.Data.Models;
 using Catalog.API.FunctionalTests.Infrastructure;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using UnitOfWork.Common;
 using Xunit;
 
@@ -143,10 +146,22 @@ namespace Catalog.API.FunctionalTests
         public async Task Delete_Authenticated_Success()
         {
             // Arrange
-            var client = _factory.CreateAuthenticatedClient();
+            var product = new Product
+            {
+                ImageUri = "test.jpg"
+            };
+
+            var client = _factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(async services =>
+            {
+                using var scope = services.BuildServiceProvider().CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await context.Products.AddAsync(product);
+                await context.SaveChangesAsync();
+
+            })).CreateAuthenticatedClient();
 
             // Act
-            var response = await client.DeleteAsync($"{Uri}/2");
+            var response = await client.DeleteAsync($"{Uri}/{product.Id}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);

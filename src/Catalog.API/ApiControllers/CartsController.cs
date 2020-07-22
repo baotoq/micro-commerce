@@ -1,7 +1,9 @@
 ﻿using Catalog.API.Application.Carts.Commands;
+using Catalog.API.Application.Carts.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,12 +21,20 @@ namespace Catalog.API.ApiControllers
             _mediator = mediator;
         }
 
-        [HttpPost("add-to-cart")]
-        public async Task<ActionResult> AddToCart(AddToCartCommand request, CancellationToken cancellationToken)
+        [HttpGet]
+        public async Task<ActionResult<List<CartItemDto>>> LoadCart(CancellationToken cancellationToken)
         {
-            await _mediator.Send(request, cancellationToken);
+            var result = await _mediator.Send(new LoadCartCommand(), cancellationToken);
 
-            return Ok();
+            return result;
+        }
+
+        [HttpPost("add-to-cart")]
+        public async Task<ActionResult<long>> AddToCart(AddToCartCommand request, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(request, cancellationToken);
+
+            return result;
         }
 
         [HttpPost("remove-from-cart")]

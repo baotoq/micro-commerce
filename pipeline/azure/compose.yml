@@ -9,7 +9,7 @@ steps:
     displayName: Docker Compose ${{ parameters.action }} ${{ service }}
     inputs:
       dockerComposeCommand: ${{ parameters.action }} ${{ service }}
-      dockerComposeFile: pipeline/docker-compose/docker-compose.yaml
+      dockerComposeFile: pipeline/docker-compose/docker-compose-ci.yaml
       currentWorkingDirectory: $(Build.SourcesDirectory)/pipeline/docker-compose
       projectName: $(Build.Repository.Name)
       containerRegistryType: Container Registry

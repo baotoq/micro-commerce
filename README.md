@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/bao2703/b-shop/workflows/.NET%20Core/badge.svg)](https://github.com/bao2703/b-shop/commits/master)
 
-[[Sonar Gate]](http://52.147.208.46:9000/projects)
+[[Sonar Gate]](https://baotoq-sonar.azurewebsites.net/projects)
 
 | Project      | Status                                                                                                                                                                                               |
 |--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -14,12 +14,10 @@
 This is a simplified a commerce made in a micro-services architecture, using:
 
 * .NET Core 3.1
-* Internal communication using [Grpc](https://github.com/grpc/grpc-dotnet) (Ongoing)
-* Using [RabbitMQ](https://www.rabbitmq.com/) as a message broker based on [Masstransit](http://masstransit-project.com/) (Ongoing)
+* Internal communication using [Grpc](https://github.com/grpc/grpc-dotnet)
 * SQL database with [MS SQL Server]()
 * Accessing database with Entity Framework Core
 * In-process messaging with [MediatR](https://github.com/jbogard/MediatR)
-* Retry with Polly (Ongoing)
 * A modern web application with [React](https://reactjs.org/)
 * Logging with [Serilog](https://github.com/serilog/serilog)
 * Identity and access management with [Identity server 4](http://docs.identityserver.io/en/latest/#)

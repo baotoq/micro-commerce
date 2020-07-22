@@ -13,7 +13,7 @@ import Rating from "@material-ui/lab/Rating";
 import ProductService from "../../services/product-service";
 import { Product } from "../../models";
 
-import { addToCart } from "../../store/slices/cart-slice";
+import { addToCartAsync } from "../../store/slices/cart-slice";
 
 const Index = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,7 +41,7 @@ const Index = () => {
               <Rating name="read-only" value={product.ratingAverage} readOnly />
               <p>{product.description}</p>
               <h3>${product.price}</h3>
-              <Button variant="contained" color="primary" onClick={() => dispatch(addToCart(product))}>
+              <Button variant="contained" color="primary" onClick={() => dispatch(addToCartAsync(product))}>
                 Add to Cart
               </Button>
             </Grid>

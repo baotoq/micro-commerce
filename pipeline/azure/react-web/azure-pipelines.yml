@@ -19,6 +19,7 @@ variables:
 
 stages:
 - stage: Build_and_Run_Tests
+  displayName: Build and Run tests
   jobs:
   - job: Build
     displayName: Build

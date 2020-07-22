@@ -29,13 +29,18 @@ class ProductService {
     return data;
   }
   public async createAsync(name: string) {
-    await httpClient.post(`${resource}`, { name });
+    return await httpClient.post(`${resource}`, { name });
   }
-  public async updateAsync(id: number, name: string) {
-    await httpClient.put(`${resource}/${id}`, { name });
+  public async updateAsync(id: number, { name, price }: { name: string; price: number }) {
+    var bodyFormData = new FormData();
+    bodyFormData.set("name", name);
+    bodyFormData.set("price", price.toString());
+    return await httpClient.put(`${resource}/${id}`, bodyFormData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
   }
   public async deleteAsync(id: number) {
-    await httpClient.delete(`${resource}/${id}`);
+    return await httpClient.delete(`${resource}/${id}`);
   }
 }
 

@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using System.Threading.Tasks;
+using Catalog.API.Application.Orders.Models;
+using Catalog.API.Application.Orders.Queries;
+using UnitOfWork.Common;
 
 namespace Catalog.API.ApiControllers
 {
@@ -19,9 +22,26 @@ namespace Catalog.API.ApiControllers
             _mediator = mediator;
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult<OffsetPaged<OrderDto>>> FindProducts([FromQuery] FindOrdersQuery request, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(request, cancellationToken);
+
+            return result;
+        }
+
         [HttpPost("create-order")]
         public async Task<ActionResult> CreateOrder(CreateOrderCommand request, CancellationToken cancellationToken)
         {
+            await _mediator.Send(request, cancellationToken);
+            return Ok();
+        }
+
+        [HttpPut("{id}/change-status")]
+        public async Task<ActionResult> ChangeOrderStatus(long id, ChangeOrderStatusCommand request, CancellationToken cancellationToken)
+        {
+            request.Id = id;
             await _mediator.Send(request, cancellationToken);
             return Ok();
         }
