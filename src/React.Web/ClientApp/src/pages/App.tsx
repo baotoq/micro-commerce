@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 
 import DefaultLayout from "../components/Layout/DefaultLayout";
 import AdminLayout from "../components/Layout/AdminLayout";
@@ -20,6 +20,7 @@ import AdminUser from "./Admin/User";
 import AdminCategory from "./Admin/Category";
 import AdminProduct from "./Admin/Product";
 import AdminReview from "./Admin/Review";
+import AdminOrder from "./Admin/Order";
 
 import Loading from "../components/Loading";
 
@@ -49,6 +50,7 @@ const App = () => {
               <Route path="/admin/category" exact component={AdminCategory} />
               <Route path="/admin/product" exact component={AdminProduct} />
               <Route path="/admin/review" exact component={AdminReview} />
+              <Route path="/admin/order" exact component={AdminOrder} />
               <Route component={() => <div>404 Main Admin</div>} exact path="/admin/*" />
             </Switch>
           </AdminLayout>

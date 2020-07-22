@@ -5,5 +5,7 @@
         public decimal ProductPrice { get; set; }
 
         public int Quantity { get; set; }
+
+        public int ProductName { get; set; }
     }
 }

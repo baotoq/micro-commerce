@@ -33,7 +33,7 @@ namespace Catalog.API.FunctionalTests
         public async Task Find_Success()
         {
             // Arrange
-            var client = _factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(async services =>
+            var client = _factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
             {
                 var identityClientMock = new Mock<IdentityService.IdentityServiceClient>();
                 identityClientMock.Setup(s => s.GetUsersByIdsAsync(It.IsAny<GetUsersByIdsRequest>(),

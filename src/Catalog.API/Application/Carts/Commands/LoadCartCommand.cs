@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Carts.Models;
@@ -11,22 +10,24 @@ using UnitOfWork;
 
 namespace Catalog.API.Application.Carts.Commands
 {
-    public class LoadCartCommand : IRequest<List<CartItemDto>>
+    public class LoadCartCommand : IRequest<CartDto>
     {
     }
 
-    public class LoadCartCommandHandler : IRequestHandler<LoadCartCommand, List<CartItemDto>>
+    public class LoadCartCommandHandler : IRequestHandler<LoadCartCommand, CartDto>
     {
         private readonly IIdentityService _identityService;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Cart> _cartRepository;
 
-        public LoadCartCommandHandler(IIdentityService identityService, IRepository<Cart> cartRepository)
+        public LoadCartCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork)
         {
             _identityService = identityService;
-            _cartRepository = cartRepository;
+            _unitOfWork = unitOfWork;
+            _cartRepository = unitOfWork.Repository<Cart>();
         }
 
-        public async Task<List<CartItemDto>> Handle(LoadCartCommand request, CancellationToken cancellationToken)
+        public async Task<CartDto> Handle(LoadCartCommand request, CancellationToken cancellationToken)
         {
             var customerId = _identityService.GetCurrentUserId();
 
@@ -34,6 +35,7 @@ namespace Catalog.API.Application.Carts.Commands
                 .FindActiveCart(customerId)
                 .Select(s => new CartDto
                 {
+                    Id = s.Id,
                     Items = s.Items.Select(x => new CartItemDto
                     {
                         Id = x.Id,
@@ -50,7 +52,22 @@ namespace Catalog.API.Application.Carts.Commands
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            return cart.Items.ToList();
+            if (cart == null)
+            {
+                var newCart = new Cart
+                {
+                    CustomerId = customerId
+                };
+                await _cartRepository.AddAsync(newCart, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return new CartDto
+                {
+                    Id = newCart.Id,
+                };
+            }
+
+            return cart;
         }
     }
 }
