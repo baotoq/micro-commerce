@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk, RootState } from "..";
 
-import { Product, CartItem } from "../../models";
+import { Product, Cart } from "../../models";
 import CartService from "../../services/cart-service";
+import OderService from "../../services/order-service";
 
-interface CartState {
-  items: CartItem[];
-}
+interface CartState extends Cart {}
 
 const initialState: CartState = {
+  id: 0,
   items: [],
 };
 
@@ -16,11 +16,17 @@ export const cart = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    loadCart: (state, { payload }: PayloadAction<CartItem[]>) => {
-      state.items = payload;
+    loadCart: (state, { payload }: PayloadAction<Cart>) => {
+      if (payload) {
+        state.id = payload.id;
+        state.items = payload.items;
+      } else {
+        state.id = 0;
+        state.items = [];
+      }
     },
     addToCart: (state, { payload }: PayloadAction<{ cartItemId: number; product: Product }>) => {
-      const item = state.items.find((s) => s.product.id === payload.id);
+      const item = state.items.find((s) => s.id === payload.cartItemId);
       if (item) {
         item.quantity += 1;
       } else {
@@ -28,24 +34,24 @@ export const cart = createSlice({
       }
     },
     removeFromCart: (state, { payload }: PayloadAction<number>) => {
-      state.items = state.items.filter((s) => s.product.id === payload);
+      state.items = state.items.filter((s) => s.id !== payload);
     },
-    changeQuantity: (state, { payload }: PayloadAction<{ productId: number; quantity: number }>) => {
-      const item = state.items.find((s) => s.product.id === payload.productId);
+    changeQuantity: (state, { payload }: PayloadAction<{ cartItemId: number; quantity: number }>) => {
+      const item = state.items.find((s) => s.id === payload.cartItemId);
       if (item) {
-        item.quantity += payload.quantity;
+        item.quantity = payload.quantity;
       }
     },
   },
 });
 
 export const loadCartAsync = (): AppThunk => async (dispatch) => {
-  var { data } = await CartService.loadCartAsync();
+  const { data } = await CartService.loadCartAsync();
   dispatch(loadCart(data));
 };
 
 export const addToCartAsync = (product: Product): AppThunk => async (dispatch) => {
-  var { data } = await CartService.AddToCartAsync(product.id, 1);
+  const { data } = await CartService.AddToCartAsync(product.id, 1);
   dispatch(addToCart({ cartItemId: data, product }));
 };
 
@@ -54,10 +60,22 @@ export const removeFromCartAsync = (cartItemId: number): AppThunk => async (disp
   dispatch(removeFromCart(cartItemId));
 };
 
+export const changeQuantityAsync = (cartItemId: number, quantity: number): AppThunk => async (dispatch) => {
+  await CartService.updateQuantityAsync(cartItemId, quantity);
+  dispatch(changeQuantity({ cartItemId, quantity }));
+};
+
+export const createOrderAsync = (): AppThunk => async (dispatch, getState) => {
+  await OderService.createAsync(getState().cart.id);
+  dispatch(loadCartAsync());
+};
+
 export const { addToCart, removeFromCart, changeQuantity, loadCart } = cart.actions;
 
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectTotalItemsInCart = (state: RootState) =>
   state.cart.items.map((s) => s.quantity).reduce((accumulator, curr) => accumulator + curr, 0);
+export const selectSubTotalPricesInCart = (state: RootState) =>
+  state.cart.items.map((s) => s.quantity * s.product.price).reduce((accumulator, curr) => accumulator + curr, 0);
 
 export default cart.reducer;

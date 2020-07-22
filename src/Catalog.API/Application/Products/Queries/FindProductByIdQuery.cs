@@ -20,11 +20,11 @@ namespace Catalog.API.Application.Products.Queries
         }
     }
 
-    public class GetProductByIdQueryHandler : IRequestHandler<FindProductByIdQuery, ProductDto>
+    public class FindProductByIdQueryHandler : IRequestHandler<FindProductByIdQuery, ProductDto>
     {
         private readonly IRepository<Product> _repository;
 
-        public GetProductByIdQueryHandler(IRepository<Product> repository)
+        public FindProductByIdQueryHandler(IRepository<Product> repository)
         {
             _repository = repository;
         }
@@ -38,6 +38,7 @@ namespace Catalog.API.Application.Products.Queries
                     Name = p.Name,
                     Price = p.Price,
                     CartMaxQuantity = p.CartMaxQuantity,
+                    StockQuantity = p.StockQuantity,
                     ImageUri = p.ImageUri,
                     ReviewsCount = p.ReviewsCount,
                     RatingAverage = p.RatingAverage,

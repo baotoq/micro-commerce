@@ -112,6 +112,9 @@ const NavMenu = () => {
                 <Button color="inherit" component={Link} to="/admin/review">
                   Review
                 </Button>
+                <Button color="inherit" component={Link} to="/admin/order">
+                  Order
+                </Button>
               </span>
             )}
           </div>
