@@ -11,8 +11,8 @@ code-analysis-catalog-api:
     - dotnet build --no-restore -c Release
     - cd ${CI_PROJECT_DIR}
     - cd tests/${SERVICE_NAME}
-    - dotnet test ${SERVICE_NAME}.UnitTests -c Release /p:CollectCoverage=true
-    - dotnet test ${SERVICE_NAME}.FunctionalTests -c Release /p:CollectCoverage=true
+    - dotnet test ${SERVICE_NAME}.UnitTests -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    - dotnet test ${SERVICE_NAME}.FunctionalTests -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
 # build-catalog-api:
 #   stage: dockerize

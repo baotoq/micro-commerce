@@ -42,6 +42,7 @@ namespace Catalog.API.Application.Categories.Queries
                 {
                     Id = s.Id,
                     Name = s.Name,
+                    CartMaxQuantity = s.CartMaxQuantity,
                     Price = s.Price,
                     Description = s.Description,
                     ImageUri = s.ImageUri

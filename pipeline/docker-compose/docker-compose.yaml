@@ -23,8 +23,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=identity-api;User Id=sa;Password=P@ssw0rd;
-      - Client:Swagger:Uri=http://${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
-      - Client:React:Uri=http://${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
+      - Client:Swagger:Uri=${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
+      - Client:React:Uri=${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
     ports:
       - "${IDENTITY_API_PORT}:80"
     networks:
@@ -42,7 +42,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=catalog-api;User Id=sa;Password=P@ssw0rd;
-      - Identity:Uri=http://${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
+      - Identity:Uri=${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
     ports:
       - "${CATALOG_API_PORT}:80"
     networks:
@@ -55,9 +55,8 @@ services:
       context: ../../src
       dockerfile: React.Web/Dockerfile
       args:
-        - REACT_APP_BASE_URI=http://${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
-        - REACT_APP_IDENTITY_URI=http://${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
-        - REACT_APP_CATALOG_URI=http://${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
+        - REACT_APP_IDENTITY_URI=${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
+        - REACT_APP_CATALOG_URI=${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80

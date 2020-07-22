@@ -40,8 +40,8 @@ class AuthService {
     return this.userManager.signoutRedirect();
   }
 
-  public async completeLogoutAsync(url: string): Promise<void> {
-    await this.userManager.signoutCallback(url);
+  public async completeLogoutAsync(url: string) {
+    return await this.userManager.signoutCallback(url);
   }
 }
 

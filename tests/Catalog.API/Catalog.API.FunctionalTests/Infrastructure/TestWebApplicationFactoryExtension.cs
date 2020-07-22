@@ -10,7 +10,7 @@ namespace Catalog.API.FunctionalTests.Infrastructure
 {
     public static class TestWebApplicationFactoryExtension
     {
-        public static HttpClient CreateAuthenticatedClient<TStartup>(this TestWebApplicationFactory<TStartup> factory) where TStartup : class
+        public static HttpClient CreateAuthenticatedClient<TStartup>(this WebApplicationFactory<TStartup> factory) where TStartup : class
         {
             var client = factory.WithWebHostBuilder(builder =>
                 {

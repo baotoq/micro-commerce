@@ -22,13 +22,13 @@ class CategoryService {
     return data;
   }
   public async createAsync(name: string) {
-    await httpClient.post(`${resource}`, { name });
+    return await httpClient.post(`${resource}`, { name });
   }
   public async updateAsync(id: number, name: string) {
-    await httpClient.put(`${resource}/${id}`, { name });
+    return await httpClient.put(`${resource}/${id}`, { name });
   }
   public async deleteAsync(id: number) {
-    await httpClient.delete(`${resource}/${id}`);
+    return await httpClient.delete(`${resource}/${id}`);
   }
 }
 

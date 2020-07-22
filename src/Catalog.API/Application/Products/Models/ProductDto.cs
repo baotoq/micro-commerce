@@ -11,6 +11,8 @@ namespace Catalog.API.Application.Products.Models
 
         public decimal Price { get; set; }
 
+        public int CartMaxQuantity { get; set; }
+
         public int ReviewsCount { get; set; }
 
         public double? RatingAverage { get; set; }

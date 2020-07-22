@@ -52,7 +52,7 @@ const Index = () => {
         onRowAdd: async (newData) => await ProductService.createAsync(newData.name),
         onRowUpdate: async (newData, oldData) => {
           if (oldData) {
-            await ProductService.updateAsync(oldData.id, newData.name);
+            await ProductService.updateAsync(oldData.id, { name: newData.name, price: newData.price });
           }
         },
         onRowDelete: async (oldData) => await ProductService.deleteAsync(oldData.id),
