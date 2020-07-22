@@ -42,9 +42,6 @@ namespace Catalog.API.Application.Products.Commands
         {
             RuleFor(s => s.Name).NotEmpty();
             RuleFor(s => s.Price).GreaterThan(0);
-            RuleFor(s => s.SellQuantity).GreaterThan(0);
-            RuleFor(s => s.CartMaxQuantity).GreaterThan(0);
-            RuleFor(s => s.StockQuantity).GreaterThan(0);
         }
     }
 

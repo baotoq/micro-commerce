@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Products.Models;
@@ -40,9 +38,6 @@ namespace Catalog.API.Application.Products.Commands
             RuleFor(s => s.Name).NotEmpty();
             RuleFor(s => s.Price).GreaterThan(0);
             RuleFor(s => s.Image).NotNull();
-            RuleFor(s => s.SellQuantity).GreaterThan(0);
-            RuleFor(s => s.CartMaxQuantity).GreaterThan(0);
-            RuleFor(s => s.StockQuantity).GreaterThan(0);
         }
     }
 

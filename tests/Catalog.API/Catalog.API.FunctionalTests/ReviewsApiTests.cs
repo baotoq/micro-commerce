@@ -1,13 +1,19 @@
 ﻿using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
-using Catalog.API.Application.Categories.Commands.Create;
-using Catalog.API.Application.Categories.Models;
+using Bshop.V1.Identity;
 using Catalog.API.Application.Reviews.Commands;
 using Catalog.API.Application.Reviews.Models;
+using Catalog.API.Data;
+using Catalog.API.Data.Models;
 using Catalog.API.FunctionalTests.Infrastructure;
 using Catalog.API.Data.Models.Enums;
 using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using Shared.Testings;
 using UnitOfWork.Common;
 using Xunit;
 
@@ -21,6 +27,32 @@ namespace Catalog.API.FunctionalTests
         public ReviewsApiTests(TestWebApplicationFactory<Startup> factory)
         {
             _factory = factory;
+        }
+
+        [Fact]
+        public async Task Find_Success()
+        {
+            // Arrange
+            var client = _factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(async services =>
+            {
+                var identityClientMock = new Mock<IdentityService.IdentityServiceClient>();
+                identityClientMock.Setup(s => s.GetUsersByIdsAsync(It.IsAny<GetUsersByIdsRequest>(),
+                        null, null, It.IsAny<CancellationToken>()))
+                    .Returns(GrpcTestCalls.AsyncUnaryCall(new GetUsersByIdsResponse
+                    {
+                        Users = { new GetUsersByIdsResponse.Types.User { Id = MasterData.CurrentUserId, Email = "test@gmail.com", UserName = "test@gmail.com" } }
+                    }));
+
+                services.AddSingleton(identityClientMock.Object);
+            })).CreateClient();
+
+            // Act
+            var response = await client.GetAsync(Uri + "/offset");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var result = await response.Content.ReadAsAsync<OffsetPaged<ReviewDto>>();
+            result.Data.Should().NotBeNullOrEmpty();
         }
 
         [Fact]
@@ -55,10 +87,19 @@ namespace Catalog.API.FunctionalTests
         public async Task Delete_Authenticated_Success()
         {
             // Arrange
-            var client = _factory.CreateAuthenticatedClient();
+            var review = new Review();
+
+            var client = _factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(async services =>
+            {
+                using var scope = services.BuildServiceProvider().CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await context.Reviews.AddAsync(review);
+                await context.SaveChangesAsync();
+
+            })).CreateAuthenticatedClient();
 
             // Act
-            var response = await client.DeleteAsync($"{Uri}/2");
+            var response = await client.DeleteAsync($"{Uri}/{review.Id}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

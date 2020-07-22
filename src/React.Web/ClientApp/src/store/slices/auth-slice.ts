@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk, RootState } from "../";
 import { push } from "connected-react-router";
 import { setLoading } from "./app-slice";
+import { loadCartAsync } from "./cart-slice";
 import authService from "../../services/auth-service";
 import { User } from "../../models";
 
@@ -57,6 +58,7 @@ export const checkLoginAsync = (): AppThunk => async (dispatch) => {
   const user = await authService.getUserAsync();
   if (user) {
     dispatch(loginSuccess({ id: user.profile.sub, name: user.profile.name, role: user.profile.role } as User));
+    dispatch(loadCartAsync());
   }
 };
 

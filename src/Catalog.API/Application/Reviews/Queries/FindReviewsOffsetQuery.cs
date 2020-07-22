@@ -68,9 +68,9 @@ namespace Catalog.API.Application.Reviews.Queries
             var response = await _identityServiceClient.GetUsersByIdsAsync(new GetUsersByIdsRequest
             {
                 Ids = { paged.Data.Select(s => s.CreatedById).Distinct() }
-            });
+            }, cancellationToken: cancellationToken);
 
-            paged.Data.ForEach(s => s.CreatedByUserName = response.Users.SingleOrDefault(x => x.Id == s.CreatedById).UserName);
+            paged.Data.ForEach(s => s.CreatedByUserName = response.Users.SingleOrDefault(x => x.Id == s.CreatedById)?.UserName);
 
             return paged;
         }

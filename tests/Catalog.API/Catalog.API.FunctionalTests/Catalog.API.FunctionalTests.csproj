@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.3" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Moq" Version="4.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.3" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
@@ -22,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\BuildingBlocks\Shared.Testings\Shared.Testings.csproj" />
     <ProjectReference Include="..\..\..\src\Catalog.API\Catalog.API.csproj" />
   </ItemGroup>
 

@@ -11,7 +11,7 @@ using UnitOfWork;
 
 namespace Catalog.API.Application.Carts.Commands
 {
-    public class AddToCartCommand : IRequest<Unit>
+    public class AddToCartCommand : IRequest<long>
     {
         public long ProductId { get; set; }
         public int Quantity { get; set; }
@@ -25,7 +25,7 @@ namespace Catalog.API.Application.Carts.Commands
         }
     }
 
-    public class AddToCartCommandHandler : IRequestHandler<AddToCartCommand, Unit>
+    public class AddToCartCommandHandler : IRequestHandler<AddToCartCommand, long>
     {
         private readonly IIdentityService _identityService;
         private readonly IUnitOfWork _unitOfWork;
@@ -40,7 +40,7 @@ namespace Catalog.API.Application.Carts.Commands
             _productRepository = productRepository;
         }
 
-        public async Task<Unit> Handle(AddToCartCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(AddToCartCommand request, CancellationToken cancellationToken)
         {
             var customerId = _identityService.GetCurrentUserId();
 
@@ -95,7 +95,7 @@ namespace Catalog.API.Application.Carts.Commands
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
+            return cartItem.Id;
         }
     }
 }

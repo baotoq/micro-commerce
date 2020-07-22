@@ -37,6 +37,7 @@ namespace Catalog.API.Application.Products.Queries
                     Id = p.Id,
                     Name = p.Name,
                     Price = p.Price,
+                    CartMaxQuantity = p.CartMaxQuantity,
                     ImageUri = p.ImageUri,
                     ReviewsCount = p.ReviewsCount,
                     RatingAverage = p.RatingAverage,

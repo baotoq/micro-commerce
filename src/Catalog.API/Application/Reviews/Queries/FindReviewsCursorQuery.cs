@@ -89,7 +89,7 @@ namespace Catalog.API.Application.Reviews.Queries
                 Ids = { paged.Data.Select(s => s.CreatedById).Distinct() }
             });
 
-            paged.Data.ForEach(s => s.CreatedByUserName = response.Users.SingleOrDefault(x => x.Id == s.CreatedById).UserName);
+            paged.Data.ForEach(s => s.CreatedByUserName = response.Users.SingleOrDefault(x => x.Id == s.CreatedById)?.UserName);
 
             return paged;
         }

@@ -14,10 +14,10 @@ class UserService {
     return data;
   }
   public async updateAsync(userId: string, roleId: string) {
-    await httpClient.put(`/api/users/${userId}/role/${roleId}`);
+    return await httpClient.put(`/api/users/${userId}/role/${roleId}`);
   }
   public async deleteAsync(id: string) {
-    await httpClient.delete(`/api/users/${id}`);
+    return await httpClient.delete(`/api/users/${id}`);
   }
 }
 

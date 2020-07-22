@@ -15,4 +15,4 @@ code-analysis:
   script:
     - dotnet restore
     - dotnet build --no-restore -c Release
-    - dotnet test -c Release /p:CollectCoverage=true
+    - dotnet test -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover

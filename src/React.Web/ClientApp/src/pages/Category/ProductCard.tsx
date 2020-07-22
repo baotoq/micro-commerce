@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Image from "material-ui-image";
 
-import { addToCart } from "../../store/slices/cart-slice";
+import { addToCartAsync } from "../../store/slices/cart-slice";
 
 const useStyles = makeStyles({
   root: {
@@ -45,7 +45,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" color="primary" onClick={() => dispatch(addToCart(product))}>
+        <Button size="small" color="primary" onClick={() => dispatch(addToCartAsync(product))}>
           Add to Cart
         </Button>
       </CardActions>
