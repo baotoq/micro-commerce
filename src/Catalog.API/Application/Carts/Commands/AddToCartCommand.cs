@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Services;
 using UnitOfWork;
+using Shared.MediatR.Exceptions;
 
 namespace Catalog.API.Application.Carts.Commands
 {
@@ -51,11 +52,7 @@ namespace Catalog.API.Application.Carts.Commands
 
             if (cart == null)
             {
-                cart = new Cart
-                {
-                    CustomerId = customerId
-                };
-                await _cartRepository.AddAsync(cart, cancellationToken);
+                throw new NotFoundException();
             }
 
             if (cart.LockedOnCheckout)
@@ -88,7 +85,7 @@ namespace Catalog.API.Application.Carts.Commands
                 throw new Exception($"Can only add {product.CartMaxQuantity} items per cart");
             }
 
-            if (cartItem.Quantity > product.SellQuantity)
+            if (cartItem.Quantity > product.StockQuantity)
             {
                 throw new Exception($"There are only {product.StockQuantity} items available for {product.Name}");
             }

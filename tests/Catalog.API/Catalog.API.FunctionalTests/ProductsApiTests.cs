@@ -119,20 +119,14 @@ namespace Catalog.API.FunctionalTests
             {
                 Name = "Changed",
                 Price = 100,
-                Description = "Short description",
-                CartMaxQuantity = 10,
                 StockQuantity = 100,
-                SellQuantity = 50
             };
 
             var content = new MultipartFormDataContent
             {
                 { new StringContent(command.Name), nameof(command.Name) },
                 { new StringContent(command.Price.ToString()), nameof(command.Price) },
-                { new StringContent(command.Description), nameof(command.Description) },
-                { new StringContent(command.CartMaxQuantity.ToString()), nameof(command.CartMaxQuantity) },
                 { new StringContent(command.StockQuantity.ToString()), nameof(command.StockQuantity) },
-                { new StringContent(command.SellQuantity.ToString()), nameof(command.SellQuantity) },
             };
 
             // Act

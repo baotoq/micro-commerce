@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,13 +24,7 @@ namespace Catalog.API.Application.Products.Commands
 
         public decimal Price { get; set; }
 
-        public int CartMaxQuantity { get; set; }
-
-        public int SellQuantity { get; set; }
-
         public int StockQuantity { get; set; }
-
-        public string Description { get; set; }
 
         public IFormFile Image { get; set; }
 
@@ -73,10 +68,7 @@ namespace Catalog.API.Application.Products.Commands
 
             product.Name = request.Name;
             product.Price = request.Price;
-            product.CartMaxQuantity = request.CartMaxQuantity;
-            product.SellQuantity = request.SellQuantity;
             product.StockQuantity = request.StockQuantity;
-            product.Description = request.Description;
 
             if (request.Image != null)
             {
@@ -85,14 +77,17 @@ namespace Catalog.API.Application.Products.Commands
                 product.ImageUri = imageFileName;
             }
 
-            product.Categories.Clear();
+            if (product.Categories.Any())
+            {
+                product.Categories.Clear();
 
-            foreach (var categoryId in request.CategoryIds)
-            { 
-                product.Categories.Add(new ProductCategory
+                foreach (var categoryId in request.CategoryIds)
                 {
-                    CategoryId = categoryId
-                });
+                    product.Categories.Add(new ProductCategory
+                    {
+                        CategoryId = categoryId
+                    });
+                }
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -4,6 +4,7 @@ export * from "./user";
 export * from "./review";
 export * from "./role";
 export * from "./cart";
+export * from "./order";
 
 export interface OffsetPaged<T> {
   data: T[];

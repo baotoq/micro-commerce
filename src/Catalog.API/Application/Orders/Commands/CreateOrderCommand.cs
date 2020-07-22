@@ -52,7 +52,7 @@ namespace Catalog.API.Application.Orders.Commands
                     throw new Exception($"Can only add {product.CartMaxQuantity} items per cart");
                 }
 
-                if (cartItem.Quantity > cartItem.Product.SellQuantity)
+                if (cartItem.Quantity > cartItem.Product.StockQuantity)
                 {
                     throw new Exception($"There are only {product.StockQuantity} items available for {product.Name}");
                 }

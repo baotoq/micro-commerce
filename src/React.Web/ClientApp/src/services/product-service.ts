@@ -7,6 +7,8 @@ export interface ProductResponse {
   id: number;
   name: string;
   price: number;
+  cartMaxQuantity: number;
+  stockQuantity: number;
   description: string;
   imageUri: string;
   ratingAverage: number;
@@ -31,10 +33,14 @@ class ProductService {
   public async createAsync(name: string) {
     return await httpClient.post(`${resource}`, { name });
   }
-  public async updateAsync(id: number, { name, price }: { name: string; price: number }) {
+  public async updateAsync(
+    id: number,
+    { name, price, stockQuantity }: { name: string; price: number; stockQuantity: number }
+  ) {
     var bodyFormData = new FormData();
     bodyFormData.set("name", name);
     bodyFormData.set("price", price.toString());
+    bodyFormData.set("stockQuantity", stockQuantity.toString());
     return await httpClient.put(`${resource}/${id}`, bodyFormData, {
       headers: { "Content-Type": "multipart/form-data" },
     });

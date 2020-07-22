@@ -41,6 +41,7 @@ namespace Catalog.API.Application.Products.Queries
                 Id = s.Id,
                 Name = s.Name,
                 CartMaxQuantity = s.CartMaxQuantity,
+                StockQuantity = s.StockQuantity,
                 Price = s.Price,
                 ImageUri = s.ImageUri,
                 ReviewsCount = s.ReviewsCount,

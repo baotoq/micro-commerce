@@ -13,6 +13,8 @@ namespace Catalog.API.Application.Products.Models
 
         public int CartMaxQuantity { get; set; }
 
+        public int StockQuantity { get; set; }
+
         public int ReviewsCount { get; set; }
 
         public double? RatingAverage { get; set; }
