@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
-using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
 
 namespace Catalog.API.Application.Orders.Models
 {
     public class OrderDto
     {
+        public long Id { get; set; }
+
         public string CustomerId { get; set; }
 
         public string CustomerName { get; set; }

@@ -15,7 +15,7 @@ const CategoriesTabs = () => {
   return (
     <div>
       <AppBar position="static" color="default">
-        <Tabs variant="scrollable" value={activeTab} scrollButtons="auto">
+        <Tabs value={activeTab} centered>
           <Tab to="/" component={Link} label="Home" value={0} />
           {categories.map((c) => (
             <Tab to={`/category/${c.id}/page/1`} component={Link} label={c.name} value={c.id} key={c.id} />

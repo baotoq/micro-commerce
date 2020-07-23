@@ -59,7 +59,7 @@ namespace Catalog.API
                     options.Authority = Configuration["Identity:Uri"];
                     options.ApiName = "catalog-api";
                     options.ApiSecret = "secret";
-                    options.RequireHttpsMetadata = Configuration.GetValue<bool>("Identity:RequireHttpsMetadata");
+                    options.RequireHttpsMetadata = false;
                 });
 
             services.AddHttpContextAccessor();
