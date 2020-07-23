@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
@@ -31,7 +32,7 @@ namespace Catalog.API.ApiControllers
             var result = await _reviewRepository.Query()
                 .Where(s => s.CreatedDate > time)
                 .GroupBy(s => s.CreatedDate.Month)
-                .Select(s => new object[] { s.Key, s.Count() })
+                .Select(s => new object[] { CultureInfo.InvariantCulture.DateTimeFormat.GetAbbreviatedMonthName(s.Key), s.Count() })
                 .ToListAsync();
 
             return Ok(result);
@@ -45,7 +46,7 @@ namespace Catalog.API.ApiControllers
             var result = await _orderRepository.Query()
                 .Where(s => s.CreatedDate > time)
                 .GroupBy(s => s.CreatedDate.Month)
-                .Select(s => new object[] { s.Key, s.Count() })
+                .Select(s => new object[] { CultureInfo.InvariantCulture.DateTimeFormat.GetAbbreviatedMonthName(s.Key), s.Count() })
                 .ToListAsync();
 
             return Ok(result);
