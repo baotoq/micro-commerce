@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
@@ -15,19 +14,35 @@ namespace Catalog.API.ApiControllers
     [Route("api/[controller]")]
     public class StatisticsController : ControllerBase
     {
-        private readonly IRepository<Review> _repository;
+        private readonly IRepository<Review> _reviewRepository;
+        private readonly IRepository<Order> _orderRepository;
 
-        public StatisticsController(IRepository<Review> repository)
+        public StatisticsController(IRepository<Review> reviewRepository, IRepository<Order> orderRepository)
         {
-            _repository = repository;
+            _reviewRepository = reviewRepository;
+            _orderRepository = orderRepository;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        [HttpGet("reviews")]
+        public async Task<IActionResult> Reviews()
         {
             var time = DateTime.UtcNow.AddYears(-1);
 
-            var result = await _repository.Query()
+            var result = await _reviewRepository.Query()
+                .Where(s => s.CreatedDate > time)
+                .GroupBy(s => s.CreatedDate.Month)
+                .Select(s => new object[] { s.Key, s.Count() })
+                .ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("orders")]
+        public async Task<IActionResult> Orders()
+        {
+            var time = DateTime.UtcNow.AddYears(-1);
+
+            var result = await _orderRepository.Query()
                 .Where(s => s.CreatedDate > time)
                 .GroupBy(s => s.CreatedDate.Month)
                 .Select(s => new object[] { s.Key, s.Count() })

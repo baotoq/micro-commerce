@@ -69,7 +69,7 @@ namespace Catalog.API.ApiControllers
             request.Id = id;
             await _mediator.Send(request, cancellationToken);
 
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -77,7 +77,7 @@ namespace Catalog.API.ApiControllers
         {
             await _mediator.Send(new DeleteCategoryCommand(id), cancellationToken);
 
-            return NoContent();
+            return Ok();
         }
     }
 }

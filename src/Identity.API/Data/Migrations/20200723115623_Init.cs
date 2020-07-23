@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Identity.API.Migrations
+namespace Identity.API.Data.Migrations
 {
     public partial class Init : Migration
     {
@@ -151,36 +151,6 @@ namespace Identity.API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "1", "4776a1b2-dbe4-4056-82ec-8bed211d1454", "admin", "ADMIN" },
-                    { "2", "00d172be-03a0-4856-8b12-26d63fcf4374", "customer", "CUSTOMER" },
-                    { "3", "d4754388-8355-4018-b728-218018836817", "guest", "GUEST" },
-                    { "4", "71f10604-8c4d-4a7d-ac4a-ffefb11cefeb", "vendor", "VENDOR" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[,]
-                {
-                    { "1", 0, "c83afcbc-312c-4589-bad7-8686bd4754c0", "admin@gmail.com", false, false, null, "ADMIN@SIMPLCOMMERCE.COM", "ADMIN@GMAIL.COM", "AQAAAAEAACcQAAAAEAEqSCV8Bpg69irmeg8N86U503jGEAYf75fBuzvL00/mr/FGEsiUqfR0rWBbBUwqtw==", null, false, "d6847450-47f0-4c7a-9fed-0c66234bf61f", false, "admin@gmail.com" },
-                    { "2", 0, "101cd6ae-a8ef-4a37-97fd-04ac2dd630e4", "bshop@gmail.com", false, false, null, "BSHOP@GMAIL.COM", "SYSTEM@SIMPLCOMMERCE.COM", "AQAAAAEAACcQAAAAEAEqSCV8Bpg69irmeg8N86U503jGEAYf75fBuzvL00/mr/FGEsiUqfR0rWBbBUwqtw==", null, false, "a9565acb-cee6-425f-9833-419a793f5fba", false, "bshop@gmail.com" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "UserId", "RoleId" },
-                values: new object[] { "1", "1" });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "UserId", "RoleId" },
-                values: new object[] { "2", "2" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

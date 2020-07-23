@@ -3,7 +3,8 @@ import MaterialTable, { Column } from "material-table";
 import Rating from "@material-ui/lab/Rating";
 import Image from "material-ui-image";
 import ProductService from "../../../services/product-service";
-import { Product } from "../../../models";
+import OrderService from "../../../services/order-service";
+import { Product, Order } from "../../../models";
 
 const Index = () => {
   const [columns, setColumns] = React.useState<Column<Product>[]>([

@@ -3,7 +3,7 @@ export interface Order {
   customerName: string;
   orderStatus: OrderStatus;
   orderNote: string;
-  OrderItemss: OrderItem[];
+  OrderItems: OrderItem[];
 }
 
 export interface OrderItem {
@@ -13,7 +13,11 @@ export interface OrderItem {
 }
 
 export enum OrderStatus {
-  Pending,
-  Approved,
-  NotApproved,
+  New,
+  PaymentReceived,
+  Invoiced,
+  Shipping,
+  Completed,
+  Canceled,
+  Closed
 }

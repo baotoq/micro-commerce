@@ -24,7 +24,7 @@ namespace Catalog.API.ApiControllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<OffsetPaged<OrderDto>>> FindProducts([FromQuery] FindOrdersQuery request, CancellationToken cancellationToken)
+        public async Task<ActionResult<OffsetPaged<OrderDto>>> FindOrders([FromQuery] FindOrdersQuery request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
 
@@ -43,6 +43,13 @@ namespace Catalog.API.ApiControllers
         {
             request.Id = id;
             await _mediator.Send(request, cancellationToken);
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteOrder(long id, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new DeleteOrderCommand(id), cancellationToken);
             return Ok();
         }
     }
