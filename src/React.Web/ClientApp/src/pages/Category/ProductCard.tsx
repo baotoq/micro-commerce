@@ -13,6 +13,8 @@ import Image from "material-ui-image";
 
 import { addToCartAsync } from "../../store/slices/cart-slice";
 
+import { Product } from "../../models"
+
 const useStyles = makeStyles({
   root: {
     maxWidth: 210,
@@ -24,7 +26,7 @@ const useStyles = makeStyles({
 });
 
 interface ProductCardProps {
-  product: { id: number; name: string; price: number; description: string; imageUri: string, ratingAverage: number };
+  product: Product;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {

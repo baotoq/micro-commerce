@@ -97,7 +97,7 @@ namespace Catalog.API.UnitTests.Categories
                 Name = "test"
             }, CancellationToken.None);
 
-            act.Should().BeOfType<NoContentResult>();
+            act.Should().BeOfType<OkResult>();
         }
 
         [Fact]
@@ -109,7 +109,7 @@ namespace Catalog.API.UnitTests.Categories
 
             var act = await _sut.DeleteCategory(1, CancellationToken.None);
 
-            act.Should().BeOfType<NoContentResult>();
+            act.Should().BeOfType<OkResult>();
         }
     }
 }

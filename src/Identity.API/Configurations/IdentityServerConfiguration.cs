@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using IdentityServer4;
 using IdentityServer4.Models;
@@ -49,7 +49,7 @@ namespace Identity.API.Configurations
                 {
                     ClientName = "react-web",
                     ClientId = "react-web",
-                    AccessTokenType = AccessTokenType.Reference,
+                    AccessTokenType = AccessTokenType.Jwt,
                     AllowedGrantTypes = GrantTypes.Code,
                     AllowAccessTokensViaBrowser = true,
 

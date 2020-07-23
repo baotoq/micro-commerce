@@ -133,7 +133,7 @@ namespace Catalog.API.FunctionalTests
             var response = await client.PutAsync($"{Uri}/1", content);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
@@ -158,7 +158,7 @@ namespace Catalog.API.FunctionalTests
             var response = await client.DeleteAsync($"{Uri}/{product.Id}");
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
     }
 }

@@ -39,7 +39,8 @@ namespace Catalog.API.Application.Orders.Queries
                     OrderItems = s.OrderItems.Select(x => new OrderItemDto
                     {
                         Quantity = x.Quantity,
-                        ProductPrice = x.ProductPrice
+                        ProductPrice = x.ProductPrice,
+                        ProductName = x.Product.Name,
                     }).ToList()
                 })
                 .ToPagedAsync(request.Page, request.PageSize, cancellationToken);

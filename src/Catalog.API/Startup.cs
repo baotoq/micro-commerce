@@ -59,7 +59,7 @@ namespace Catalog.API
                     options.Authority = Configuration["Identity:Uri"];
                     options.ApiName = "catalog-api";
                     options.ApiSecret = "secret";
-                    options.RequireHttpsMetadata = false;
+                    options.RequireHttpsMetadata = Configuration.GetValue<bool>("Identity:RequireHttpsMetadata");
                 });
 
             services.AddHttpContextAccessor();
@@ -95,8 +95,7 @@ namespace Catalog.API
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
-
-            app.UseFileServer();
+            app.UseStaticFiles();
 
             app.UseSwaggerDefault();
 
@@ -168,7 +167,7 @@ namespace Catalog.API
                 c.OAuthClientId("swagger");
                 c.OAuthClientSecret("secret");
                 c.OAuthUsePkce();
-                c.SwaggerEndpoint("swagger/v1/swagger.json", "Catalog API V1");
+                c.SwaggerEndpoint("swagger/v1/swagger.json", "Identity API V1");
             });
         }
     }

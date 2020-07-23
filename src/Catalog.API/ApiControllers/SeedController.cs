@@ -6,6 +6,7 @@ using Catalog.API.Data;
 using Catalog.API.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Catalog.API.ApiControllers
@@ -22,6 +23,13 @@ namespace Catalog.API.ApiControllers
         {
             _logger = logger;
             _context = context;
+        }
+
+        [HttpGet("migrate")]
+        public async Task<IActionResult> Migrate()
+        {
+            await _context.Database.MigrateAsync();
+            return Ok();
         }
 
         [HttpGet]
