@@ -99,7 +99,7 @@ namespace Catalog.API.FunctionalTests
             var response = await client.PutAsJsonAsync($"{Uri}/1", command);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace Catalog.API.FunctionalTests
             var response = await client.DeleteAsync($"{Uri}/{cat.Id}");
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
     }
 }

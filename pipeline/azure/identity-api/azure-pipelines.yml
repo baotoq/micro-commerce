@@ -29,7 +29,7 @@ stages:
       parameters:
         projectKey: identity-api
         projectPath: Identity.API
-        runTest: false
+        runTest: true
 
 - stage: Build_and_Push_Image
   displayName: Build and push docker image

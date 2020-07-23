@@ -3,12 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
 using Identity.API.Configurations;
+using Identity.API.Data;
 using Identity.API.Data.Models;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -21,18 +23,30 @@ namespace Identity.API.ApiControllers
     {
         private readonly ILogger<SeedController> _logger;
         private readonly ConfigurationDbContext _configurationDbContext;
+        private readonly PersistedGrantDbContext _persistedGrantDbContext;
+        private readonly ApplicationDbContext _applicationDbContext;
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
         private const string Password = "1qazZAQ!";
 
-        public SeedController(ILogger<SeedController> logger, ConfigurationDbContext configurationDbContext, IConfiguration configuration, UserManager<User> userManager, RoleManager<Role> roleManager)
+        public SeedController(ILogger<SeedController> logger, ConfigurationDbContext configurationDbContext, IConfiguration configuration, UserManager<User> userManager, RoleManager<Role> roleManager, ApplicationDbContext applicationDbContext, PersistedGrantDbContext persistedGrantDbContext)
         {
             _logger = logger;
             _configurationDbContext = configurationDbContext;
             _configuration = configuration;
             _userManager = userManager;
             _roleManager = roleManager;
+            _applicationDbContext = applicationDbContext;
+            _persistedGrantDbContext = persistedGrantDbContext;
+        }
+
+        [HttpGet("migrate")]
+        public async Task<IActionResult> Migrate()
+        {
+            await Task.WhenAll(_applicationDbContext.Database.MigrateAsync(), _persistedGrantDbContext.Database.MigrateAsync(), _configurationDbContext.Database.MigrateAsync());
+
+            return Ok();
         }
 
         [HttpGet("identity-server-config")]
@@ -97,7 +111,7 @@ namespace Identity.API.ApiControllers
         }
 
         [HttpGet("users-admin")]
-        public async Task<IActionResult> SeedUserAmin(int count = 20)
+        public async Task<IActionResult> SeedUserAdmin(int count = 20)
         {
             _logger.LogInformation("Start seeding database");
 

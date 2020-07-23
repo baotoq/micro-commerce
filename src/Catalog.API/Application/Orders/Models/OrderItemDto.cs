@@ -6,6 +6,6 @@
 
         public int Quantity { get; set; }
 
-        public int ProductName { get; set; }
+        public string ProductName { get; set; }
     }
 }

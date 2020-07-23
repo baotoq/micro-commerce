@@ -19,8 +19,8 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Restore with dotnet
-      run: dotnet restore ./BShop.sln
+      run: dotnet restore
     - name: Build with dotnet
-      run: dotnet build ./BShop.sln --no-restore --configuration Release
+      run: dotnet build --no-restore -c Release
     - name: Test with dotnet
-      run: dotnet test ./BShop.sln --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      run: dotnet test --no-build -c Release /p:CollectCoverage=true /p:CoverletOutput="../../../coverage.json" /p:MergeWith="../../../coverage.json" /p:CoverletOutputFormat=\"opencover,json\" /maxcpucount:1

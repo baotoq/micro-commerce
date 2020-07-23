@@ -8,6 +8,7 @@ using Catalog.API.Application.Orders.Commands;
 using Catalog.API.Application.Orders.Models;
 using Catalog.API.Data;
 using Catalog.API.Data.Models;
+using Catalog.API.Data.Models.Enums;
 using Catalog.API.FunctionalTests.Infrastructure;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Catalog.API.Data.Models.Enums;
 using UnitOfWork;
 
 namespace Catalog.API.Application.Orders.Commands

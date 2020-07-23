@@ -1,19 +1,13 @@
-﻿namespace Catalog.API.Data.Models
+﻿namespace Catalog.API.Data.Models.Enums
 {
     public enum OrderStatus
     {
-        New = 1,
-
-        PaymentReceived = 30,
-
-        Invoiced = 40,
-
-        Shipping = 50,
-
-        Completed = 70,
-
-        Canceled = 80,
-
-        Closed = 100
+        New,
+        PaymentReceived,
+        Invoiced,
+        Shipping,
+        Completed,
+        Canceled,
+        Closed
     }
 }
