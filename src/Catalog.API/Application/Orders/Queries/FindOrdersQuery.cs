@@ -39,6 +39,7 @@ namespace Catalog.API.Application.Orders.Queries
                     SubTotal = s.SubTotal,
                     OrderItems = s.OrderItems.Select(x => new OrderItemDto
                     {
+                        Id = x.Id,
                         Quantity = x.Quantity,
                         ProductPrice = x.ProductPrice,
                         ProductName = x.Product.Name,
