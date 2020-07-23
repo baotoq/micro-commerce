@@ -1,28 +1,25 @@
 import React from "react";
 import MaterialTable, { Column } from "material-table";
-import Rating from "@material-ui/lab/Rating";
-import Image from "material-ui-image";
-import ProductService from "../../../services/product-service";
 import OrderService from "../../../services/order-service";
-import { Product, Order } from "../../../models";
+import { Order, OrderStatus } from "../../../models";
 
 const Index = () => {
-  const [columns, setColumns] = React.useState<Column<Product>[]>([
-    { title: "Name", field: "name" },
+  const [columns, setColumns] = React.useState<Column<Order>[]>([
+    { title: "Order Id", field: "id", editable: "never" },
+    { title: "Total", field: "subTotal", type: "currency", editable: "never" },
     {
-      title: "Rating",
-      field: "ratingAverage",
-      editable: "never",
-      render: (rowData) => <Rating size="small" value={rowData.ratingAverage} readOnly />,
+      title: "Status",
+      field: "orderStatus",
+      lookup: {
+        [OrderStatus.New]: "New",
+        [OrderStatus.PaymentReceived]: "Payment Received",
+        [OrderStatus.Invoiced]: "Invoiced",
+        [OrderStatus.Shipping]: "Shipping",
+        [OrderStatus.Completed]: "Completed",
+        [OrderStatus.Canceled]: "Canceled",
+        [OrderStatus.Closed]: "Closed",
+      },
     },
-    { title: "Review Count", field: "reviewsCount", editable: "never" },
-    {
-      title: "Stock Quantity",
-      field: "stockQuantity",
-      type: "numeric",
-      validate: (rowData) => rowData.stockQuantity >= 0,
-    },
-    { title: "Price", field: "price", type: "currency", validate: (rowData) => rowData.price >= 0 },
   ]);
 
   return (
@@ -30,7 +27,7 @@ const Index = () => {
       title="Products"
       columns={columns}
       data={async (query) => {
-        const paged = await ProductService.findAsync({
+        const paged = await OrderService.findAsync({
           page: query.page + 1,
           pageSize: query.pageSize,
           queryString: query.search,
@@ -42,12 +39,7 @@ const Index = () => {
         };
       }}
       detailPanel={(rowData) => {
-        return (
-          <div style={{ padding: "15px" }}>
-            <b>Description</b>: {rowData.description}
-            <Image src={rowData.imageUri} aspectRatio={16 / 9} />
-          </div>
-        );
+        return <div style={{ padding: "15px" }}></div>;
       }}
       options={{
         actionsColumnIndex: -1,
@@ -56,17 +48,12 @@ const Index = () => {
         addRowPosition: "first",
       }}
       editable={{
-        onRowAdd: async (newData) => await ProductService.createAsync(newData.name),
         onRowUpdate: async (newData, oldData) => {
           if (oldData) {
-            await ProductService.updateAsync(oldData.id, {
-              name: newData.name,
-              price: newData.price,
-              stockQuantity: newData.stockQuantity,
-            });
+            await OrderService.changeOrderStatusAsync(oldData.id, newData.orderStatus);
           }
         },
-        onRowDelete: async (oldData) => await ProductService.deleteAsync(oldData.id),
+        onRowDelete: async (oldData) => await OrderService.deleteAsync(oldData.id),
       }}
     />
   );

@@ -1,5 +1,5 @@
 import { createHttpClient } from "./http-client";
-import { OffsetPaged, OffsetPagedQuery, Category, Product } from "../models/index";
+import { OffsetPaged, OffsetPagedQuery, Category, Product } from "../models";
 
 const httpClient = createHttpClient(process.env.REACT_APP_CATALOG_URI);
 const resource = "/api/categories";

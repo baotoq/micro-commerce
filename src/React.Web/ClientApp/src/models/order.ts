@@ -1,4 +1,5 @@
 export interface Order {
+  id: number;
   subTotal: number;
   customerName: string;
   orderStatus: OrderStatus;

@@ -32,6 +32,7 @@ namespace Catalog.API.Application.Orders.Queries
             var result = await _repository.Query()
                 .Select(s => new OrderDto
                 {
+                    Id = s.Id,
                     CustomerId = s.CustomerId,
                     OrderNote = s.OrderNote,
                     OrderStatus = s.OrderStatus,

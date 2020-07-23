@@ -10,7 +10,6 @@ RUN yarn config set strict-ssl false
 RUN yarn install
 
 COPY ["React.Web/ClientApp/", "."]
-ARG REACT_APP_BASE_URI
 ARG REACT_APP_IDENTITY_URI
 ARG REACT_APP_CATALOG_URI
 RUN yarn build
