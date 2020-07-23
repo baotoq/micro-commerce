@@ -4,12 +4,13 @@ export interface Order {
   customerName: string;
   orderStatus: OrderStatus;
   orderNote: string;
-  OrderItems: OrderItem[];
+  orderItems: OrderItem[];
 }
 
 export interface OrderItem {
+  id: number;
   productName: string;
-  price: number;
+  productPrice: number;
   quantity: number;
 }
 

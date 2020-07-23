@@ -98,8 +98,7 @@ const CustomerReviews = ({ productId }: { productId: number }) => {
         </div>
       ) : (
         <div>
-          Please login or register to submit your review. Please also note that submitting review is only enable for
-          users who have bought this product
+          Please login or register to submit your review.
         </div>
       )}
       <Grid container spacing={3}>
