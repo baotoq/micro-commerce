@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Shared.FileStorage;
+using Shared.Grpc;
 using Shared.MediatR;
 using UnitOfWork;
 using static Bshop.V1.Identity.IdentityService;

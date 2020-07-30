@@ -8,12 +8,14 @@ WORKDIR /src
 COPY ["Catalog.API/*.csproj", "Catalog.API/"]
 COPY ["BuildingBlocks/UnitOfWork/*.csproj", "BuildingBlocks/UnitOfWork/"]
 COPY ["BuildingBlocks/Shared/*.csproj", "BuildingBlocks/Shared/"]
+COPY ["BuildingBlocks/Shared.Grpc/*.csproj", "BuildingBlocks/Shared.Grpc/"]
 COPY ["Protos/", "Protos/"]
 RUN dotnet restore "Catalog.API/Catalog.API.csproj"
 
 COPY ["Catalog.API/", "Catalog.API/"]
 COPY ["BuildingBlocks/UnitOfWork/", "BuildingBlocks/UnitOfWork/"]
 COPY ["BuildingBlocks/Shared/", "BuildingBlocks/Shared/"]
+COPY ["BuildingBlocks/Shared.Grpc/", "BuildingBlocks/Shared.Grpc/"]
 
 WORKDIR /src/Catalog.API
 RUN dotnet build --no-restore -c Release

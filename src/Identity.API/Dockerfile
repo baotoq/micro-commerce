@@ -8,12 +8,14 @@ WORKDIR /src
 COPY ["Identity.API/*.csproj", "Identity.API/"]
 COPY ["BuildingBlocks/UnitOfWork/*.csproj", "BuildingBlocks/UnitOfWork/"]
 COPY ["BuildingBlocks/Shared/*.csproj", "BuildingBlocks/Shared/"]
+COPY ["BuildingBlocks/Shared.Grpc/*.csproj", "BuildingBlocks/Shared.Grpc/"]
 COPY ["Protos/", "Protos/"]
 RUN dotnet restore "Identity.API/Identity.API.csproj"
 
 COPY ["Identity.API/", "Identity.API/"]
 COPY ["BuildingBlocks/UnitOfWork/", "BuildingBlocks/UnitOfWork/"]
 COPY ["BuildingBlocks/Shared/", "BuildingBlocks/Shared/"]
+COPY ["BuildingBlocks/Shared.Grpc/", "BuildingBlocks/Shared.Grpc/"]
 
 WORKDIR /src/Identity.API
 RUN dotnet build --no-restore -c Release
