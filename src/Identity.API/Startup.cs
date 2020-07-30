@@ -18,6 +18,7 @@ using UnitOfWork;
 using Grpc.HealthCheck;
 using Identity.API.Grpc;
 using Microsoft.AspNetCore.HttpOverrides;
+using Shared.Grpc;
 
 namespace Identity.API
 {

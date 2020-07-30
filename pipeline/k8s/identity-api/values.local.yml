@@ -5,7 +5,7 @@ image:
   tag: latest
 
 env:
-  Client__Swagger__Uri: http://localhost/catalog
+  Client__Swagger__Uri__0: http://localhost/catalog
   Client__React__Uri: http://localhost/react
 
 ingress:

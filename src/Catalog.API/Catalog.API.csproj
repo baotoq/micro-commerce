@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks\Shared.Grpc\Shared.Grpc.csproj" />
     <ProjectReference Include="..\BuildingBlocks\Shared\Shared.csproj" />
     <ProjectReference Include="..\BuildingBlocks\UnitOfWork\UnitOfWork.csproj" />
   </ItemGroup>

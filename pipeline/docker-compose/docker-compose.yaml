@@ -23,7 +23,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=identity-api;User Id=sa;Password=P@ssw0rd;
-      - Client:Swagger:Uri=${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
+      - Client:Swagger:Uri:0=${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
       - Client:React:Uri=${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
     ports:
       - "${IDENTITY_API_PORT}:80"
