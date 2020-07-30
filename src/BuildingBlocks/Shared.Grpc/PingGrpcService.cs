@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Bshop.V1.Common;
+using Bshop.V1.Shared;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
-namespace Identity.API.Grpc
+namespace Shared.Grpc
 {
     public class PingGrpcService : PingService.PingServiceBase
     {

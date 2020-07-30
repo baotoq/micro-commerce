@@ -17,13 +17,6 @@ services:
       dockerfile: Identity.API/Dockerfile
     depends_on:
       - sqldb
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=identity-api;User Id=sa;Password=P@ssw0rd;
-      - Client:Swagger:Uri:0=https://bshop-catalog.azurewebsites.net
-      - Client:Swagger:Uri:1=https://bshop-identity.azurewebsites.net
-      - Client:React:Uri=https://bshop.azurewebsites.net
     networks:
       - backend
       - frontend
@@ -35,11 +28,6 @@ services:
       dockerfile: Catalog.API/Dockerfile
     depends_on:
       - sqldb
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=catalog-api;User Id=sa;Password=P@ssw0rd;
-      - Identity:Uri=https://bshop-identity.azurewebsites.net
     ports:
       - "${CATALOG_API_PORT}:80"
     networks:

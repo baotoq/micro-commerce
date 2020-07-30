@@ -1,0 +1,9 @@
+# helm upgrade sonar oteemocharts/sonarqube --install -f ./values.yaml -f values.local.yml --namespace=infrastructure
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - name: localhost
+      path: /sonar
