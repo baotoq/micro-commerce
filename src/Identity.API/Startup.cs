@@ -19,6 +19,8 @@ using Grpc.HealthCheck;
 using Identity.API.Grpc;
 using Microsoft.AspNetCore.HttpOverrides;
 using Shared.Grpc;
+using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace Identity.API
 {
@@ -54,7 +56,9 @@ namespace Identity.API
             services
                 .AddDefaultIdentity<User>()
                 .AddRoles<Role>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<ConfigurationDbContext>()
+                .AddEntityFrameworkStores<PersistedGrantDbContext>();
 
             services.AddIdentityServer(options =>
                 {
@@ -111,7 +115,7 @@ namespace Identity.API
 
             app.UseSerilogRequestLogging();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseSwaggerDefault();
@@ -132,7 +136,11 @@ namespace Identity.API
             {
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
-                endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health/readiness");
+                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
                 endpoints.MapGrpcService<HealthServiceImpl>();
                 endpoints.MapGrpcService<PingGrpcService>();
                 endpoints.MapGrpcService<IdentityGrpcService>();
