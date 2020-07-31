@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
@@ -43,7 +44,7 @@ namespace React.Web
                 app.UseHsts();
             }
 
-            app.UsePathBase(Configuration["PATH_BASE"]);
+            app.UsePathBase(Configuration["PathBase"]);
 
             app.UseSerilogRequestLogging();
 
@@ -55,7 +56,11 @@ namespace React.Web
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health/readiness");
+                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
             });
 
             app.UseSpa(spa =>

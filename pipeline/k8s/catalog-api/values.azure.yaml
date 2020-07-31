@@ -3,7 +3,7 @@ image:
   tag: latest
 
 env:
-  PATH_BASE:
+  PathBase:
   Identity__Uri: https://idm.dongnai-vn.com
 
 ingress:
