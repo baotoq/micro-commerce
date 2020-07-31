@@ -3,7 +3,7 @@ image:
   tag: latest
 
 env:
-  PATH_BASE:
+  PathBase:
   Client__Swagger__Uri__0: https://api.dongnai-vn.com
   Client__React__Uri: https://bshop.dongnai-vn.com
 

@@ -6,6 +6,7 @@ image:
 
 env:
   Client__Swagger__Uri__0: http://localhost/catalog
+  Client__Swagger__Uri__1: http://localhost/identity
   Client__React__Uri: http://localhost/react
 
 ingress:

@@ -20,8 +20,8 @@ fullnameOverride: catalog-api
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
-  PATH_BASE: /catalog
-  ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux,1433;Database=catalog-api;User Id=sa;Password=P@ssw0rd;
+  PathBase: /catalog
+  ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux.infrastructure.svc.cluster.local,1433;Database=catalog-api;User Id=sa;Password=P@ssw0rd;
   Identity__Uri: http://identity-api
 
 service:
@@ -51,11 +51,11 @@ resources:
 
 probes:
   liveness:
-    path: /health
+    path: /health/liveness
     initialDelaySeconds: 15
     periodSeconds: 30
   readiness:
-    path: /health
+    path: /health/readiness
     initialDelaySeconds: 30
     periodSeconds: 60
     timeoutSeconds: 5

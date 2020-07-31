@@ -28,8 +28,6 @@ services:
       dockerfile: Catalog.API/Dockerfile
     depends_on:
       - sqldb
-    ports:
-      - "${CATALOG_API_PORT}:80"
     networks:
       - backend
       - frontend

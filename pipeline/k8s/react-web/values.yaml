@@ -20,7 +20,7 @@ fullnameOverride: react-web
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
-  PATH_BASE: /react
+  PathBase: /react
 
 service:
   type: ClusterIP
@@ -49,11 +49,11 @@ resources:
 
 probes:
   liveness:
-    path: /health
+    path: /health/liveness
     initialDelaySeconds: 15
     periodSeconds: 30
   readiness:
-    path: /health
+    path: /health/readiness
     initialDelaySeconds: 30
     periodSeconds: 60
     timeoutSeconds: 5
