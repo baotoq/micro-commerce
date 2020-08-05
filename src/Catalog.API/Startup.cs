@@ -46,15 +46,13 @@ namespace Catalog.API
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             services.AddGrpcClient<IdentityServiceClient>(options =>
             {
-                Log.Information("{a}", Configuration.GetServiceUri("identity-api"));
-                options.Address = Configuration.GetServiceUri("identity-api");
-                //options.Address = new Uri(Configuration["Identity:Uri"]);
+                options.Address = new Uri(Configuration["Identity:Uri"]);
             }).EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
             
             services.AddMediatR().AddValidators();
 
             services.AddUnitOfWork<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
                     provider => provider.EnableRetryOnFailure()));
 
             services.AddSwagger(Configuration);

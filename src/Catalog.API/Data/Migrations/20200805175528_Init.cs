@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Catalog.API.Data.Migrations
 {
@@ -12,11 +13,12 @@ namespace Catalog.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedDate = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: false),
-                    CustomerId = table.Column<long>(nullable: false),
+                    CustomerId = table.Column<string>(nullable: true),
                     IsActive = table.Column<bool>(nullable: false),
+                    OrderNote = table.Column<string>(nullable: true),
                     LockedOnCheckout = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -29,7 +31,7 @@ namespace Catalog.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedDate = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(nullable: true)
@@ -44,10 +46,10 @@ namespace Catalog.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedDate = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: false),
-                    CustomerId = table.Column<long>(nullable: false),
+                    CustomerId = table.Column<string>(nullable: true),
                     SubTotal = table.Column<decimal>(nullable: false),
                     OrderStatus = table.Column<int>(nullable: false),
                     OrderNote = table.Column<string>(nullable: true)
@@ -62,12 +64,15 @@ namespace Catalog.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedDate = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Price = table.Column<decimal>(nullable: false),
+                    CartMaxQuantity = table.Column<int>(nullable: false),
+                    SellQuantity = table.Column<int>(nullable: false),
                     StockQuantity = table.Column<int>(nullable: false),
+                    ReviewsCount = table.Column<int>(nullable: false),
                     RatingAverage = table.Column<double>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     ImageUri = table.Column<string>(nullable: true)
@@ -82,7 +87,7 @@ namespace Catalog.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProductId = table.Column<long>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
                     CartId = table.Column<long>(nullable: false)
@@ -109,7 +114,7 @@ namespace Catalog.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     OrderId = table.Column<long>(nullable: false),
                     ProductId = table.Column<long>(nullable: false),
                     ProductPrice = table.Column<decimal>(nullable: false),
@@ -161,10 +166,10 @@ namespace Catalog.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedDate = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: false),
-                    CreatedById = table.Column<long>(nullable: false),
+                    CreatedById = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: true),
                     Comment = table.Column<string>(nullable: true),
                     Rating = table.Column<int>(nullable: false),
@@ -187,10 +192,10 @@ namespace Catalog.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedDate = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: false),
-                    CreatedById = table.Column<long>(nullable: false),
+                    CreatedById = table.Column<string>(nullable: true),
                     Comment = table.Column<string>(nullable: true),
                     ReplyStatus = table.Column<int>(nullable: false),
                     ReviewId = table.Column<long>(nullable: false)
