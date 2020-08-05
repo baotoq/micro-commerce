@@ -1,0 +1,52 @@
+# tye application configuration file
+# read all about it at https://github.com/dotnet/tye
+#
+# when you've given us a try, we'd love to know what you think:
+#    https://aka.ms/AA7q20u
+#
+name: bshop 
+
+extensions:
+- name: zipkin
+- name: seq
+  logPath: ./.logs/seq
+
+ingress:
+- name: ingress
+  bindings:
+    - port: 8080
+  rules:
+  - path: /identity
+    service: identity-api
+  - path: /catalog
+    service: catalog-api
+  - path: /react
+    service: react-web
+
+services:
+- name: identity-api
+  project: src/Identity.API/Identity.API.csproj
+  replicas: 2
+  bindings:
+  - protocol: https
+- name: catalog-api
+  project: src/Catalog.API/Catalog.API.csproj
+  replicas: 2
+  bindings:
+  - protocol: https
+- name: react-web
+  project: src/React.Web/React.Web.csproj
+  replicas: 2
+  bindings:
+  - protocol: https
+- name: mssql
+  image: mcr.microsoft.com/mssql/server:2017-latest
+  env:
+    - name: ACCEPT_EULA
+      value: Y
+    - name: SA_PASSWORD
+      value: P@ssw0rd
+  bindings:
+  - port: 14333
+    containerPort: 1433
+    connectionString: Server=${host},${port};Database=catalog-api;User Id=sa;Password=${env:SA_PASSWORD}
