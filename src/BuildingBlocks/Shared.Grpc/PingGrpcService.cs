@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Bshop.V1.Shared;
+using Bshop.Shared.V1;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Bshop.V1.Identity;
+using Bshop.Identity.V1;
 using Catalog.API.Application.Reviews.Models;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
@@ -9,7 +9,7 @@ using MediatR;
 using Shared.MediatR.Models;
 using UnitOfWork;
 using UnitOfWork.Common;
-using static Bshop.V1.Identity.IdentityService;
+using static Bshop.Identity.V1.IdentityService;
 
 namespace Catalog.API.Application.Reviews.Queries
 {

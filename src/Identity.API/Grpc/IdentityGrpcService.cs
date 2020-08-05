@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Bshop.V1.Identity;
+using Bshop.Identity.V1;
 using Grpc.Core;
 using Identity.API.Application.Users.Queries;
 using MediatR;
