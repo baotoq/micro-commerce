@@ -1,4 +1,4 @@
-﻿using Bshop.V1.Catalog;
+﻿using Bshop.Catalog.V1;
 
 namespace Catalog.API.Grpc
 {

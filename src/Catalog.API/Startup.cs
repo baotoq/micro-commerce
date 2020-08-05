@@ -19,7 +19,7 @@ using Shared.FileStorage;
 using Shared.Grpc;
 using Shared.MediatR;
 using UnitOfWork;
-using static Bshop.V1.Identity.IdentityService;
+using static Bshop.Identity.V1.IdentityService;
 
 namespace Catalog.API
 {
@@ -42,6 +42,8 @@ namespace Catalog.API
                 options.EnableDetailedErrors = Environment.IsDevelopment();
             });
 
+            AppContext.SetSwitch(
+                "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             services.AddGrpcClient<IdentityServiceClient>(options =>
             {
                 options.Address = new Uri(Configuration["Identity:Uri"]);

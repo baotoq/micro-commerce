@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Bshop.V1.Identity;
+using Bshop.Identity.V1;
 using Catalog.API.Application.Orders.Commands;
 using Catalog.API.Application.Orders.Models;
 using Catalog.API.Data;

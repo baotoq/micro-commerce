@@ -1,6 +1,6 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
-package bshop.v1.common;
+package bshop.shared.v1;
 
 import "google/protobuf/empty.proto";
 

@@ -1,5 +1,3 @@
 syntax = "proto3";
 
-package bshop.v1.common;
-
-import "google/protobuf/empty.proto";
+package bshop.common.v1;

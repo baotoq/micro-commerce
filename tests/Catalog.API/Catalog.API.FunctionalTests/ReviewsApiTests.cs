@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Bshop.V1.Identity;
+using Bshop.Identity.V1;
 using Catalog.API.Application.Reviews.Commands;
 using Catalog.API.Application.Reviews.Models;
 using Catalog.API.Data;

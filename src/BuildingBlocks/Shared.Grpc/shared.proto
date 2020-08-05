@@ -1,9 +1,0 @@
-﻿syntax = "proto3";
-
-package bshop.v1.shared;
-
-import "google/protobuf/empty.proto";
-
-service PingService {
-  rpc Ping (google.protobuf.Empty) returns (google.protobuf.Empty);
-}
