@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{D6A082
 		src\Protos\catalog.proto = src\Protos\catalog.proto
 		src\Protos\common.proto = src\Protos\common.proto
 		src\Protos\identity.proto = src\Protos\identity.proto
+		src\Protos\shared.proto = src\Protos\shared.proto
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.API", "src\Identity.API\Identity.API.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7556}"

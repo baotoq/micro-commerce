@@ -9,6 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="shared.proto" GrpcServices="Server" />
+    <Protobuf Include="..\..\Protos\shared.proto" GrpcServices="Server" />
   </ItemGroup>
 </Project>
