@@ -46,7 +46,9 @@ namespace Catalog.API
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             services.AddGrpcClient<IdentityServiceClient>(options =>
             {
-                options.Address = new Uri(Configuration["Identity:Uri"]);
+                Log.Information("{a}", Configuration.GetServiceUri("identity-api"));
+                options.Address = Configuration.GetServiceUri("identity-api");
+                //options.Address = new Uri(Configuration["Identity:Uri"]);
             }).EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
             
             services.AddMediatR().AddValidators();
@@ -98,7 +100,7 @@ namespace Catalog.API
 
             app.UseSerilogRequestLogging();
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseSwaggerDefault();

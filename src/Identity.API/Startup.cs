@@ -117,7 +117,7 @@ namespace Identity.API
 
             app.UseSerilogRequestLogging();
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseSwaggerDefault();
