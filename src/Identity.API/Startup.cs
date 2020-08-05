@@ -39,7 +39,7 @@ namespace Identity.API
         public void ConfigureServices(IServiceCollection services)
         {
             void DbContextOptions(DbContextOptionsBuilder builder) =>
-                builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                builder.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
                     provider =>
                     {
                         provider.EnableRetryOnFailure();

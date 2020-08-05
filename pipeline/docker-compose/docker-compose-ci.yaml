@@ -1,36 +1,16 @@
-version: "3"
+version: "3.8"
 services:
-  sqldb:
-    image: mcr.microsoft.com/mssql/server:2017-latest
-    environment:
-      - SA_PASSWORD=P@ssw0rd
-      - ACCEPT_EULA=Y
-    volumes:
-      - sqldb-data:/var/opt/mssql
-    networks:
-      - backend
-
   identity-api:
     image: identity-api
     build:
       context: ../../src
       dockerfile: Identity.API/Dockerfile
-    depends_on:
-      - sqldb
-    networks:
-      - backend
-      - frontend
 
   catalog-api:
     image: catalog-api
     build:
       context: ../../src
       dockerfile: Catalog.API/Dockerfile
-    depends_on:
-      - sqldb
-    networks:
-      - backend
-      - frontend
 
   react-web:
     image: react-web
@@ -43,12 +23,3 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
-    networks:
-      - frontend
-
-volumes:
-  sqldb-data:
-
-networks:
-  frontend:
-  backend:

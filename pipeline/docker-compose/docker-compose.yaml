@@ -1,14 +1,13 @@
-version: "3"
+version: "3.8"
 services:
-  sqldb:
-    image: mcr.microsoft.com/mssql/server:2017-latest
+  postgres:
+    image: postgres:latest
     environment:
-      - SA_PASSWORD=P@ssw0rd
-      - ACCEPT_EULA=Y
+      - POSTGRES_PASSWORD=P@ssw0rd
     volumes:
-      - sqldb-data:/var/opt/mssql
+      - postgres-data:/var/lib/postgresql/data
     ports:
-      - "${SQL_DATABASE_PORT}:1443"
+      - "${DATABASE_PORT}:5432"
     networks:
       - backend
 
@@ -18,11 +17,11 @@ services:
       context: ../../src
       dockerfile: Identity.API/Dockerfile
     depends_on:
-      - sqldb
+      - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=identity-api;User Id=sa;Password=P@ssw0rd;
+      - ConnectionStrings:DefaultConnection=Server=postgres;Port=5432;Database=identity-api;User Id=postgres;Password=P@ssw0rd;
       - Client:Swagger:Uri:0=${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
       - Client:React:Uri=${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
     ports:
@@ -37,11 +36,11 @@ services:
       context: ../../src
       dockerfile: Catalog.API/Dockerfile
     depends_on:
-      - sqldb
+      - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=catalog-api;User Id=sa;Password=P@ssw0rd;
+      - ConnectionStrings:DefaultConnection=Server=postgres;Port=5432;Database=catalog-api;User Id=postgres;Password=P@ssw0rd;
       - Identity:Uri=${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
     ports:
       - "${CATALOG_API_PORT}:80"
@@ -66,7 +65,7 @@ services:
       - frontend
 
 volumes:
-  sqldb-data:
+  postgres-data:
 
 networks:
   frontend:
