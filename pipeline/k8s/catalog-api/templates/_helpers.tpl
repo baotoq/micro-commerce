@@ -47,6 +47,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "catalog-api.selectorLabels" -}}
+app: {{ include "catalog-api.name" . }}
 app.kubernetes.io/name: {{ include "catalog-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}

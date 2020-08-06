@@ -47,6 +47,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "react-web.selectorLabels" -}}
+app: {{ include "react-web.name" . }}
 app.kubernetes.io/name: {{ include "react-web.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
