@@ -1,4 +1,4 @@
-# helm upgrade sonar oteemocharts/sonarqube --install -f ./values.yaml -f values.local --namespace=infrastructure
+# helm upgrade sonar oteemocharts/sonarqube --install -f ./values.yaml -f values.local.yml --namespace=infra
 
 ingress:
   enabled: true

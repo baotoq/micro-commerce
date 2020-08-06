@@ -21,7 +21,7 @@ env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
   PathBase: /catalog
-  ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux.infrastructure.svc.cluster.local,1433;Database=catalog-api;User Id=sa;Password=P@ssw0rd;
+  ConnectionStrings__DefaultConnection: Server=postgres-postgresql.infra.svc.cluster.local;Port=5432;Database=catalog-api;User Id=postgres;Password=P@ssw0rd;
   Identity__Uri: http://identity-api
 
 service:

@@ -1,0 +1,6 @@
+# helm repo add cetic https://cetic.github.io/helm-charts
+# helm repo update
+# helm upgrade postgres cetic/postgresql --install -f ./values.yaml --namespace=infra
+
+postgresql:
+  password: P@ssw0rd
