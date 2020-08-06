@@ -24,6 +24,7 @@ namespace Catalog.API.ApiControllers
             _orderRepository = orderRepository;
         }
 
+        [ResponseCache(Duration = 5)]
         [HttpGet("reviews")]
         public async Task<IActionResult> Reviews()
         {
@@ -38,6 +39,7 @@ namespace Catalog.API.ApiControllers
             return Ok(result);
         }
 
+        [ResponseCache(Duration = 5)]
         [HttpGet("orders")]
         public async Task<IActionResult> Orders()
         {

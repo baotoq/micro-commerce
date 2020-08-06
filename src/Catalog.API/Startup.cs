@@ -55,6 +55,13 @@ namespace Catalog.API
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
                     provider => provider.EnableRetryOnFailure()));
 
+            services.AddResponseCaching();
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "localhost";
+                options.InstanceName = "SampleInstance";
+            });
+
             services.AddSwagger(Configuration);
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -112,6 +119,8 @@ namespace Catalog.API
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseResponseCaching();
 
             app.UseEndpoints(endpoints =>
             {

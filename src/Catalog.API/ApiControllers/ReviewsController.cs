@@ -23,6 +23,7 @@ namespace Catalog.API.ApiControllers
             _mediator = mediator;
         }
 
+        [ResponseCache(Duration = 5)]
         [AllowAnonymous]
         [HttpGet("cursor")]
         public async Task<ActionResult<CursorPaged<ReviewDto, DateTime?>>> FindReviews([FromQuery] FindReviewsCursorQuery request, CancellationToken cancellationToken)
@@ -32,6 +33,7 @@ namespace Catalog.API.ApiControllers
             return result;
         }
 
+        [ResponseCache(Duration = 5)]
         [AllowAnonymous]
         [HttpGet("offset")]
         public async Task<ActionResult<OffsetPaged<ReviewDto>>> FindReviews([FromQuery] FindReviewsOffsetQuery request, CancellationToken cancellationToken)

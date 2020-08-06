@@ -23,7 +23,7 @@ namespace Catalog.API.UnitTests.Categories
         public CategoriesControllerTests()
         {
             _mockMediator = new Mock<IMediator>();
-            _sut = new CategoriesController(_mockMediator.Object);
+            _sut = new CategoriesController(_mockMediator.Object, null);
         }
 
         [Fact]

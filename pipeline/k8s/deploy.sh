@@ -6,6 +6,7 @@ set -e
 set -o xtrace
 
 kubectl create namespace bshop || true
+kubectl label namespace bshop istio-injection=enabled || true
 
 for i in react-web catalog-api identity-api
 do

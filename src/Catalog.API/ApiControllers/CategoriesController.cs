@@ -7,6 +7,7 @@ using Catalog.API.Application.Categories.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using UnitOfWork.Common;
 
 namespace Catalog.API.ApiControllers
@@ -17,12 +18,15 @@ namespace Catalog.API.ApiControllers
     public class CategoriesController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IDistributedCache _cache;
 
-        public CategoriesController(IMediator mediator)
+        public CategoriesController(IMediator mediator, IDistributedCache cache)
         {
             _mediator = mediator;
+            _cache = cache;
         }
 
+        [ResponseCache(Duration = 5)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<OffsetPaged<CategoryDto>>> FindCategories([FromQuery] FindCategoriesQuery request, CancellationToken cancellationToken)
@@ -32,6 +36,7 @@ namespace Catalog.API.ApiControllers
             return result;
         }
 
+        [ResponseCache(Duration = 5)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> FindCategoryById(long id, CancellationToken cancellationToken)
@@ -41,6 +46,7 @@ namespace Catalog.API.ApiControllers
             return result;
         }
 
+        [ResponseCache(Duration = 5)]
         [AllowAnonymous]
         [HttpGet("{id}/products")]
         public async Task<ActionResult<OffsetPaged<ProductDto>>> FindProducts(long id, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
