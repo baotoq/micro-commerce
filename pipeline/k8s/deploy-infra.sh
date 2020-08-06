@@ -5,14 +5,14 @@ set -e
 # debug trace
 set -o xtrace
 
-kubectl create namespace infrastructure || true
+kubectl create namespace infra || true
 
-cd infrastructure
+cd infra
 
 cd nginx-ingress
 helm upgrade nginx-ingress stable/nginx-ingress --install -f ./values.yaml --namespace=default
 cd ..
 
-cd mssql-linux
-helm upgrade mssql stable/mssql-linux --install -f ./values.yaml --namespace=infrastructure
+cd postgres
+helm upgrade postgres cetic/postgresql --install -f ./values.yaml --namespace=infra
 cd ..
