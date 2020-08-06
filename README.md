@@ -18,11 +18,12 @@ This is a simplified a commerce made in a micro-services architecture, using:
 * SQL database with [MS SQL Server]()
 * Accessing database with Entity Framework Core
 * In-process messaging with [MediatR](https://github.com/jbogard/MediatR)
-* A modern web application with [React](https://reactjs.org/)
+* A modern web application with [React](https://reactjs.org)
 * Logging with [Serilog](https://github.com/serilog/serilog)
-* Identity and access management with [Identity server 4](http://docs.identityserver.io/en/latest/#)
+* Identity and access management with [Identity server 4](http://docs.identityserver.io/en/latest)
 * Building [Docker](https://www.docker.com/) images, managing containers
 * [Docker compose](https://docs.docker.com/compose/)
 * CI & CD with [Azure pipeline](https://azure.microsoft.com/en-us/services/devops/pipelines/)
-* Orchestrating services using [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/)
-* Deploy services to AKS by [helm 3](https://v3.helm.sh/)
+* Orchestrating services using [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service)
+* Deploy services to AKS by [helm 3](https://v3.helm.sh)
+* [Istio(https://istio.io) for traffic management

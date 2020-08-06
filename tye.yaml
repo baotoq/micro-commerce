@@ -48,4 +48,3 @@ services:
     bindings:
       - port: 15432
         containerPort: 5432
-        connectionString: Server=${host};Port=${port};Database=catalog-api;User Id=postgres;Password=${env:POSTGRES_PASSWORD}
