@@ -7,10 +7,8 @@ image:
 env:
   Identity__Uri: http://localhost/identity
 
-ingress:
+virtualService:
   enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx
-  hosts:
-    - host: localhost
-      paths: ["/catalog"]
+
+ingress:
+  enabled: false

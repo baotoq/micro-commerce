@@ -1,0 +1,44 @@
+{{- if .Values.virtualService.enabled -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .Chart.Name }}-http
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - {{ .Values.virtualService.gateway.host }}
+  gateways:
+  - {{ .Values.virtualService.gateway.name }}
+  http:
+  - match:
+    - uri:
+        prefix: {{ .Values.env.PathBase }}
+    route:
+    - destination:
+        host: {{ .Values.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: {{ .Values.service.port }}
+{{- end }}
+---
+{{- if .Values.virtualService.enabled -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .Chart.Name }}-grpc
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - {{ .Values.virtualService.gateway.host }}
+  gateways:
+  - {{ .Values.virtualService.gateway.name }}
+  http:
+  - match:
+    - headers:
+        grpc-location:
+          prefix: {{ .Values.fullnameOverride }}
+    route:
+    - destination:
+        host: {{ .Values.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: {{ .Values.service.port }}
+{{- end }}

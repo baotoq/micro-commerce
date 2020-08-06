@@ -9,8 +9,8 @@ kubectl create namespace infra || true
 
 cd infra
 
-cd nginx-ingress
-helm upgrade nginx-ingress stable/nginx-ingress --install -f ./values.yaml --namespace=default
+cd istio
+kubectl apply -f gateway.yml --namespace=default
 cd ..
 
 cd postgres

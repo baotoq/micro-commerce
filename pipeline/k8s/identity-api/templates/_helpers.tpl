@@ -47,6 +47,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "identity-api.selectorLabels" -}}
+app: {{ include "identity-api.name" . }}
 app.kubernetes.io/name: {{ include "identity-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
