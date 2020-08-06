@@ -22,6 +22,7 @@ namespace Catalog.API.ApiControllers
             _mediator = mediator;
         }
 
+        [ResponseCache(Duration = 5)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<OffsetPaged<ProductDto>>> FindProducts([FromQuery] FindProductsQuery request, CancellationToken cancellationToken)
@@ -31,6 +32,7 @@ namespace Catalog.API.ApiControllers
             return result;
         }
 
+        [ResponseCache(Duration = 5)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> FindProductById(long id, CancellationToken cancellationToken)

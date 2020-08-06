@@ -6,6 +6,7 @@ set -e
 set -o xtrace
 
 kubectl create namespace infra || true
+kubectl label namespace infra istio-injection=enabled || true
 
 cd infra
 
