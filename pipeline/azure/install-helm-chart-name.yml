@@ -13,6 +13,7 @@ steps:
     script: |
       helm repo add stable https://kubernetes-charts.storage.googleapis.com
       helm repo add oteemocharts https://oteemo.github.io/charts
+      helm repo add cetic https://cetic.github.io/helm-charts
 - task: HelmDeploy@0
   displayName: Helm install ${{ parameters.chartName }}
   inputs:

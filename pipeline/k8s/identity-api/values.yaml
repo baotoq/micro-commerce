@@ -21,7 +21,7 @@ env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
   PathBase: /identity
-  ConnectionStrings__DefaultConnection: Server=mssql-mssql-linux.infrastructure.svc.cluster.local,1433;Database=identity-api;User Id=sa;Password=P@ssw0rd;
+  ConnectionStrings__DefaultConnection: Server=postgres-postgresql.infra.svc.cluster.local;Port=5432;Database=identity-api;User Id=postgres;Password=P@ssw0rd;
   Client__Swagger__Uri: http://swagger
   Client__React__Uri: http://react-web
 
