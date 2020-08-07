@@ -5,6 +5,7 @@ image:
 env:
   PathBase:
   Client__Swagger__Uri__0: https://api.dongnai-vn.com
+  Client__Swagger__Uri__1: https://idm.dongnai-vn.com
   Client__React__Uri: https://bshop.dongnai-vn.com
 
 ingress:
