@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bshop.Shared.V1;
 using Catalog.API.BackgroundServices;
 using Catalog.API.Data;
 using Catalog.API.Grpc;
@@ -46,9 +47,13 @@ namespace Catalog.API
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             services.AddGrpcClient<IdentityServiceClient>(options =>
             {
-                options.Address = new Uri(Configuration["Identity:Uri"]);
+                options.Address = new Uri(Configuration["Identity:Uri:Grpc"]);
             }).EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
-            
+            services.AddGrpcClient<PingService.PingServiceClient>(options =>
+            {
+                options.Address = new Uri(Configuration["Identity:Uri:Grpc"]);
+            }).EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
+
             services.AddMediatR().AddValidators();
 
             services.AddUnitOfWork<ApplicationDbContext>(options =>
@@ -67,7 +72,7 @@ namespace Catalog.API
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
-                    options.Authority = Configuration["Identity:Uri"];
+                    options.Authority = Configuration["Identity:Uri:Http"];
                     options.ApiName = "catalog-api";
                     options.ApiSecret = "secret";
                     options.RequireHttpsMetadata = false;
@@ -152,8 +157,8 @@ namespace Catalog.API
                     {
                         AuthorizationCode = new OpenApiOAuthFlow
                         {
-                            TokenUrl = new Uri($"{configuration["Identity:Uri"]}/connect/token"),
-                            AuthorizationUrl = new Uri($"{configuration["Identity:Uri"]}/connect/authorize"),
+                            TokenUrl = new Uri($"{configuration["Identity:Uri:Http"]}/connect/token"),
+                            AuthorizationUrl = new Uri($"{configuration["Identity:Uri:Http"]}/connect/authorize"),
                             Scopes =
                             {
                                 { "catalog-api", "Catalog API" }
