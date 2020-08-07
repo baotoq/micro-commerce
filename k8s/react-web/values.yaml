@@ -20,6 +20,7 @@ fullnameOverride: react-web
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
+  Kestrel__Endpoints__Http__Url: http://0.0.0.0:80
   PathBase: /react
 
 service:

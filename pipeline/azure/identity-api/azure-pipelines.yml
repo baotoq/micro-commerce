@@ -8,7 +8,7 @@ trigger:
     include:
     - src/Identity.API
     - tests/**/Identity.API**
-    - pipeline/k8s/identity-api
+    - k8s/identity-api
     - pipeline/azure/identity-api
 pr: none
 
@@ -60,5 +60,5 @@ stages:
       parameters:
         service: identity-api
         namespace: bshop
-        valueFile: pipeline/k8s/identity-api/values.yaml
-        arguments: -f pipeline/k8s/identity-api/values.azure.yaml
+        valueFile: k8s/identity-api/values.yaml
+        arguments: -f k8s/identity-api/values.azure.yaml

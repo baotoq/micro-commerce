@@ -19,7 +19,7 @@ stages:
         releaseName: postgres
         chartName: cetic/postgresql
         namespace: infra
-        valueFile: pipeline/k8s/infra/mssql-linux/values.yaml
+        valueFile: k8s/infra/mssql-linux/values.yaml
 
 - stage: Install_Nginx_Ingress
   displayName: Install Nginx ingress controller
@@ -32,7 +32,7 @@ stages:
         releaseName: nginx-ingress
         chartName: stable/nginx-ingress
         namespace: default
-        valueFile: pipeline/k8s/infra/nginx-ingress/values.yaml
+        valueFile: k8s/infra/nginx-ingress/values.yaml
 
 - stage: Install_SonarQube
   displayName: Install SonarQube
@@ -45,4 +45,4 @@ stages:
         releaseName: sonar
         chartName: oteemocharts/sonarqube
         namespace: infra
-        valueFile: pipeline/k8s/infra/sonarqube/values.yaml
+        valueFile: k8s/infra/sonarqube/values.yaml
