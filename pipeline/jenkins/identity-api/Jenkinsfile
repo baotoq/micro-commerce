@@ -1,11 +1,11 @@
 pipeline {
     agent {
-        docker { image 'mcr.microsoft.com/dotnet/core/sdk:3.1' }
+        docker { image 'node:14-alpine' }
     }
     stages {
-        stage('restore') {
+        stage('Test') {
             steps {
-                sh 'dotnet restore'
+                sh 'node --version'
             }
         }
     }
