@@ -165,8 +165,8 @@ namespace Identity.API
                     {
                         AuthorizationCode = new OpenApiOAuthFlow
                         {
-                            TokenUrl = new Uri("/connect/token", UriKind.Relative),
-                            AuthorizationUrl = new Uri("/connect/authorize", UriKind.Relative),
+                            TokenUrl = new Uri($"{configuration["PathBase"]}/connect/token", UriKind.Relative),
+                            AuthorizationUrl = new Uri($"{configuration["PathBase"]}/connect/authorize", UriKind.Relative),
                             Scopes =
                             {
                                 { IdentityServerConstants.LocalApi.ScopeName, IdentityServerConstants.LocalApi.ScopeName }

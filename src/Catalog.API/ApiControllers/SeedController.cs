@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using Bogus;
 using Bogus.DataSets;
+using Bshop.Shared.V1;
 using Catalog.API.Data;
 using Catalog.API.Data.Models;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +20,20 @@ namespace Catalog.API.ApiControllers
     {
         private readonly ILogger<SeedController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly PingService.PingServiceClient _client;
 
-        public SeedController(ILogger<SeedController> logger, ApplicationDbContext context)
+        public SeedController(ILogger<SeedController> logger, ApplicationDbContext context, PingService.PingServiceClient client)
         {
             _logger = logger;
             _context = context;
+            _client = client;
+        }
+
+        [HttpGet("test")]
+        public async Task<IActionResult> Test()
+        {
+            await _client.PingAsync(new Empty());
+            return Ok();
         }
 
         [HttpGet("migrate")]

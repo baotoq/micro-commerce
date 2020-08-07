@@ -11,7 +11,7 @@
     "React.Web": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:7000",
+      "applicationUrl": "http://localhost:7020",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
