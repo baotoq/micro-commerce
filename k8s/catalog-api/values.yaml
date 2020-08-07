@@ -1,29 +1,31 @@
-# Default values for identity-api.
+# Default values for catalog-api.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 # helm package .
 # helm lint -f ./values.yaml .
-# helm upgrade identity-api --install -f ./values.yaml --namespace=bshop .
+# helm upgrade catalog-api --install -f ./values.yaml --namespace=bshop .
 
 replicaCount: 1
 
 image:
-  repository: identity-api
+  repository: catalog-api
   tag: latest
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
-nameOverride: identity-api
-fullnameOverride: identity-api
+nameOverride: catalog-api
+fullnameOverride: catalog-api
 
 env:
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://0.0.0.0:80
-  PathBase: /identity
-  ConnectionStrings__DefaultConnection: Server=postgres-postgresql.infra.svc.cluster.local;Port=5432;Database=identity-api;User Id=postgres;Password=P@ssw0rd;
-  Client__Swagger__Uri: http://swagger
-  Client__React__Uri: http://react-web
+  Kestrel__Endpoints__Http__Url: http://0.0.0.0:80
+  Kestrel__Endpoints__Http2__Url: http://0.0.0.0:81
+  PathBase: /catalog
+  ConnectionStrings__DefaultConnection: Server=postgres-postgresql.infra.svc.cluster.local;Port=5432;Database=catalog-api;User Id=postgres;Password=P@ssw0rd;
+  Identity__Uri__Http: http://identity-api
+  Identity__Uri__Grpc: http://identity-api:81
 
 service:
   type: ClusterIP
@@ -41,7 +43,7 @@ ingress:
     kubernetes.io/ingress.class: nginx
   hosts:
     - host: k8s.local.com
-      paths: ["/identity"]
+      paths: ["/catalog"]
 
 resources:
   limits:

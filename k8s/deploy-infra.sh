@@ -17,3 +17,7 @@ cd ..
 cd postgres
 helm upgrade postgres cetic/postgresql --install -f ./values.yaml --namespace=infra
 cd ..
+
+cd jenkins
+helm upgrade jenkins stable/jenkins --install -f ./values.yaml --namespace=infra
+cd ..
