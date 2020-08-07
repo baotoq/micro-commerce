@@ -1,20 +1,11 @@
 pipeline {
-    agent any
-
+    agent {
+        docker { image 'mcr.microsoft.com/dotnet/core/sdk:3.1' }
+    }
     stages {
-        stage('Build') {
+        stage('restore') {
             steps {
-                echo 'Building..'
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
+                sh 'dotnet restore'
             }
         }
     }
