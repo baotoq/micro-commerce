@@ -20,12 +20,16 @@ services:
       - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
       - ConnectionStrings:DefaultConnection=Server=postgres;Port=5432;Database=identity-api;User Id=postgres;Password=P@ssw0rd;
-      - Client:Swagger:Uri:0=${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
-      - Client:React:Uri=${EXTERNAL_HOST_IP}:${REACT_WEB_PORT}
+      - Client:Swagger:Uri:0=${EXTERNAL_HOST_IP}:${CATALOG_API_HTTP_PORT}
+      - Client:Swagger:Uri:1=${EXTERNAL_HOST_IP}:${IDENTITY_API_HTTP_PORT}
+      - Client:React:Uri=${EXTERNAL_HOST_IP}:${REACT_WEB_HTTP_PORT}
     ports:
-      - "${IDENTITY_API_PORT}:80"
+      - "${IDENTITY_API_HTTP_PORT}:80"
+      - "${IDENTITY_API_GRPC_PORT}:81"
     networks:
       - backend
       - frontend
@@ -39,11 +43,15 @@ services:
       - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
       - ConnectionStrings:DefaultConnection=Server=postgres;Port=5432;Database=catalog-api;User Id=postgres;Password=P@ssw0rd;
-      - Identity:Uri=${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
+      - Identity:Uri:Http=${EXTERNAL_HOST_IP}:${IDENTITY_API_HTTP_PORT}
+      - Identity:Uri:Grpc=http://identity-api:81
     ports:
-      - "${CATALOG_API_PORT}:80"
+      - "${CATALOG_API_HTTP_PORT}:80"
+      - "${CATALOG_API_GRPC_PORT}:81"
     networks:
       - backend
       - frontend
@@ -54,13 +62,14 @@ services:
       context: ../../src
       dockerfile: React.Web/Dockerfile
       args:
-        - REACT_APP_IDENTITY_URI=${EXTERNAL_HOST_IP}:${IDENTITY_API_PORT}
-        - REACT_APP_CATALOG_URI=${EXTERNAL_HOST_IP}:${CATALOG_API_PORT}
+        - REACT_APP_IDENTITY_URI=${EXTERNAL_HOST_IP}:${IDENTITY_API_HTTP_PORT}
+        - REACT_APP_CATALOG_URI=${EXTERNAL_HOST_IP}:${CATALOG_API_HTTP_PORT}
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
     ports:
-      - "${REACT_WEB_PORT}:80"
+      - "${REACT_WEB_HTTP_PORT}:80"
     networks:
       - frontend
 
