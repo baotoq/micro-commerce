@@ -1,18 +1,18 @@
 pipeline {
-    agent none
-    stages {
-        stage('Back-end') {
-            agent {
-                docker { image 'maven:3-alpine' }
-            }
-            steps {
-                sh 'mvn --version'
-            }
+    agent {
+        docker {
+          image 'ubuntu:18.04'
+          args '''-v /var/run/docker.sock:/var/run/docker.sock
+                -v /usr/bin/docker:/usr/bin/docker
+                -v /usr/local/bin/docker-compose:/usr/local/bin/docker-compose
+                -v /usr/local/bin/helm:/usr/local/bin/helm
+                -v /usr/local/bin/kubectl:/usr/local/bin/kubectl
+                -v /var/config:/var/config/
+                -v /tmp/test-results:/tmp/test-results'''
         }
-        stage('Front-end') {
-            agent {
-                docker { image 'node:14-alpine' }
-            }
+    }
+    stages {
+        stage('Test') {
             steps {
                 sh 'node --version'
             }
