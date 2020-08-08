@@ -1,21 +1,30 @@
-pipeline {
-    agent {
-        docker {
-          image 'ubuntu:18.04'
-          args '''-v /var/run/docker.sock:/var/run/docker.sock
-                -v /usr/bin/docker:/usr/bin/docker
-                -v /usr/local/bin/docker-compose:/usr/local/bin/docker-compose
-                -v /usr/local/bin/helm:/usr/local/bin/helm
-                -v /usr/local/bin/kubectl:/usr/local/bin/kubectl
-                -v /var/config:/var/config/
-                -v /tmp/test-results:/tmp/test-results'''
-        }
-    }
-    stages {
-        stage('Test') {
-            steps {
-                sh 'node --version'
+podTemplate(containers: [
+    containerTemplate(name: 'maven', image: 'maven:3.3.9-jdk-8-alpine', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'golang', image: 'golang:1.8.0', ttyEnabled: true, command: 'cat')
+  ]) {
+
+    node(POD_LABEL) {
+        stage('Get a Maven project') {
+            git 'https://github.com/jenkinsci/kubernetes-plugin.git'
+            container('maven') {
+                stage('Build a Maven project') {
+                    sh 'mvn -B clean install'
+                }
             }
         }
+
+        stage('Get a Golang project') {
+            git url: 'https://github.com/hashicorp/terraform.git'
+            container('golang') {
+                stage('Build a Go project') {
+                    sh """
+                    mkdir -p /go/src/github.com/hashicorp
+                    ln -s `pwd` /go/src/github.com/hashicorp/terraform
+                    cd /go/src/github.com/hashicorp/terraform && make core-dev
+                    """
+                }
+            }
+        }
+
     }
 }
