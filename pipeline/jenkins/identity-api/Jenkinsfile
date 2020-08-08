@@ -1,21 +1,14 @@
-pipeline {
-  agent {
-    kubernetes {
-      containerTemplate {
-        name 'maven'
-        image 'maven:3.3.9-jdk-8-alpine'
-        ttyEnabled true
-        command 'cat'
-      }
-    }
-  }
-  stages {
-      stage('Run maven') {
-        steps {
-            container('maven') {
-                sh 'mvn -version'
+podTemplate(containers: [
+    containerTemplate(name: 'netcore31', image: 'mcr.microsoft.com/dotnet/core/sdk:3.1', ttyEnabled: true)
+  ]) {
+
+    node(POD_LABEL) {
+        stage('Build') {
+            container('netcore31') {
+                stage('Restore') {
+                    sh 'dotnet restore'
+                }
             }
         }
     }
-  }
 }
