@@ -33,7 +33,7 @@ spec:
             steps {
                 container('netcore31') {
                     sh '''
-                        cd tests/${PROJECT}/${PROJECT}.FunctionalTests
+                        cd ./tests/${PROJECT}/${PROJECT}.FunctionalTests
                         dotnet test -c Release /p:CollectCoverage=true
                     '''
                 }
@@ -43,7 +43,7 @@ spec:
             steps {
                 container('netcore31') {
                     sh '''
-                        cd tests/${PROJECT}/${PROJECT}.UnitTests
+                        cd ./tests/${PROJECT}/${PROJECT}.UnitTests
                         dotnet test -c Release /p:CollectCoverage=true
                     '''
                 }
