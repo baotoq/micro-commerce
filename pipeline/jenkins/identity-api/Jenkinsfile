@@ -1,20 +1,68 @@
 pipeline {
-    agent any
-
-    stages {
-        stage('Build') {
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+spec:
+  containers:
+  - name: netcore31
+    image: mcr.microsoft.com/dotnet/core/sdk:3.1
+    tty: true
+  - name: dockercompose
+    image: docker/compose:latest
+    tty: true
+    command: 
+    - cat
+"""
+        }
+    }
+    environment {
+        PROJECT = "Identity.API"
+        SERVICE_NAME = "identity-api"
+    }
+    stages { 
+        stage("Build") {
             steps {
-                echo 'Building..'
+                container("netcore31") {
+                    sh """
+                        cd ./src/${PROJECT}
+                        dotnet restore
+                        dotnet build --no-restore
+                    """
+                }
             }
         }
-        stage('Test') {
+        stage("FunctionalTests") {
             steps {
-                echo 'Testing..'
+                container("netcore31") {
+                    sh """
+                        cd ./tests/${PROJECT}/${PROJECT}.FunctionalTests
+                        dotnet test -c Release /p:CollectCoverage=true
+                    """
+                }
             }
         }
-        stage('Deploy') {
+        stage("UnitTests") {
             steps {
-                echo 'Deploying....'
+                container("netcore31") {
+                    sh """
+                        cd ./tests/${PROJECT}/${PROJECT}.UnitTests
+                        dotnet test -c Release /p:CollectCoverage=true
+                    """
+                }
+            }
+        }
+        stage("Build image") {
+            steps {
+                container("dockercompose") {
+                    sh """
+                        cd ./pipeline/docker-compose
+                        docker-compose -f docker-compose-ci.yaml build ${SERVICE_NAME}
+                    """
+                }
             }
         }
     }
