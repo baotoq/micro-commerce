@@ -15,7 +15,7 @@ spec:
         }
     }
     environment {
-        PROJECT = "Identity.API"
+        PROJECT = "Catalog.API"
     }
     stages { 
         stage('Build') {
