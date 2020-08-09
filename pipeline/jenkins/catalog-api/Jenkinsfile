@@ -1,52 +1,51 @@
-pipeline {
-    agent {
-        kubernetes {
-            yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-spec:
-  containers:
-  - name: netcore31
-    image: mcr.microsoft.com/dotnet/core/sdk:3.1
-    tty: true
-"""
-        }
-    }
-    environment {
-        PROJECT = "Catalog.API"
-    }
-    stages { 
-        stage('Build') {
-            steps {
-                container('netcore31') {
-                    sh '''
-                        cd ./src/${PROJECT}
-                        dotnet restore
-                        dotnet build --no-restore
-                    '''
-                }
+podTemplate(containers: [
+        containerTemplate(name: "netcore31", image: "mcr.microsoft.com/dotnet/core/sdk:3.1", ttyEnabled: true, command: "cat"),
+        containerTemplate(name: "dockercompose", image: "docker/compose:latest", ttyEnabled: true, command: "cat")
+    ],
+    volumes: [
+        hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock"),
+        hostPathVolume(mountPath: "/home/jenkins/.nuget/packages", hostPath: "/home/.nuget/packages")
+    ]) {
+
+    node(POD_LABEL) {
+        def REPO = checkout scm
+        def PROJECT = "Catalog.API"
+        def SERVICE_NAME = "catalog-api"
+
+        stage("Build") {
+            container("netcore31") {
+                sh """
+                    cd ./src/${PROJECT}
+                    dotnet restore
+                    dotnet build --no-restore
+                """
             }
         }
-        stage('FunctionalTests') {
-            steps {
-                container('netcore31') {
-                    sh '''
-                        cd ./tests/${PROJECT}/${PROJECT}.FunctionalTests
-                        dotnet test -c Release /p:CollectCoverage=true
-                    '''
-                }
+
+        stage("FunctionalTests") {
+            container("netcore31") {
+                sh """
+                    cd ./tests/${PROJECT}/${PROJECT}.FunctionalTests
+                    dotnet test -c Release /p:CollectCoverage=true
+                """
             }
         }
-        stage('UnitTests') {
-            steps {
-                container('netcore31') {
-                    sh '''
-                        cd ./tests/${PROJECT}/${PROJECT}.UnitTests
-                        dotnet test -c Release /p:CollectCoverage=true
-                    '''
-                }
+
+        stage("UnitTests") {
+            container("netcore31") {
+                sh """
+                    cd ./tests/${PROJECT}/${PROJECT}.UnitTests
+                    dotnet test -c Release /p:CollectCoverage=true
+                """
+            }
+        }
+
+        stage("UnitTests") {
+            container("dockercompose") {
+                sh """
+                    cd ./pipeline/docker-compose
+                    docker-compose -f docker-compose-ci.yaml build ${SERVICE_NAME}
+                """
             }
         }
     }

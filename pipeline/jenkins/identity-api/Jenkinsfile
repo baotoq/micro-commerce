@@ -11,41 +11,57 @@ spec:
   - name: netcore31
     image: mcr.microsoft.com/dotnet/core/sdk:3.1
     tty: true
+  - name: dockercompose
+    image: docker/compose:latest
+    tty: true
+    command: 
+    - cat
 """
         }
     }
     environment {
         PROJECT = "Identity.API"
+        SERVICE_NAME = "identity-api"
     }
     stages { 
-        stage('Build') {
+        stage("Build") {
             steps {
-                container('netcore31') {
-                    sh '''
+                container("netcore31") {
+                    sh """
                         cd ./src/${PROJECT}
                         dotnet restore
                         dotnet build --no-restore
-                    '''
+                    """
                 }
             }
         }
-        stage('FunctionalTests') {
+        stage("FunctionalTests") {
             steps {
-                container('netcore31') {
-                    sh '''
+                container("netcore31") {
+                    sh """
                         cd ./tests/${PROJECT}/${PROJECT}.FunctionalTests
                         dotnet test -c Release /p:CollectCoverage=true
-                    '''
+                    """
                 }
             }
         }
-        stage('UnitTests') {
+        stage("UnitTests") {
             steps {
-                container('netcore31') {
-                    sh '''
+                container("netcore31") {
+                    sh """
                         cd ./tests/${PROJECT}/${PROJECT}.UnitTests
                         dotnet test -c Release /p:CollectCoverage=true
-                    '''
+                    """
+                }
+            }
+        }
+        stage("Build image") {
+            steps {
+                container("dockercompose") {
+                    sh """
+                        cd ./pipeline/docker-compose
+                        docker-compose -f docker-compose-ci.yaml build ${SERVICE_NAME}
+                    """
                 }
             }
         }
