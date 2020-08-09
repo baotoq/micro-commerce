@@ -8,9 +8,12 @@ podTemplate(containers: [
     ]) {
 
     node(POD_LABEL) {
-        def REPO = checkout scm
         def PROJECT = "Catalog.API"
         def SERVICE_NAME = "catalog-api"
+
+        stage("Checkout") {
+            checkout scm
+        }
 
         stage("Build") {
             container("netcore31") {
