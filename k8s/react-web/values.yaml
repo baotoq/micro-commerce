@@ -9,7 +9,7 @@
 replicaCount: 1
 
 image:
-  repository: react-web
+  repository: bao2703/react-web
   tag: latest
   pullPolicy: IfNotPresent
 

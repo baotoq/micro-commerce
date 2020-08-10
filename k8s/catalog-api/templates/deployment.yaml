@@ -41,6 +41,9 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+            - name: grpc
+              containerPort: 81
+              protocol: TCP
           {{- if .Values.probes }}
           {{- if .Values.probes.liveness }}
           livenessProbe:

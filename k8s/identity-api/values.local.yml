@@ -1,9 +1,5 @@
 # helm upgrade identity-api --install -f ./values.yaml -f values.local.yml --namespace=bshop .
 
-image:
-  repository: identity-api
-  tag: latest
-
 env:
   Client__Swagger__Uri__0: http://localhost/catalog
   Client__Swagger__Uri__1: http://localhost/identity
