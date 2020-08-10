@@ -11,6 +11,17 @@ services:
     networks:
       - backend
 
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - backend
+
   identity-api:
     image: identity-api
     build:
@@ -41,6 +52,7 @@ services:
       dockerfile: Catalog.API/Dockerfile
     depends_on:
       - postgres
+      - rabbitmq
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:80
