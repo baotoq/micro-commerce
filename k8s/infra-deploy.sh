@@ -6,6 +6,7 @@ set -e
 set -o xtrace
 
 kubectl create namespace infra || true
+kubectl create namespace jenkins || true
 kubectl label namespace infra istio-injection=enabled || true
 
 cd infra
@@ -19,5 +20,5 @@ helm upgrade postgres cetic/postgresql --install -f ./values.yaml --namespace=in
 cd ..
 
 cd jenkins
-helm upgrade jenkins stable/jenkins --install -f ./values.yaml --namespace=infra
+helm upgrade jenkins stable/jenkins --install -f ./values.yaml --namespace=jenkins
 cd ..

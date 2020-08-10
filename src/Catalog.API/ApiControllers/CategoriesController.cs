@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Commands;
 using Catalog.API.Application.Categories.Commands.Create;
@@ -18,12 +18,10 @@ namespace Catalog.API.ApiControllers
     public class CategoriesController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IDistributedCache _cache;
 
-        public CategoriesController(IMediator mediator, IDistributedCache cache)
+        public CategoriesController(IMediator mediator)
         {
             _mediator = mediator;
-            _cache = cache;
         }
 
         [ResponseCache(Duration = 5)]
