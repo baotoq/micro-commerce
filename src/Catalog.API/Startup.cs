@@ -63,8 +63,7 @@ namespace Catalog.API
             services.AddResponseCaching();
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = "localhost";
-                options.InstanceName = "SampleInstance";
+                options.Configuration = "localhost:6379";
             });
 
             services.AddSwagger(Configuration);

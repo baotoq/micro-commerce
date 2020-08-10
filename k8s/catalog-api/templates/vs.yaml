@@ -2,7 +2,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ .Chart.Name }}-http
+  name: {{ include "catalog-api.fullname" . }}-http
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
@@ -15,16 +15,16 @@ spec:
         prefix: {{ .Values.env.PathBase }}
     route:
     - destination:
-        host: {{ .Values.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local
+        host: {{ include "catalog-api.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
         port:
-          number: {{ .Values.service.port }}
+          number: {{ .Values.service.port.http }}
 {{- end }}
 ---
 {{- if .Values.virtualService.enabled -}}
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ .Chart.Name }}-grpc
+  name: {{ include "catalog-api.fullname" . }}-grpc
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
@@ -35,10 +35,10 @@ spec:
   - match:
     - headers:
         grpc-location:
-          prefix: {{ .Values.fullnameOverride }}
+          prefix: {{ include "catalog-api.fullname" . }}
     route:
     - destination:
-        host: {{ .Values.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local
+        host: {{ include "catalog-api.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
         port:
-          number: {{ .Values.service.port }}
+          number: {{ .Values.service.port.grpc }}
 {{- end }}

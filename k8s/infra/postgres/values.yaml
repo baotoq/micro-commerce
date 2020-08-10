@@ -4,3 +4,6 @@
 
 postgresql:
   password: P@ssw0rd
+
+nameOverride: postgres
+fullnameOverride: postgres
