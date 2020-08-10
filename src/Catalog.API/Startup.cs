@@ -1,20 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mime;
+using System.Threading.Tasks;
 using Bshop.Shared.V1;
 using Catalog.API.BackgroundServices;
+using Catalog.API.Consumers;
 using Catalog.API.Data;
 using Catalog.API.Grpc;
 using Catalog.API.Services;
+using GreenPipes;
 using Grpc.HealthCheck;
 using IdentityServer4.AccessTokenValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Serilog;
 using Shared.FileStorage;
 using Shared.Grpc;
@@ -88,6 +98,31 @@ namespace Catalog.API
 
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddFileStorage(Environment.WebRootPath);
+
+            services.AddMassTransitHostedService();
+            services.AddMassTransit(s =>
+            {
+                s.AddConsumersFromNamespaceContaining<BaseConsumer<BaseMessage>>();
+
+                s.UsingRabbitMq((context, cfg) =>
+                {
+                    var rabbitmq = Configuration.GetSection("Rabbitmq");
+                    cfg.Host(new Uri(rabbitmq["Uri"]), hostConfig =>
+                    {
+                        hostConfig.Username(rabbitmq["UserName"]);
+                        hostConfig.Password(rabbitmq["Password"]);
+                    });
+                    cfg.ReceiveEndpoint("catalog-api", s =>
+                    {
+                        s.PrefetchCount = rabbitmq.GetValue<ushort>("PrefetchCount");
+                        s.ConfigureConsumer<TestConsumer>(context);
+                    });
+                    cfg.UseMessageRetry(r =>
+                    {
+                        r.Immediate(rabbitmq.GetValue<int>("RetryLimit"));
+                    });
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -128,16 +163,35 @@ namespace Catalog.API
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHealthChecks("/health/readiness");
+                endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions
+                {
+                    ResponseWriter = WriteResponse
+                });
                 endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
                 {
-                    Predicate = r => r.Name.Contains("self")
+                    Predicate = r => r.Name.Contains("self"),
                 });
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<HealthServiceImpl>();
                 endpoints.MapGrpcService<PingGrpcService>();
                 endpoints.MapGrpcService<CatalogGrpcService>();
             });
+        }
+
+        private static Task WriteResponse(HttpContext context, HealthReport result)
+        {
+            context.Response.ContentType = MediaTypeNames.Application.Json;
+
+            var json = new JObject(
+                new JProperty("status", result.Status.ToString()),
+                new JProperty("results", new JObject(result.Entries.Select(pair =>
+                    new JProperty(pair.Key, new JObject(
+                        new JProperty("status", pair.Value.Status.ToString()),
+                        new JProperty("description", pair.Value.Description),
+                        new JProperty("data", new JObject(pair.Value.Data.Select(
+                            p => new JProperty(p.Key, JsonConvert.SerializeObject(p.Value)))))))))));
+
+            return context.Response.WriteAsync(json.ToString(Formatting.Indented));
         }
     }
 

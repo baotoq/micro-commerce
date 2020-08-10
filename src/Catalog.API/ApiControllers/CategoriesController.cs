@@ -7,7 +7,6 @@ using Catalog.API.Application.Categories.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 using UnitOfWork.Common;
 
 namespace Catalog.API.ApiControllers
@@ -30,7 +29,6 @@ namespace Catalog.API.ApiControllers
         public async Task<ActionResult<OffsetPaged<CategoryDto>>> FindCategories([FromQuery] FindCategoriesQuery request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
-
             return result;
         }
 
