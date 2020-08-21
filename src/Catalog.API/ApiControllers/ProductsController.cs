@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Products.Commands;
 using Catalog.API.Application.Products.Models;
 using Catalog.API.Application.Products.Queries;
+using Data.UnitOfWork.EF.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UnitOfWork.Common;
 
 namespace Catalog.API.ApiControllers
 {

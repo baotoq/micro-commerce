@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Data.Entities.Models;
 using Microsoft.AspNetCore.Identity;
-using UnitOfWork.Models;
 
 namespace Identity.API.Data.Models
 {

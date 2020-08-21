@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
+using Data.UnitOfWork.EF;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Shared.MediatR.Exceptions;
-using UnitOfWork;
 
 namespace Catalog.API.Application.Reviews.Commands
 {
@@ -20,11 +20,11 @@ namespace Catalog.API.Application.Reviews.Commands
 
     public class ChangeReviewStatusCommandHandler : IRequestHandler<ChangeReviewStatusCommand, Unit>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Review> _repository;
         private readonly IRepository<Product> _productRepository;
 
-        public ChangeReviewStatusCommandHandler(IUnitOfWork unitOfWork, IRepository<Review> repository, IRepository<Product> productRepository)
+        public ChangeReviewStatusCommandHandler(IEfUnitOfWork unitOfWork, IRepository<Review> repository, IRepository<Product> productRepository)
         {
             _unitOfWork = unitOfWork;
             _repository = repository;

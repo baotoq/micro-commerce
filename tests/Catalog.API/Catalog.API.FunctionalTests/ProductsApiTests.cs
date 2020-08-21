@@ -8,10 +8,10 @@ using Catalog.API.Application.Products.Models;
 using Catalog.API.Data;
 using Catalog.API.Data.Models;
 using Catalog.API.FunctionalTests.Infrastructure;
+using Data.UnitOfWork.EF.Common;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using UnitOfWork.Common;
 using Xunit;
 
 namespace Catalog.API.FunctionalTests

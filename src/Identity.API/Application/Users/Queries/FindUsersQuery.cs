@@ -1,15 +1,15 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Data.UnitOfWork.EF;
+using Data.UnitOfWork.EF.Common;
 using Identity.API.Application.Users.Models;
 using Identity.API.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.MediatR.Models;
-using UnitOfWork;
-using UnitOfWork.Common;
 
-namespace Identity.API.Application.Roles.Queries
+namespace Identity.API.Application.Users.Queries
 {
     public class FindUsersQuery : OffsetPagedQuery, IRequest<OffsetPaged<UserDto>>
     {

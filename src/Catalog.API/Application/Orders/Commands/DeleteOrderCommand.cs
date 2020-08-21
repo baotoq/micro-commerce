@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
+using Data.UnitOfWork.EF;
 using MediatR;
-using UnitOfWork;
 
 namespace Catalog.API.Application.Orders.Commands
 {
@@ -18,10 +18,10 @@ namespace Catalog.API.Application.Orders.Commands
 
     public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand, Unit>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Order> _repository;
 
-        public DeleteOrderCommandHandler(IUnitOfWork unitOfWork)
+        public DeleteOrderCommandHandler(IEfUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = unitOfWork.Repository<Order>();

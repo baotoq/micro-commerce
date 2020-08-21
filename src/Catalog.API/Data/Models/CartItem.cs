@@ -1,4 +1,4 @@
-﻿using UnitOfWork.Models;
+﻿using Data.Entities.Models;
 
 namespace Catalog.API.Data.Models
 {

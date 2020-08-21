@@ -1,5 +1,16 @@
 version: "3.8"
 services:
+  redis:
+    image: redis:alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - backend
+    restart: always
+
   postgres:
     image: postgres:latest
     environment:
@@ -10,6 +21,7 @@ services:
       - "${DATABASE_PORT}:5432"
     networks:
       - backend
+    restart: always
 
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
@@ -21,6 +33,7 @@ services:
       - "5672:5672"
     networks:
       - backend
+    restart: always
 
   identity-api:
     image: identity-api
@@ -59,6 +72,7 @@ services:
       - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
       - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
       - ConnectionStrings:DefaultConnection=Server=postgres;Port=5432;Database=catalog-api;User Id=postgres;Password=P@ssw0rd;
+      - ConnectionStrings:Redis=redis:6379;
       - Identity:Uri:Http=${EXTERNAL_HOST_IP}:${IDENTITY_API_HTTP_PORT}
       - Identity:Uri:Grpc=http://identity-api:81
     ports:
@@ -87,6 +101,7 @@ services:
 
 volumes:
   postgres-data:
+  redis-data:
 
 networks:
   frontend:

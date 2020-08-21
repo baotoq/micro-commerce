@@ -5,10 +5,12 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Bshop.Shared.V1;
 using Catalog.API.BackgroundServices;
-using Catalog.API.Consumers;
+using Catalog.API.IntegrationEvents;
+using Catalog.API.IntegrationEvents.Models;
 using Catalog.API.Data;
 using Catalog.API.Grpc;
 using Catalog.API.Services;
+using Data.UnitOfWork.EF;
 using GreenPipes;
 using Grpc.HealthCheck;
 using IdentityServer4.AccessTokenValidation;
@@ -29,7 +31,6 @@ using Serilog;
 using Shared.FileStorage;
 using Shared.Grpc;
 using Shared.MediatR;
-using UnitOfWork;
 using static Bshop.Identity.V1.IdentityService;
 
 namespace Catalog.API
@@ -73,7 +74,7 @@ namespace Catalog.API
             services.AddResponseCaching();
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = "localhost:6379";
+                options.Configuration = Configuration.GetConnectionString("Redis");
             });
 
             services.AddSwagger(Configuration);
@@ -96,7 +97,7 @@ namespace Catalog.API
             services.AddHostedService<ApproveReviewBackgroundService>();
             services.AddHostedService<ApproveReplyBackgroundService>();
 
-            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddTransient<IIdentityService, IdentityService>();
             services.AddFileStorage(Environment.WebRootPath);
 
             services.AddMassTransitHostedService();
@@ -112,10 +113,11 @@ namespace Catalog.API
                         hostConfig.Username(rabbitmq["UserName"]);
                         hostConfig.Password(rabbitmq["Password"]);
                     });
-                    cfg.ReceiveEndpoint("catalog-api", s =>
+                    cfg.ReceiveEndpoint("catalog-api", endpoint =>
                     {
-                        s.PrefetchCount = rabbitmq.GetValue<ushort>("PrefetchCount");
-                        s.ConfigureConsumer<TestConsumer>(context);
+                        endpoint.PrefetchCount = rabbitmq.GetValue<ushort>("PrefetchCount");
+                        endpoint.ConfigureConsumer<TestConsumer>(context);
+                        endpoint.ConfigureConsumer<OrderCreatedConsumer>(context);
                     });
                     cfg.UseMessageRetry(r =>
                     {

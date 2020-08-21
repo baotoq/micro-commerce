@@ -1,12 +1,13 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Identity.API.Application.Roles.Queries;
+using Data.UnitOfWork.EF.Common;
+using Identity.API.Application.Users.Commands;
 using Identity.API.Application.Users.Models;
+using Identity.API.Application.Users.Queries;
 using IdentityServer4;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UnitOfWork.Common;
 
 namespace Identity.API.ApiControllers
 {

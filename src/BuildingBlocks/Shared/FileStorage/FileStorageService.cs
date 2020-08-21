@@ -20,13 +20,16 @@ namespace Shared.FileStorage
             await stream.CopyToAsync(output, cancellationToken);
         }
 
-        public async Task DeleteAsync(string fileName, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(string fileName, CancellationToken cancellationToken = default)
         {
             var filePath = Path.Combine(_rootPath, fileName);
+
             if (File.Exists(filePath))
             {
-                await Task.Run(() => File.Delete(filePath), cancellationToken);
+                File.Delete(filePath);
             }
+
+            return Task.CompletedTask;
         }
     }
 }
