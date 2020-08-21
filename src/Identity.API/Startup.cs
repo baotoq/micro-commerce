@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Data.UnitOfWork.EF;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Shared.MediatR;
-using UnitOfWork;
 using Grpc.HealthCheck;
 using Identity.API.Grpc;
 using Microsoft.AspNetCore.HttpOverrides;

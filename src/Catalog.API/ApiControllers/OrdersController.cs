@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Orders.Models;
 using Catalog.API.Application.Orders.Queries;
-using UnitOfWork.Common;
+using Data.UnitOfWork.EF.Common;
 
 namespace Catalog.API.ApiControllers
 {

@@ -1,11 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Data.UnitOfWork.EF;
 using Identity.API.Data.Models;
 using MediatR;
 using Shared.MediatR.Exceptions;
-using UnitOfWork;
 
-namespace Identity.API.ApiControllers
+namespace Identity.API.Application.Users.Commands
 {
     public class DeleteUserCommand : IRequest<Unit>
     {
@@ -19,10 +19,10 @@ namespace Identity.API.ApiControllers
 
     public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Unit>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<User, string> _userRepository;
 
-        public DeleteUserCommandHandler(IUnitOfWork unitOfWork)
+        public DeleteUserCommandHandler(IEfUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _userRepository = unitOfWork.Repository<User, string>();

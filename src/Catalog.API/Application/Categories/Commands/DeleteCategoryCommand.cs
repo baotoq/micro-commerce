@@ -3,7 +3,7 @@ using MediatR;
 using Shared.MediatR.Exceptions;
 using System.Threading;
 using System.Threading.Tasks;
-using UnitOfWork;
+using Data.UnitOfWork.EF;
 
 namespace Catalog.API.Application.Categories.Commands
 {
@@ -19,10 +19,10 @@ namespace Catalog.API.Application.Categories.Commands
 
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, Unit>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Category> _repository;
 
-        public DeleteCategoryCommandHandler(IUnitOfWork unitOfWork)
+        public DeleteCategoryCommandHandler(IEfUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.Repository<Category>();

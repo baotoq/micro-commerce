@@ -5,10 +5,10 @@ using Bshop.Identity.V1;
 using Catalog.API.Application.Reviews.Models;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
+using Data.UnitOfWork.EF;
+using Data.UnitOfWork.EF.Common;
 using MediatR;
 using Shared.MediatR.Models;
-using UnitOfWork;
-using UnitOfWork.Common;
 using static Bshop.Identity.V1.IdentityService;
 
 namespace Catalog.API.Application.Reviews.Queries

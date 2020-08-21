@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Services;
-using UnitOfWork;
+using Data.UnitOfWork.EF;
 using Shared.MediatR.Exceptions;
 
 namespace Catalog.API.Application.Carts.Commands
@@ -29,11 +29,11 @@ namespace Catalog.API.Application.Carts.Commands
     public class AddToCartCommandHandler : IRequestHandler<AddToCartCommand, long>
     {
         private readonly IIdentityService _identityService;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Cart> _cartRepository;
         private readonly IRepository<Product> _productRepository;
 
-        public AddToCartCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<Product> productRepository)
+        public AddToCartCommandHandler(IIdentityService identityService, IEfUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<Product> productRepository)
         {
             _identityService = identityService;
             _unitOfWork = unitOfWork;

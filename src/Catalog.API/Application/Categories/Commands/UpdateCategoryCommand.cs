@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
+using Data.UnitOfWork.EF;
 using MediatR;
 using Shared.MediatR.Exceptions;
-using UnitOfWork;
 
 namespace Catalog.API.Application.Categories.Commands
 {
@@ -18,10 +18,10 @@ namespace Catalog.API.Application.Categories.Commands
 
     public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, Unit>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Category> _repository;
 
-        public UpdateCategoryCommandHandler(IUnitOfWork unitOfWork)
+        public UpdateCategoryCommandHandler(IEfUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.Repository<Category>();

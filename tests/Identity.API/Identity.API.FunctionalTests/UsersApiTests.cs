@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Data.UnitOfWork.EF.Common;
 using FluentAssertions;
 using Identity.API.Application.Users.Models;
 using Identity.API.FunctionalTests.Infrastructure;
-using UnitOfWork.Common;
 using Xunit;
 
 namespace Identity.API.FunctionalTests

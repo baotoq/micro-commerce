@@ -1,13 +1,13 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Commands;
 using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Application.Categories.Queries;
+using Data.UnitOfWork.EF.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UnitOfWork.Common;
 
 namespace Catalog.API.ApiControllers
 {

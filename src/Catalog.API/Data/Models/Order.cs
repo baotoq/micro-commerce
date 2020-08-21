@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Catalog.API.Data.Models.Enums;
-using UnitOfWork.Models;
+using Data.Entities.Models;
 
 namespace Catalog.API.Data.Models
 {

@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
+using Data.UnitOfWork.EF;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using UnitOfWork;
 
 namespace Catalog.API.Application.Replies.Commands
 {
@@ -18,10 +18,10 @@ namespace Catalog.API.Application.Replies.Commands
     public class ApprovePendingRepliesCommandHandler : IRequestHandler<ApprovePendingRepliesCommand, Unit>
     {
         private readonly ILogger _logger;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Reply> _repository;
 
-        public ApprovePendingRepliesCommandHandler(ILogger<ApprovePendingRepliesCommandHandler> logger, IUnitOfWork unitOfWork, IRepository<Reply> repository)
+        public ApprovePendingRepliesCommandHandler(ILogger<ApprovePendingRepliesCommandHandler> logger, IEfUnitOfWork unitOfWork, IRepository<Reply> repository)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;

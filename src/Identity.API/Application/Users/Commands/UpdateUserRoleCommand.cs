@@ -1,12 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Data.UnitOfWork.EF;
 using Identity.API.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.MediatR.Exceptions;
-using UnitOfWork;
 
-namespace Identity.API.ApiControllers
+namespace Identity.API.Application.Users.Commands
 {
     public class UpdateUserRoleCommand : IRequest<Unit>
     {
@@ -22,10 +22,10 @@ namespace Identity.API.ApiControllers
 
     public class UpdateUserRoleCommandHandler : IRequestHandler<UpdateUserRoleCommand, Unit>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<User, string> _userRepository;
 
-        public UpdateUserRoleCommandHandler(IUnitOfWork unitOfWork)
+        public UpdateUserRoleCommandHandler(IEfUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _userRepository = unitOfWork.Repository<User, string>();
