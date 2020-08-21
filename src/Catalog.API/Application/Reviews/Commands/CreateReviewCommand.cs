@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Services;
+using Data.UnitOfWork.EF;
 using FluentValidation;
 using MediatR;
-using UnitOfWork;
 
 namespace Catalog.API.Application.Reviews.Commands
 {
@@ -27,10 +27,10 @@ namespace Catalog.API.Application.Reviews.Commands
     public class CreateReviewCommandHandler : IRequestHandler<CreateReviewCommand, Unit>
     {
         private readonly IIdentityService _identityService;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Review> _repository;
 
-        public CreateReviewCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork, IRepository<Review> repository)
+        public CreateReviewCommandHandler(IIdentityService identityService, IEfUnitOfWork unitOfWork, IRepository<Review> repository)
         {
             _identityService = identityService;
             _unitOfWork = unitOfWork;

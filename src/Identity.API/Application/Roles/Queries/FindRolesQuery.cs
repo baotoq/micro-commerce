@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Data.UnitOfWork.EF;
 using Identity.API.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using UnitOfWork;
 
 namespace Identity.API.Application.Roles.Queries
 {

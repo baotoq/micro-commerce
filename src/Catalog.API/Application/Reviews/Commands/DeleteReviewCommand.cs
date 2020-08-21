@@ -3,7 +3,7 @@ using MediatR;
 using Shared.MediatR.Exceptions;
 using System.Threading;
 using System.Threading.Tasks;
-using UnitOfWork;
+using Data.UnitOfWork.EF;
 
 namespace Catalog.API.Application.Reviews.Commands
 {
@@ -19,10 +19,10 @@ namespace Catalog.API.Application.Reviews.Commands
 
     public class DeleteReviewCommandHandler : IRequestHandler<DeleteReviewCommand, Unit>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Review> _repository;
 
-        public DeleteReviewCommandHandler(IUnitOfWork unitOfWork)
+        public DeleteReviewCommandHandler(IEfUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.Repository<Review>();

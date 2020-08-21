@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Reviews.Commands;
 using Catalog.API.Application.Reviews.Models;
 using Catalog.API.Application.Reviews.Queries;
+using Data.UnitOfWork.EF.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UnitOfWork.Common;
 
 namespace Catalog.API.ApiControllers
 {

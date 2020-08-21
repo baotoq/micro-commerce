@@ -7,8 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Catalog.API.IntegrationEvents.Models;
 using Catalog.API.Data.Models.Enums;
-using UnitOfWork;
+using Data.UnitOfWork.EF;
+using MassTransit;
 
 namespace Catalog.API.Application.Orders.Commands
 {
@@ -19,15 +21,17 @@ namespace Catalog.API.Application.Orders.Commands
 
     public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Unit>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Cart> _cartRepository;
         private readonly IRepository<Order> _orderRepository;
+        private readonly IBus _bus;
 
-        public CreateOrderCommandHandler(IUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<Order> orderRepository)
+        public CreateOrderCommandHandler(IEfUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<Order> orderRepository, IBus bus)
         {
             _unitOfWork = unitOfWork;
             _cartRepository = cartRepository;
             _orderRepository = orderRepository;
+            _bus = bus;
         }
 
         public async Task<Unit> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -82,6 +86,11 @@ namespace Catalog.API.Application.Orders.Commands
             await _orderRepository.AddAsync(order, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _bus.Publish(new OrderCreated
+            {
+                OrderId = order.Id
+            }, cancellationToken);
 
             return Unit.Value;
         }

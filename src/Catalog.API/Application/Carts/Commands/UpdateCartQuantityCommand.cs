@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Services;
+using Data.UnitOfWork.EF;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.MediatR.Exceptions;
-using UnitOfWork;
 
 namespace Catalog.API.Application.Carts.Commands
 {
@@ -28,11 +28,11 @@ namespace Catalog.API.Application.Carts.Commands
     public class UpdateCartQuantityCommandHandler : IRequestHandler<UpdateCartQuantityCommand, Unit>
     {
         private readonly IIdentityService _identityService;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Cart> _cartRepository;
         private readonly IRepository<CartItem> _cartItemRepository;
 
-        public UpdateCartQuantityCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<CartItem> cartItemRepository)
+        public UpdateCartQuantityCommandHandler(IIdentityService identityService, IEfUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<CartItem> cartItemRepository)
         {
             _identityService = identityService;
             _unitOfWork = unitOfWork;

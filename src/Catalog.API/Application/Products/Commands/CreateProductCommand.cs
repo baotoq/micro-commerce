@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Products.Models;
 using Catalog.API.Data.Models;
 using Catalog.API.Extensions;
+using Data.UnitOfWork.EF;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Shared.FileStorage;
-using UnitOfWork;
 
 namespace Catalog.API.Application.Products.Commands
 {
@@ -43,11 +43,11 @@ namespace Catalog.API.Application.Products.Commands
 
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEfUnitOfWork _unitOfWork;
         private readonly IRepository<Product> _repository;
         private readonly IStorageService _storageService;
 
-        public CreateProductCommandHandler(IUnitOfWork unitOfWork, IStorageService storageService)
+        public CreateProductCommandHandler(IEfUnitOfWork unitOfWork, IStorageService storageService)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.Repository<Product>();

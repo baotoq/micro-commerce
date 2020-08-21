@@ -28,9 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks\Data.UnitOfWork.EF\Data.UnitOfWork.EF.csproj" />
     <ProjectReference Include="..\BuildingBlocks\Shared.Grpc\Shared.Grpc.csproj" />
     <ProjectReference Include="..\BuildingBlocks\Shared\Shared.csproj" />
-    <ProjectReference Include="..\BuildingBlocks\UnitOfWork\UnitOfWork.csproj" />
   </ItemGroup>
 
   <ItemGroup>
