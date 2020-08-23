@@ -75,6 +75,9 @@ services:
       - ConnectionStrings:Redis=redis:6379;
       - Identity:Uri:Http=${EXTERNAL_HOST_IP}:${IDENTITY_API_HTTP_PORT}
       - Identity:Uri:Grpc=http://identity-api:81
+      - Rabbitmq:Uri=rabbitmq://rabbitmq:5672
+      - Rabbitmq:UserName=guest
+      - Rabbitmq:Password=guest
     ports:
       - "${CATALOG_API_HTTP_PORT}:80"
       - "${CATALOG_API_GRPC_PORT}:81"
