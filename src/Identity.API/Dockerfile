@@ -6,14 +6,18 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 WORKDIR /src
 COPY ["Identity.API/*.csproj", "Identity.API/"]
-COPY ["BuildingBlocks/UnitOfWork/*.csproj", "BuildingBlocks/UnitOfWork/"]
+COPY ["BuildingBlocks/Data.Entities/*.csproj", "BuildingBlocks/Data.Entities/"]
+COPY ["BuildingBlocks/Data.UnitOfWork/*.csproj", "BuildingBlocks/Data.UnitOfWork/"]
+COPY ["BuildingBlocks/Data.UnitOfWork.EF/*.csproj", "BuildingBlocks/Data.UnitOfWork.EF/"]
 COPY ["BuildingBlocks/Shared/*.csproj", "BuildingBlocks/Shared/"]
 COPY ["BuildingBlocks/Shared.Grpc/*.csproj", "BuildingBlocks/Shared.Grpc/"]
 COPY ["Protos/", "Protos/"]
 RUN dotnet restore "Identity.API/Identity.API.csproj"
 
 COPY ["Identity.API/", "Identity.API/"]
-COPY ["BuildingBlocks/UnitOfWork/", "BuildingBlocks/UnitOfWork/"]
+COPY ["BuildingBlocks/Data.Entities/", "BuildingBlocks/Data.Entities/"]
+COPY ["BuildingBlocks/Data.UnitOfWork/", "BuildingBlocks/Data.UnitOfWork/"]
+COPY ["BuildingBlocks/Data.UnitOfWork.EF/", "BuildingBlocks/Data.UnitOfWork.EF/"]
 COPY ["BuildingBlocks/Shared/", "BuildingBlocks/Shared/"]
 COPY ["BuildingBlocks/Shared.Grpc/", "BuildingBlocks/Shared.Grpc/"]
 
