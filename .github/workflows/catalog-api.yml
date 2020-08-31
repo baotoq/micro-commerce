@@ -12,9 +12,10 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: src/${{env.SERVICE_NAME}}
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -22,14 +23,18 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
-      working-directory: src/${SERVICE_NAME}
       run: dotnet restore
     - name: Build
-      working-directory: src/${SERVICE_NAME}
       run: dotnet build --no-restore -c Release
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    defaults:
+      run:
+        working-directory: tests/${{env.SERVICE_NAME}}
+    steps:
     - name: Run UnitTests
-      working-directory: tests/$SERVICE_NAME
       run: dotnet test ${SERVICE_NAME}.UnitTests -c Release /p:CollectCoverage=true
     - name: Run FunctionalTests
-      working-directory: tests/$SERVICE_NAME
       run: dotnet test ${SERVICE_NAME}.FunctionalTests -c Release /p:CollectCoverage=true
