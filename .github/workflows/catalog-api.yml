@@ -22,10 +22,10 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
-      working-directory: src/Catalog.API
+      working-directory: src/${SERVICE_NAME}
       run: dotnet restore
     - name: Build
-      working-directory: src/$SERVICE_NAME
+      working-directory: src/${SERVICE_NAME}
       run: dotnet build --no-restore -c Release
     - name: Run UnitTests
       working-directory: tests/$SERVICE_NAME
