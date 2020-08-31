@@ -24,7 +24,7 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Prepare
-      run: ls -la -R
+      run: ls -R
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -35,21 +35,24 @@ jobs:
         name: repo
         path: |
           .
+          !.git/**
           !README.md
 
   tests:
     runs-on: ubuntu-latest
     needs: build
+    env: 
+      TEST_PROJECT_PREFIX: tests/${{env.SERVICE_NAME}}/${{env.SERVICE_NAME}}
     steps:
     - name: Download result
       uses: actions/download-artifact@v2
       with:
         name: repo
     - name: Prepare
-      run: ls -la -R
+      run: ls -R
     - name: Run UnitTests
-      working-directory: tests/${{env.SERVICE_NAME}}/${{env.SERVICE_NAME}}.UnitTests
+      working-directory: ${{env.TEST_PROJECT_PREFIX}}.UnitTests
       run: dotnet test -c Release /p:CollectCoverage=true
     - name: Run FunctionalTests
-      working-directory: tests/${{env.SERVICE_NAME}}/${{env.SERVICE_NAME}}.FunctionalTests
+      working-directory: ${{env.TEST_PROJECT_PREFIX}}.FunctionalTests
       run: dotnet test -c Release /p:CollectCoverage=true
