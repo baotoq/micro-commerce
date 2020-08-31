@@ -1,4 +1,4 @@
-name: .NET Core
+name: catalog-api
 
 on:
   push:
@@ -6,6 +6,9 @@ on:
     paths: [ src/**, tests/**, .github/**, k8s/** ]
   pull_request:
     branches: [ master ]
+
+env:
+  SERVICE_NAME: Catalog.API
 
 jobs:
   build:
@@ -19,8 +22,14 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
+      working-directory: src/$SERVICE_NAME
       run: dotnet restore
     - name: Build
-      run: dotnet build -c Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal /p:CollectCoverage=true
+      working-directory: src/$SERVICE_NAME
+      run: dotnet build --no-restore -c Release
+    - name: Run UnitTests
+      working-directory: tests/$SERVICE_NAME
+      run: dotnet test ${SERVICE_NAME}.UnitTests -c Release /p:CollectCoverage=true
+    - name: Run FunctionalTests
+      working-directory: tests/$SERVICE_NAME
+      run: dotnet test ${SERVICE_NAME}.FunctionalTests -c Release /p:CollectCoverage=true
