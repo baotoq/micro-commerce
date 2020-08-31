@@ -24,7 +24,7 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Prepare
-      run: ls -la
+      run: ls -la -R
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -37,7 +37,7 @@ jobs:
           .
           !README.md
 
-  test:
+  tests:
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -46,10 +46,10 @@ jobs:
       with:
         name: repo
     - name: Prepare
-      run: ls -la
+      run: ls -la -R
     - name: Run UnitTests
-      working-directory: tests/${{env.SERVICE_NAME}}.UnitTests
+      working-directory: tests/${{env.SERVICE_NAME}}/${{env.SERVICE_NAME}}.UnitTests
       run: dotnet test -c Release /p:CollectCoverage=true
     - name: Run FunctionalTests
-      working-directory: tests/${{env.SERVICE_NAME}}.FunctionalTests
+      working-directory: tests/${{env.SERVICE_NAME}}/${{env.SERVICE_NAME}}.FunctionalTests
       run: dotnet test -c Release /p:CollectCoverage=true
