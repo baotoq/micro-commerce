@@ -35,6 +35,8 @@ jobs:
         working-directory: tests/${{env.SERVICE_NAME}}
     steps:
     - name: Run UnitTests
-      run: dotnet test ${SERVICE_NAME}.UnitTests -c Release /p:CollectCoverage=true
+      working-directory: ${{env.SERVICE_NAME}}.UnitTests
+      run: dotnet test -c Release /p:CollectCoverage=true
     - name: Run FunctionalTests
-      run: dotnet test ${SERVICE_NAME}.FunctionalTests -c Release /p:CollectCoverage=true
+      working-directory: ${{env.SERVICE_NAME}}.FunctionalTests
+      run: dotnet test -c Release /p:CollectCoverage=true
