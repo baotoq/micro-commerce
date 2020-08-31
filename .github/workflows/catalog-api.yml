@@ -46,12 +46,10 @@ jobs:
       with:
         name: repo
     - name: Prepare
-      run: |
-        ls -la
-        cd tests/$SERVICE_NAME
+      run: ls -la
     - name: Run UnitTests
-      working-directory: ${{env.SERVICE_NAME}}.UnitTests
+      working-directory: tets/${{env.SERVICE_NAME}}.UnitTests
       run: dotnet test -c Release /p:CollectCoverage=true
     - name: Run FunctionalTests
-      working-directory: ${{env.SERVICE_NAME}}.FunctionalTests
+      working-directory: tets/${{env.SERVICE_NAME}}.FunctionalTests
       run: dotnet test -c Release /p:CollectCoverage=true
