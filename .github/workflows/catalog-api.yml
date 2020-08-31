@@ -17,11 +17,14 @@ jobs:
       run:
         working-directory: src/${{env.SERVICE_NAME}}
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
+    - name: Prepare
+      run: ls -la
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -34,6 +37,8 @@ jobs:
       run:
         working-directory: tests/${{env.SERVICE_NAME}}
     steps:
+    - name: Prepare
+      run: ls -la
     - name: Run UnitTests
       working-directory: ${{env.SERVICE_NAME}}.UnitTests
       run: dotnet test -c Release /p:CollectCoverage=true
