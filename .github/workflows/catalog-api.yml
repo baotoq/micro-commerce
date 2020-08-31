@@ -48,8 +48,8 @@ jobs:
     - name: Prepare
       run: ls -la
     - name: Run UnitTests
-      working-directory: tets/${{env.SERVICE_NAME}}.UnitTests
+      working-directory: tests/${{env.SERVICE_NAME}}.UnitTests
       run: dotnet test -c Release /p:CollectCoverage=true
     - name: Run FunctionalTests
-      working-directory: tets/${{env.SERVICE_NAME}}.FunctionalTests
+      working-directory: tests/${{env.SERVICE_NAME}}.FunctionalTests
       run: dotnet test -c Release /p:CollectCoverage=true
