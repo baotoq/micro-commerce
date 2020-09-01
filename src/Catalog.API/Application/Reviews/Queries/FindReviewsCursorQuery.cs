@@ -6,7 +6,7 @@ using Bshop.Identity.V1;
 using Catalog.API.Application.Reviews.Models;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using Data.UnitOfWork.EF.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

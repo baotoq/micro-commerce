@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
 using Catalog.API.Services;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using FluentValidation;
 using MediatR;
 
@@ -26,10 +26,10 @@ namespace Catalog.API.Application.Replies.Commands
     public class CreateReplyCommandHandler : IRequestHandler<CreateReplyCommand, Unit>
     {
         private readonly IIdentityService _identityService;
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Reply> _repository;
 
-        public CreateReplyCommandHandler(IIdentityService identityService, IEfUnitOfWork unitOfWork, IRepository<Reply> repository)
+        public CreateReplyCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork, IRepository<Reply> repository)
         {
             _identityService = identityService;
             _unitOfWork = unitOfWork;
@@ -46,7 +46,7 @@ namespace Catalog.API.Application.Replies.Commands
                 CreatedById = _identityService.GetCurrentUserId()
             }, cancellationToken);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }

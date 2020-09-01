@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,10 +18,10 @@ namespace Catalog.API.Application.Reviews.Commands
     public class ApprovePendingReviewsCommandHandler : IRequestHandler<ApprovePendingReviewsCommand, Unit>
     {
         private readonly ILogger _logger;
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Review> _reviewRepository;
 
-        public ApprovePendingReviewsCommandHandler(ILogger<ApprovePendingReviewsCommandHandler> logger, IEfUnitOfWork unitOfWork, IRepository<Review> reviewRepository)
+        public ApprovePendingReviewsCommandHandler(ILogger<ApprovePendingReviewsCommandHandler> logger, IUnitOfWork unitOfWork, IRepository<Review> reviewRepository)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
@@ -45,7 +45,7 @@ namespace Catalog.API.Application.Reviews.Commands
                 product.RatingAverage = (product.ReviewsCount * (product.RatingAverage ?? 0) + review.Rating) / (++product.ReviewsCount);
             }
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             _logger.LogInformation("Approved {Count} reviews with Id: {ReviewIds}", reviews.Count, reviews.Select(s => s.Id));
 

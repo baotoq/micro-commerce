@@ -22,59 +22,75 @@ namespace Ordering.API.Data.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("CreatedDate")
+                        .HasColumnName("created_date")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CustomerId")
+                        .HasColumnName("customer_id")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastModified")
+                        .HasColumnName("last_modified")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("OrderNote")
+                        .HasColumnName("order_note")
                         .HasColumnType("text");
 
                     b.Property<int>("OrderStatus")
+                        .HasColumnName("order_status")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("SubTotal")
+                        .HasColumnName("sub_total")
                         .HasColumnType("numeric");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
 
-                    b.ToTable("Orders");
+                    b.ToTable("orders");
                 });
 
             modelBuilder.Entity("Ordering.API.Data.Models.OrderItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<long>("OrderId")
+                        .HasColumnName("order_id")
                         .HasColumnType("bigint");
 
                     b.Property<long>("ProductId")
+                        .HasColumnName("product_id")
                         .HasColumnType("bigint");
 
                     b.Property<string>("ProductName")
+                        .HasColumnName("product_name")
                         .HasColumnType("text");
 
                     b.Property<decimal>("ProductPrice")
+                        .HasColumnName("product_price")
                         .HasColumnType("numeric");
 
                     b.Property<int>("Quantity")
+                        .HasColumnName("quantity")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_order_items");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .HasName("ix_order_items_order_id");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("order_items");
                 });
 
             modelBuilder.Entity("Ordering.API.Data.Models.OrderItem", b =>
@@ -82,6 +98,7 @@ namespace Ordering.API.Data.Migrations
                     b.HasOne("Ordering.API.Data.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
+                        .HasConstraintName("fk_order_items_orders_order_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

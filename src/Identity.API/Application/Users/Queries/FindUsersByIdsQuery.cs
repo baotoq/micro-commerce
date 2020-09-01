@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using Identity.API.Application.Users.Models;
 using Identity.API.Data.Models;
 using MediatR;

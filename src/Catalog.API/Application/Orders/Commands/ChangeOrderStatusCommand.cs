@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using MediatR;
 
 namespace Catalog.API.Application.Orders.Commands
@@ -17,10 +17,10 @@ namespace Catalog.API.Application.Orders.Commands
 
     public class ChangeOrderStatusCommandHandler : IRequestHandler<ChangeOrderStatusCommand, Unit>
     {
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Order> _repository;
 
-        public ChangeOrderStatusCommandHandler(IEfUnitOfWork unitOfWork)
+        public ChangeOrderStatusCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = unitOfWork.Repository<Order>();
@@ -31,7 +31,7 @@ namespace Catalog.API.Application.Orders.Commands
             var order = await _repository.FindAsync(request.Id, cancellationToken);
 
             order.OrderStatus = request.OrderStatus;
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }

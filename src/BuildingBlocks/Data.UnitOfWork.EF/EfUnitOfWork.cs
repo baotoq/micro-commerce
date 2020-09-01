@@ -1,30 +1,22 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Data.Entities.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Data.UnitOfWork.EF
 {
-    public class EfUnitOfWork : UnitOfWork, IEfUnitOfWork
+    public class EfUnitOfWork : UnitOfWork
     {
         protected DbContext Context { get; }
-        protected IServiceProvider ServiceProvider { get; }
 
-        public EfUnitOfWork(DbContext context, IServiceProvider serviceProvider) : base(() => context.Database.GetDbConnection())
+        public EfUnitOfWork(DbContext context, IServiceProvider serviceProvider) : base(() => context.Database.GetDbConnection(), serviceProvider)
         {
             Context = context;
-            ServiceProvider = serviceProvider;
         }
 
-        public IRepository<TEntity> Repository<TEntity>() where TEntity : IEntity<long> => ServiceProvider.GetRequiredService<IRepository<TEntity>>();
+        public override void Commit() => Context.SaveChanges();
 
-        public IRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : IEntity<TId> => ServiceProvider.GetRequiredService<IRepository<TEntity, TId>>();
-
-        public int SaveChanges() => Context.SaveChanges();
-
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => Context.SaveChangesAsync(cancellationToken);
+        public override Task CommitAsync(CancellationToken cancellationToken = default) => Context.SaveChangesAsync(cancellationToken);
 
         private bool _disposed;
 
