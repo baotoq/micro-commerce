@@ -1,4 +1,4 @@
-﻿namespace Identity.API.Application.Roles
+﻿namespace Identity.API.Application.Roles.Models
 {
     public class RoleDto
     {

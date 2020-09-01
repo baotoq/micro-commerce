@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using Identity.API.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -22,10 +22,10 @@ namespace Identity.API.Application.Users.Commands
 
     public class UpdateUserRoleCommandHandler : IRequestHandler<UpdateUserRoleCommand, Unit>
     {
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<User, string> _userRepository;
 
-        public UpdateUserRoleCommandHandler(IEfUnitOfWork unitOfWork)
+        public UpdateUserRoleCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _userRepository = unitOfWork.Repository<User, string>();
@@ -49,7 +49,7 @@ namespace Identity.API.Application.Users.Commands
                 RoleId = request.RoleId
             });
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }

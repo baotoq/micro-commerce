@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Extensions;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -42,11 +42,11 @@ namespace Catalog.API.Application.Products.Commands
 
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Unit>
     {
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IStorageService _storageService;
         private readonly IRepository<Product> _repository;
 
-        public UpdateProductCommandHandler(IEfUnitOfWork unitOfWork, IStorageService storageService)
+        public UpdateProductCommandHandler(IUnitOfWork unitOfWork, IStorageService storageService)
         {
             _unitOfWork = unitOfWork;
             _storageService = storageService;
@@ -90,7 +90,7 @@ namespace Catalog.API.Application.Products.Commands
                 }
             }
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             if (request.Image != null)
             {

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Carts.Models;
 using Catalog.API.Data.Models;
 using Catalog.API.Services;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,10 +17,10 @@ namespace Catalog.API.Application.Carts.Commands
     public class LoadCartCommandHandler : IRequestHandler<LoadCartCommand, CartDto>
     {
         private readonly IIdentityService _identityService;
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Cart> _cartRepository;
 
-        public LoadCartCommandHandler(IIdentityService identityService, IEfUnitOfWork unitOfWork)
+        public LoadCartCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork)
         {
             _identityService = identityService;
             _unitOfWork = unitOfWork;
@@ -59,7 +59,7 @@ namespace Catalog.API.Application.Carts.Commands
                     CustomerId = customerId
                 };
                 await _cartRepository.AddAsync(newCart, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await _unitOfWork.CommitAsync(cancellationToken);
 
                 return new CartDto
                 {

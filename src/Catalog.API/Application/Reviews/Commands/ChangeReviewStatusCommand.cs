@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -20,11 +20,11 @@ namespace Catalog.API.Application.Reviews.Commands
 
     public class ChangeReviewStatusCommandHandler : IRequestHandler<ChangeReviewStatusCommand, Unit>
     {
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Review> _repository;
         private readonly IRepository<Product> _productRepository;
 
-        public ChangeReviewStatusCommandHandler(IEfUnitOfWork unitOfWork, IRepository<Review> repository, IRepository<Product> productRepository)
+        public ChangeReviewStatusCommandHandler(IUnitOfWork unitOfWork, IRepository<Review> repository, IRepository<Product> productRepository)
         {
             _unitOfWork = unitOfWork;
             _repository = repository;
@@ -42,7 +42,7 @@ namespace Catalog.API.Application.Reviews.Commands
             }
 
             review.ReviewStatus = request.ReviewStatus;
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             var approvedReviews = _repository.Query()
                 .Where(s => s.ProductId == review.ProductId && s.ReviewStatus == ReviewStatus.Approved);
@@ -59,7 +59,7 @@ namespace Catalog.API.Application.Reviews.Commands
                 product.RatingAverage = await approvedReviews.SumAsync(s => s.Rating, cancellationToken) / product.ReviewsCount;
             }
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }

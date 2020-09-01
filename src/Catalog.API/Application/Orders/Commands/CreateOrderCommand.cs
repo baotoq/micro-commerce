@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.IntegrationEvents.Models;
 using Catalog.API.Data.Models.Enums;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using MassTransit;
 
 namespace Catalog.API.Application.Orders.Commands
@@ -21,12 +21,12 @@ namespace Catalog.API.Application.Orders.Commands
 
     public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Unit>
     {
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Cart> _cartRepository;
         private readonly IRepository<Order> _orderRepository;
         private readonly IBus _bus;
 
-        public CreateOrderCommandHandler(IEfUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<Order> orderRepository, IBus bus)
+        public CreateOrderCommandHandler(IUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<Order> orderRepository, IBus bus)
         {
             _unitOfWork = unitOfWork;
             _cartRepository = cartRepository;
@@ -85,7 +85,7 @@ namespace Catalog.API.Application.Orders.Commands
 
             await _orderRepository.AddAsync(order, cancellationToken);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             await _bus.Publish(new OrderCreated
             {

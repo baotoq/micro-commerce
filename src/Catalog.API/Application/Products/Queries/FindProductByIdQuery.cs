@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Products.Models;
 using Catalog.API.Data.Models;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.MediatR.Exceptions;

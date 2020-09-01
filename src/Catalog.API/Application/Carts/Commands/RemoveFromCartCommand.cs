@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Services;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.MediatR.Exceptions;
@@ -18,11 +18,11 @@ namespace Catalog.API.Application.Carts.Commands
     public class RemoveFromCartCommandHandler : IRequestHandler<RemoveFromCartCommand, Unit>
     {
         private readonly IIdentityService _identityService;
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Cart> _cartRepository;
         private readonly IRepository<CartItem> _cartItemRepository;
 
-        public RemoveFromCartCommandHandler(IIdentityService identityService, IEfUnitOfWork unitOfWork,IRepository<Cart> cartRepository, IRepository<CartItem> cartItemRepository)
+        public RemoveFromCartCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork,IRepository<Cart> cartRepository, IRepository<CartItem> cartItemRepository)
         {
             _identityService = identityService;
             _unitOfWork = unitOfWork;
@@ -56,7 +56,7 @@ namespace Catalog.API.Application.Carts.Commands
             }
 
             _cartItemRepository.Remove(cartItem);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }
