@@ -1,22 +1,20 @@
 # b-shop
 
-[![Build Status](https://github.com/bao2703/b-shop/workflows/.NET%20Core/badge.svg)](https://github.com/bao2703/b-shop/commits/master)
+![catalog-api](https://github.com/bao2703/b-shop/workflows/catalog-api/badge.svg)
 
-[[Sonar Gate]](https://baotoq-sonar.azurewebsites.net/projects)
-
-| Project      | Status                                                                                                                                                                                               |
-|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| identity-api | [![Build Status](https://bao2703.visualstudio.com/b-shop/_apis/build/status/identity-api?branchName=master)](https://bao2703.visualstudio.com/b-shop/_build/latest?definitionId=6&branchName=master) |
-| catalog-api  | [![Build Status](https://bao2703.visualstudio.com/b-shop/_apis/build/status/catalog-api?branchName=master)](https://bao2703.visualstudio.com/b-shop/_build/latest?definitionId=5&branchName=master)  |
-| react-web    | [![Build Status](https://bao2703.visualstudio.com/b-shop/_apis/build/status/react-web?branchName=master)](https://bao2703.visualstudio.com/b-shop/_build/latest?definitionId=7&branchName=master)    |
+| Project      | Status                                                                                                                                                                                               |Sonar                                                                                                                                                                            |
+|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| identity-api | [![Build Status](https://bao2703.visualstudio.com/b-shop/_apis/build/status/identity-api?branchName=master)](https://bao2703.visualstudio.com/b-shop/_build/latest?definitionId=6&branchName=master) |[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bshop-identity-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=bshop-identity-api) |
+| catalog-api  | [![Build Status](https://bao2703.visualstudio.com/b-shop/_apis/build/status/catalog-api?branchName=master)](https://bao2703.visualstudio.com/b-shop/_build/latest?definitionId=5&branchName=master)  |[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bshop-catalog-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=bshop-catalog-api)   |
+| react-web    | [![Build Status](https://bao2703.visualstudio.com/b-shop/_apis/build/status/react-web?branchName=master)](https://bao2703.visualstudio.com/b-shop/_build/latest?definitionId=7&branchName=master)    |                                                                                                                                                                                 |
 
 
 This is a simplified a commerce made in a micro-services architecture, using:
 
 * .NET Core 3.1
 * Internal communication using [Grpc](https://github.com/grpc/grpc-dotnet)
-* SQL database with [MS SQL Server]()
-* Accessing database with Entity Framework Core
+* SQL database with [MS SQL Server](), [PostgreSQL]()
+* Accessing database with [Entity Framework Core](), [Dapper]()
 * In-process messaging with [MediatR](https://github.com/jbogard/MediatR)
 * A modern web application with [React](https://reactjs.org)
 * Logging with [Serilog](https://github.com/serilog/serilog)
