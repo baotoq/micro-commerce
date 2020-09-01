@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using Identity.API.Data.Models;
 using MediatR;
 using Shared.MediatR.Exceptions;
@@ -19,10 +19,10 @@ namespace Identity.API.Application.Users.Commands
 
     public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Unit>
     {
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<User, string> _userRepository;
 
-        public DeleteUserCommandHandler(IEfUnitOfWork unitOfWork)
+        public DeleteUserCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _userRepository = unitOfWork.Repository<User, string>();
@@ -39,7 +39,7 @@ namespace Identity.API.Application.Users.Commands
 
             _userRepository.Remove(user);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }

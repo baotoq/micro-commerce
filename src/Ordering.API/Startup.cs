@@ -1,4 +1,5 @@
-﻿using Data.UnitOfWork;
+﻿using Dapper;
+using Data.UnitOfWork;
 using Data.UnitOfWork.EF;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -32,8 +33,9 @@ namespace Ordering.API
 
             services.AddUnitOfWork<ApplicationDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
-                    provider => provider.EnableRetryOnFailure()));
+                    provider => provider.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
 
+            SimpleCRUD.SetDialect(SimpleCRUD.Dialect.PostgreSQL);
             services.AddUnitOfWork(() => new NpgsqlConnection(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddHttpContextAccessor();

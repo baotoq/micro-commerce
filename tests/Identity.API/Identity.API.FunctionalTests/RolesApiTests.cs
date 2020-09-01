@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Identity.API.Application.Roles;
+using Identity.API.Application.Roles.Models;
 using Identity.API.FunctionalTests.Infrastructure;
 using Xunit;
 

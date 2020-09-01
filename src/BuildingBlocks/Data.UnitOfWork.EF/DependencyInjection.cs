@@ -11,9 +11,9 @@ namespace Data.UnitOfWork.EF
             services.AddDbContext<TDbContext>(optionsAction);
 
             services.AddScoped<DbContext, TDbContext>();
-            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
-            services.AddTransient(typeof(IRepository<,>), typeof(Repository<,>));
-            services.AddScoped<IEfUnitOfWork, EfUnitOfWork>();
+            services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+            services.AddTransient(typeof(IRepository<>), typeof(EfRepository<>));
+            services.AddTransient(typeof(IRepository<,>), typeof(EfRepository<,>));
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using MediatR;
 
 namespace Catalog.API.Application.Orders.Commands
@@ -18,10 +18,10 @@ namespace Catalog.API.Application.Orders.Commands
 
     public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand, Unit>
     {
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Order> _repository;
 
-        public DeleteOrderCommandHandler(IEfUnitOfWork unitOfWork)
+        public DeleteOrderCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = unitOfWork.Repository<Order>();
@@ -32,7 +32,7 @@ namespace Catalog.API.Application.Orders.Commands
             var order = await _repository.FindAsync(request.Id, cancellationToken);
 
             _repository.Remove(order);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }

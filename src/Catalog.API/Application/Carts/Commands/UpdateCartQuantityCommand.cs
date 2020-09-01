@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Services;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -28,11 +28,11 @@ namespace Catalog.API.Application.Carts.Commands
     public class UpdateCartQuantityCommandHandler : IRequestHandler<UpdateCartQuantityCommand, Unit>
     {
         private readonly IIdentityService _identityService;
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Cart> _cartRepository;
         private readonly IRepository<CartItem> _cartItemRepository;
 
-        public UpdateCartQuantityCommandHandler(IIdentityService identityService, IEfUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<CartItem> cartItemRepository)
+        public UpdateCartQuantityCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork, IRepository<Cart> cartRepository, IRepository<CartItem> cartItemRepository)
         {
             _identityService = identityService;
             _unitOfWork = unitOfWork;
@@ -69,7 +69,7 @@ namespace Catalog.API.Application.Carts.Commands
 
             cartItem.Quantity = request.Quantity;
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }

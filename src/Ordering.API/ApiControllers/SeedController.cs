@@ -1,16 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Dapper;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Ordering.API.Data;
 using Ordering.API.Data.Models;
 
 namespace Ordering.API.ApiControllers
 {
     public static class OrderSchema
     {
-        public const string Table = @"""Orders""";
+        public const string Table = "orders";
     }
 
     [ApiController]
@@ -18,14 +18,12 @@ namespace Ordering.API.ApiControllers
     public class SeedController : ControllerBase
     {
         private readonly ILogger<SeedController> _logger;
-        private readonly IEfUnitOfWork _unitOfWork;
-        private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public SeedController(ILogger<SeedController> logger, IEfUnitOfWork unitOfWork, ApplicationDbContext context)
+        public SeedController(ILogger<SeedController> logger, IUnitOfWork unitOfWork)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
-            _context = context;
         }
 
         [HttpGet]
@@ -33,14 +31,15 @@ namespace Ordering.API.ApiControllers
         {
             //_unitOfWork.Connection.Open();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 2; i++)
             {
-                await _context.Orders.AddAsync(new Order());
+                await _unitOfWork.Repository<Order>().AddAsync(new Order());
                 //await _unitOfWork.Repository<Order>().Query().ToListAsync();
-                var result = await _unitOfWork.Connection.QueryAsync(@$"DELETE FROM {OrderSchema.Table}");
+                //await _unitOfWork.Connection.QueryAsync($@"INSERT INTO {OrderSchema.Table} (""SubTotal"", ""OrderStatus"", ""CreatedDate"", ""LastModified"") VALUES (@SubTotal, @OrderStatus, @CreatedDate, @LastModified)", new Order());
+                var aaaa = await _unitOfWork.Connection.QueryAsync<List<Order>>($@"SELECT * FROM {OrderSchema.Table}");
+                var aa = await _unitOfWork.Repository<Order>().FindAsync(1);
             }
-
-            await _context.SaveChangesAsync();
+            _unitOfWork.Commit();
             //_unitOfWork.Connection.Close();
             return Ok();
         }

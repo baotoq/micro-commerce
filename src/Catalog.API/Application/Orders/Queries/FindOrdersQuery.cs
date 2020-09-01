@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Bshop.Identity.V1;
 using Catalog.API.Application.Orders.Models;
 using Catalog.API.Data.Models;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using Data.UnitOfWork.EF.Common;
 using MediatR;
 using Shared.MediatR.Models;
