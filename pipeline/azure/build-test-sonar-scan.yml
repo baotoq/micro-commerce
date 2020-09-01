@@ -4,12 +4,13 @@ parameters:
   runTest: true
 
 steps:
-- task: SonarQubePrepare@4
-  displayName: Prepare analysis on SonarQube
-  continueOnError: true
+- task: SonarCloudPrepare@1
+  displayName: Prepare analysis on Sonar
   inputs:
-    SonarQube: sonar
-    projectKey: ${{ parameters.projectKey }}
+    SonarCloud: sonarcloud
+    organization: bao2703
+    scannerMode: MSBuild
+    projectKey: bshop-${{ parameters.projectKey }}
 
 - task: DotNetCoreCLI@2
   displayName: Build project
@@ -32,7 +33,9 @@ steps:
     codeCoverageTool: Cobertura
     summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
 
-- task: SonarQubeAnalyze@4
+- task: SonarCloudPublish@1
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   continueOnError: true
-  displayName: Run Code Analysis and publish to SonarQube
+  displayName: Run Code Analysis and publish to Sonar
+  inputs:
+    pollingTimeoutSec: '300'
