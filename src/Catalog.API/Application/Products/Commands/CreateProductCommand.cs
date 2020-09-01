@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Products.Models;
 using Catalog.API.Data.Models;
 using Catalog.API.Extensions;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -43,11 +43,11 @@ namespace Catalog.API.Application.Products.Commands
 
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
     {
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Product> _repository;
         private readonly IStorageService _storageService;
 
-        public CreateProductCommandHandler(IEfUnitOfWork unitOfWork, IStorageService storageService)
+        public CreateProductCommandHandler(IUnitOfWork unitOfWork, IStorageService storageService)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.Repository<Product>();
@@ -79,7 +79,7 @@ namespace Catalog.API.Application.Products.Commands
             }
 
             await _repository.AddAsync(product, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return new ProductDto
             {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Identity.API.Application.Roles;
+using Identity.API.Application.Roles.Models;
 using Identity.API.Application.Roles.Queries;
 using IdentityServer4;
 using MediatR;

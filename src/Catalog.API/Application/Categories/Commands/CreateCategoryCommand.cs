@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Data.Models;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using FluentValidation;
 using MediatR;
 
-namespace Catalog.API.Application.Categories.Commands.Create
+namespace Catalog.API.Application.Categories.Commands
 {
     public class CreateCategoryCommand : IRequest<CategoryDto>
     {
@@ -25,10 +25,10 @@ namespace Catalog.API.Application.Categories.Commands.Create
 
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
     {
-        private readonly IEfUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Category> _repository;
 
-        public CreateCategoryCommandHandler(IEfUnitOfWork unitOfWork)
+        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.Repository<Category>();
@@ -42,7 +42,7 @@ namespace Catalog.API.Application.Categories.Commands.Create
             };
 
             await _repository.AddAsync(category, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return new CategoryDto
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Data.Entities.Models;
@@ -7,12 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Data.UnitOfWork.EF
 {
-    public class EfUnitOfWork : UnitOfWork, IEfUnitOfWork
+    public class EfUnitOfWork : IUnitOfWork, IDisposable
     {
         protected DbContext Context { get; }
         protected IServiceProvider ServiceProvider { get; }
 
-        public EfUnitOfWork(DbContext context, IServiceProvider serviceProvider) : base(() => context.Database.GetDbConnection())
+        public EfUnitOfWork(DbContext context, IServiceProvider serviceProvider)
         {
             Context = context;
             ServiceProvider = serviceProvider;
@@ -22,13 +23,21 @@ namespace Data.UnitOfWork.EF
 
         public IRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : IEntity<TId> => ServiceProvider.GetRequiredService<IRepository<TEntity, TId>>();
 
-        public int SaveChanges() => Context.SaveChanges();
+        public IDbConnection Connection => Context.Database.GetDbConnection();
+        public IDbTransaction Transaction => throw new NotSupportedException();
 
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => Context.SaveChangesAsync(cancellationToken);
+        public void Commit() => Context.SaveChanges();
+
+        public Task CommitAsync(CancellationToken cancellationToken = default) => Context.SaveChangesAsync(cancellationToken);
 
         private bool _disposed;
 
-        protected override void Dispose(bool disposing)
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected void Dispose(bool disposing)
         {
             if (_disposed)
             {
@@ -41,8 +50,6 @@ namespace Data.UnitOfWork.EF
             }
 
             _disposed = true;
-
-            base.Dispose(disposing);
         }
     }
 }

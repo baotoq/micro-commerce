@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Data.Models;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork;
 using Data.UnitOfWork.EF.Common;
 using MediatR;
 using Shared.MediatR.Exceptions;

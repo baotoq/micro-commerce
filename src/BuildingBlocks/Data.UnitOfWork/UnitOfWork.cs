@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
+using Data.Entities.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Data.UnitOfWork
 {
@@ -7,28 +11,46 @@ namespace Data.UnitOfWork
     {
         protected readonly Func<IDbConnection> ConnFactoryFunc;
         protected IDbConnection DbConnection;
-        protected IDbTransaction Transaction;
+        protected IServiceProvider ServiceProvider { get; }
 
-        public UnitOfWork(Func<IDbConnection> connFactoryFunc)
+        public UnitOfWork(Func<IDbConnection> connFactoryFunc, IServiceProvider serviceProvider)
         {
             ConnFactoryFunc = connFactoryFunc;
+            ServiceProvider = serviceProvider;
+            Connection.Open();
+            Transaction = Connection.BeginTransaction();
         }
+
+        public IRepository<TEntity> Repository<TEntity>() where TEntity : IEntity<long> => ServiceProvider.GetRequiredService<IRepository<TEntity>>();
+
+        public IRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : IEntity<TId> => ServiceProvider.GetRequiredService<IRepository<TEntity, TId>>();
 
         public IDbConnection Connection => DbConnection ??= ConnFactoryFunc();
+        public IDbTransaction Transaction { get; private set; }
 
-        public void BeginTransaction(IsolationLevel level = IsolationLevel.ReadCommitted)
+        public virtual void Commit()
         {
-            Transaction = Connection.BeginTransaction(level);
+            CommitAsync().GetAwaiter().GetResult();
         }
 
-        public void CommitTransaction()
+        public virtual Task CommitAsync(CancellationToken cancellationToken = default)
         {
-            Transaction.Commit();
-        }
+            try
+            {
+                Transaction.Commit();
+            }
+            catch
+            {
+                Transaction.Rollback();
+                throw;
+            }
+            finally
+            {
+                Transaction.Dispose();
+                Transaction = Connection.BeginTransaction();
+            }
 
-        public void RollbackTransaction()
-        {
-            Transaction.Rollback();
+            return Task.CompletedTask;
         }
 
         private bool _disposed;

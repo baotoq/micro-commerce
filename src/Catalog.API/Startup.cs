@@ -31,7 +31,6 @@ using Serilog;
 using Shared.FileStorage;
 using Shared.Grpc;
 using Shared.MediatR;
-using static Bshop.Identity.V1.IdentityService;
 
 namespace Catalog.API
 {
@@ -56,7 +55,7 @@ namespace Catalog.API
 
             AppContext.SetSwitch(
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            services.AddGrpcClient<IdentityServiceClient>(options =>
+            services.AddGrpcClient<Bshop.Identity.V1.IdentityService.IdentityServiceClient>(options =>
             {
                 options.Address = new Uri(Configuration["Identity:Uri:Grpc"]);
             }).EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);

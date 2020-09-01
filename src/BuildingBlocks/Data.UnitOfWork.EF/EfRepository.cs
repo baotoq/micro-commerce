@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Data.Entities.Models;
@@ -7,19 +6,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.UnitOfWork.EF
 {
-    public class Repository<TEntity> : Repository<TEntity, long>, IRepository<TEntity> where TEntity : class, IEntity<long>
+    public class EfRepository<TEntity> : EfRepository<TEntity, long>, IRepository<TEntity> where TEntity : class, IEntity<long>
     {
-        public Repository(DbContext context) : base(context)
+        public EfRepository(DbContext context) : base(context)
         {
         }
     }
 
-    public class Repository<TEntity, TId> : IRepository<TEntity, TId> where TEntity : class, IEntity<TId>
+    public class EfRepository<TEntity, TId> : IRepository<TEntity, TId> where TEntity : class, IEntity<TId>
     {
         protected DbContext Context { get; }
         protected DbSet<TEntity> DbSet { get; }
 
-        public Repository(DbContext context)
+        public EfRepository(DbContext context)
         {
             Context = context;
             DbSet = Context.Set<TEntity>();
@@ -32,8 +31,6 @@ namespace Data.UnitOfWork.EF
         public void Add(TEntity entity) => DbSet.Add(entity);
 
         public async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default) => await DbSet.AddAsync(entity, cancellationToken);
-
-        public void AddRange(IEnumerable<TEntity> entity) => DbSet.AddRange(entity);
 
         public void Remove(TEntity entity) => DbSet.Remove(entity);
     }
