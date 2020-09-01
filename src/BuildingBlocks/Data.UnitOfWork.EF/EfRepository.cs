@@ -6,19 +6,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.UnitOfWork.EF
 {
-    public abstract class EfRepository<TEntity> : EfRepository<TEntity, long>, IRepository<TEntity> where TEntity : class, IEntity<long>
+    public class EfRepository<TEntity> : EfRepository<TEntity, long>, IRepository<TEntity> where TEntity : class, IEntity<long>
     {
-        protected EfRepository(DbContext context) : base(context)
+        public EfRepository(DbContext context) : base(context)
         {
         }
     }
 
-    public abstract class EfRepository<TEntity, TId> : IRepository<TEntity, TId> where TEntity : class, IEntity<TId>
+    public class EfRepository<TEntity, TId> : IRepository<TEntity, TId> where TEntity : class, IEntity<TId>
     {
         protected DbContext Context { get; }
         protected DbSet<TEntity> DbSet { get; }
 
-        protected EfRepository(DbContext context)
+        public EfRepository(DbContext context)
         {
             Context = context;
             DbSet = Context.Set<TEntity>();

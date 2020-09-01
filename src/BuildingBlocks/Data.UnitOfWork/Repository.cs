@@ -24,10 +24,7 @@ namespace Data.UnitOfWork
             Transaction = unitOfWork.Transaction;
         }
 
-        public IQueryable<TEntity> Query()
-        {
-            throw new System.NotImplementedException();
-        }
+        public IQueryable<TEntity> Query() => Connection.GetList<TEntity>(true, Transaction).AsQueryable();
 
         public async ValueTask<TEntity> FindAsync(TId id, CancellationToken cancellationToken = default) => await Connection.GetAsync<TEntity>(id, Transaction);
 
@@ -35,9 +32,6 @@ namespace Data.UnitOfWork
 
         public Task AddAsync(TEntity entity, CancellationToken cancellationToken = default) => Connection.InsertAsync<TId, TEntity>(entity, Transaction);
 
-        public void Remove(TEntity entity)
-        {
-            Connection.Delete(entity);
-        }
+        public void Remove(TEntity entity) => Connection.Delete(entity);
     }
 }
