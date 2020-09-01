@@ -1,26 +1,43 @@
 ﻿using System;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using Data.Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Data.UnitOfWork.EF
 {
-    public class EfUnitOfWork : UnitOfWork
+    public class EfUnitOfWork : IUnitOfWork, IDisposable
     {
         protected DbContext Context { get; }
+        protected IServiceProvider ServiceProvider { get; }
 
-        public EfUnitOfWork(DbContext context, IServiceProvider serviceProvider) : base(() => context.Database.GetDbConnection(), serviceProvider)
+        public EfUnitOfWork(DbContext context, IServiceProvider serviceProvider)
         {
             Context = context;
+            ServiceProvider = serviceProvider;
         }
 
-        public override void Commit() => Context.SaveChanges();
+        public IRepository<TEntity> Repository<TEntity>() where TEntity : IEntity<long> => ServiceProvider.GetRequiredService<IRepository<TEntity>>();
 
-        public override Task CommitAsync(CancellationToken cancellationToken = default) => Context.SaveChangesAsync(cancellationToken);
+        public IRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : IEntity<TId> => ServiceProvider.GetRequiredService<IRepository<TEntity, TId>>();
+
+        public IDbConnection Connection => Context.Database.GetDbConnection();
+        public IDbTransaction Transaction => throw new NotSupportedException();
+
+        public void Commit() => Context.SaveChanges();
+
+        public Task CommitAsync(CancellationToken cancellationToken = default) => Context.SaveChangesAsync(cancellationToken);
 
         private bool _disposed;
 
-        protected override void Dispose(bool disposing)
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected void Dispose(bool disposing)
         {
             if (_disposed)
             {
@@ -33,8 +50,6 @@ namespace Data.UnitOfWork.EF
             }
 
             _disposed = true;
-
-            base.Dispose(disposing);
         }
     }
 }

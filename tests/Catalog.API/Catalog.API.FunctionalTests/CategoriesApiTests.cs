@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Commands;
-using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Data;
 using Catalog.API.Data.Models;

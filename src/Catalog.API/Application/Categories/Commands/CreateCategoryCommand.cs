@@ -6,7 +6,7 @@ using Data.UnitOfWork;
 using FluentValidation;
 using MediatR;
 
-namespace Catalog.API.Application.Categories.Commands.Create
+namespace Catalog.API.Application.Categories.Commands
 {
     public class CreateCategoryCommand : IRequest<CategoryDto>
     {
