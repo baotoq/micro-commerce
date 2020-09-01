@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.ApiControllers;
 using Catalog.API.Application.Categories.Commands;
-using Catalog.API.Application.Categories.Commands.Create;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Application.Categories.Queries;
 using Data.UnitOfWork.EF.Common;
