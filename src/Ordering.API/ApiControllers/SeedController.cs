@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 using Dapper;
 using Data.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
@@ -30,16 +31,19 @@ namespace Ordering.API.ApiControllers
         public async Task<IActionResult> Get()
         {
             //_unitOfWork.Connection.Open();
-
-            for (int i = 0; i < 2; i++)
+            using (var scope = new TransactionScope())
             {
+                var a2aaa = await _unitOfWork.Connection.QueryAsync<Order>($@"SELECT * FROM {OrderSchema.Table}");
                 await _unitOfWork.Repository<Order>().AddAsync(new Order());
-                //await _unitOfWork.Repository<Order>().Query().ToListAsync();
-                //await _unitOfWork.Connection.QueryAsync($@"INSERT INTO {OrderSchema.Table} (""SubTotal"", ""OrderStatus"", ""CreatedDate"", ""LastModified"") VALUES (@SubTotal, @OrderStatus, @CreatedDate, @LastModified)", new Order());
-                var aaaa = await _unitOfWork.Connection.QueryAsync<List<Order>>($@"SELECT * FROM {OrderSchema.Table}");
-                var aa = await _unitOfWork.Repository<Order>().FindAsync(1);
+                var a2aa2a = await _unitOfWork.Connection.QueryAsync<Order>($@"SELECT * FROM {OrderSchema.Table}");
+                var a2a = await _unitOfWork.Repository<Order>().FindAsync(1);
+
             }
-            _unitOfWork.Commit();
+
+            await _unitOfWork.Repository<Order>().AddAsync(new Order());
+            var aaaa = await _unitOfWork.Connection.QueryAsync<Order>($@"SELECT * FROM {OrderSchema.Table}");
+            var aa = await _unitOfWork.Repository<Order>().FindAsync(1);
+           // _unitOfWork.Commit();
             //_unitOfWork.Connection.Close();
             return Ok();
         }

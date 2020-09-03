@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using Data.Entities.Models;
@@ -23,8 +24,8 @@ namespace Data.UnitOfWork.EF
 
         public IRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : IEntity<TId> => ServiceProvider.GetRequiredService<IRepository<TEntity, TId>>();
 
-        public IDbConnection Connection => Context.Database.GetDbConnection();
-        public IDbTransaction Transaction => throw new NotSupportedException();
+        public DbConnection Connection => Context.Database.GetDbConnection();
+        public DbTransaction Transaction => throw new NotSupportedException();
 
         public void Commit() => Context.SaveChanges();
 
@@ -35,9 +36,10 @@ namespace Data.UnitOfWork.EF
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        protected void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (_disposed)
             {
@@ -50,6 +52,11 @@ namespace Data.UnitOfWork.EF
             }
 
             _disposed = true;
+        }
+
+        ~EfUnitOfWork()
+        {
+            Dispose(false);
         }
     }
 }
