@@ -1,57 +1,64 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using Data.Entities.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Data.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
-        protected readonly Func<IDbConnection> ConnFactoryFunc;
-        protected IDbConnection DbConnection;
-        protected IServiceProvider ServiceProvider { get; }
+        private readonly ILogger<UnitOfWork> _logger;
+        protected readonly IConnectionFactory ConnectionFactory;
+        protected readonly IServiceProvider ServiceProvider;
+        protected DbConnection DbConnection;
 
-        public UnitOfWork(Func<IDbConnection> connFactoryFunc, IServiceProvider serviceProvider)
+        public UnitOfWork(ILogger<UnitOfWork> logger, IConnectionFactory connectionFactory, IServiceProvider serviceProvider)
         {
-            ConnFactoryFunc = connFactoryFunc;
+            _logger = logger;
+            ConnectionFactory = connectionFactory;
             ServiceProvider = serviceProvider;
-            Connection.Open();
-            Transaction = Connection.BeginTransaction();
+            //Transaction = Connection.BeginTransaction();
         }
 
-        public IRepository<TEntity> Repository<TEntity>() where TEntity : IEntity<long> => ServiceProvider.GetRequiredService<IRepository<TEntity>>();
+        public virtual IRepository<TEntity> Repository<TEntity>() where TEntity : IEntity<long> => ServiceProvider.GetRequiredService<IRepository<TEntity>>();
 
-        public IRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : IEntity<TId> => ServiceProvider.GetRequiredService<IRepository<TEntity, TId>>();
+        public virtual IRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : IEntity<TId> => ServiceProvider.GetRequiredService<IRepository<TEntity, TId>>();
 
-        public IDbConnection Connection => DbConnection ??= ConnFactoryFunc();
-        public IDbTransaction Transaction { get; private set; }
+        public virtual DbConnection Connection => DbConnection ??= ConnectionFactory.CreateDbConnection();
+        public virtual DbTransaction Transaction { get; private set; }
+
+        public DbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted) => Connection.BeginTransaction(isolationLevel);
+        public ValueTask<DbTransaction> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, CancellationToken cancellationToken = default)
+            => Connection.BeginTransactionAsync(isolationLevel, cancellationToken);
+
+        public void Rollback() => Transaction.Rollback();
+        public void RollbackAsync(CancellationToken cancellationToken = default) => Transaction.RollbackAsync(cancellationToken);
 
         public virtual void Commit()
-        {
-            CommitAsync().GetAwaiter().GetResult();
-        }
-
-        public virtual Task CommitAsync(CancellationToken cancellationToken = default)
         {
             try
             {
                 Transaction.Commit();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "There is exception when call commit transaction");
                 Transaction.Rollback();
                 throw;
             }
             finally
             {
                 Transaction.Dispose();
+                Connection.Dispose();
                 Transaction = Connection.BeginTransaction();
             }
-
-            return Task.CompletedTask;
         }
+
+        public virtual Task CommitAsync(CancellationToken cancellationToken = default) => Task.Run(Commit, cancellationToken);
 
         private bool _disposed;
 
@@ -75,6 +82,11 @@ namespace Data.UnitOfWork
             }
 
             _disposed = true;
+        }
+
+        ~UnitOfWork()
+        {
+            Dispose(false);
         }
     }
 }

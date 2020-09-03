@@ -16,4 +16,3 @@ steps:
       dockerRegistryEndpoint: ${{ parameters.registryEndpoint }}
       includeLatestTag: true
       qualifyImageNames: true
-      additionalImageTags: bao2703/${{ service }}

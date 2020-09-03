@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Npgsql;
 using Ordering.API.Data;
 using Ordering.API.Services;
+using Serilog;
 using Shared.MediatR;
 
 namespace Ordering.API
@@ -35,8 +36,7 @@ namespace Ordering.API
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
                     provider => provider.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
 
-            SimpleCRUD.SetDialect(SimpleCRUD.Dialect.PostgreSQL);
-            services.AddUnitOfWork(() => new NpgsqlConnection(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddUnitOfWork(() => new NpgsqlConnection(Configuration.GetConnectionString("DefaultConnection")), SimpleCRUD.Dialect.PostgreSQL);
 
             services.AddHttpContextAccessor();
 
@@ -62,6 +62,8 @@ namespace Ordering.API
             }
 
             app.UsePathBase(Configuration["PathBase"]);
+
+            app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
 
