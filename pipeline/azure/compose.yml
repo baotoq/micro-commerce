@@ -1,7 +1,7 @@
 parameters:
   action:
   services: []
-  registryEndpoint: 'test'
+  registryEndpoint: 'bshopacr'
 
 steps:
 - ${{ each service in parameters.services }}:

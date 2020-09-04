@@ -1,19 +1,19 @@
 version: "3.8"
 services:
   identity-api:
-    image: identity-api
+    image: bao2703/identity-api
     build:
       context: ../../src
       dockerfile: Identity.API/Dockerfile
 
   catalog-api:
-    image: catalog-api
+    image: bao2703/catalog-api
     build:
       context: ../../src
       dockerfile: Catalog.API/Dockerfile
 
   react-web:
-    image: react-web
+    image: bao2703/react-web
     build:
       context: ../../src
       dockerfile: React.Web/Dockerfile
