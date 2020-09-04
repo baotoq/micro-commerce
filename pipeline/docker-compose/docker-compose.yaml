@@ -36,7 +36,7 @@ services:
     restart: always
 
   identity-api:
-    image: bao2703/identity-api
+    image: identity-api
     build:
       context: ../../src
       dockerfile: Identity.API/Dockerfile
@@ -59,7 +59,7 @@ services:
       - frontend
 
   catalog-api:
-    image: bao2703/catalog-api
+    image: catalog-api
     build:
       context: ../../src
       dockerfile: Catalog.API/Dockerfile
@@ -86,7 +86,7 @@ services:
       - frontend
 
   react-web:
-    image: bao2703/react-web
+    image: react-web
     build:
       context: ../../src
       dockerfile: React.Web/Dockerfile
