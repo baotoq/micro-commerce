@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Data.Common;
 using Dapper;
+using Data.UnitOfWork.Dapper.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Data.UnitOfWork
+namespace Data.UnitOfWork.Dapper
 {
     public static class DependencyInjection
     {

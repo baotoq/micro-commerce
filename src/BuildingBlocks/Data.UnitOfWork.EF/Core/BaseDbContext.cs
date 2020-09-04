@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Data.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data.UnitOfWork.EF
+namespace Data.UnitOfWork.EF.Core
 {
     public abstract class BaseDbContext : DbContext
     {
@@ -25,6 +25,14 @@ namespace Data.UnitOfWork.EF
                     case EntityState.Modified:
                         entry.Entity.LastModified = DateTime.UtcNow;
                         break;
+                    case EntityState.Detached:
+                        break;
+                    case EntityState.Unchanged:
+                        break;
+                    case EntityState.Deleted:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 

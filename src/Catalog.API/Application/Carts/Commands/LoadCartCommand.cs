@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Carts.Models;
 using Catalog.API.Data.Models;
 using Catalog.API.Services;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -59,7 +59,7 @@ namespace Catalog.API.Application.Carts.Commands
                     CustomerId = customerId
                 };
                 await _cartRepository.AddAsync(newCart, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return new CartDto
                 {

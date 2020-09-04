@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Data.UnitOfWork.EF.Common;
+using Data.Entities.Common;
 using Identity.API.Application.Users.Commands;
 using Identity.API.Application.Users.Models;
 using Identity.API.Application.Users.Queries;

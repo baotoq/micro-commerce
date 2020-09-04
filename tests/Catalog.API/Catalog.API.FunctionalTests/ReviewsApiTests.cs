@@ -9,7 +9,7 @@ using Catalog.API.Data;
 using Catalog.API.Data.Models;
 using Catalog.API.FunctionalTests.Infrastructure;
 using Catalog.API.Data.Models.Enums;
-using Data.UnitOfWork.EF.Common;
+using Data.Entities.Common;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,4 @@
-﻿namespace Catalog.API.Data.Models.Enums
+﻿namespace Ordering.API.Data.Models.Enums
 {
     public enum OrderStatus
     {

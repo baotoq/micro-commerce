@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Services;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using Shared.MediatR.Exceptions;
 
 namespace Catalog.API.Application.Carts.Commands
@@ -90,7 +90,7 @@ namespace Catalog.API.Application.Carts.Commands
                 throw new Exception($"There are only {product.StockQuantity} items available for {product.Name}");
             }
 
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return cartItem.Id;
         }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Catalog.API.Data.Models.Enums;
 using Dapper;
 using Data.Entities.Models;
+using Ordering.API.Data.Models.Enums;
 
 namespace Ordering.API.Data.Models
 {

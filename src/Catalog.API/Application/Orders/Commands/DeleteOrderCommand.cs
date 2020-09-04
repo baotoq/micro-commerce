@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using MediatR;
 
 namespace Catalog.API.Application.Orders.Commands
@@ -32,7 +32,7 @@ namespace Catalog.API.Application.Orders.Commands
             var order = await _repository.FindAsync(request.Id, cancellationToken);
 
             _repository.Remove(order);
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }
