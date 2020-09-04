@@ -1,24 +1,25 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Data.Entities.Models;
 
-namespace Data.UnitOfWork
+namespace Data.UnitOfWork.Dapper.Core
 {
     public interface IRepository<T> : IRepository<T, long> where T : IEntity<long>
     {
     }
 
-    public interface IRepository<T, in TId> where T : IEntity<TId>
+    public interface IRepository<T, in TId> : IQueryRepository<T, TId>, ICommandRepository<T, TId> where T : IEntity<TId>
     {
-        IQueryable<T> Query();
+    }
 
+    public interface IQueryRepository<T, in TId> where T : IEntity<TId>
+    {
         ValueTask<T> FindAsync(TId id, CancellationToken cancellationToken = default);
+    }
 
-        void Add(T entity);
-
+    public interface ICommandRepository<in T, in TId> where T : IEntity<TId>
+    {
         Task AddAsync(T entity, CancellationToken cancellationToken = default);
-
         void Remove(T entity);
     }
 }

@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BuildingBlocks\Data.UnitOfWork.EF\Data.UnitOfWork.EF.csproj" />
+    <ProjectReference Include="..\BuildingBlocks\Data.UnitOfWork.Dapper\Data.UnitOfWork.Dapper.csproj" />
     <ProjectReference Include="..\BuildingBlocks\Shared\Shared.csproj" />
   </ItemGroup>
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Data.Entities.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.UnitOfWork.EF.Common

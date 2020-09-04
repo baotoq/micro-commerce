@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using Identity.API.Data.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +49,7 @@ namespace Identity.API.Application.Users.Commands
                 RoleId = request.RoleId
             });
 
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

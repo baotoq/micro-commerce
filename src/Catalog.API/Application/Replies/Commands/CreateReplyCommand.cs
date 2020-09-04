@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
 using Catalog.API.Services;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using FluentValidation;
 using MediatR;
 
@@ -46,7 +46,7 @@ namespace Catalog.API.Application.Replies.Commands
                 CreatedById = _identityService.GetCurrentUserId()
             }, cancellationToken);
 
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

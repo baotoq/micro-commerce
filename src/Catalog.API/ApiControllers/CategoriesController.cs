@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Commands;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Application.Categories.Queries;
-using Data.UnitOfWork.EF.Common;
+using Data.Entities.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
