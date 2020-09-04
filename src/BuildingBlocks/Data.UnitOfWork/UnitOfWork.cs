@@ -21,7 +21,7 @@ namespace Data.UnitOfWork
             _logger = logger;
             ConnectionFactory = connectionFactory;
             ServiceProvider = serviceProvider;
-            //Transaction = Connection.BeginTransaction();
+            Transaction = BeginTransaction();
         }
 
         public virtual IRepository<TEntity> Repository<TEntity>() where TEntity : IEntity<long> => ServiceProvider.GetRequiredService<IRepository<TEntity>>();
@@ -47,18 +47,36 @@ namespace Data.UnitOfWork
             catch (Exception ex)
             {
                 _logger.LogError(ex, "There is exception when call commit transaction");
-                Transaction.Rollback();
+                Rollback();
                 throw;
             }
             finally
             {
                 Transaction.Dispose();
                 Connection.Dispose();
-                Transaction = Connection.BeginTransaction();
+                Transaction = BeginTransaction();
             }
         }
 
-        public virtual Task CommitAsync(CancellationToken cancellationToken = default) => Task.Run(Commit, cancellationToken);
+        public virtual async Task CommitAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Transaction.CommitAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "There is exception when call commit transaction");
+                RollbackAsync(cancellationToken);
+                throw;
+            }
+            finally
+            {
+                await Transaction.DisposeAsync();
+                await Connection.DisposeAsync();
+                Transaction = await BeginTransactionAsync(cancellationToken: cancellationToken);
+            }
+        }
 
         private bool _disposed;
 
