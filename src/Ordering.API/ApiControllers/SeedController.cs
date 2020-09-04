@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
-using Data.UnitOfWork;
+using Data.UnitOfWork.Dapper.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Ordering.API.Data.Models;

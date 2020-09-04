@@ -1,19 +1,22 @@
 ﻿using System;
+using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using Data.Entities.Models;
+using Data.UnitOfWork.EF.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Data.UnitOfWork.EF
 {
-    public class EfUnitOfWork : IUnitOfWork, IDisposable
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         protected DbContext Context { get; }
         protected IServiceProvider ServiceProvider { get; }
-
-        public EfUnitOfWork(DbContext context, IServiceProvider serviceProvider)
+        
+        public UnitOfWork(DbContext context, IServiceProvider serviceProvider)
         {
             Context = context;
             ServiceProvider = serviceProvider;
@@ -24,11 +27,14 @@ namespace Data.UnitOfWork.EF
         public IRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : IEntity<TId> => ServiceProvider.GetRequiredService<IRepository<TEntity, TId>>();
 
         public DbConnection Connection => Context.Database.GetDbConnection();
-        public DbTransaction Transaction => throw new NotSupportedException();
 
-        public void Commit() => Context.SaveChanges();
+        public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default) => Context.Database.BeginTransactionAsync(cancellationToken);
+        public Task<IDbContextTransaction> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, CancellationToken cancellationToken = default)
+            => Context.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
 
-        public Task CommitAsync(CancellationToken cancellationToken = default) => Context.SaveChangesAsync(cancellationToken);
+        public void SaveChanges() => Context.SaveChanges();
+
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Context.SaveChangesAsync(cancellationToken);
 
         private bool _disposed;
 
@@ -53,7 +59,7 @@ namespace Data.UnitOfWork.EF
             _disposed = true;
         }
 
-        ~EfUnitOfWork()
+        ~UnitOfWork()
         {
             Dispose(false);
         }

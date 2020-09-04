@@ -3,8 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Data.Models;
-using Data.UnitOfWork;
+using Data.Entities.Common;
 using Data.UnitOfWork.EF.Common;
+using Data.UnitOfWork.EF.Core;
 using MediatR;
 using Shared.MediatR.Models;
 

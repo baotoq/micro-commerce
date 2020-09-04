@@ -15,5 +15,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Data.Entities\Data.Entities.csproj" />
   </ItemGroup>
-
 </Project>

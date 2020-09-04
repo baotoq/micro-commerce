@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Catalog.API.Application.Reviews.Commands;
 using Catalog.API.Application.Reviews.Models;
 using Catalog.API.Application.Reviews.Queries;
-using Data.UnitOfWork.EF.Common;
+using Data.Entities.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

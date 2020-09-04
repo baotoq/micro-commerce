@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Data.UnitOfWork.EF.Common;
+using Data.Entities.Common;
 using FluentAssertions;
 using Identity.API.Application.Users.Models;
 using Identity.API.FunctionalTests.Infrastructure;

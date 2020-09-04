@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using MediatR;
 using Shared.MediatR.Exceptions;
 
@@ -37,7 +37,7 @@ namespace Catalog.API.Application.Categories.Commands
             }
 
             category.Name = request.Name;
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

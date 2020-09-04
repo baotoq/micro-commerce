@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Data.UnitOfWork.EF.Common
+namespace Data.Entities.Common
 {
     public class OffsetPaged<T>
     {
