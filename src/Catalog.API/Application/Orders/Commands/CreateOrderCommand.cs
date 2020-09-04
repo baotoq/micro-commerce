@@ -46,6 +46,8 @@ namespace Catalog.API.Application.Orders.Commands
                 throw new NotFoundException(nameof(Cart), request.CartId);
             }
 
+            cart.IsActive = false;
+
             var orderItems = new List<OrderItem>();
 
             foreach (var cartItem in cart.Items)
@@ -80,8 +82,6 @@ namespace Catalog.API.Application.Orders.Commands
                 SubTotal = orderItems.Sum(s => s.ProductPrice * s.Quantity),
                 OrderStatus = OrderStatus.New
             };
-
-            cart.IsActive = false;
 
             await _orderRepository.AddAsync(order, cancellationToken);
 

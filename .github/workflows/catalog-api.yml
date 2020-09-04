@@ -3,7 +3,11 @@ name: catalog-api
 on:
   push:
     branches: [ master, feature/** ]
-    paths: [ src/**, tests/**, .github/**, k8s/** ]
+    paths:
+    - src/Catalog.API
+    - tests/**/Catalog.API**
+    - k8s/catalog-api
+    - pipeline/azure/catalog-api
   pull_request:
     branches: [ master ]
 
