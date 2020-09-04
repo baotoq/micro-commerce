@@ -11,7 +11,7 @@ steps:
       dockerComposeCommand: ${{ parameters.action }} ${{ service }}
       dockerComposeFile: pipeline/docker-compose/docker-compose-ci.yaml
       currentWorkingDirectory: $(Build.SourcesDirectory)/pipeline/docker-compose
-      projectName: $(Build.Repository.Name)
+      projectName: bao2703/$(Build.Repository.Name)
       containerRegistryType: Container Registry
       dockerRegistryEndpoint: ${{ parameters.registryEndpoint }}
       includeLatestTag: true
