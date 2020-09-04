@@ -2,8 +2,8 @@ stages:
   - code-analysis
 
 include:
-  - local: pipeline/gitlab/catalog-api.gitlab-ci.yml
-  - local: pipeline/gitlab/identity-api.gitlab-ci.yml
+  - local: catalog-api.gitlab-ci.yml
+  - local: identity-api.gitlab-ci.yml
 
 code-analysis:
   stage: code-analysis
