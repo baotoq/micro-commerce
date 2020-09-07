@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Catalog.API.IntegrationEvents.Models;
 using MassTransit;
+using Ordering.API.IntegrationEvents.Models;
 
-namespace Catalog.API.IntegrationEvents
+namespace Ordering.API.IntegrationEvents
 {
     public class OrderCreatedConsumer : BaseConsumer<OrderCreated>
     {

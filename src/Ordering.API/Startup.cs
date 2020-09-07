@@ -1,6 +1,9 @@
-﻿using Dapper;
+﻿using System;
+using Dapper;
 using Data.UnitOfWork.Dapper;
 using Data.UnitOfWork.EF;
+using GreenPipes;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
 using Ordering.API.Data;
+using Ordering.API.IntegrationEvents;
+using Ordering.API.IntegrationEvents.Models;
 using Ordering.API.Services;
 using Serilog;
 using Shared.MediatR;
@@ -45,6 +50,31 @@ namespace Ordering.API
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
             services.AddTransient<IIdentityService, IdentityService>();
+
+            services.AddMassTransitHostedService();
+            services.AddMassTransit(s =>
+            {
+                s.AddConsumersFromNamespaceContaining<BaseConsumer<BaseMessage>>();
+
+                s.UsingRabbitMq((context, cfg) =>
+                {
+                    var rabbitmq = Configuration.GetSection("Rabbitmq");
+                    cfg.Host(new Uri(rabbitmq["Uri"]), hostConfig =>
+                    {
+                        hostConfig.Username(rabbitmq["UserName"]);
+                        hostConfig.Password(rabbitmq["Password"]);
+                    });
+                    cfg.ReceiveEndpoint("ordering-api", endpoint =>
+                    {
+                        endpoint.PrefetchCount = rabbitmq.GetValue<ushort>("PrefetchCount");
+                        endpoint.ConfigureConsumer<OrderCreatedConsumer>(context);
+                    });
+                    cfg.UseMessageRetry(r =>
+                    {
+                        r.Immediate(rabbitmq.GetValue<int>("RetryLimit"));
+                    });
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
