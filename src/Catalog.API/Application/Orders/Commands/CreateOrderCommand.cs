@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.IntegrationEvents.Models;
 using Catalog.API.Data.Models.Enums;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using MassTransit;
 
 namespace Catalog.API.Application.Orders.Commands
@@ -85,7 +85,7 @@ namespace Catalog.API.Application.Orders.Commands
 
             await _orderRepository.AddAsync(order, cancellationToken);
 
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             await _bus.Publish(new OrderCreated
             {

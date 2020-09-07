@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -45,7 +45,7 @@ namespace Catalog.API.Application.Reviews.Commands
                 product.RatingAverage = (product.ReviewsCount * (product.RatingAverage ?? 0) + review.Rating) / (++product.ReviewsCount);
             }
 
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Approved {Count} reviews with Id: {ReviewIds}", reviews.Count, reviews.Select(s => s.Id));
 

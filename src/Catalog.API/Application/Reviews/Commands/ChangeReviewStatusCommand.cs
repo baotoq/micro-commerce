@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Catalog.API.Data.Models;
 using Catalog.API.Data.Models.Enums;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -42,7 +42,7 @@ namespace Catalog.API.Application.Reviews.Commands
             }
 
             review.ReviewStatus = request.ReviewStatus;
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             var approvedReviews = _repository.Query()
                 .Where(s => s.ProductId == review.ProductId && s.ReviewStatus == ReviewStatus.Approved);
@@ -59,7 +59,7 @@ namespace Catalog.API.Application.Reviews.Commands
                 product.RatingAverage = await approvedReviews.SumAsync(s => s.Rating, cancellationToken) / product.ReviewsCount;
             }
 
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

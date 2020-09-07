@@ -2,7 +2,7 @@
 using System.Data.Common;
 using Microsoft.Extensions.Logging;
 
-namespace Data.UnitOfWork
+namespace Data.UnitOfWork.Dapper.Core
 {
     [System.ComponentModel.DesignerCategory("Code")]
     public class TracingDbConnection : DbConnection

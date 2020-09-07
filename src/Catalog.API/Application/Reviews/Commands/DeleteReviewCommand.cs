@@ -3,7 +3,7 @@ using MediatR;
 using Shared.MediatR.Exceptions;
 using System.Threading;
 using System.Threading.Tasks;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 
 namespace Catalog.API.Application.Reviews.Commands
 {
@@ -38,7 +38,7 @@ namespace Catalog.API.Application.Reviews.Commands
             }
 
             _repository.Remove(review);
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

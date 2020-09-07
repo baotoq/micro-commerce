@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using Data.UnitOfWork;
+using Data.UnitOfWork.Dapper;
 using Data.UnitOfWork.EF;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;

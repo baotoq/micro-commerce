@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Catalog.API.Application.Categories.Models;
 using Catalog.API.Data.Models;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using FluentValidation;
 using MediatR;
 
@@ -42,7 +42,7 @@ namespace Catalog.API.Application.Categories.Commands
             };
 
             await _repository.AddAsync(category, cancellationToken);
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new CategoryDto
             {

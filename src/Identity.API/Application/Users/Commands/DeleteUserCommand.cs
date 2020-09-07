@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Data.UnitOfWork;
+using Data.UnitOfWork.EF.Core;
 using Identity.API.Data.Models;
 using MediatR;
 using Shared.MediatR.Exceptions;
@@ -39,7 +39,7 @@ namespace Identity.API.Application.Users.Commands
 
             _userRepository.Remove(user);
 
-            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

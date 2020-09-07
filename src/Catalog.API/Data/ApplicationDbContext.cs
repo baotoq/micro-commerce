@@ -1,5 +1,5 @@
 ﻿using Catalog.API.Data.Models;
-using Data.UnitOfWork.EF;
+using Data.UnitOfWork.EF.Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.Data
