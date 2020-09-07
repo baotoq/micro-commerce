@@ -31,13 +31,6 @@ namespace Catalog.API.ApiControllers
             return result;
         }
 
-        [HttpPost("create-order")]
-        public async Task<ActionResult> CreateOrder(CreateOrderCommand request, CancellationToken cancellationToken)
-        {
-            await _mediator.Send(request, cancellationToken);
-            return Ok();
-        }
-
         [HttpPut("{id}/change-status")]
         public async Task<ActionResult> ChangeOrderStatus(long id, ChangeOrderStatusCommand request, CancellationToken cancellationToken)
         {
