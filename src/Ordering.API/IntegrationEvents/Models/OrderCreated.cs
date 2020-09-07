@@ -1,4 +1,4 @@
-﻿namespace Catalog.API.IntegrationEvents.Models
+﻿namespace Ordering.API.IntegrationEvents.Models
 {
     public class OrderCreated : BaseMessage
     {

@@ -116,7 +116,6 @@ namespace Catalog.API
                     {
                         endpoint.PrefetchCount = rabbitmq.GetValue<ushort>("PrefetchCount");
                         endpoint.ConfigureConsumer<TestConsumer>(context);
-                        endpoint.ConfigureConsumer<OrderCreatedConsumer>(context);
                     });
                     cfg.UseMessageRetry(r =>
                     {
