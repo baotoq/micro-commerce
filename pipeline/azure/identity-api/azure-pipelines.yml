@@ -46,19 +46,27 @@ stages:
         action: push
         services: [identity-api]
 
-- stage: Deploy_Helm_Chart
-  displayName: Deploy helm chart
+- stage: Deploy
+  displayName: Deploy
+  dependsOn:
+  - Build_and_Run_Tests
+  - Build_and_Push_Image
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['isDeploy'], 'true')))
   jobs:
-  - job: Deploy_Helm_Chart
-    displayName: Deploy helm chart
-    steps:
-    - template: ../package-helm-chart.yml
-      parameters:
-        service: identity-api
+  - deployment: app
+    displayName: App deployment
+    environment: dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: ../package-helm-chart.yml
+            parameters:
+              service: identity-api
 
-    - template: ../install-helm-chart.yml
-      parameters:
-        service: identity-api
-        namespace: bshop
-        valueFile: k8s/identity-api/values.yaml
-        arguments: -f k8s/identity-api/values.azure.yaml
+          - template: ../install-helm-chart.yml
+            parameters:
+              service: identity-api
+              namespace: bshop
+              valueFile: k8s/identity-api/values.yaml
+              arguments: -f k8s/identity-api/values.azure.yaml
