@@ -1,7 +1,17 @@
 import React from "react";
+import { Switch, Route, Link } from "react-router-dom";
+
 import { Counter } from "../counter/Counter";
 import "./App.css";
+function Home() {
+  console.log("b");
+  return <h2>Home</h2>;
+}
 
+function About() {
+  console.log("a");
+  return <h2>About</h2>;
+}
 function App() {
   return (
     <div className="App">
@@ -49,6 +59,27 @@ function App() {
           </a>
         </span>
       </header>
+      <div>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/about">About</Link>
+          </li>
+          <li>
+            <Link to="/topics">Topics</Link>
+          </li>
+        </ul>
+
+        <Switch>
+          <Route path="/about" component={About}></Route>
+          <Route path="/topics">asdas</Route>
+          <Route exact path="/">
+            <Home />
+          </Route>
+        </Switch>
+      </div>
     </div>
   );
 }
