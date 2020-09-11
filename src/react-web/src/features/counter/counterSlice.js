@@ -33,9 +33,9 @@ export const selectCount = (state) => state.counter.value;
 export default counterSlice.reducer;
 
 export const epics = {
-  incrementAsync: (action$, state$, action) =>
+  incrementAsync: (action$, state$, { payload }) =>
     of([]).pipe(
       delay(1000),
-      map(() => incrementByAmount(2))
+      map(() => incrementByAmount(payload))
     ),
 };
