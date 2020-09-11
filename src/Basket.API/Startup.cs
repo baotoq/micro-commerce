@@ -9,9 +9,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
+using StackExchange.Redis;
 
 namespace Basket.API
 {
@@ -35,6 +37,8 @@ namespace Basket.API
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
             });
+
+            services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"))));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
