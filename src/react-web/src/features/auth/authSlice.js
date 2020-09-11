@@ -28,7 +28,7 @@ export const loginAsync = () => async (dispatch) => {
 export const completeLoginAsync = () => async (dispatch) => {
   await authService.completeLoginAsync(window.location.href);
   const user = await authService.getUserAsync();
-  dispatch(loginSuccess({ id: user?.profile.sub, name: user?.profile.name, role: user?.profile.role } as User));
+  dispatch(loginSuccess({ id: user.profile.sub, name: user.profile.name, role: user.profile.role }));
   dispatch(push("/"));
 };
 
@@ -45,11 +45,11 @@ export const completeLogoutAsync = () => async (dispatch) => {
 export const checkLoginAsync = () => async (dispatch) => {
   const user = await authService.getUserAsync();
   if (user) {
-    dispatch(loginSuccess({ id: user.profile.sub, name: user.profile.name, role: user.profile.role } as User));
+    dispatch(loginSuccess({ id: user.profile.sub, name: user.profile.name, role: user.profile.role }));
   }
 };
 
 export const selectIsAuthenticated = (state) => !!state.auth.user;
-export const selectUser = (stat) => state.auth.user;
+export const selectUser = (state) => state.auth.user;
 
 export default authSlice.reducer;
