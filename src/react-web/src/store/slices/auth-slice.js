@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { push } from "connected-react-router";
-import authService from "../../services/authService";
+import authService from "../../services/auth-service";
 
 const initialState = {
-  user: undefined,
+  user: null,
 };
 
 export const authSlice = createSlice({
@@ -14,7 +14,7 @@ export const authSlice = createSlice({
       state.user = payload;
     },
     logoutSuccess: (state) => {
-      state.user = undefined;
+      state.user = null;
     },
   },
 });

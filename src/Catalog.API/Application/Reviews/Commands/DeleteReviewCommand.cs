@@ -37,7 +37,7 @@ namespace Catalog.API.Application.Reviews.Commands
                 throw new NotFoundException(nameof(Review), request.Id);
             }
 
-            _repository.Remove(review);
+            await _repository.RemoveAsync(review);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;

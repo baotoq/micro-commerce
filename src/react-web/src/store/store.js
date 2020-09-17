@@ -9,8 +9,8 @@ import { createBrowserHistory } from "history";
 
 import { createEpicMiddleware, combineEpics } from "redux-observable";
 
-import createEpics from "./createEpics";
-import * as countSlice from "../features/counter/counterSlice";
+import createEpics from "./create-epics";
+import * as authSlice from "./slices/auth-slice";
 
 export const history = createBrowserHistory();
 
@@ -22,12 +22,12 @@ const middleware = [
   epicMiddleware,
 ];
 
-const rootEpic = combineEpics(...createEpics([countSlice]));
+const rootEpic = combineEpics(...createEpics([authSlice]));
 
 export default configureStore({
   reducer: combineReducers({
     router: connectRouter(history),
-    counter: countSlice.default,
+    auth: authSlice.default,
   }),
   middleware,
 });

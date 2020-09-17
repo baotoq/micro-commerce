@@ -16,12 +16,10 @@ namespace Catalog.API.ApiControllers
     public class StatisticsController : ControllerBase
     {
         private readonly IRepository<Review> _reviewRepository;
-        private readonly IRepository<Order> _orderRepository;
 
-        public StatisticsController(IRepository<Review> reviewRepository, IRepository<Order> orderRepository)
+        public StatisticsController(IRepository<Review> reviewRepository)
         {
             _reviewRepository = reviewRepository;
-            _orderRepository = orderRepository;
         }
 
         [ResponseCache(Duration = 5)]
@@ -31,21 +29,6 @@ namespace Catalog.API.ApiControllers
             var time = DateTime.UtcNow.AddYears(-1);
 
             var result = await _reviewRepository.Query()
-                .Where(s => s.CreatedDate > time)
-                .GroupBy(s => s.CreatedDate.Month)
-                .Select(s => new object[] { CultureInfo.InvariantCulture.DateTimeFormat.GetAbbreviatedMonthName(s.Key), s.Count() })
-                .ToListAsync();
-
-            return Ok(result);
-        }
-
-        [ResponseCache(Duration = 5)]
-        [HttpGet("orders")]
-        public async Task<IActionResult> Orders()
-        {
-            var time = DateTime.UtcNow.AddYears(-1);
-
-            var result = await _orderRepository.Query()
                 .Where(s => s.CreatedDate > time)
                 .GroupBy(s => s.CreatedDate.Month)
                 .Select(s => new object[] { CultureInfo.InvariantCulture.DateTimeFormat.GetAbbreviatedMonthName(s.Key), s.Count() })
