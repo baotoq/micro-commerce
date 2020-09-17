@@ -31,6 +31,10 @@ namespace Data.UnitOfWork.EF
 
         public virtual async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default) => await DbSet.AddAsync(entity, cancellationToken);
 
-        public virtual void Remove(TEntity entity) => DbSet.Remove(entity);
+        public virtual Task RemoveAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            DbSet.Remove(entity);
+            return Task.CompletedTask;
+        }
     }
 }

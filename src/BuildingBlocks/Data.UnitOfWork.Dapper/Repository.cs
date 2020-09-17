@@ -26,6 +26,6 @@ namespace Data.UnitOfWork.Dapper
 
         public virtual Task AddAsync(TEntity entity, CancellationToken cancellationToken = default) => Uow.Connection.InsertAsync<TId, TEntity>(entity);
 
-        public virtual void Remove(TEntity entity) => Uow.Connection.Delete(entity);
+        public virtual Task RemoveAsync(TEntity entity, CancellationToken cancellationToken = default) => Uow.Connection.DeleteAsync(entity);
     }
 }

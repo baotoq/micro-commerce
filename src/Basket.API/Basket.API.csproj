@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks\Data.UnitOfWork.Dapper\Data.UnitOfWork.Dapper.csproj" />
     <ProjectReference Include="..\BuildingBlocks\Shared.Grpc\Shared.Grpc.csproj" />
     <ProjectReference Include="..\BuildingBlocks\Shared\Shared.csproj" />
   </ItemGroup>

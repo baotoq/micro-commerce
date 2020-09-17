@@ -37,7 +37,7 @@ namespace Catalog.API.Application.Categories.Commands
                 throw new NotFoundException(nameof(Category), request.Id);
             }
 
-            _repository.Remove(category);
+            await _repository.RemoveAsync(category);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;

@@ -1,17 +1,12 @@
-﻿using MediatR;
-using Shared.MediatR.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Data.UnitOfWork.EF.Core;
 using MassTransit;
+using MediatR;
 using Ordering.API.Data.Models;
-using Ordering.API.Data.Models.Enums;
 using Ordering.API.IntegrationEvents.Models;
 
-namespace Catalog.API.Application.Orders.Commands
+namespace Ordering.API.Application.Orders.Commands
 {
     public class CreateOrderCommand : IRequest<Unit>
     {
@@ -33,61 +28,56 @@ namespace Catalog.API.Application.Orders.Commands
 
         public async Task<Unit> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-        //    var cart = await _cartRepository.Query()
-        //        .Include(s => s.Items)
-        //        .ThenInclude(s => s.Product)
-        //        .SingleOrDefaultAsync(s => s.Id == request.CartId, cancellationToken);
+            //    var cart = await _cartRepository.Query()
+            //        .Include(s => s.Items)
+            //        .ThenInclude(s => s.Product)
+            //        .SingleOrDefaultAsync(s => s.Id == request.CartId, cancellationToken);
 
-        //    if (cart == null)
-        //    {
-        //        throw new NotFoundException(nameof(Cart), request.CartId);
-        //    }
+            //    if (cart == null)
+            //    {
+            //        throw new NotFoundException(nameof(Cart), request.CartId);
+            //    }
 
-        //    cart.IsActive = false;
+            //    cart.IsActive = false;
 
-        //    var orderItems = new List<OrderItem>();
+            //    var orderItems = new List<OrderItem>();
 
-        //    foreach (var cartItem in cart.Items)
-        //    {
-        //        var product = cartItem.Product;
+            //    foreach (var cartItem in cart.Items)
+            //    {
+            //        var product = cartItem.Product;
 
-        //        if (cartItem.Quantity > product.CartMaxQuantity)
-        //        {
-        //            throw new Exception($"Can only add {product.CartMaxQuantity} items per cart");
-        //        }
+            //        if (cartItem.Quantity > product.CartMaxQuantity)
+            //        {
+            //            throw new Exception($"Can only add {product.CartMaxQuantity} items per cart");
+            //        }
 
-        //        if (cartItem.Quantity > cartItem.Product.StockQuantity)
-        //        {
-        //            throw new Exception($"There are only {product.StockQuantity} items available for {product.Name}");
-        //        }
+            //        if (cartItem.Quantity > cartItem.Product.StockQuantity)
+            //        {
+            //            throw new Exception($"There are only {product.StockQuantity} items available for {product.Name}");
+            //        }
 
-        //        product.StockQuantity -= cartItem.Quantity;
+            //        product.StockQuantity -= cartItem.Quantity;
 
-        //        orderItems.Add(new OrderItem
-        //        {
-        //            ProductId = product.Id,
-        //            ProductPrice = product.Price,
-        //            Quantity = cartItem.Quantity
-        //        });
-        //    }
+            //        orderItems.Add(new OrderItem
+            //        {
+            //            ProductId = product.Id,
+            //            ProductPrice = product.Price,
+            //            Quantity = cartItem.Quantity
+            //        });
+            //    }
 
-        //    var order = new Order
-        //    {
-        //        CustomerId = cart.CustomerId,
-        //        OrderNote = cart.OrderNote,
-        //        OrderItems = orderItems,
-        //        SubTotal = orderItems.Sum(s => s.ProductPrice * s.Quantity),
-        //        OrderStatus = OrderStatus.New
-        //    };
+            //    var order = new Order
+            //    {
+            //        CustomerId = cart.CustomerId,
+            //        OrderNote = cart.OrderNote,
+            //        OrderItems = orderItems,
+            //        SubTotal = orderItems.Sum(s => s.ProductPrice * s.Quantity),
+            //        OrderStatus = OrderStatus.New
+            //    };
 
-        //    await _orderRepository.AddAsync(order, cancellationToken);
+            //    await _orderRepository.AddAsync(order, cancellationToken);
 
-        //    await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        //    await _bus.Publish(new OrderCreated
-        //    {
-        //        OrderId = order.Id
-        //    }, cancellationToken);
+            //    await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }
