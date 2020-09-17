@@ -6,9 +6,9 @@ import {
   logoutAsync,
   completeLoginAsync,
   completeLogoutAsync,
-} from "./authSlice";
+} from "../../store/slices/auth-slice";
 
-const Auth = () => {
+export const Auth = () => {
   const dispatch = useDispatch();
   const { action } = useParams();
 
@@ -33,5 +33,3 @@ const Auth = () => {
 
   return <div></div>;
 };
-
-export default Auth;

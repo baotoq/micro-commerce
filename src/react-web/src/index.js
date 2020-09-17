@@ -5,8 +5,7 @@ import * as serviceWorker from "./serviceWorker";
 
 import { ConnectedRouter } from "connected-react-router";
 
-import "./index.css";
-import App from "./features/app/App";
+import { App } from "./features/app/App";
 import store, { history } from "./store/store";
 
 ReactDOM.render(

@@ -37,7 +37,7 @@ namespace Identity.API.Application.Users.Commands
                 throw new NotFoundException(nameof(User), request.Id);
             }
 
-            _userRepository.Remove(user);
+            await _userRepository.RemoveAsync(user);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

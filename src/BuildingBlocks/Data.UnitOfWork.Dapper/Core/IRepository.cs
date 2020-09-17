@@ -20,6 +20,6 @@ namespace Data.UnitOfWork.Dapper.Core
     public interface ICommandRepository<in T, in TId> where T : IEntity<TId>
     {
         Task AddAsync(T entity, CancellationToken cancellationToken = default);
-        void Remove(T entity);
+        Task RemoveAsync(T entity, CancellationToken cancellationToken = default);
     }
 }

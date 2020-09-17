@@ -40,7 +40,7 @@ namespace Catalog.API.Application.Products.Commands
                 throw new NotFoundException(nameof(Product), request.Id);
             }
 
-            _repository.Remove(product);
+            await _repository.RemoveAsync(product);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             await _storageService.DeleteAsync(product.ImageUri, cancellationToken);
