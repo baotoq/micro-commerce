@@ -10,16 +10,16 @@ namespace Catalog.API.Services
 
     public class IdentityService : IIdentityService
     {
-        protected readonly HttpContext HttpContext;
+        private readonly IHttpContextAccessor _accessor;
 
-        public IdentityService(IHttpContextAccessor context)
+        public IdentityService(IHttpContextAccessor accessor)
         {
-            HttpContext = context.HttpContext;
+            _accessor = accessor;
         }
 
         public string GetCurrentUserId()
         {
-            return HttpContext.User.FindFirstValue("sub");
+            return _accessor.HttpContext.User.FindFirstValue("sub");
         }
     }
 }

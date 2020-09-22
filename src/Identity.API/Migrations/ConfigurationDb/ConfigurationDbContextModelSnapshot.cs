@@ -3,17 +3,15 @@ using System;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Identity.API.Data.Migrations.ConfigurationDb
+namespace Identity.API.Migrations.ConfigurationDb
 {
     [DbContext(typeof(ConfigurationDbContext))]
-    [Migration("20200805180037_Init")]
-    partial class Init
+    partial class ConfigurationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,41 +23,52 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("Created")
+                        .HasColumnName("created")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
+                        .HasColumnName("description")
                         .HasColumnType("character varying(1000)")
                         .HasMaxLength(1000);
 
                     b.Property<string>("DisplayName")
+                        .HasColumnName("display_name")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<bool>("Enabled")
+                        .HasColumnName("enabled")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastAccessed")
+                        .HasColumnName("last_accessed")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnName("name")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<bool>("NonEditable")
+                        .HasColumnName("non_editable")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("Updated")
+                        .HasColumnName("updated")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_api_resources");
 
                     b.HasIndex("Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("ix_api_resources_name");
 
                     b.ToTable("ApiResources");
                 });
@@ -68,20 +77,25 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ApiResourceId")
+                        .HasColumnName("api_resource_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .HasColumnName("type")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_api_resource_claim");
 
-                    b.HasIndex("ApiResourceId");
+                    b.HasIndex("ApiResourceId")
+                        .HasName("ix_api_resource_claim_api_resource_id");
 
                     b.ToTable("ApiClaims");
                 });
@@ -90,25 +104,31 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ApiResourceId")
+                        .HasColumnName("api_resource_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Key")
                         .IsRequired()
+                        .HasColumnName("key")
                         .HasColumnType("character varying(250)")
                         .HasMaxLength(250);
 
                     b.Property<string>("Value")
                         .IsRequired()
+                        .HasColumnName("value")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_api_resource_property");
 
-                    b.HasIndex("ApiResourceId");
+                    b.HasIndex("ApiResourceId")
+                        .HasName("ix_api_resource_property_api_resource_id");
 
                     b.ToTable("ApiProperties");
                 });
@@ -117,40 +137,51 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ApiResourceId")
+                        .HasColumnName("api_resource_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
+                        .HasColumnName("description")
                         .HasColumnType("character varying(1000)")
                         .HasMaxLength(1000);
 
                     b.Property<string>("DisplayName")
+                        .HasColumnName("display_name")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<bool>("Emphasize")
+                        .HasColumnName("emphasize")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnName("name")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<bool>("Required")
+                        .HasColumnName("required")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("ShowInDiscoveryDocument")
+                        .HasColumnName("show_in_discovery_document")
                         .HasColumnType("boolean");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_api_scope");
 
-                    b.HasIndex("ApiResourceId");
+                    b.HasIndex("ApiResourceId")
+                        .HasName("ix_api_scope_api_resource_id");
 
                     b.HasIndex("Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("ix_api_scopes_name");
 
                     b.ToTable("ApiScopes");
                 });
@@ -159,20 +190,25 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ApiScopeId")
+                        .HasColumnName("api_scope_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .HasColumnName("type")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_api_scope_claim");
 
-                    b.HasIndex("ApiScopeId");
+                    b.HasIndex("ApiScopeId")
+                        .HasName("ix_api_scope_claim_api_scope_id");
 
                     b.ToTable("ApiScopeClaims");
                 });
@@ -181,35 +217,44 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ApiResourceId")
+                        .HasColumnName("api_resource_id")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Created")
+                        .HasColumnName("created")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
+                        .HasColumnName("description")
                         .HasColumnType("character varying(1000)")
                         .HasMaxLength(1000);
 
                     b.Property<DateTime?>("Expiration")
+                        .HasColumnName("expiration")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .HasColumnName("type")
                         .HasColumnType("character varying(250)")
                         .HasMaxLength(250);
 
                     b.Property<string>("Value")
                         .IsRequired()
+                        .HasColumnName("value")
                         .HasColumnType("character varying(4000)")
                         .HasMaxLength(4000);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_api_secret");
 
-                    b.HasIndex("ApiResourceId");
+                    b.HasIndex("ApiResourceId")
+                        .HasName("ix_api_secret_api_resource_id");
 
                     b.ToTable("ApiSecrets");
                 });
@@ -218,149 +263,193 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("AbsoluteRefreshTokenLifetime")
+                        .HasColumnName("absolute_refresh_token_lifetime")
                         .HasColumnType("integer");
 
                     b.Property<int>("AccessTokenLifetime")
+                        .HasColumnName("access_token_lifetime")
                         .HasColumnType("integer");
 
                     b.Property<int>("AccessTokenType")
+                        .HasColumnName("access_token_type")
                         .HasColumnType("integer");
 
                     b.Property<bool>("AllowAccessTokensViaBrowser")
+                        .HasColumnName("allow_access_tokens_via_browser")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("AllowOfflineAccess")
+                        .HasColumnName("allow_offline_access")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("AllowPlainTextPkce")
+                        .HasColumnName("allow_plain_text_pkce")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("AllowRememberConsent")
+                        .HasColumnName("allow_remember_consent")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("AlwaysIncludeUserClaimsInIdToken")
+                        .HasColumnName("always_include_user_claims_in_id_token")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("AlwaysSendClientClaims")
+                        .HasColumnName("always_send_client_claims")
                         .HasColumnType("boolean");
 
                     b.Property<int>("AuthorizationCodeLifetime")
+                        .HasColumnName("authorization_code_lifetime")
                         .HasColumnType("integer");
 
                     b.Property<bool>("BackChannelLogoutSessionRequired")
+                        .HasColumnName("back_channel_logout_session_required")
                         .HasColumnType("boolean");
 
                     b.Property<string>("BackChannelLogoutUri")
+                        .HasColumnName("back_channel_logout_uri")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
                     b.Property<string>("ClientClaimsPrefix")
+                        .HasColumnName("client_claims_prefix")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("ClientId")
                         .IsRequired()
+                        .HasColumnName("client_id")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("ClientName")
+                        .HasColumnName("client_name")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("ClientUri")
+                        .HasColumnName("client_uri")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
                     b.Property<int?>("ConsentLifetime")
+                        .HasColumnName("consent_lifetime")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Created")
+                        .HasColumnName("created")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
+                        .HasColumnName("description")
                         .HasColumnType("character varying(1000)")
                         .HasMaxLength(1000);
 
                     b.Property<int>("DeviceCodeLifetime")
+                        .HasColumnName("device_code_lifetime")
                         .HasColumnType("integer");
 
                     b.Property<bool>("EnableLocalLogin")
+                        .HasColumnName("enable_local_login")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("Enabled")
+                        .HasColumnName("enabled")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("FrontChannelLogoutSessionRequired")
+                        .HasColumnName("front_channel_logout_session_required")
                         .HasColumnType("boolean");
 
                     b.Property<string>("FrontChannelLogoutUri")
+                        .HasColumnName("front_channel_logout_uri")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
                     b.Property<int>("IdentityTokenLifetime")
+                        .HasColumnName("identity_token_lifetime")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IncludeJwtId")
+                        .HasColumnName("include_jwt_id")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastAccessed")
+                        .HasColumnName("last_accessed")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LogoUri")
+                        .HasColumnName("logo_uri")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
                     b.Property<bool>("NonEditable")
+                        .HasColumnName("non_editable")
                         .HasColumnType("boolean");
 
                     b.Property<string>("PairWiseSubjectSalt")
+                        .HasColumnName("pair_wise_subject_salt")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("ProtocolType")
                         .IsRequired()
+                        .HasColumnName("protocol_type")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<int>("RefreshTokenExpiration")
+                        .HasColumnName("refresh_token_expiration")
                         .HasColumnType("integer");
 
                     b.Property<int>("RefreshTokenUsage")
+                        .HasColumnName("refresh_token_usage")
                         .HasColumnType("integer");
 
                     b.Property<bool>("RequireClientSecret")
+                        .HasColumnName("require_client_secret")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("RequireConsent")
+                        .HasColumnName("require_consent")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("RequirePkce")
+                        .HasColumnName("require_pkce")
                         .HasColumnType("boolean");
 
                     b.Property<int>("SlidingRefreshTokenLifetime")
+                        .HasColumnName("sliding_refresh_token_lifetime")
                         .HasColumnType("integer");
 
                     b.Property<bool>("UpdateAccessTokenClaimsOnRefresh")
+                        .HasColumnName("update_access_token_claims_on_refresh")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("Updated")
+                        .HasColumnName("updated")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserCodeType")
+                        .HasColumnName("user_code_type")
                         .HasColumnType("character varying(100)")
                         .HasMaxLength(100);
 
                     b.Property<int?>("UserSsoLifetime")
+                        .HasColumnName("user_sso_lifetime")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_clients");
 
                     b.HasIndex("ClientId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("ix_clients_client_id");
 
                     b.ToTable("Clients");
                 });
@@ -369,25 +458,31 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ClientId")
+                        .HasColumnName("client_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .HasColumnName("type")
                         .HasColumnType("character varying(250)")
                         .HasMaxLength(250);
 
                     b.Property<string>("Value")
                         .IsRequired()
+                        .HasColumnName("value")
                         .HasColumnType("character varying(250)")
                         .HasMaxLength(250);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_client_claim");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .HasName("ix_client_claim_client_id");
 
                     b.ToTable("ClientClaims");
                 });
@@ -396,20 +491,25 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ClientId")
+                        .HasColumnName("client_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Origin")
                         .IsRequired()
+                        .HasColumnName("origin")
                         .HasColumnType("character varying(150)")
                         .HasMaxLength(150);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_client_cors_origin");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .HasName("ix_client_cors_origin_client_id");
 
                     b.ToTable("ClientCorsOrigins");
                 });
@@ -418,20 +518,25 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ClientId")
+                        .HasColumnName("client_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("GrantType")
                         .IsRequired()
+                        .HasColumnName("grant_type")
                         .HasColumnType("character varying(250)")
                         .HasMaxLength(250);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_client_grant_type");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .HasName("ix_client_grant_type_client_id");
 
                     b.ToTable("ClientGrantTypes");
                 });
@@ -440,20 +545,25 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ClientId")
+                        .HasColumnName("client_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Provider")
                         .IsRequired()
+                        .HasColumnName("provider")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_client_id_p_restriction");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .HasName("ix_client_id_p_restriction_client_id");
 
                     b.ToTable("ClientIdPRestrictions");
                 });
@@ -462,20 +572,25 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ClientId")
+                        .HasColumnName("client_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("PostLogoutRedirectUri")
                         .IsRequired()
+                        .HasColumnName("post_logout_redirect_uri")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_client_post_logout_redirect_uri");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .HasName("ix_client_post_logout_redirect_uri_client_id");
 
                     b.ToTable("ClientPostLogoutRedirectUris");
                 });
@@ -484,25 +599,31 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ClientId")
+                        .HasColumnName("client_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Key")
                         .IsRequired()
+                        .HasColumnName("key")
                         .HasColumnType("character varying(250)")
                         .HasMaxLength(250);
 
                     b.Property<string>("Value")
                         .IsRequired()
+                        .HasColumnName("value")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_client_property");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .HasName("ix_client_property_client_id");
 
                     b.ToTable("ClientProperties");
                 });
@@ -511,20 +632,25 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ClientId")
+                        .HasColumnName("client_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("RedirectUri")
                         .IsRequired()
+                        .HasColumnName("redirect_uri")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_client_redirect_uri");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .HasName("ix_client_redirect_uri_client_id");
 
                     b.ToTable("ClientRedirectUris");
                 });
@@ -533,20 +659,25 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ClientId")
+                        .HasColumnName("client_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Scope")
                         .IsRequired()
+                        .HasColumnName("scope")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_client_scope");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .HasName("ix_client_scope_client_id");
 
                     b.ToTable("ClientScopes");
                 });
@@ -555,35 +686,44 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("ClientId")
+                        .HasColumnName("client_id")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Created")
+                        .HasColumnName("created")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
+                        .HasColumnName("description")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
                     b.Property<DateTime?>("Expiration")
+                        .HasColumnName("expiration")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .HasColumnName("type")
                         .HasColumnType("character varying(250)")
                         .HasMaxLength(250);
 
                     b.Property<string>("Value")
                         .IsRequired()
+                        .HasColumnName("value")
                         .HasColumnType("character varying(4000)")
                         .HasMaxLength(4000);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_client_secret");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .HasName("ix_client_secret_client_id");
 
                     b.ToTable("ClientSecrets");
                 });
@@ -592,20 +732,25 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("IdentityResourceId")
+                        .HasColumnName("identity_resource_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .HasColumnName("type")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_identity_claim");
 
-                    b.HasIndex("IdentityResourceId");
+                    b.HasIndex("IdentityResourceId")
+                        .HasName("ix_identity_claim_identity_resource_id");
 
                     b.ToTable("IdentityClaims");
                 });
@@ -614,47 +759,60 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("Created")
+                        .HasColumnName("created")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
+                        .HasColumnName("description")
                         .HasColumnType("character varying(1000)")
                         .HasMaxLength(1000);
 
                     b.Property<string>("DisplayName")
+                        .HasColumnName("display_name")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<bool>("Emphasize")
+                        .HasColumnName("emphasize")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("Enabled")
+                        .HasColumnName("enabled")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnName("name")
                         .HasColumnType("character varying(200)")
                         .HasMaxLength(200);
 
                     b.Property<bool>("NonEditable")
+                        .HasColumnName("non_editable")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("Required")
+                        .HasColumnName("required")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("ShowInDiscoveryDocument")
+                        .HasColumnName("show_in_discovery_document")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("Updated")
+                        .HasColumnName("updated")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_identity_resources");
 
                     b.HasIndex("Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("ix_identity_resources_name");
 
                     b.ToTable("IdentityResources");
                 });
@@ -663,25 +821,31 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("IdentityResourceId")
+                        .HasColumnName("identity_resource_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Key")
                         .IsRequired()
+                        .HasColumnName("key")
                         .HasColumnType("character varying(250)")
                         .HasMaxLength(250);
 
                     b.Property<string>("Value")
                         .IsRequired()
+                        .HasColumnName("value")
                         .HasColumnType("character varying(2000)")
                         .HasMaxLength(2000);
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_identity_resource_property");
 
-                    b.HasIndex("IdentityResourceId");
+                    b.HasIndex("IdentityResourceId")
+                        .HasName("ix_identity_resource_property_identity_resource_id");
 
                     b.ToTable("IdentityProperties");
                 });
@@ -691,6 +855,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.ApiResource", "ApiResource")
                         .WithMany("UserClaims")
                         .HasForeignKey("ApiResourceId")
+                        .HasConstraintName("fk_api_resource_claim_api_resources_api_resource_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -700,6 +865,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.ApiResource", "ApiResource")
                         .WithMany("Properties")
                         .HasForeignKey("ApiResourceId")
+                        .HasConstraintName("fk_api_resource_property_api_resources_api_resource_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -709,6 +875,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.ApiResource", "ApiResource")
                         .WithMany("Scopes")
                         .HasForeignKey("ApiResourceId")
+                        .HasConstraintName("fk_api_scope_api_resources_api_resource_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -718,6 +885,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.ApiScope", "ApiScope")
                         .WithMany("UserClaims")
                         .HasForeignKey("ApiScopeId")
+                        .HasConstraintName("fk_api_scope_claim_api_scope_api_scope_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -727,6 +895,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.ApiResource", "ApiResource")
                         .WithMany("Secrets")
                         .HasForeignKey("ApiResourceId")
+                        .HasConstraintName("fk_api_secret_api_resources_api_resource_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -736,6 +905,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.Client", "Client")
                         .WithMany("Claims")
                         .HasForeignKey("ClientId")
+                        .HasConstraintName("fk_client_claim_clients_client_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -745,6 +915,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.Client", "Client")
                         .WithMany("AllowedCorsOrigins")
                         .HasForeignKey("ClientId")
+                        .HasConstraintName("fk_client_cors_origin_clients_client_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -754,6 +925,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.Client", "Client")
                         .WithMany("AllowedGrantTypes")
                         .HasForeignKey("ClientId")
+                        .HasConstraintName("fk_client_grant_type_clients_client_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -763,6 +935,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.Client", "Client")
                         .WithMany("IdentityProviderRestrictions")
                         .HasForeignKey("ClientId")
+                        .HasConstraintName("fk_client_id_p_restriction_clients_client_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -772,6 +945,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.Client", "Client")
                         .WithMany("PostLogoutRedirectUris")
                         .HasForeignKey("ClientId")
+                        .HasConstraintName("fk_client_post_logout_redirect_uri_clients_client_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -781,6 +955,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.Client", "Client")
                         .WithMany("Properties")
                         .HasForeignKey("ClientId")
+                        .HasConstraintName("fk_client_property_clients_client_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -790,6 +965,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.Client", "Client")
                         .WithMany("RedirectUris")
                         .HasForeignKey("ClientId")
+                        .HasConstraintName("fk_client_redirect_uri_clients_client_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -799,6 +975,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.Client", "Client")
                         .WithMany("AllowedScopes")
                         .HasForeignKey("ClientId")
+                        .HasConstraintName("fk_client_scope_clients_client_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -808,6 +985,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.Client", "Client")
                         .WithMany("ClientSecrets")
                         .HasForeignKey("ClientId")
+                        .HasConstraintName("fk_client_secret_clients_client_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -817,6 +995,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.IdentityResource", "IdentityResource")
                         .WithMany("UserClaims")
                         .HasForeignKey("IdentityResourceId")
+                        .HasConstraintName("fk_identity_claim_identity_resources_identity_resource_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -826,6 +1005,7 @@ namespace Identity.API.Data.Migrations.ConfigurationDb
                     b.HasOne("IdentityServer4.EntityFramework.Entities.IdentityResource", "IdentityResource")
                         .WithMany("Properties")
                         .HasForeignKey("IdentityResourceId")
+                        .HasConstraintName("fk_identity_resource_property_identity_resources_identity_resou")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

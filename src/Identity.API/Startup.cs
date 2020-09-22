@@ -44,7 +44,7 @@ namespace Identity.API
                     {
                         provider.EnableRetryOnFailure();
                         provider.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
-                    });
+                    }).UseSnakeCaseNamingConvention();
 
             services.AddGrpc(options =>
             {
@@ -103,17 +103,17 @@ namespace Identity.API
 
             app.UsePathBase(Configuration["PathBase"]);
 
-            var forwardOptions = new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-                RequireHeaderSymmetry = false
-            };
+            //var forwardOptions = new ForwardedHeadersOptions
+            //{
+            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+            //    RequireHeaderSymmetry = false
+            //};
 
-            forwardOptions.KnownNetworks.Clear();
-            forwardOptions.KnownProxies.Clear();
+            //forwardOptions.KnownNetworks.Clear();
+            //forwardOptions.KnownProxies.Clear();
 
-            // ref: https://github.com/aspnet/Docs/issues/2384
-            app.UseForwardedHeaders(forwardOptions);
+            //// ref: https://github.com/aspnet/Docs/issues/2384
+            //app.UseForwardedHeaders(forwardOptions);
 
             app.UseSerilogRequestLogging();
 
