@@ -30,13 +30,13 @@ namespace Identity.API.ApiControllers
         private readonly RoleManager<Role> _roleManager;
         private const string Password = "1qazZAQ!";
 
-        public SeedController(ILogger<SeedController> logger, ConfigurationDbContext configurationDbContext, IConfiguration configuration, UserManager<User> userManager, RoleManager<Role> roleManager, ApplicationDbContext applicationDbContext, PersistedGrantDbContext persistedGrantDbContext)
+        public SeedController(ILogger<SeedController> logger, IConfiguration configuration, UserManager<User> userManager, RoleManager<Role> roleManager, ConfigurationDbContext configurationDbContext, ApplicationDbContext applicationDbContext, PersistedGrantDbContext persistedGrantDbContext)
         {
             _logger = logger;
-            _configurationDbContext = configurationDbContext;
             _configuration = configuration;
             _userManager = userManager;
             _roleManager = roleManager;
+            _configurationDbContext = configurationDbContext;
             _applicationDbContext = applicationDbContext;
             _persistedGrantDbContext = persistedGrantDbContext;
         }
@@ -44,7 +44,9 @@ namespace Identity.API.ApiControllers
         [HttpGet("migrate")]
         public async Task<IActionResult> Migrate()
         {
-            await Task.WhenAll(_applicationDbContext.Database.MigrateAsync(), _persistedGrantDbContext.Database.MigrateAsync(), _configurationDbContext.Database.MigrateAsync());
+            await _applicationDbContext.Database.MigrateAsync();
+            await _configurationDbContext.Database.MigrateAsync();
+            await _persistedGrantDbContext.Database.MigrateAsync();
 
             return Ok();
         }
