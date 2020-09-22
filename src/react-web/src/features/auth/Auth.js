@@ -13,7 +13,6 @@ export const Auth = () => {
   const { action } = useParams();
 
   useEffect(() => {
-    console.log(action)
     switch (action) {
       case "login":
         dispatch(loginAsync());

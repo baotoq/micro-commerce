@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Shared.Grpc;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
 
 namespace Identity.API
 {
@@ -103,17 +104,19 @@ namespace Identity.API
 
             app.UsePathBase(Configuration["PathBase"]);
 
-            //var forwardOptions = new ForwardedHeadersOptions
-            //{
-            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-            //    RequireHeaderSymmetry = false
-            //};
+            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
 
-            //forwardOptions.KnownNetworks.Clear();
-            //forwardOptions.KnownProxies.Clear();
+            var forwardOptions = new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+                RequireHeaderSymmetry = false
+            };
 
-            //// ref: https://github.com/aspnet/Docs/issues/2384
-            //app.UseForwardedHeaders(forwardOptions);
+            forwardOptions.KnownNetworks.Clear();
+            forwardOptions.KnownProxies.Clear();
+
+            // ref: https://github.com/aspnet/Docs/issues/2384
+            app.UseForwardedHeaders(forwardOptions);
 
             app.UseSerilogRequestLogging();
 
