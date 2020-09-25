@@ -2,11 +2,8 @@
 using System.Threading.Tasks;
 using Bogus;
 using Bogus.DataSets;
-using Bshop.Shared.V1;
-using Catalog.API.IntegrationEvents.Models;
 using Catalog.API.Data;
 using Catalog.API.Data.Models;
-using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,25 +18,11 @@ namespace Catalog.API.ApiControllers
     {
         private readonly ILogger<SeedController> _logger;
         private readonly ApplicationDbContext _context;
-        private readonly PingService.PingServiceClient _client;
-        private readonly IBus _bus;
 
-        public SeedController(ILogger<SeedController> logger, ApplicationDbContext context, PingService.PingServiceClient client, IBus bus)
+        public SeedController(ILogger<SeedController> logger, ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
-            _client = client;
-            _bus = bus;
-        }
-
-        [HttpGet("test")]
-        public async Task<IActionResult> Test()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                await _bus.Publish(new Test { Message = "Test" });
-            }
-            return Ok();
         }
 
         [HttpGet("migrate")]
