@@ -1,13 +1,18 @@
-﻿{
+{
   "profiles": {
     "MicroCommerce.Ordering.API": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
-      "launchBrowser": false,
-      "applicationUrl": "https://localhost:5301;http://localhost:5300",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": "true",
+      "applicationUrl": "https://localhost:5301;http://localhost:5300"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true,
+      "useSSL": true
     }
   }
 }
