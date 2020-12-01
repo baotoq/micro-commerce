@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  microcommerce.basket.api:
+    image: ${DOCKER_REGISTRY-}microcommerce-basket-api
+    build:
+      context: .
+      dockerfile: Services/Basket/MicroCommerce.Basket.API/Dockerfile
+
+  microcommerce.catalog.api:
+    image: ${DOCKER_REGISTRY-}microcommerce-catalog-api
+    build:
+      context: .
+      dockerfile: Services/Catalog/MicroCommerce.Catalog.API/Dockerfile
+
+  microcommerce.ordering.api:
+    image: ${DOCKER_REGISTRY-}microcommerce-ordering-api
+    build:
+      context: .
+      dockerfile: Services/Ordering/MicroCommerce.Ordering.API/Dockerfile
+
+  microcommerce.identity.api:
+    image: ${DOCKER_REGISTRY-}microcommerce-identity-api
+    build:
+      context: .
+      dockerfile: Services/Identity/MicroCommerce.Identity.API/Dockerfile
