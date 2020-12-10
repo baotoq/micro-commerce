@@ -3,7 +3,7 @@ using Serilog;
 
 namespace MicroCommerce.Shared.Logging
 {
-    public static class Extensions
+    public static class LoggingExtensions
     {
         public static IHostBuilder UseLogging(this IHostBuilder hostBuilder)
         {
