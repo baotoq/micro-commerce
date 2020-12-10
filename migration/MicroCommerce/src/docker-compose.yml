@@ -1,26 +1,68 @@
 version: '3.4'
 
 services:
-  microcommerce.basket.api:
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis-data:/data
+    restart: always
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:latest
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - backend
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    restart: always
+    networks:
+      - backend
+
+  basket-api:
     image: ${DOCKER_REGISTRY-}microcommerce-basket-api
     build:
       context: .
       dockerfile: Services/Basket/MicroCommerce.Basket.API/Dockerfile
+    restart: always
+    networks:
+      - backend
 
-  microcommerce.catalog.api:
+  catalog-api:
     image: ${DOCKER_REGISTRY-}microcommerce-catalog-api
     build:
       context: .
       dockerfile: Services/Catalog/MicroCommerce.Catalog.API/Dockerfile
+    restart: always
+    networks:
+      - backend
 
-  microcommerce.ordering.api:
+  ordering-api:
     image: ${DOCKER_REGISTRY-}microcommerce-ordering-api
     build:
       context: .
       dockerfile: Services/Ordering/MicroCommerce.Ordering.API/Dockerfile
+    restart: always
+    networks:
+      - backend
 
-  microcommerce.identity.api:
+  identity-api:
     image: ${DOCKER_REGISTRY-}microcommerce-identity-api
     build:
       context: .
       dockerfile: Services/Identity/MicroCommerce.Identity.API/Dockerfile
+    restart: always
+    networks:
+      - backend
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  frontend:
+  backend:
