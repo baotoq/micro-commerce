@@ -1,0 +1,111 @@
+version: "3.8"
+services:
+  redis:
+    image: redis:alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - backend
+    restart: always
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=P@ssw0rd
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "${DATABASE_PORT}:5432"
+    networks:
+      - backend
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - backend
+    restart: always
+
+  identity-api:
+    image: identity-api
+    build:
+      context: ../../src
+      dockerfile: Identity.API/Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
+      - ConnectionStrings:DefaultConnection=Server=postgres;Port=5432;Database=identity-api;User Id=postgres;Password=P@ssw0rd;
+      - Client:Swagger:Uri:0=${EXTERNAL_HOST_IP}:${CATALOG_API_HTTP_PORT}
+      - Client:Swagger:Uri:1=${EXTERNAL_HOST_IP}:${IDENTITY_API_HTTP_PORT}
+      - Client:React:Uri=${EXTERNAL_HOST_IP}:${REACT_WEB_HTTP_PORT}
+    ports:
+      - "${IDENTITY_API_HTTP_PORT}:80"
+      - "${IDENTITY_API_GRPC_PORT}:81"
+    networks:
+      - backend
+      - frontend
+
+  catalog-api:
+    image: catalog-api
+    build:
+      context: ../../src
+      dockerfile: Catalog.API/Dockerfile
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
+      - ConnectionStrings:DefaultConnection=Server=postgres;Port=5432;Database=catalog-api;User Id=postgres;Password=P@ssw0rd;
+      - ConnectionStrings:Redis=redis:6379;
+      - Identity:Uri:Http=${EXTERNAL_HOST_IP}:${IDENTITY_API_HTTP_PORT}
+      - Identity:Uri:Grpc=http://identity-api:81
+      - Rabbitmq:Uri=rabbitmq://rabbitmq:5672
+      - Rabbitmq:UserName=guest
+      - Rabbitmq:Password=guest
+    ports:
+      - "${CATALOG_API_HTTP_PORT}:80"
+      - "${CATALOG_API_GRPC_PORT}:81"
+    networks:
+      - backend
+      - frontend
+
+  react-web:
+    image: react-web
+    build:
+      context: ../../src
+      dockerfile: React.Web/Dockerfile
+      args:
+        - REACT_APP_IDENTITY_URI=${EXTERNAL_HOST_IP}:${IDENTITY_API_HTTP_PORT}
+        - REACT_APP_CATALOG_URI=${EXTERNAL_HOST_IP}:${CATALOG_API_HTTP_PORT}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+    ports:
+      - "${REACT_WEB_HTTP_PORT}:80"
+    networks:
+      - frontend
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  frontend:
+  backend:

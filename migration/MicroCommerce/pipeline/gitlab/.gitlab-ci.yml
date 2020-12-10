@@ -1,0 +1,18 @@
+stages:
+  - code-analysis
+
+include:
+  - local: catalog-api.gitlab-ci.yml
+  - local: identity-api.gitlab-ci.yml
+
+code-analysis:
+  stage: code-analysis
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  before_script:
+    - dotnet --info
+    - curl -sL https://deb.nodesource.com/setup_10.x | bash -
+    - apt-get install -y nodejs
+  script:
+    - dotnet restore
+    - dotnet build --no-restore -c Release
+    - dotnet test --no-build -c Release /p:CollectCoverage=true /p:CoverletOutput="../../../coverage.json" /p:MergeWith="../../../coverage.json" /p:CoverletOutputFormat=\"opencover,json\" /maxcpucount:1
