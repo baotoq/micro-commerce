@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using MicroCommerce.Shared.OpenTelemetry;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,8 @@ namespace MicroCommerce.Catalog.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroCommerce.Catalog.API", Version = "v1" });
             });
+
+            services.AddCustomOpenTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

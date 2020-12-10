@@ -1,4 +1,6 @@
-﻿using MicroCommerce.Identity.API.Data;
+﻿using System;
+using System.Reflection;
+using MicroCommerce.Identity.API.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Trace;
 using Serilog;
 
 namespace MicroCommerce.Identity.API
@@ -29,6 +32,21 @@ namespace MicroCommerce.Identity.API
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
+
+            services.AddOpenTelemetryTracing(builder =>
+            {
+                builder
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddGrpcClientInstrumentation()
+                    .AddSqlClientInstrumentation()
+                    .SetSampler(new AlwaysOnSampler())
+                    .AddZipkinExporter(option =>
+                    {
+                        option.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
+                        option.Endpoint = new Uri("http://localhost:9412/api/v2/spans");
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
