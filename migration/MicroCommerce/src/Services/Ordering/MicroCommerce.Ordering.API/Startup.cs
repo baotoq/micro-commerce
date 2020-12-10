@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MicroCommerce.Ordering.API.Services;
+using Serilog;
 
 namespace MicroCommerce.Ordering.API
 {
@@ -23,6 +24,8 @@ namespace MicroCommerce.Ordering.API
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 

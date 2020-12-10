@@ -1,16 +1,22 @@
 version: '3.4'
 
 services:
-  microcommerce.basket.api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+  redis:
+    command: ["redis-server", "--appendonly", "yes"]
     ports:
-      - "80"
-      - "443"
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-  microcommerce.catalog.api:
+      - "${REDIS_PORT}:6379"
+
+  postgres:
+    environment:
+      - POSTGRES_PASSWORD=P@ssw0rd
+    ports:
+      - "${POSTGRES_PORT}:5432"
+
+  zipkin:
+    ports:
+      - "${ZIPKIN_PORT}:9411"
+
+  microcommerce-basket-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
@@ -20,7 +26,7 @@ services:
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  microcommerce.ordering.api:
+  microcommerce-catalog-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
@@ -30,7 +36,17 @@ services:
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  microcommerce.identity.api:
+  microcommerce-ordering-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "80"
+      - "443"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  microcommerce-identity-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80

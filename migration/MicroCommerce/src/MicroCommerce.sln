@@ -15,19 +15,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Basket", "Basket", "{2026A7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ordering", "Ordering", "{2F61EB5B-4D44-47E2-ADD1-23E8734DBBD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Identity.API", "Services\Identity\MicroCommerce.Identity.API\MicroCommerce.Identity.API.csproj", "{F22690A7-E881-40CB-8E6A-4F2B7C464C18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.API", "Services\Identity\MicroCommerce.Identity.API\MicroCommerce.Identity.API.csproj", "{F22690A7-E881-40CB-8E6A-4F2B7C464C18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Identity.API.Tests", "Services\Identity\MicroCommerce.Identity.API.Tests\MicroCommerce.Identity.API.Tests.csproj", "{83B2A161-518D-48D5-9450-DC1BF7590020}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.API.Tests", "Services\Identity\MicroCommerce.Identity.API.Tests\MicroCommerce.Identity.API.Tests.csproj", "{83B2A161-518D-48D5-9450-DC1BF7590020}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Catalog.API", "Services\Catalog\MicroCommerce.Catalog.API\MicroCommerce.Catalog.API.csproj", "{5A9E52CC-D361-4203-8617-6C504CE26FE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Catalog.API", "Services\Catalog\MicroCommerce.Catalog.API\MicroCommerce.Catalog.API.csproj", "{5A9E52CC-D361-4203-8617-6C504CE26FE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Catalog.API.Tests", "Services\Catalog\MicroCommerce.Catalog.API.Tests\MicroCommerce.Catalog.API.Tests.csproj", "{AD9676AA-0217-49E8-B016-4A3145B70A25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Catalog.API.Tests", "Services\Catalog\MicroCommerce.Catalog.API.Tests\MicroCommerce.Catalog.API.Tests.csproj", "{AD9676AA-0217-49E8-B016-4A3145B70A25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Ordering.API", "Services\Ordering\MicroCommerce.Ordering.API\MicroCommerce.Ordering.API.csproj", "{B8BBC795-6279-45D7-959A-CB7E936327F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Ordering.API", "Services\Ordering\MicroCommerce.Ordering.API\MicroCommerce.Ordering.API.csproj", "{B8BBC795-6279-45D7-959A-CB7E936327F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Basket.API", "Services\Basket\MicroCommerce.Basket.API\MicroCommerce.Basket.API.csproj", "{A8625B81-4BE6-4E7B-931D-0E9698149C05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Basket.API", "Services\Basket\MicroCommerce.Basket.API\MicroCommerce.Basket.API.csproj", "{A8625B81-4BE6-4E7B-931D-0E9698149C05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Basket.API.Tests", "Services\Basket\MicroCommerce.Basket.API.Tests\MicroCommerce.Basket.API.Tests.csproj", "{9473994C-1E12-4429-8109-03A630CBAE39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Basket.API.Tests", "Services\Basket\MicroCommerce.Basket.API.Tests\MicroCommerce.Basket.API.Tests.csproj", "{9473994C-1E12-4429-8109-03A630CBAE39}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E757E165-5946-4695-8ABF-51EAB1A17B70}"
 	ProjectSection(SolutionItems) = preProject
@@ -35,9 +35,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Ordering.API.Tests", "Services\Ordering\MicroCommerce.Ordering.API.Tests\MicroCommerce.Ordering.API.Tests.csproj", "{D9A2D04D-9DE7-437F-891B-C9D3C71600B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Ordering.API.Tests", "Services\Ordering\MicroCommerce.Ordering.API.Tests\MicroCommerce.Ordering.API.Tests.csproj", "{D9A2D04D-9DE7-437F-891B-C9D3C71600B8}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{E1398D8C-5CBB-40C9-A16B-679AF6207396}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Shared", "BuildingBlocks\MicroCommerce.Shared\MicroCommerce.Shared.csproj", "{E7258EA0-1436-49AB-97B7-EF7E391CDCE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{E1398D8C-5CBB-40C9-A16B-679AF6207396}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1398D8C-5CBB-40C9-A16B-679AF6207396}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1398D8C-5CBB-40C9-A16B-679AF6207396}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7258EA0-1436-49AB-97B7-EF7E391CDCE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7258EA0-1436-49AB-97B7-EF7E391CDCE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7258EA0-1436-49AB-97B7-EF7E391CDCE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7258EA0-1436-49AB-97B7-EF7E391CDCE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +104,7 @@ Global
 		{A8625B81-4BE6-4E7B-931D-0E9698149C05} = {2026A7B0-AE6A-41E4-BF63-9722246948AB}
 		{9473994C-1E12-4429-8109-03A630CBAE39} = {2026A7B0-AE6A-41E4-BF63-9722246948AB}
 		{D9A2D04D-9DE7-437F-891B-C9D3C71600B8} = {2F61EB5B-4D44-47E2-ADD1-23E8734DBBD5}
+		{E7258EA0-1436-49AB-97B7-EF7E391CDCE9} = {F61E80D3-0322-418F-AE08-EAC1ED02DFD3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8519BD33-1A81-4DD1-B549-06A9FF84481E}
