@@ -1,0 +1,71 @@
+trigger:
+  branches:
+    include:
+    - master
+    exclude:
+    - ref/tags/*
+  paths:
+    include:
+    - src/Catalog.API
+    - tests/**/Catalog.API**
+    - k8s/catalog-api
+    - pipeline/azure/catalog-api
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- template: ../variables.yml
+
+stages:
+- stage: Build_and_Run_Tests
+  displayName: Build and Run tests
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - template: ../build-test-sonar-scan.yml
+      parameters:
+        projectKey: catalog-api
+        projectPath: Catalog.API
+
+- stage: Build_and_Push_Image
+  displayName: Build and push docker image
+  jobs:
+  - job: Build_and_Push_Image
+    displayName: Build and push docker image
+    steps:
+    - template: ../compose.yml
+      parameters:
+        action: build
+        services: [catalog-api]
+    - template: ../compose.yml
+      parameters:
+        action: push
+        services: [catalog-api]
+
+- stage: Deploy
+  displayName: Deploy
+  dependsOn:
+  - Build_and_Run_Tests
+  - Build_and_Push_Image
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['isDeploy'], 'true')))
+  jobs:
+  - deployment: app
+    displayName: App deployment
+    environment: dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: ../package-helm-chart.yml
+            parameters:
+              service: catalog-api
+
+          - template: ../install-helm-chart.yml
+            parameters:
+              service: catalog-api
+              namespace: bshop
+              valueFile: k8s/catalog-api/values.yaml
+              arguments: -f k8s/catalog-api/values.azure.yaml

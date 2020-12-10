@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  identity-api:
+    image: bao2703/identity-api
+    build:
+      context: ../../src
+      dockerfile: Identity.API/Dockerfile
+
+  catalog-api:
+    image: bao2703/catalog-api
+    build:
+      context: ../../src
+      dockerfile: Catalog.API/Dockerfile
+
+  react-web:
+    image: bao2703/react-web
+    build:
+      context: ../../src
+      dockerfile: React.Web/Dockerfile
+      args:
+        - REACT_APP_IDENTITY_URI=https://bshop-identity.azurewebsites.net
+        - REACT_APP_CATALOG_URI=https://bshop-catalog.azurewebsites.net
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
