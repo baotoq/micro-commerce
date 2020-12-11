@@ -23,6 +23,16 @@ services:
     networks:
       - backend
 
+  seq:
+    image: datalust/seq
+    volumes:
+      - seq-data:/data
+    environment:
+      - ACCEPT_EULA=Y
+    restart: always
+    networks:
+      - backend
+
   basket-api:
     image: ${DOCKER_REGISTRY-}microcommerce-basket-api
     build:
@@ -62,6 +72,7 @@ services:
 volumes:
   postgres-data:
   redis-data:
+  seq-data:
 
 networks:
   frontend:
