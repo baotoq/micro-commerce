@@ -20,7 +20,7 @@ namespace MicroCommerce.Shared.OpenTelemetry
                     .AddZipkinExporter(option =>
                     {
                         option.ServiceName = Assembly.GetCallingAssembly().GetName().Name;
-                        option.Endpoint = new Uri("http://localhost:9412/api/v2/spans");
+                        option.Endpoint = new Uri("http://localhost:19411/api/v2/spans");
                     });
             });
 

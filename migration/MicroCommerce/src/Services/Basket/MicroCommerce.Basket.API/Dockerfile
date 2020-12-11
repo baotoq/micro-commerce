@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
 COPY ["Services/Basket/MicroCommerce.Basket.API/MicroCommerce.Basket.API.csproj", "Services/Basket/MicroCommerce.Basket.API/"]
+COPY ["BuildingBlocks/MicroCommerce.Shared/MicroCommerce.Shared.csproj", "BuildingBlocks/MicroCommerce.Shared/"]
 RUN dotnet restore "Services/Basket/MicroCommerce.Basket.API/MicroCommerce.Basket.API.csproj"
 COPY . .
 WORKDIR "/src/Services/Basket/MicroCommerce.Basket.API"
