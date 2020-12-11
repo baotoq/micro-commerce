@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using MicroCommerce.Identity.API.Data;
-using MicroCommerce.Shared.OpenTelemetry;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +34,8 @@ namespace MicroCommerce.Identity.API
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
 
+            services.AddHealthChecks();
+
             services.AddOpenTelemetryTracing(builder =>
             {
                 builder
@@ -45,7 +47,7 @@ namespace MicroCommerce.Identity.API
                     .AddZipkinExporter(option =>
                     {
                         option.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
-                        option.Endpoint = new Uri("http://localhost:19411/api/v2/spans");
+                        option.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
                     });
             });
         }
@@ -77,6 +79,11 @@ namespace MicroCommerce.Identity.API
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions());
+                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
                 endpoints.MapRazorPages();
             });
         }

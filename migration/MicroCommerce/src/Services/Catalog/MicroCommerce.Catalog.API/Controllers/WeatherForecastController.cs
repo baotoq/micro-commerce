@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Grpc.Health.V1;
 
 namespace MicroCommerce.Catalog.API.Controllers
 {
@@ -16,10 +18,12 @@ namespace MicroCommerce.Catalog.API.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly Health.HealthClient _healthClient;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, Health.HealthClient healthClient)
         {
             _logger = logger;
+            _healthClient = healthClient;
         }
 
         [HttpGet]
@@ -33,6 +37,13 @@ namespace MicroCommerce.Catalog.API.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpGet("/health/ordering")]
+        public async Task<IActionResult> HealthOrdering()
+        {
+            var result = await _healthClient.CheckAsync(new HealthCheckRequest());
+            return Ok(result);
         }
     }
 }

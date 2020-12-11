@@ -13,6 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.32.0" />
+    <PackageReference Include="Grpc.HealthCheck" Version="2.34.0" />
   </ItemGroup>
 
   <ItemGroup>
