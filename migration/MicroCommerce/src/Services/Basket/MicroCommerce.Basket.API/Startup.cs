@@ -1,10 +1,14 @@
-﻿using MicroCommerce.Shared.OpenTelemetry;
+﻿using System;
+using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Trace;
 using Serilog;
 
 namespace MicroCommerce.Basket.API
@@ -27,7 +31,22 @@ namespace MicroCommerce.Basket.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroCommerce.Basket.API", Version = "v1" });
             });
 
-            services.AddCustomOpenTelemetry();
+            services.AddHealthChecks();
+
+            services.AddOpenTelemetryTracing(builder =>
+            {
+                builder
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddGrpcClientInstrumentation()
+                    .AddSqlClientInstrumentation()
+                    .SetSampler(new AlwaysOnSampler())
+                    .AddZipkinExporter(option =>
+                    {
+                        option.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
+                        option.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +69,16 @@ namespace MicroCommerce.Basket.API
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGet("/", context =>
+                {
+                    context.Response.Redirect("/swagger");
+                    return Task.CompletedTask;
+                });
+                endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions());
+                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
                 endpoints.MapControllers();
             });
         }
