@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using MicroCommerce.Identity.API.Data;
+using MicroCommerce.Shared.OpenTelemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -44,7 +45,7 @@ namespace MicroCommerce.Identity.API
                     .AddZipkinExporter(option =>
                     {
                         option.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
-                        option.Endpoint = new Uri("http://localhost:9412/api/v2/spans");
+                        option.Endpoint = new Uri("http://localhost:19411/api/v2/spans");
                     });
             });
         }
