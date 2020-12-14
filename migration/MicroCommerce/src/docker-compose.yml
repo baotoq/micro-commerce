@@ -25,47 +25,24 @@ services:
 
   seq:
     image: datalust/seq:latest
-    volumes:
-      - seq-data:/data
-    environment:
-      - ACCEPT_EULA=Y
     restart: on-failure
     networks:
       - backend
 
   prometheus:
     image: prom/prometheus:latest
-    ports:
-      - "19090:9090"
-    volumes:
-      - ./config:/etc/prometheus
-      - prometheus-data:/prometheus
     restart: on-failure
     networks:
       - backend
 
   grafana:
     image: grafana/grafana:latest
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=P@ssw0rd
-      - PROMETHEUS_URL=http://prometheus:9090
-      - DASHBOARDS_BACKUP_FOLDER=/var/lib/grafana/dashboards
-    volumes:
-      - ./config/grafana/provisioning:/etc/grafana/provisioning
-      - ./config/grafana/dashboard-backup:/var/lib/grafana/dashboards
-    ports:
-      - "13000:3000"
     restart: on-failure
     networks:
       - backend
 
   alertmanager:
     image: prom/alertmanager:latest
-    volumes:
-      - ./config:/etc/alertmanager
-      - alertmanager-data:/alertmanager
-    ports:
-      - "19093:9093"
     restart: on-failure
     networks:
       - backend

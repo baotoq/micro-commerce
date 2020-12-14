@@ -19,8 +19,35 @@ services:
   seq:
     environment:
       - ACCEPT_EULA=Y
+    volumes:
+      - seq-data:/data
     ports:
       - "${SEQ_PORT}:80"
+
+  prometheus:
+    ports:
+      - "${PROMETHEUS_PORT}:9090"
+    volumes:
+      - ./monitoring:/etc/prometheus
+      - prometheus-data:/prometheus
+
+  grafana:
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=P@ssw0rd
+      - PROMETHEUS_URL=http://prometheus:9090
+      - DASHBOARDS_BACKUP_FOLDER=/var/lib/grafana/dashboards
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboard-backup:/var/lib/grafana/dashboards
+
+  alertmanager:
+    ports:
+      - "${ALERTMANAGER_PORT}:9093"
+    volumes:
+      - ./monitoring:/etc/alertmanager
+      - alertmanager-data:/alertmanager
 
   basket-api:
     environment:
@@ -30,6 +57,7 @@ services:
       - "80"
       - "${BASKET_API_HTTP_PORT}:443"
     volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
   catalog-api:
@@ -40,6 +68,7 @@ services:
       - "80"
       - "${CATALOG_API_HTTP_PORT}:443"
     volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
   ordering-api:
@@ -50,6 +79,7 @@ services:
       - "80"
       - "${ORDERING_API_HTTP_PORT}:443"
     volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
   identity-api:

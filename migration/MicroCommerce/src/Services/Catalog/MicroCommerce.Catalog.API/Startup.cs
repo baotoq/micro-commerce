@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Trace;
+using Prometheus;
 using Serilog;
 
 namespace MicroCommerce.Catalog.API
@@ -41,7 +42,7 @@ namespace MicroCommerce.Catalog.API
                 })
                 .EnableCallContextPropagation(c => c.SuppressContextNotFoundErrors = true);
 
-            services.AddHealthChecks();
+            services.AddHealthChecks().ForwardToPrometheus();
 
             services.AddOpenTelemetryTracing(builder =>
             {
@@ -69,11 +70,12 @@ namespace MicroCommerce.Catalog.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroCommerce.Catalog.API v1"));
             }
 
-            app.UseHttpsRedirection();
-
             app.UseSerilogRequestLogging();
 
             app.UseRouting();
+
+            app.UseHttpMetrics();
+            app.UseGrpcMetrics();
 
             app.UseAuthorization();
 
@@ -89,6 +91,7 @@ namespace MicroCommerce.Catalog.API
                 {
                     Predicate = r => r.Name.Contains("self")
                 });
+                endpoints.MapMetrics();
                 endpoints.MapControllers();
             });
         }

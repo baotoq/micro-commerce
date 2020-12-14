@@ -9,7 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using OpenTelemetry.Trace;
+using Prometheus;
 using Serilog;
 
 namespace MicroCommerce.Identity.API
@@ -32,9 +34,14 @@ namespace MicroCommerce.Identity.API
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            
             services.AddRazorPages();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroCommerce.Identity.API", Version = "v1" });
+            });
 
-            services.AddHealthChecks();
+            services.AddHealthChecks().ForwardToPrometheus();
 
             services.AddOpenTelemetryTracing(builder =>
             {
@@ -59,6 +66,8 @@ namespace MicroCommerce.Identity.API
             {
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroCommerce.Identity.API v1"));
             }
             else
             {
@@ -67,12 +76,14 @@ namespace MicroCommerce.Identity.API
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseSerilogRequestLogging();
 
             app.UseRouting();
+
+            app.UseHttpMetrics();
+            app.UseGrpcMetrics();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -84,6 +95,7 @@ namespace MicroCommerce.Identity.API
                 {
                     Predicate = r => r.Name.Contains("self")
                 });
+                endpoints.MapMetrics();
                 endpoints.MapRazorPages();
             });
         }
