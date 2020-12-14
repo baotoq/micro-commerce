@@ -12,5 +12,13 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="monitoring\alert-rules.yml" />
+    <None Include="monitoring\alertmanager.yml" />
+    <None Include="monitoring\grafana\provisioning\dashboards\config.yml" />
+    <None Include="monitoring\grafana\provisioning\datasources\config.yml" />
+    <None Include="monitoring\prometheus.yml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="monitoring\grafana\dashboard-backup\" />
   </ItemGroup>
 </Project>

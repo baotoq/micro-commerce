@@ -9,6 +9,7 @@ using MicroCommerce.Ordering.API.Services;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Trace;
+using Prometheus;
 using Serilog;
 
 namespace MicroCommerce.Ordering.API
@@ -28,7 +29,7 @@ namespace MicroCommerce.Ordering.API
         {
             services.AddGrpc();
 
-            services.AddHealthChecks();
+            services.AddHealthChecks().ForwardToPrometheus();
 
             services.AddOpenTelemetryTracing(builder =>
             {
@@ -58,6 +59,9 @@ namespace MicroCommerce.Ordering.API
 
             app.UseRouting();
 
+            app.UseHttpMetrics();
+            app.UseGrpcMetrics();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", context =>
@@ -70,6 +74,7 @@ namespace MicroCommerce.Ordering.API
                 {
                     Predicate = r => r.Name.Contains("self")
                 });
+                endpoints.MapMetrics();
                 endpoints.MapGrpcService<GreeterService>();
                 endpoints.MapGrpcService<HealthService>();
             });

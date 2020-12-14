@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Trace;
+using Prometheus;
 using Serilog;
 
 namespace MicroCommerce.Basket.API
@@ -31,7 +32,7 @@ namespace MicroCommerce.Basket.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroCommerce.Basket.API", Version = "v1" });
             });
 
-            services.AddHealthChecks();
+            services.AddHealthChecks().ForwardToPrometheus();
 
             services.AddOpenTelemetryTracing(builder =>
             {
@@ -59,11 +60,12 @@ namespace MicroCommerce.Basket.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroCommerce.Basket.API v1"));
             }
 
-            app.UseHttpsRedirection();
-
             app.UseSerilogRequestLogging();
 
             app.UseRouting();
+
+            app.UseHttpMetrics();
+            app.UseGrpcMetrics();
 
             app.UseAuthorization();
 
@@ -79,6 +81,7 @@ namespace MicroCommerce.Basket.API
                 {
                     Predicate = r => r.Name.Contains("self")
                 });
+                endpoints.MapMetrics();
                 endpoints.MapControllers();
             });
         }

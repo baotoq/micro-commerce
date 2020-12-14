@@ -13,15 +13,15 @@ rule_files:
   - alert-rules.yml
 
 scrape_configs:
-  - job_name: "basket-api"
+  - job_name: basket-api
     static_configs:
-      - targets: ["basket-api:80"]
-  - job_name: "catalog-api"
+      - targets: ["basket-api"]
+  - job_name: catalog-api
     static_configs:
-      - targets: ["catalog-api:80"]
-  - job_name: "ordering-api"
+      - targets: ["catalog-api"]
+  - job_name: ordering-api
     static_configs:
-      - targets: ["ordering-api:80"]
-  - job_name: "identity-api"
+      - targets: ["ordering-api"]
+  - job_name: identity-api
     static_configs:
-      - targets: ["identity-api:80"]
+      - targets: ["identity-api"]
