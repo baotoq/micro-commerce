@@ -6,11 +6,15 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
+
 WORKDIR /src
-COPY ["Services/Identity/MicroCommerce.Identity.API/MicroCommerce.Identity.API.csproj", "Services/Identity/MicroCommerce.Identity.API/"]
 COPY ["BuildingBlocks/MicroCommerce.Shared/MicroCommerce.Shared.csproj", "BuildingBlocks/MicroCommerce.Shared/"]
+COPY ["Services/Identity/MicroCommerce.Identity.API/MicroCommerce.Identity.API.csproj", "Services/Identity/MicroCommerce.Identity.API/"]
 RUN dotnet restore "Services/Identity/MicroCommerce.Identity.API/MicroCommerce.Identity.API.csproj"
-COPY . .
+
+COPY ["BuildingBlocks/MicroCommerce.Shared/", "BuildingBlocks/MicroCommerce.Shared/"]
+COPY ["Services/Identity/MicroCommerce.Identity.API/", "Services/Identity/MicroCommerce.Identity.API/"]
+
 WORKDIR "/src/Services/Identity/MicroCommerce.Identity.API"
 RUN dotnet build "MicroCommerce.Identity.API.csproj" -c Release -o /app/build
 
