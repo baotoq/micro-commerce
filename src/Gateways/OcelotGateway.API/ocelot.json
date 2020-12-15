@@ -1,0 +1,76 @@
+﻿{
+  "Routes": [
+    {
+      "UpstreamHttpMethod": [],
+      "UpstreamPathTemplate": "/i/{everything}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "identity-api",
+          "Port": 80
+        }
+      ],
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "ServiceName": "identity",
+      "LoadBalancerOptions": {
+          "Type": "LeastConnection"
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/b/{everything}",
+      "UpstreamHttpMethod": [],
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "basket-api",
+          "Port": 80
+        }
+      ],
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "ServiceName": "basket",
+      "LoadBalancerOptions": {
+          "Type": "LeastConnection"
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/c/{everything}",
+      "UpstreamHttpMethod": [],
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "catalog-api",
+          "Port": 80
+        }
+      ],
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "ServiceName": "catalog",
+      "LoadBalancerOptions": {
+          "Type": "LeastConnection"
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/o/{everything}",
+      "UpstreamHttpMethod": [],
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "ordering-api",
+          "Port": 80
+        }
+      ],
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "ServiceName": "ordering",
+      "LoadBalancerOptions": {
+          "Type": "LeastConnection"
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "ServiceDiscoveryProvider": {
+      "Scheme": "https",
+      "Host": "0.0.0.0",
+      "Port": 8500,
+      "Type": "Consul"
+    }
+  }
+}

@@ -3,8 +3,6 @@ version: '3.8'
 services:
   redis:
     image: redis:alpine
-    volumes:
-      - redis-data:/data
     restart: on-failure
     networks:
       - backend
@@ -80,6 +78,14 @@ services:
       context: .
       dockerfile: Services/Identity/MicroCommerce.Identity.API/Dockerfile
     restart: on-failure
+    networks:
+      - backend
+
+  ocelot-gateway-api:
+    image: ${DOCKER_REGISTRY-}ocelot-gateway-api
+    build:
+      context: .
+      dockerfile: Gateways/OcelotGateway.API/Dockerfile
     networks:
       - backend
 
