@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Reflection;
+using MicroCommerce.Identity.API.Configuration;
 using MicroCommerce.Identity.API.Data;
+using MicroCommerce.Identity.API.Data.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,12 +32,16 @@ namespace MicroCommerce.Identity.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
+                    provider => provider.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
+
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            
+
+            services.AddDefaultIdentity<User>()
+                .AddRoles<Role>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
             services.AddRazorPages();
             services.AddSwaggerGen(c =>
             {
@@ -51,12 +58,27 @@ namespace MicroCommerce.Identity.API
                     .AddGrpcClientInstrumentation()
                     .AddSqlClientInstrumentation()
                     .SetSampler(new AlwaysOnSampler())
-                    .AddZipkinExporter(option =>
+                    .AddZipkinExporter(options =>
                     {
-                        option.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
-                        option.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
+                        options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
+                        options.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
                     });
             });
+
+            services.AddIdentityServer(options =>
+            {
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+                options.UserInteraction.ErrorUrl = "/Error";
+            })
+            .AddInMemoryIdentityResources(IdentityServerConfiguration.IdentityResources)
+            .AddInMemoryApiResources(IdentityServerConfiguration.ApiResources)
+            .AddInMemoryApiScopes(IdentityServerConfiguration.ApiScopes)
+            .AddInMemoryClients(IdentityServerConfiguration.Clients(Configuration))
+            .AddAspNetIdentity<User>()
+            .AddDeveloperSigningCredential(); // not recommended for production - you need to store your key material somewhere secure
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,11 +98,15 @@ namespace MicroCommerce.Identity.API
                 app.UseHsts();
             }
 
+            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+
             app.UseStaticFiles();
 
             app.UseSerilogRequestLogging();
 
             app.UseRouting();
+
+            app.UseIdentityServer();
 
             app.UseHttpMetrics();
             app.UseGrpcMetrics();
