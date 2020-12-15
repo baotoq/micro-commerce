@@ -54,10 +54,10 @@ services:
   basket-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
     ports:
-      - "80"
-      - "${BASKET_API_HTTP_PORT}:443"
+      - "${BASKET_API_HTTP_PORT}:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -65,10 +65,10 @@ services:
   catalog-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
     ports:
-      - "80"
-      - "${CATALOG_API_HTTP_PORT}:443"
+      - "${CATALOG_API_HTTP_PORT}:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -76,10 +76,10 @@ services:
   ordering-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
     ports:
-      - "80"
-      - "${ORDERING_API_HTTP_PORT}:443"
+      - "${ORDERING_API_HTTP_PORT}:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -87,10 +87,10 @@ services:
   identity-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
     ports:
-      - "80"
-      - "${IDENTITY_API_HTTP_PORT}:443"
+      - "${IDENTITY_API_HTTP_PORT}:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -102,6 +102,7 @@ services:
     ports:
       - "80"
       - "${OCELOT_GATEWAY_API_HTTP_PORT}:443"
+      - "8500:8500"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

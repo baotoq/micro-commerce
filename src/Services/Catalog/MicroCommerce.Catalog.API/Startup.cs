@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Net.Http;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Health.V1;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -31,16 +32,49 @@ namespace MicroCommerce.Catalog.API
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
+                c.CustomSchemaIds(s => s.FullName);
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroCommerce.Catalog.API", Version = "v1" });
+                c.AddSecurityDefinition(IdentityServerAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            TokenUrl = new Uri($"{Configuration["Client:Identity:Uri:Authority"]}/connect/token"),
+                            AuthorizationUrl = new Uri($"{Configuration["Client:Identity:Uri:Authority"]}/connect/authorize"),
+                            Scopes =
+                            {
+                                { "catalog-api", "Catalog API" }
+                            }
+                        },
+                    },
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = IdentityServerAuthenticationDefaults.AuthenticationScheme }
+                        },
+                        new List<string> { "catalog-api" }
+                    }
+                });
             });
 
-            services.AddGrpcClient<Health.HealthClient>(c => c.Address = new Uri(Configuration["Client:Ordering:Uri"]))
-                .ConfigurePrimaryHttpMessageHandler(c => new HttpClientHandler
+            services.AddAuthorization();
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
                 {
-                    ServerCertificateCustomValidationCallback =
-                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                })
-                .EnableCallContextPropagation(c => c.SuppressContextNotFoundErrors = true);
+                    options.Authority = Configuration["Client:Identity:Uri:Http"];
+                    options.ApiName = "catalog-api";
+                    options.RequireHttpsMetadata = false;
+                });
+
+            AppContext.SetSwitch(
+                "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            services.AddGrpcClient<Health.HealthClient>(options => options.Address = new Uri(Configuration["Client:Ordering:Uri:Grpc"]))
+                .EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
 
             services.AddHealthChecks().ForwardToPrometheus();
 
@@ -52,10 +86,10 @@ namespace MicroCommerce.Catalog.API
                     .AddGrpcClientInstrumentation()
                     .AddSqlClientInstrumentation()
                     .SetSampler(new AlwaysOnSampler())
-                    .AddZipkinExporter(option =>
+                    .AddZipkinExporter(options =>
                     {
-                        option.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
-                        option.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
+                        options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
+                        options.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
                     });
             });
         }
@@ -67,7 +101,13 @@ namespace MicroCommerce.Catalog.API
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroCommerce.Catalog.API v1"));
+                app.UseSwaggerUI(c =>
+                {
+                    c.OAuthClientId("swagger");
+                    c.OAuthClientSecret("secret");
+                    c.OAuthUsePkce();
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroCommerce.Catalog.API v1");
+                });
             }
 
             app.UseSerilogRequestLogging();

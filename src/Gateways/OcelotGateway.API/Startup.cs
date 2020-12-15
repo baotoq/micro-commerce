@@ -32,8 +32,7 @@ namespace OcelotGateway.API
             services.AddHealthChecks().ForwardToPrometheus();
 
             services.AddOcelot()
-                .AddConsul()
-                .AddAdministration("/admin");
+                .AddConsul();
 
             //services.AddAuthentication()
                 //.AddJwtBearer("Bearer", options =>
@@ -47,10 +46,10 @@ namespace OcelotGateway.API
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .SetSampler(new AlwaysOnSampler())
-                    .AddZipkinExporter(option =>
+                    .AddZipkinExporter(options =>
                     {
-                        option.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
-                        option.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
+                        options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
+                        options.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
                     });
             });
         }

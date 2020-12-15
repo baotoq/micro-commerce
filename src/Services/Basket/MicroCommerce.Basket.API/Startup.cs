@@ -42,10 +42,10 @@ namespace MicroCommerce.Basket.API
                     .AddGrpcClientInstrumentation()
                     .AddSqlClientInstrumentation()
                     .SetSampler(new AlwaysOnSampler())
-                    .AddZipkinExporter(option =>
+                    .AddZipkinExporter(options =>
                     {
-                        option.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
-                        option.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
+                        options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
+                        options.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
                     });
             });
         }
