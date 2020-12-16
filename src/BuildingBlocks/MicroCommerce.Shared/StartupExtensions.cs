@@ -95,8 +95,8 @@ namespace MicroCommerce.Shared
                             TokenUrl = new Uri($"{identityOptions.Uri.External}/connect/token", UriKind.RelativeOrAbsolute),
                             AuthorizationUrl = new Uri($"{identityOptions.Uri.External}/connect/authorize", UriKind.RelativeOrAbsolute),
                             Scopes = identityOptions.Scopes.ToDictionary(s => s)
-                        },
-                    },
+                        }
+                    }
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
