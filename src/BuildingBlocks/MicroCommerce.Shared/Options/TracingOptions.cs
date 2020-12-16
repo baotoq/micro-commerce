@@ -1,4 +1,4 @@
-﻿namespace MicroCommerce.Shared
+﻿namespace MicroCommerce.Shared.Options
 {
     public class TracingOptions
     {

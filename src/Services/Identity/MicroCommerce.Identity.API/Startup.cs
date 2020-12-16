@@ -2,6 +2,7 @@
 using MicroCommerce.Identity.API.Data;
 using MicroCommerce.Identity.API.Data.Models;
 using MicroCommerce.Shared;
+using MicroCommerce.Shared.Grpc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,13 +27,17 @@ namespace MicroCommerce.Identity.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddGrpc();
             services.AddControllers();
             services.AddRazorPages();
 
             services.AddSwagger();
             services.AddMonitoring();
+            services.AddHealthChecks().AddNpgSql(connectionString).ForwardToPrometheus();
 
-            services.AddDbContext(Configuration.GetConnectionString("DefaultConnection"));
+            services.AddDbContext(connectionString);
 
             services.AddDefaultIdentity<User>()
                 .AddRoles<Role>()
@@ -94,6 +99,7 @@ namespace MicroCommerce.Identity.API
                 endpoints.MapMetrics();
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                endpoints.MapGrpcService<HealthService>();
             });
         }
     }

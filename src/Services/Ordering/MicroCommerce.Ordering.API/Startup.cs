@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MicroCommerce.Ordering.API.Services;
 using MicroCommerce.Shared;
+using MicroCommerce.Shared.Grpc;
 using Microsoft.Extensions.Configuration;
 using Prometheus;
 using Serilog;
