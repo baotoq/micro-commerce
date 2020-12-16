@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Polly;
+using Prometheus;
 using Serilog;
 
 namespace OcelotGateway.API
@@ -63,6 +64,7 @@ namespace OcelotGateway.API
                     await context.Response.WriteAsync("Ocelot gateway hello!");
                 });
                 endpoints.MapHealthChecks();
+                endpoints.MapMetrics();
             });
 
             app.UseOcelot().Wait();

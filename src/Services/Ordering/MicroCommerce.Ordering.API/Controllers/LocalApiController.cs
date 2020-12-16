@@ -1,10 +1,9 @@
-﻿using IdentityServer4;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MicroCommerce.Identity.API.Controllers
 {
-    [Authorize(IdentityServerConstants.LocalApi.PolicyName)]
+    [Authorize]
     [Route("localApi")]
     public class LocalApiController : ControllerBase
     {

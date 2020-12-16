@@ -27,7 +27,6 @@ namespace MicroCommerce.Catalog.API.Controllers
             _healthClient = healthClient;
         }
 
-        [Authorize]
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
@@ -41,6 +40,7 @@ namespace MicroCommerce.Catalog.API.Controllers
             .ToArray();
         }
 
+        [Authorize]
         [HttpGet("/health/ordering")]
         public async Task<IActionResult> HealthOrdering()
         {

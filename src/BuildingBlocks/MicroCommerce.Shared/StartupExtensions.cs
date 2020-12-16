@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using OpenTelemetry.Trace;
 using Prometheus;
 
@@ -34,6 +38,7 @@ namespace MicroCommerce.Shared
             using var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetService<IConfiguration>();
             var tracingOptions = configuration.GetSection("OpenTelemetry:Tracing").Get<TracingOptions>();
+            var serviceName = Assembly.GetCallingAssembly().GetName().Name;
 
             services.AddHealthChecks().ForwardToPrometheus();
 
@@ -47,7 +52,7 @@ namespace MicroCommerce.Shared
                     .SetSampler(new AlwaysOnSampler())
                     .AddZipkinExporter(options =>
                     {
-                        options.ServiceName = tracingOptions.ServiceName;
+                        options.ServiceName = serviceName;
                         options.Endpoint = new Uri(tracingOptions.Endpoint);
                     });
             });
@@ -66,11 +71,50 @@ namespace MicroCommerce.Shared
             {
                 Predicate = r => r.Name.Contains("self")
             });
-            endpoints.MapMetrics();
         }
 
-        public static void UseSwaggerEndpoint(this IApplicationBuilder app, string name, string clientId = "swagger", string secret = "secret")
+        public static void AddSwagger(this IServiceCollection services)
         {
+            using var serviceProvider = services.BuildServiceProvider();
+            var configuration = serviceProvider.GetService<IConfiguration>();
+            var identityOptions = configuration.GetSection("Identity").Get<IdentityOptions>();
+
+            var title = Assembly.GetCallingAssembly().GetName().Name;
+
+            services.AddSwaggerGen(c =>
+            {
+                c.CustomSchemaIds(s => s.FullName);
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = title, Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            TokenUrl = new Uri($"{identityOptions.Uri.External}/connect/token", UriKind.RelativeOrAbsolute),
+                            AuthorizationUrl = new Uri($"{identityOptions.Uri.External}/connect/authorize", UriKind.RelativeOrAbsolute),
+                            Scopes = identityOptions.Scopes.ToDictionary(s => s)
+                        },
+                    },
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                        },
+                        new List<string>()
+                    }
+                });
+            });
+        }
+
+        public static void UseSwaggerEndpoint(this IApplicationBuilder app, string clientId = "swagger", string secret = "secret")
+        {
+            var name = Assembly.GetCallingAssembly().GetName().Name + " v1";
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
