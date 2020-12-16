@@ -44,6 +44,7 @@ namespace MicroCommerce.Basket.API
 
             app.UseMonitoring();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
