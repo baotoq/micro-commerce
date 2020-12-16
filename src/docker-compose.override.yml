@@ -100,9 +100,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
-      - "80"
       - "${OCELOT_GATEWAY_API_HTTP_PORT}:443"
-      - "8500:8500"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

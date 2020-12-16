@@ -1,14 +1,10 @@
-﻿using System;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using MicroCommerce.Shared;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using OpenTelemetry.Trace;
 using Prometheus;
 using Serilog;
 
@@ -32,22 +28,7 @@ namespace MicroCommerce.Basket.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroCommerce.Basket.API", Version = "v1" });
             });
 
-            services.AddHealthChecks().ForwardToPrometheus();
-
-            services.AddOpenTelemetryTracing(builder =>
-            {
-                builder
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddGrpcClientInstrumentation()
-                    .AddSqlClientInstrumentation()
-                    .SetSampler(new AlwaysOnSampler())
-                    .AddZipkinExporter(options =>
-                    {
-                        options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
-                        options.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
-                    });
-            });
+            services.AddMonitoring();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,16 +52,7 @@ namespace MicroCommerce.Basket.API
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", context =>
-                {
-                    context.Response.Redirect("/swagger");
-                    return Task.CompletedTask;
-                });
-                endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions());
-                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
-                {
-                    Predicate = r => r.Name.Contains("self")
-                });
+                endpoints.MapHealthChecks();
                 endpoints.MapMetrics();
                 endpoints.MapControllers();
             });

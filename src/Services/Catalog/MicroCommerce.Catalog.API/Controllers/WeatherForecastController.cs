@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MicroCommerce.Catalog.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -28,6 +27,7 @@ namespace MicroCommerce.Catalog.API.Controllers
             _healthClient = healthClient;
         }
 
+        [Authorize]
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {

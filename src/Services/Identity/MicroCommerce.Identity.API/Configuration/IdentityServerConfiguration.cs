@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace MicroCommerce.Identity.API.Configuration
 {
-    public class IdentityServerConfiguration
+    public static class IdentityServerConfiguration
     {
         public static IEnumerable<IdentityResource> IdentityResources =>
             new List<IdentityResource>
@@ -18,10 +18,10 @@ namespace MicroCommerce.Identity.API.Configuration
         public static IEnumerable<ApiResource> ApiResources =>
             new[]
             {
-                new ApiResource(IdentityConstants.ApiResource.BasketApi),
-                new ApiResource(IdentityConstants.ApiResource.CatalogApi),
-                new ApiResource(IdentityConstants.ApiResource.OrderingApi),
-                new ApiResource(IdentityServerConstants.LocalApi.ScopeName),
+                new ApiResource(IdentityConstants.ApiResource.BasketApi) { Scopes = new[] { IdentityConstants.ApiResource.BasketApi } },
+                new ApiResource(IdentityConstants.ApiResource.CatalogApi) { Scopes = new[] { IdentityConstants.ApiResource.CatalogApi } },
+                new ApiResource(IdentityConstants.ApiResource.OrderingApi) { Scopes = new[] { IdentityConstants.ApiResource.OrderingApi } },
+                new ApiResource(IdentityServerConstants.LocalApi.ScopeName) { Scopes = new[] { IdentityServerConstants.LocalApi.ScopeName } },
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
