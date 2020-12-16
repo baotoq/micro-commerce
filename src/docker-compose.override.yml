@@ -104,3 +104,10 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  healthchecks-web:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+    ports:
+      - "${HEALTH_CHECKS_WEB_HTTP_PORT}:80"

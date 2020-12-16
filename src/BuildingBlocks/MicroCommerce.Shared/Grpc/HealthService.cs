@@ -5,7 +5,7 @@ using Grpc.Health.V1;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 
-namespace MicroCommerce.Ordering.API.Services
+namespace MicroCommerce.Shared.Grpc
 {
     public class HealthService : Health.HealthBase
     {

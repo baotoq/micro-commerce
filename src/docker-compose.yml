@@ -89,6 +89,14 @@ services:
     networks:
       - backend
 
+  healthchecks-web:
+    image: ${DOCKER_REGISTRY-}healthchecks-web
+    build:
+      context: .
+      dockerfile: Webs/HealthChecks.Web/Dockerfile
+    networks:
+      - backend
+
 volumes:
   postgres-data:
   redis-data:
@@ -99,3 +107,4 @@ volumes:
 networks:
   frontend:
   backend:
+

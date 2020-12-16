@@ -9,8 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.32.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Grpc.HealthCheck" Version="2.34.0" />
   </ItemGroup>
 

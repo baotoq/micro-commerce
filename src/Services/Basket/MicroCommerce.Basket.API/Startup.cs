@@ -1,4 +1,5 @@
 ﻿using MicroCommerce.Shared;
+using MicroCommerce.Shared.Grpc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,7 @@ namespace MicroCommerce.Basket.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddGrpc();
             services.AddControllers();
 
             services.AddIdentityAuthentication();
@@ -52,6 +54,7 @@ namespace MicroCommerce.Basket.API
                 endpoints.MapHealthChecks();
                 endpoints.MapMetrics();
                 endpoints.MapControllers();
+                endpoints.MapGrpcService<HealthService>();
             });
         }
     }

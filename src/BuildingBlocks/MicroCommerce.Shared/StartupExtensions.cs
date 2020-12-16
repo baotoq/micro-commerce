@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HealthChecks.UI.Client;
+using MicroCommerce.Shared.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -33,7 +35,7 @@ namespace MicroCommerce.Shared
                 });
         }
 
-        public static void AddMonitoring(this IServiceCollection services)
+        public static IServiceCollection AddMonitoring(this IServiceCollection services)
         {
             using var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetService<IConfiguration>();
@@ -56,6 +58,8 @@ namespace MicroCommerce.Shared
                         options.Endpoint = new Uri(tracingOptions.Endpoint);
                     });
             });
+
+            return services;
         }
 
         public static void UseMonitoring(this IApplicationBuilder app)
@@ -66,10 +70,14 @@ namespace MicroCommerce.Shared
 
         public static void MapHealthChecks(this IEndpointRouteBuilder endpoints)
         {
-            endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions());
+            endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
             endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
             {
-                Predicate = r => r.Name.Contains("self")
+                Predicate = r => r.Name.Contains("self"),
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
         }
 
