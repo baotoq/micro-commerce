@@ -24,7 +24,11 @@ namespace MicroCommerce.Ordering.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+            services.AddControllers();
 
+            services.AddIdentityAuthentication();
+
+            services.AddSwagger();
             services.AddMonitoring();
         }
 
@@ -34,6 +38,7 @@ namespace MicroCommerce.Ordering.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwaggerEndpoint();
             }
 
             app.UseSerilogRequestLogging();
@@ -42,10 +47,14 @@ namespace MicroCommerce.Ordering.API
 
             app.UseMonitoring();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks();
                 endpoints.MapMetrics();
+                endpoints.MapControllers();
                 endpoints.MapGrpcService<GreeterService>();
                 endpoints.MapGrpcService<HealthService>();
             });

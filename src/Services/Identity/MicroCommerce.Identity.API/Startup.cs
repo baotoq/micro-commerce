@@ -30,7 +30,6 @@ namespace MicroCommerce.Identity.API
             services.AddRazorPages();
 
             services.AddSwagger();
-
             services.AddMonitoring();
 
             services.AddDbContext(Configuration.GetConnectionString("DefaultConnection"));
@@ -65,7 +64,7 @@ namespace MicroCommerce.Identity.API
             {
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
-                app.UseSwaggerEndpoint("MicroCommerce.Identity.API v1");
+                app.UseSwaggerEndpoint();
             }
             else
             {
