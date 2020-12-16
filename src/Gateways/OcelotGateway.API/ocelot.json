@@ -10,11 +10,7 @@
         }
       ],
       "DownstreamPathTemplate": "/{everything}",
-      "DownstreamScheme": "http",
-      "ServiceName": "identity",
-      "LoadBalancerOptions": {
-          "Type": "LeastConnection"
-      }
+      "DownstreamScheme": "http"
     },
     {
       "UpstreamPathTemplate": "/b/{everything}",
@@ -26,11 +22,7 @@
         }
       ],
       "DownstreamPathTemplate": "/{everything}",
-      "DownstreamScheme": "http",
-      "ServiceName": "basket",
-      "LoadBalancerOptions": {
-          "Type": "LeastConnection"
-      }
+      "DownstreamScheme": "http"
     },
     {
       "UpstreamPathTemplate": "/c/{everything}",
@@ -42,11 +34,7 @@
         }
       ],
       "DownstreamPathTemplate": "/{everything}",
-      "DownstreamScheme": "http",
-      "ServiceName": "catalog",
-      "LoadBalancerOptions": {
-          "Type": "LeastConnection"
-      }
+      "DownstreamScheme": "http"
     },
     {
       "UpstreamPathTemplate": "/o/{everything}",
@@ -58,19 +46,9 @@
         }
       ],
       "DownstreamPathTemplate": "/{everything}",
-      "DownstreamScheme": "http",
-      "ServiceName": "ordering",
-      "LoadBalancerOptions": {
-          "Type": "LeastConnection"
-      }
+      "DownstreamScheme": "http"
     }
   ],
   "GlobalConfiguration": {
-    "ServiceDiscoveryProvider": {
-      "Scheme": "https",
-      "Host": "0.0.0.0",
-      "Port": 8500,
-      "Type": "Consul"
-    }
   }
 }

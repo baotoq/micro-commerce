@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using MicroCommerce.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,9 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using Ocelot.Provider.Consul;
-using OpenTelemetry.Trace;
-using Prometheus;
+using Ocelot.Provider.Polly;
 using Serilog;
 
 namespace OcelotGateway.API
@@ -29,29 +26,10 @@ namespace OcelotGateway.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddHealthChecks().ForwardToPrometheus();
 
-            services.AddOcelot()
-                .AddConsul();
+            services.AddOcelot().AddPolly();
 
-            //services.AddAuthentication()
-                //.AddJwtBearer("Bearer", options =>
-                //{
-                //    options.Authority = "https://whereyouridentityserverlives.com";
-                //});
-
-            services.AddOpenTelemetryTracing(builder =>
-            {
-                builder
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .SetSampler(new AlwaysOnSampler())
-                    .AddZipkinExporter(options =>
-                    {
-                        options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
-                        options.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
-                    });
-            });
+            services.AddMonitoring();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,7 +52,7 @@ namespace OcelotGateway.API
 
             app.UseRouting();
 
-            app.UseHttpMetrics();
+            app.UseMonitoring();
 
             app.UseAuthorization();
 
@@ -84,6 +62,7 @@ namespace OcelotGateway.API
                 {
                     await context.Response.WriteAsync("Ocelot gateway hello!");
                 });
+                endpoints.MapHealthChecks();
             });
 
             app.UseOcelot().Wait();

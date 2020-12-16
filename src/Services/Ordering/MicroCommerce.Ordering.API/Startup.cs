@@ -1,14 +1,10 @@
-﻿using System;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MicroCommerce.Ordering.API.Services;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using MicroCommerce.Shared;
 using Microsoft.Extensions.Configuration;
-using OpenTelemetry.Trace;
 using Prometheus;
 using Serilog;
 
@@ -29,22 +25,7 @@ namespace MicroCommerce.Ordering.API
         {
             services.AddGrpc();
 
-            services.AddHealthChecks().ForwardToPrometheus();
-
-            services.AddOpenTelemetryTracing(builder =>
-            {
-                builder
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddGrpcClientInstrumentation()
-                    .AddSqlClientInstrumentation()
-                    .SetSampler(new AlwaysOnSampler())
-                    .AddZipkinExporter(options =>
-                    {
-                        options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name;
-                        options.Endpoint = new Uri(Configuration["OpenTelemetry:ZipkinEndpoint"]);
-                    });
-            });
+            services.AddMonitoring();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,21 +40,11 @@ namespace MicroCommerce.Ordering.API
 
             app.UseRouting();
 
-            app.UseHttpMetrics();
-            app.UseGrpcMetrics();
+            app.UseMonitoring();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", context =>
-                {
-                    context.Response.Redirect("/swagger");
-                    return Task.CompletedTask;
-                });
-                endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions());
-                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
-                {
-                    Predicate = r => r.Name.Contains("self")
-                });
+                endpoints.MapHealthChecks();
                 endpoints.MapMetrics();
                 endpoints.MapGrpcService<GreeterService>();
                 endpoints.MapGrpcService<HealthService>();
