@@ -51,7 +51,7 @@ jobs:
       run: dotnet test -c ${{env.CONFIGURATION}} /p:CollectCoverage=true
 
   build_and_test_image:
-    name: Test image
+    name: Build and test image
     runs-on: ubuntu-latest
     needs: build
     services:
@@ -105,7 +105,7 @@ jobs:
         push: true
         context: ./src
         file: ${{env.PROJECT_LOCATION}}/Dockerfile
-        tags: micro-commerce/catalog:latest
+        tags: ${{ github.repository_owner }}/micro-commerce/catalog:latest
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
