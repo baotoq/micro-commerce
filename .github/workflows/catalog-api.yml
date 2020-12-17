@@ -8,8 +8,11 @@ on:
     - src/Services/Catalog/**
     - deploy/k8s/catalog-api
     - pipeline/azure/catalog-api
+    - .github/workflows/catalog.api.yml
   pull_request:
     branches: [ master, develop ]
+  release:
+    types: [ published ]
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -21,6 +24,7 @@ env:
 
 jobs:
   build:
+    name: Build and Test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,4 +46,21 @@ jobs:
 
     - name: Run Tests
       run: dotnet test -c ${{env.CONFIGURATION}} /p:CollectCoverage=true
-      working-directory: src/Services/${{env.SERVICE_NAME}}/MicroCommerce.${{env.SERVICE_NAME}}.Tests
+      working-directory: src/Services/${{env.SERVICE_NAME}}/MicroCommerce.${{env.SERVICE_NAME}}.API.Tests
+
+  push_to_registry:
+    name: Push image to registry
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Push to registry
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: micro-commerce/catalog-api
+        tag_with_ref: true
