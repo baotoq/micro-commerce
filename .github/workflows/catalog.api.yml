@@ -8,6 +8,7 @@ on:
     - src/Services/Catalog/**
     - deploy/k8s/catalog-api
     - pipeline/azure/catalog-api
+    - .github/workflows/catalog-api.yml
   pull_request:
     branches: [ master, develop ]
 
