@@ -32,14 +32,14 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{DOTNET_VERSION}}
+        dotnet-version: ${{env.DOTNET_VERSION}}
 
     - name: Install dependencies
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --no-restore -c ${{CONFIGURATION}}
+      run: dotnet build --no-restore -c ${{env.CONFIGURATION}}
 
     - name: Run Tests
-      run: dotnet test -c ${{CONFIGURATION}} /p:CollectCoverage=true
+      run: dotnet test -c ${{env.CONFIGURATION}} /p:CollectCoverage=true
       working-directory: src/Services/${{env.SERVICE_NAME}}/MicroCommerce.${{env.SERVICE_NAME}}.Tests
