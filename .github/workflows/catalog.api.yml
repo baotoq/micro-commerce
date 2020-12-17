@@ -1,6 +1,7 @@
 name: catalog-api
 
 on:
+  workflow_dispatch:
   push:
     branches: [ master, develop, feature/** ]
     paths:
