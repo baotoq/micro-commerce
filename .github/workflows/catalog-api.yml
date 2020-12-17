@@ -8,7 +8,7 @@ on:
     - src/Services/Catalog/**
     - deploy/k8s/catalog-api
     - pipeline/azure/catalog-api
-    - .github/workflows/catalog.api.yml
+    - .github/workflows/catalog-api.yml
   pull_request:
     branches: [ master, develop ]
   release:
@@ -21,7 +21,7 @@ env:
   DOTNET_VERSION: 5.0.100
   CONFIGURATION: Release
 
-  PROJECT_LOCATION: ./Services/Catalog/MicroCommerce.Catalog.API
+  PROJECT_LOCATION: ./src/Services/Catalog/MicroCommerce.Catalog.API
 
 jobs:
   build:
