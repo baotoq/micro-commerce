@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{PROJECT_LOCATION}}
+        working-directory: ${{env.PROJECT_LOCATION}}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -47,7 +47,7 @@ jobs:
 
     - name: Run Tests
       run: dotnet test -c ${{env.CONFIGURATION}} /p:CollectCoverage=true
-      working-directory: ${{PROJECT_LOCATION}}.Tests
+      working-directory: ${{env.PROJECT_LOCATION}}.Tests
 
   push_image:
     name: Build and push image to registry
@@ -62,6 +62,6 @@ jobs:
       with:
         context: ./src
         push: true
-        file: ${{PROJECT_LOCATION}}/Dockerfile
+        file: ${{env.PROJECT_LOCATION}}/Dockerfile
         tags: app:latest
 
