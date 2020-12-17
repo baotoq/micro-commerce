@@ -19,16 +19,17 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
   DOTNET_VERSION: 5.0.100
-  SERVICE_NAME: Catalog
   CONFIGURATION: Release
+
+  PROJECT_LOCATION: ./Services/Catalog/MicroCommerce.Catalog.API
 
 jobs:
   build:
-    name: Build and Test
+    name: Build and run unit tests
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/Services/${{env.SERVICE_NAME}}/MicroCommerce.${{env.SERVICE_NAME}}.API
+        working-directory: ${{PROJECT_LOCATION}}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -46,21 +47,21 @@ jobs:
 
     - name: Run Tests
       run: dotnet test -c ${{env.CONFIGURATION}} /p:CollectCoverage=true
-      working-directory: src/Services/${{env.SERVICE_NAME}}/MicroCommerce.${{env.SERVICE_NAME}}.API.Tests
+      working-directory: ${{PROJECT_LOCATION}}.Tests
 
-  push_to_registry:
-    name: Push image to registry
+  push_image:
+    name: Build and push image to registry
     needs: build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Push to registry
-      uses: docker/build-push-action@v1
+    - name: Build and push image to registry
+      uses: docker/build-push-action@v2
       with:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: docker.pkg.github.com
-        repository: micro-commerce/catalog-api
-        tag_with_ref: true
+        context: ./src
+        push: true
+        file: ${{PROJECT_LOCATION}}/Dockerfile
+        tags: app:latest
+
