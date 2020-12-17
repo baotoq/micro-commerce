@@ -42,4 +42,4 @@ jobs:
 
     - name: Run Tests
       run: dotnet test -c ${{env.CONFIGURATION}} /p:CollectCoverage=true
-      working-directory: src/Services/${{env.SERVICE_NAME}}/MicroCommerce.${{env.SERVICE_NAME}}.Tests
+      working-directory: src/Services/${{env.SERVICE_NAME}}/MicroCommerce.${{env.SERVICE_NAME}}.API.Tests
