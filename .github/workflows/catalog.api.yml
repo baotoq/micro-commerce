@@ -1,0 +1,45 @@
+name: catalog-api
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master, develop, feature/** ]
+    paths:
+    - src/Services/Catalog/**
+    - deploy/k8s/catalog-api
+    - pipeline/azure/catalog-api
+  pull_request:
+    branches: [ master, develop ]
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+  DOTNET_VERSION: 5.0
+  SERVICE_NAME: Catalog
+  CONFIGURATION: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/Services/${{env.SERVICE_NAME}}/MicroCommerce.${{env.SERVICE_NAME}}.API
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{DOTNET_VERSION}}
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore -c ${{CONFIGURATION}}
+
+    - name: Run Tests
+      run: dotnet test -c ${{CONFIGURATION}} /p:CollectCoverage=true
+      working-directory: src/Services/${{env.SERVICE_NAME}}/MicroCommerce.${{env.SERVICE_NAME}}.Tests
