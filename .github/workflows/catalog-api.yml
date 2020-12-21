@@ -19,7 +19,7 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_VERSION: 5.0.100
 
-  PROJECT_LOCATION: ./src/Services/Catalog/MicroCommerce.Catalog.API
+  PROJECT_PATH: ./src/Services/Catalog/MicroCommerce.Catalog.API
 
   CONTAINER_REGISTRY: ghcr.io
   IMAGE_NAME: microcommerce-catalog-api
