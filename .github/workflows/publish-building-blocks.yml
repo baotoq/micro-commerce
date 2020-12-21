@@ -1,4 +1,4 @@
-name: catalog-api
+name: building-blocks-shared
 
 on:
   workflow_dispatch:
