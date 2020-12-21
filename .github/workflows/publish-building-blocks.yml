@@ -1,0 +1,48 @@
+name: catalog-api
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master, develop, feature/** ]
+    paths:
+    - src/BuildingBlocks/Shared/**
+  pull_request:
+    branches: [ master, develop ]
+  release:
+    types: [ published ]
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+  DOTNET_VERSION: 5.0.100
+
+  PROJECT_PATH: ./src/BuildingBlocks/MicroCommerce.Shared
+
+jobs:
+  publish:
+    name: Build, pack & publish
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core ${{env.DOTNET_VERSION}}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{env.DOTNET_VERSION}}
+
+    - name: Install dependencies
+      working-directory: ${{env.PROJECT_PATH}}
+      run: dotnet restore
+
+    - name: Build
+      working-directory: ${{env.PROJECT_PATH}}
+      run: dotnet build --no-restore -c Release
+
+    - name: publish on version change
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: ${{env.PROJECT_PATH}}
+        NUGET_SOURCE: https://nuget.pkg.github.com/bao2703/index.json
+        NUGET_KEY: ${{secrets.GITHUB_TOKEN}}
