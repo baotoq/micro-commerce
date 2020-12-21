@@ -24,6 +24,7 @@ env:
   PROJECT_LOCATION: ./src/Services/Catalog/MicroCommerce.Catalog.API
 
   CONTAINER_REGISTRY: ghcr.io
+  IMAGE_NAME: microcommerce-catalog
 
 jobs:
   build:
@@ -77,8 +78,4 @@ jobs:
         push: true
         context: ./src
         file: ${{env.PROJECT_LOCATION}}/Dockerfile
-        tags: ${{env.CONTAINER_REGISTRY}}/${{github.repository_owner}}/catalog:latest
-
-    - name: Image digest
-      run: echo ${{ steps.docker_build.outputs.digest }}
-
+        tags: ${{env.CONTAINER_REGISTRY}}/${{github.repository_owner}}/${{env.IMAGE_NAME}}:latest
