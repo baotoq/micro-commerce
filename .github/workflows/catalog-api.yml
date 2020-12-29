@@ -43,7 +43,7 @@ jobs:
 
     - name: Build
       working-directory: ${{env.PROJECT_PATH}}
-      run: dotnet build --no-restore -c Release
+      run: dotnet build -c Release --no-restore
 
     - name: Run Tests
       working-directory: ${{env.PROJECT_PATH}}.Tests
@@ -67,7 +67,7 @@ jobs:
       with:
         registry: ${{env.CONTAINER_REGISTRY}}
         username: ${{github.repository_owner}}
-        password: ${{secrets.CR_PAT}}
+        password: ${{secrets.PAT_GITHUB_PACKAGE}}
 
     - name: Build and push
       id: docker_build
