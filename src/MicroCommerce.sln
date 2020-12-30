@@ -33,7 +33,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
-		nuget.config = nuget.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Ordering.API.Tests", "Services\Ordering\MicroCommerce.Ordering.API.Tests\MicroCommerce.Ordering.API.Tests.csproj", "{D9A2D04D-9DE7-437F-891B-C9D3C71600B8}"

@@ -1,9 +1,11 @@
 ﻿using System;
 using Grpc.Health.V1;
+using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Shared;
 using MicroCommerce.Shared.Grpc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +26,8 @@ namespace MicroCommerce.Catalog.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
             services.AddGrpc();
             services.AddControllers();
 
@@ -36,6 +40,12 @@ namespace MicroCommerce.Catalog.API
 
             services.AddSwagger();
             services.AddMonitoring();
+            services.AddHealthChecks().AddNpgSql(connectionString).ForwardToPrometheus();
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseNpgsql(connectionString, provider =>
+                    provider.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +54,7 @@ namespace MicroCommerce.Catalog.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
                 app.UseSwaggerEndpoint();
             }
 

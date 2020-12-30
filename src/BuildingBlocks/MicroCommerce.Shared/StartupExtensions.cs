@@ -21,7 +21,7 @@ namespace MicroCommerce.Shared
         public static void AddIdentityAuthentication(this IServiceCollection services)
         {
             using var serviceProvider = services.BuildServiceProvider();
-            var configuration = serviceProvider.GetService<IConfiguration>();
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var identityOptions = configuration.GetSection("Identity").Get<IdentityOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -38,7 +38,7 @@ namespace MicroCommerce.Shared
         public static IServiceCollection AddMonitoring(this IServiceCollection services)
         {
             using var serviceProvider = services.BuildServiceProvider();
-            var configuration = serviceProvider.GetService<IConfiguration>();
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var tracingOptions = configuration.GetSection("OpenTelemetry:Tracing").Get<TracingOptions>();
             var serviceName = Assembly.GetCallingAssembly().GetName().Name;
 
@@ -84,7 +84,7 @@ namespace MicroCommerce.Shared
         public static void AddSwagger(this IServiceCollection services)
         {
             using var serviceProvider = services.BuildServiceProvider();
-            var configuration = serviceProvider.GetService<IConfiguration>();
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var identityOptions = configuration.GetSection("Identity").Get<IdentityOptions>();
 
             var title = Assembly.GetCallingAssembly().GetName().Name;
