@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using Grpc.Health.V1;
+using MediatR;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Shared;
 using MicroCommerce.Shared.Grpc;
@@ -46,6 +48,8 @@ namespace MicroCommerce.Catalog.API
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(connectionString, provider =>
                     provider.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
+
+            services.AddMediatR(Assembly.GetExecutingAssembly());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
