@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Grpc.Health.V1;
+using MediatR;
+using MicroCommerce.Catalog.API.Application.Products.Commands;
+using MicroCommerce.Catalog.API.Application.Products.Queries;
+using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Persistence.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
-namespace MicroCommerce.Catalog.API.Controllers
+namespace MicroCommerce.Catalog.API.Application.Products
 {
     [ApiController]
     [Route("api/[controller]s")]
@@ -17,7 +19,7 @@ namespace MicroCommerce.Catalog.API.Controllers
         private readonly ApplicationDbContext _context;
         private readonly Health.HealthClient _healthClient;
 
-        public ProductController(ILogger<ProductController> logger, Health.HealthClient healthClient, ApplicationDbContext context) : base(logger)
+        public ProductController(ILogger<ProductController> logger, IMediator mediator, Health.HealthClient healthClient, ApplicationDbContext context) : base(logger, mediator)
         {
             _healthClient = healthClient;
             _context = context;
@@ -30,17 +32,15 @@ namespace MicroCommerce.Catalog.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Product>> Get()
+        public async Task<OffsetPaged<Product>> Get([FromQuery] FindProductsQuery request)
         {
-            return await _context.Products.ToListAsync();
+            return await Mediator.Send(request);
         }
 
         [HttpPost]
-        public async Task<Product> Create(Product payload)
+        public async Task<Product> Create(CreateProductCommand request)
         {
-            await _context.Products.AddAsync(payload);
-            await _context.SaveChangesAsync();
-            return payload;
+            return await Mediator.Send(request);
         }
 
         [HttpPut]
