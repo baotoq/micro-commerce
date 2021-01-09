@@ -32,8 +32,4 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\MicroCommerce.Shared\MicroCommerce.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>
