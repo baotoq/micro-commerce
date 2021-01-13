@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using MicroCommerce.Catalog.API.Application.Categories.Models.Mappers;
-using MicroCommerce.Catalog.API.Application.Products.Models.Mappers;
+using MicroCommerce.Catalog.API.Application.Categories.Models;
+using MicroCommerce.Catalog.API.Application.Products.Commands;
+using MicroCommerce.Catalog.API.Application.Products.Models;
 using Xunit;
 
 namespace MicroCommerce.Catalog.API.Tests
@@ -9,8 +10,9 @@ namespace MicroCommerce.Catalog.API.Tests
     {
         private readonly MapperConfiguration _configuration = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<CategoryDtoProfile>();
-            cfg.AddProfile<ProductDtoProfile>();
+            cfg.AddProfile<CategoryDto.MapperProfile>();
+            cfg.AddProfile<ProductDto.MapperProfile>();
+            cfg.AddProfile<CreateProductCommand.MapperProfile>();
         });
 
         [Fact]
@@ -20,15 +22,21 @@ namespace MicroCommerce.Catalog.API.Tests
         }
 
         [Fact]
-        public void CategoryDtoProfile()
+        public void CategoryDto()
         {
-            _configuration.AssertConfigurationIsValid<CategoryDtoProfile>();
+            _configuration.AssertConfigurationIsValid<CategoryDto.MapperProfile>();
         }
 
         [Fact]
-        public void ProductDtoProfile()
+        public void ProductDto()
         {
-            _configuration.AssertConfigurationIsValid<ProductDtoProfile>();
+            _configuration.AssertConfigurationIsValid<ProductDto.MapperProfile>();
+        }
+
+        [Fact]
+        public void CreateProductCommand()
+        {
+            _configuration.AssertConfigurationIsValid<CreateProductCommand.MapperProfile>();
         }
     }
 }
