@@ -20,13 +20,16 @@ namespace MicroCommerce.Catalog.API.Infrastructure
 
             var paged = new OffsetPaged<T>
             {
-                Data = result,
-                CurrentPage = page,
-                PreviousPage = page - 1 <= 0 ? (int?)null : page - 1,
-                NextPage = page + 1 > totalPages ? (int?)null : page + 1,
-                PageSize = pageSize,
-                TotalCount = totalCount,
-                TotalPages = totalPages
+                PaginationResult = result,
+                Metadata = new Metadata
+                {
+                    CurrentPage = page,
+                    PreviousPage = page - 1 <= 0 ? (int?)null : page - 1,
+                    NextPage = page + 1 > totalPages ? (int?)null : page + 1,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                    TotalPages = totalPages
+                }
             };
 
             return paged;
@@ -44,13 +47,16 @@ namespace MicroCommerce.Catalog.API.Infrastructure
 
             var paged = new OffsetPaged<T>
             {
-                Data = result,
-                CurrentPage = page,
-                PreviousPage = page - 1 <= 0 ? (int?)null : page - 1,
-                NextPage = page + 1 > totalPages ? (int?)null : page + 1,
-                PageSize = pageSize,
-                TotalCount = totalCount,
-                TotalPages = totalPages
+                PaginationResult = result,
+                Metadata = new Metadata
+                {
+                    CurrentPage = page,
+                    PreviousPage = page - 1 <= 0 ? (int?)null : page - 1,
+                    NextPage = page + 1 > totalPages ? (int?)null : page + 1,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                    TotalPages = totalPages
+                }
             };
 
             return paged;

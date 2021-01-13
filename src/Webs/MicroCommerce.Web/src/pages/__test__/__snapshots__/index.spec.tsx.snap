@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Index should match snapshot 1`] = `
+<div>
+  <a
+    href="/products/1"
+    onClick={[Function]}
+    onMouseEnter={[Function]}
+  >
+    this page!
+  </a>
+</div>
+`;

@@ -86,6 +86,7 @@ services:
     build:
       context: .
       dockerfile: Gateways/OcelotGateway.API/Dockerfile
+    restart: on-failure
     networks:
       - backend
 
@@ -94,6 +95,7 @@ services:
     build:
       context: .
       dockerfile: Webs/HealthChecks.Web/Dockerfile
+    restart: on-failure
     networks:
       - backend
 
