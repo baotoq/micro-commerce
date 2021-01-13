@@ -2,6 +2,7 @@
 using Grpc.Health.V1;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Commands;
+using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Application.Products.Queries;
 using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Persistence;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace MicroCommerce.Catalog.API.Application.Products
 {
     [ApiController]
-    [Route("api/[controller]s")]
+    [Route("api/products")]
     public class ProductController : BaseController
     {
         private readonly ApplicationDbContext _context;
@@ -32,13 +33,13 @@ namespace MicroCommerce.Catalog.API.Application.Products
         }
 
         [HttpGet]
-        public async Task<OffsetPaged<Product>> Get([FromQuery] FindProductsQuery request)
+        public async Task<OffsetPaged<ProductDto>> Get([FromQuery] FindProductsQuery request)
         {
             return await Mediator.Send(request);
         }
 
         [HttpPost]
-        public async Task<Product> Create(CreateProductCommand request)
+        public async Task<ProductDto> Create(CreateProductCommand request)
         {
             return await Mediator.Send(request);
         }
