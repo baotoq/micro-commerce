@@ -1,6 +1,7 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { useEffect } from "react";
 
-import { useAppDispatch } from "~/store";
+import Link from "next/link";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
@@ -11,23 +12,12 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
+import Pagination from "@material-ui/lab/Pagination";
+import PaginationItem from "@material-ui/lab/PaginationItem";
+
 import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
-  icon: {
-    marginRight: theme.spacing(2),
-  },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4),
-  },
-  cardGrid: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
-  },
   card: {
     height: "100%",
     display: "flex",
@@ -39,26 +29,35 @@ const useStyles = makeStyles((theme) => ({
   cardContent: {
     flexGrow: 1,
   },
-  footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6),
+  pagination: {
+    marginTop: theme.spacing(3),
   },
 }));
 
 interface ProductsProps {
   paginationResult: [{ id: number; name: string; description: string }];
   metadata: { totalPages: number };
+  router: { page: number; pageSize: number };
 }
 
 export const getServerSideProps: GetServerSideProps<ProductsProps> = async (context) => {
-  const { data } = await axios.get<ProductsProps>("https://localhost:16000/c/api/products");
+  const page = +context.query.page || 1;
+  const pageSize = +context.query.pageSize || 10;
+
+  const { data } = await axios.get<ProductsProps>(
+    `https://localhost:16000/c/api/products?page=${page}&pageSize=${pageSize}`
+  );
 
   return {
-    props: data,
+    props: {
+      ...data,
+      router: { page, pageSize },
+    },
   };
 };
 
 export default function Products({
+  router: { page, pageSize },
   paginationResult,
   metadata,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -73,7 +72,7 @@ export default function Products({
               <CardMedia className={classes.cardMedia} image="https://source.unsplash.com/random" title="Image title" />
               <CardContent className={classes.cardContent}>
                 <Typography gutterBottom variant="h5" component="h2">
-                  {p.name}
+                  {p.name} {p.id}
                 </Typography>
                 <Typography>{p.description}</Typography>
               </CardContent>
@@ -88,6 +87,20 @@ export default function Products({
             </Card>
           </Grid>
         ))}
+      </Grid>
+      <Grid container className={classes.pagination}>
+        <Grid item xs={12}>
+          <Pagination
+            page={page}
+            count={metadata.totalPages}
+            color="secondary"
+            renderItem={(item) => (
+              <Link href={`/products/?page=${item.page}&pageSize=${pageSize}`} passHref>
+                <PaginationItem {...item} />
+              </Link>
+            )}
+          />
+        </Grid>
       </Grid>
     </div>
   );
