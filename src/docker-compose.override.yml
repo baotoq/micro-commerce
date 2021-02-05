@@ -10,9 +10,30 @@ services:
 
   postgres:
     environment:
+      - POSTGRES_MULTIPLE_DATABASES=catalog,identity
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=P@ssw0rd
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./create-database.sh:/docker-entrypoint-initdb.d/create-database.sh
     ports:
       - "${POSTGRES_PORT}:5432"
+  
+  flyway:
+    entrypoint: []
+    command:
+      - bash
+      - -c
+      - |
+        flyway -url=jdbc:postgresql://postgres:5432/catalog -locations=filesystem:/sql/catalog migrate
+        flyway -url=jdbc:postgresql://postgres:5432/identity -locations=filesystem:/sql/identity migrate
+    environment:
+      - FLYWAY_USER=postgres
+      - FLYWAY_PASSWORD=P@ssw0rd
+      - FLYWAY_CONNECT_RETRIES=15
+    volumes:
+      - ./Services/Catalog/MicroCommerce.Catalog.API/Migrations/scripts:/sql/catalog
+      - ./Services/Identity/MicroCommerce.Identity.API/Migrations/scripts:/sql/identity
 
   zipkin:
     ports:
@@ -112,3 +133,10 @@ services:
       - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
     ports:
       - "${HEALTH_CHECKS_WEB_HTTP_PORT}:80"
+
+volumes:
+  postgres-data:
+  redis-data:
+  seq-data:
+  alertmanager-data:
+  prometheus-data:
