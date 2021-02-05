@@ -9,11 +9,17 @@ services:
 
   postgres:
     image: postgres:latest
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
     restart: on-failure
     networks:
       - backend
+
+  flyway:
+    image: flyway/flyway:latest-alpine
+    restart: on-failure
+    networks:
+      - backend
+    depends_on:
+      - postgres
 
   zipkin:
     image: openzipkin/zipkin:latest
@@ -99,14 +105,6 @@ services:
     networks:
       - backend
 
-volumes:
-  postgres-data:
-  redis-data:
-  seq-data:
-  alertmanager-data:
-  prometheus-data:
-
 networks:
   frontend:
   backend:
-
