@@ -27,9 +27,12 @@ namespace MicroCommerce.Catalog.API.Application.Products
         }
 
         [HttpGet("{id}")]
-        public async Task<Product> Get(int id)
+        public async Task<ProductDto> Get(int id)
         {
-            return await _context.Products.FindAsync(id);
+            return await Mediator.Send(new FindProductByIdQuery
+            {
+                Id = id
+            });
         }
 
         [HttpGet]
@@ -45,23 +48,18 @@ namespace MicroCommerce.Catalog.API.Application.Products
         }
 
         [HttpPut]
-        public async Task<Product> Update(Product payload)
+        public async Task<Product> Update(CreateProductCommand request)
         {
-            var product = await _context.Products.FindAsync(payload.Id);
-            product.Name = payload.Name;
-            product.Description = payload.Description;
-            product.Price = payload.Price;
-            product.StockQuantity = payload.StockQuantity;
-            await _context.SaveChangesAsync();
-            return payload;
+            return await Mediator.Send(request);
         }
 
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            await Mediator.Send(new DeleteProductCommand
+            {
+                Id = id
+            });
             return Ok();
         }
 

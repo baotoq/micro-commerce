@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MicroCommerce.Identity.API.Controllers
+namespace MicroCommerce.Ordering.API.Controllers
 {
     [Authorize]
     [Route("localApi")]

@@ -4,7 +4,7 @@ using MicroCommerce.Catalog.API.Application.Products.Commands;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using Xunit;
 
-namespace MicroCommerce.Catalog.API.Tests
+namespace MicroCommerce.Catalog.API.Tests.UnitTests
 {
     public class CategoryDtoMapperTests
     {
