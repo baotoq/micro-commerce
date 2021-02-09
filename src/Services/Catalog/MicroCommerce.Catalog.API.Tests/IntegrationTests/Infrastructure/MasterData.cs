@@ -1,4 +1,4 @@
-﻿namespace MicroCommerce.Catalog.API.Tests.FunctionalTests.Infrastructure
+﻿namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
 {
     public static class MasterData
     {

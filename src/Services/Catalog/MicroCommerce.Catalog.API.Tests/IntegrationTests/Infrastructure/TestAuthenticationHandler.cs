@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace MicroCommerce.Catalog.API.Tests.FunctionalTests.Infrastructure
+namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
 {
     public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
