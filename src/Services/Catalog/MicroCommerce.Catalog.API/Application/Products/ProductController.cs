@@ -6,7 +6,6 @@ using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Application.Products.Queries;
 using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Persistence;
-using MicroCommerce.Catalog.API.Persistence.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -48,12 +47,12 @@ namespace MicroCommerce.Catalog.API.Application.Products
         }
 
         [HttpPut]
-        public async Task<Product> Update(CreateProductCommand request)
+        public async Task<ProductDto> Update(CreateProductCommand request)
         {
             return await Mediator.Send(request);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             await Mediator.Send(new DeleteProductCommand

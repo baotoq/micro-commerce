@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -56,6 +57,24 @@ namespace MicroCommerce.Catalog.API.Tests.FunctionalTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var result = await response.Content.ReadAsAsync<ProductDto>();
             result.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task DeleteById_Success()
+        {
+            // Arrange
+            var client = _factory.CreateInMemoryDbClient(context =>
+            {
+                var a = context.Products.ToList();
+                context.Add(new Product());
+                context.SaveChanges();
+            });
+
+            // Act
+            var response = await client.DeleteAsync(Uri + "/1");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
     }
 }
