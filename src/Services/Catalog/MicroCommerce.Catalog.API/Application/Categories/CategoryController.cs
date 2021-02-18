@@ -4,11 +4,13 @@ using MediatR;
 using MicroCommerce.Catalog.API.Application.Categories.Models;
 using MicroCommerce.Catalog.API.Application.Categories.Queries;
 using MicroCommerce.Catalog.API.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace MicroCommerce.Catalog.API.Application.Categories
 {
+    [Authorize]
     [ApiController]
     [Route("api/categories")]
     public class CategoryController : BaseController
@@ -17,6 +19,7 @@ namespace MicroCommerce.Catalog.API.Application.Categories
         {
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IEnumerable<CategoryDto>> Get()
         {

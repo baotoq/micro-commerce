@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MicroCommerce.Catalog.API.Application.Products
 {
+    [Authorize]
     [ApiController]
     [Route("api/products")]
     public class ProductController : BaseController
@@ -19,6 +20,7 @@ namespace MicroCommerce.Catalog.API.Application.Products
         {
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ProductDto> Get(int id)
         {
@@ -28,6 +30,7 @@ namespace MicroCommerce.Catalog.API.Application.Products
             });
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<OffsetPaged<ProductDto>> Get([FromQuery] FindProductsQuery request)
         {
@@ -56,7 +59,7 @@ namespace MicroCommerce.Catalog.API.Application.Products
             return Ok();
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("/health/ordering")]
         public async Task<IActionResult> HealthOrdering([FromServices] Health.HealthClient healthClient)
         {

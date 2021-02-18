@@ -30,6 +30,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
             var client = _factory.CreateInMemoryDbClient(async context =>
             {
                 await context.AddAsync(new Product());
+                await context.AddAsync(new Product());
                 await context.SaveChangesAsync();
             });
 

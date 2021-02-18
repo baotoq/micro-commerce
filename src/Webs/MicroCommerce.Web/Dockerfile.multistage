@@ -5,15 +5,14 @@ EXPOSE 3000
 
 WORKDIR /app
 
+COPY yarn.lock ./
 COPY package*.json ./
 
-RUN npm install --frozen-lockfile
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
-RUN npm run build
-RUN npm install --production --frozen-lockfile
-
+RUN yarn build
 
 # Stage 2: And then copy over node_modules, etc from that stage to the smaller base image
 FROM mhart/alpine-node:slim as production

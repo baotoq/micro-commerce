@@ -3,7 +3,7 @@
 exports[`Index should match snapshot 1`] = `
 <div>
   <a
-    href="/products/1"
+    href="/products"
     onClick={[Function]}
     onMouseEnter={[Function]}
   >
