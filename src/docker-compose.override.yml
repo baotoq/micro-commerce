@@ -110,8 +110,10 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
       - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
+      - Kestrel:Endpoints:HttpsDefaultCert:Url=https://0.0.0.0:443
     ports:
       - "${IDENTITY_API_HTTP_PORT}:80"
+      - "${IDENTITY_API_HTTPS_PORT}:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

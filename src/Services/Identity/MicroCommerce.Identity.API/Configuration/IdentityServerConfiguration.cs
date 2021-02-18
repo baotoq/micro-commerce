@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using IdentityServer4;
 using IdentityServer4.Models;
@@ -51,10 +52,50 @@ namespace MicroCommerce.Identity.API.Configuration
 
                     AllowedScopes = new List<string>
                     {
+                        IdentityServerConstants.LocalApi.ScopeName,
                         IdentityConstants.ApiResource.BasketApi,
                         IdentityConstants.ApiResource.CatalogApi,
                         IdentityConstants.ApiResource.OrderingApi,
-                        IdentityServerConstants.LocalApi.ScopeName
+                    }
+                },
+                new Client
+                {
+                    ClientName = "react-web",
+                    ClientId = "react-web",
+                    AccessTokenType = AccessTokenType.Jwt,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowAccessTokensViaBrowser = true,
+
+                    ClientSecrets =  { new Secret("secret".Sha256()) },
+                    RequireConsent = false,
+                    RequirePkce = false,
+
+                    RedirectUris =
+                    {
+                        $"{configuration["Client:React:Uri"]}/api/auth/callback/identity-server4",
+                        $"{configuration["Client:React:Uri"]}/auth/login-callback",
+                        $"{configuration["Client:React:Uri"]}/auth/login-callback",
+                        $"{configuration["Client:React:Uri"]}/silent-renew.html",
+                        $"{configuration["Client:React:Uri"]}",
+                    },
+                    PostLogoutRedirectUris =
+                    {
+                        $"{configuration["Client:React:Uri"]}/auth/unauthorized",
+                        $"{configuration["Client:React:Uri"]}/auth/logout-callback",
+                        $"{configuration["Client:React:Uri"]}"
+                    },
+                    AllowedCorsOrigins =
+                    {
+                        $"{configuration["Client:React:Uri"]}"
+                    },
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.LocalApi.ScopeName,
+                        IdentityConstants.ApiResource.BasketApi,
+                        IdentityConstants.ApiResource.CatalogApi,
+                        IdentityConstants.ApiResource.OrderingApi,
                     }
                 }
            };

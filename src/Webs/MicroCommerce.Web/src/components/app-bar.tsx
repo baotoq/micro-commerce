@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 
+import { signIn, signOut, useSession } from "next-auth/client";
+
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -25,28 +27,33 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function SimpleAppBar() {
   const classes = useStyles();
+  const [session, loading] = useSession();
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-          >
+          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
             <Icon>menu</Icon>
           </IconButton>
           <Typography variant="h6" className={classes.title}>
             <Link href="/">Micro Commerce</Link>
           </Typography>
-          <Link href="/auth/register" passHref>
-            <Button color="inherit">Register</Button>
-          </Link>
-          <Link href="/auth/login" passHref>
-            <Button color="inherit">Login</Button>
-          </Link>
+          {!session && (
+            <>
+              <Button color="inherit" onClick={() => signIn("identity-server4")}>
+                Login
+              </Button>
+            </>
+          )}
+          {session && (
+            <>
+              <Button color="inherit">{session.user.name}</Button>
+              <Button color="inherit" onClick={() => signOut()}>
+                Log out
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
     </div>
