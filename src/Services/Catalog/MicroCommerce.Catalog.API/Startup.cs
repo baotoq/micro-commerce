@@ -4,6 +4,7 @@ using AutoMapper;
 using Grpc.Health.V1;
 using MediatR;
 using MicroCommerce.Catalog.API.Persistence;
+using MicroCommerce.Catalog.API.Services;
 using MicroCommerce.Shared;
 using MicroCommerce.Shared.Grpc;
 using Microsoft.AspNetCore.Builder;
@@ -51,6 +52,10 @@ namespace MicroCommerce.Catalog.API
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            services.AddDaprClient();
+
+            services.AddTransient<IOrderingServiceClient, OrderingServiceClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

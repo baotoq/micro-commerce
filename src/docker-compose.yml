@@ -71,7 +71,7 @@ services:
 
   catalog-api-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "catalog-api", "-app-port", "80", "-placement-host-address", "dapr-placement:50006", ]
+    command: [ "./daprd", "-app-id", "catalog-api", "-app-port", "80", "-app-protocol", "grpc", "-placement-host-address", "dapr-placement:50005", ]
     depends_on:
       - catalog-api
     network_mode: "service:catalog-api"
@@ -85,6 +85,14 @@ services:
     restart: on-failure
     networks:
       - backend
+
+  ordering-api-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "ordering-api", "-app-port", "81", "-app-protocol", "grpc", "-placement-host-address", "dapr-placement:50005", ]
+    depends_on:
+      - ordering-api
+    network_mode: "service:ordering-api"
+    restart: on-failure
 
   identity-api:
     image: ${DOCKER_REGISTRY-}microcommerce-identity-api
@@ -117,14 +125,16 @@ services:
     image: daprio/dashboard:latest
     ports:
       - "8081:8080"
+    restart: on-failure
     networks:
       - backend
 
   dapr-placement:
     image: "daprio/placement"
-    command: ["./placement", "-port", "50006"]
+    command: ["./placement", "-port", "50005"]
     ports:
-      - "50006:50006"
+      - "50006:50005"
+    restart: on-failure
     networks:
       - backend
 

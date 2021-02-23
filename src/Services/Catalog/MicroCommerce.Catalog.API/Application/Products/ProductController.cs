@@ -1,10 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using Dapr.Client;
 using Grpc.Health.V1;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Commands;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Application.Products.Queries;
 using MicroCommerce.Catalog.API.Infrastructure;
+using MicroCommerce.Catalog.API.Services;
+using MicroCommerce.Ordering.API;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -61,10 +65,11 @@ namespace MicroCommerce.Catalog.API.Application.Products
 
         [AllowAnonymous]
         [HttpGet("/health/ordering")]
-        public async Task<IActionResult> HealthOrdering([FromServices] Health.HealthClient healthClient)
+        public async Task<IActionResult> HealthOrdering([FromServices] Health.HealthClient healthClient, [FromServices] IOrderingServiceClient orderingServiceClient)
         {
+            var a = orderingServiceClient.SayHello(new HelloRequest());
             var result = await healthClient.CheckAsync(new HealthCheckRequest());
-            return Ok(result);
+            return Ok(new {a,result});
         }
     }
 }
