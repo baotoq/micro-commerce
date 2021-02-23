@@ -33,7 +33,7 @@ namespace MicroCommerce.Catalog.API
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddGrpc();
-            services.AddControllers();
+            services.AddControllers().AddDapr();
 
             services.AddIdentityAuthentication();
 
@@ -52,8 +52,6 @@ namespace MicroCommerce.Catalog.API
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
-            services.AddDaprClient();
 
             services.AddTransient<IOrderingServiceClient, OrderingServiceClient>();
         }

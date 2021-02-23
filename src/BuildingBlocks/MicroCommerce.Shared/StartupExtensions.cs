@@ -44,20 +44,20 @@ namespace MicroCommerce.Shared
 
             services.AddHealthChecks().ForwardToPrometheus();
 
-            services.AddOpenTelemetryTracing(builder =>
-            {
-                builder
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddGrpcClientInstrumentation()
-                    .AddSqlClientInstrumentation()
-                    .SetSampler(new AlwaysOnSampler())
-                    .AddZipkinExporter(options =>
-                    {
-                        options.ServiceName = serviceName;
-                        options.Endpoint = new Uri(tracingOptions.Endpoint);
-                    });
-            });
+            //services.AddOpenTelemetryTracing(builder =>
+            //{
+            //    builder
+            //        .AddAspNetCoreInstrumentation()
+            //        .AddHttpClientInstrumentation()
+            //        .AddGrpcClientInstrumentation()
+            //        .AddSqlClientInstrumentation()
+            //        .SetSampler(new AlwaysOnSampler())
+            //        .AddZipkinExporter(options =>
+            //        {
+            //            options.ServiceName = serviceName;
+            //            options.Endpoint = new Uri(tracingOptions.Endpoint);
+            //        });
+            //});
 
             return services;
         }

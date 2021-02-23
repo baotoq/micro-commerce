@@ -22,12 +22,9 @@ namespace MicroCommerce.Catalog.API.Services
         public async Task<HelloReply> SayHello(HelloRequest request)
         {
             var a = await _daprClient.InvokeMethodAsync<HelloReply>(HttpMethod.Get, "ordering-api", "localApi");
-            var a2 = await _daprClient.InvokeMethodGrpcAsync<HelloRequest, HelloReply>("ordering-api", nameof(Greeter.GreeterClient.SayHello), new HelloRequest
-            {
-                Name = "Bao"
-            });
+            a = await _daprClient.InvokeMethodAsync<HelloReply>(HttpMethod.Get, "ordering-api", "localApi/2");
 
-            return a2;
+            return a;
         }
     }
 }

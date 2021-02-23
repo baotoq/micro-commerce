@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace MicroCommerce.Ordering.API.Controllers
 {
@@ -12,6 +11,15 @@ namespace MicroCommerce.Ordering.API.Controllers
             return Ok(new HelloReply
             {
                 Message = "Hello"
+            });
+        }
+
+        [HttpGet("2")]
+        public IActionResult Get2()
+        {
+            return Ok(new HelloReply
+            {
+                Message = "Hello 2"
             });
         }
     }

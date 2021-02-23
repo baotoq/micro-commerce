@@ -67,9 +67,11 @@ namespace MicroCommerce.Catalog.API.Application.Products
         [HttpGet("/health/ordering")]
         public async Task<IActionResult> HealthOrdering([FromServices] Health.HealthClient healthClient, [FromServices] IOrderingServiceClient orderingServiceClient)
         {
-            var a = orderingServiceClient.SayHello(new HelloRequest());
-            var result = await healthClient.CheckAsync(new HealthCheckRequest());
-            return Ok(new {a,result});
+            await Mediator.Send(new FindProductsQuery());
+            var a = await orderingServiceClient.SayHello(new HelloRequest());
+            //var result = await healthClient.CheckAsync(new HealthCheckRequest());
+            
+            return Ok(new {a});
         }
     }
 }
