@@ -53,7 +53,7 @@ namespace OcelotGateway.API
 
             app.UseRouting();
 
-            app.UseMonitoring();
+            //app.UseMonitoring();
 
             app.UseAuthorization();
 
@@ -64,7 +64,7 @@ namespace OcelotGateway.API
                     await context.Response.WriteAsync("Ocelot gateway hello!");
                 });
                 endpoints.MapHealthChecks();
-                endpoints.MapMetrics();
+                //endpoints.MapMetrics();
             });
 
             app.UseOcelot().Wait();

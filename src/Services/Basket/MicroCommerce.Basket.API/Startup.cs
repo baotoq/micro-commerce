@@ -52,7 +52,7 @@ namespace MicroCommerce.Basket.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks();
-                endpoints.MapMetrics();
+                //endpoints.MapMetrics();
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<HealthService>();
             });

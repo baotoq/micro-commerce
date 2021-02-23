@@ -42,7 +42,7 @@ namespace MicroCommerce.Shared
             var tracingOptions = configuration.GetSection("OpenTelemetry:Tracing").Get<TracingOptions>();
             var serviceName = Assembly.GetCallingAssembly().GetName().Name;
 
-            services.AddHealthChecks().ForwardToPrometheus();
+            services.AddHealthChecks();
 
             //services.AddOpenTelemetryTracing(builder =>
             //{
@@ -64,8 +64,8 @@ namespace MicroCommerce.Shared
 
         public static void UseMonitoring(this IApplicationBuilder app)
         {
-            app.UseHttpMetrics();
-            app.UseGrpcMetrics();
+            //app.UseHttpMetrics();
+            //app.UseGrpcMetrics();
         }
 
         public static void MapHealthChecks(this IEndpointRouteBuilder endpoints)

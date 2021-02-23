@@ -60,6 +60,19 @@ services:
     networks:
       - backend
 
+  basket-api-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "basket-api", "-app-port", "80", "-app-protocol", "http",
+      "-placement-host-address", "dapr-placement:50005",
+      "-components-path", "/dapr/components", "-config", "/dapr/config.yaml"
+    ]
+    depends_on:
+      - basket-api
+    volumes:
+      - "./dapr:/dapr"
+    network_mode: "service:basket-api"
+    restart: on-failure
+
   catalog-api:
     image: ${DOCKER_REGISTRY-}microcommerce-catalog-api
     build:
@@ -112,6 +125,19 @@ services:
     restart: on-failure
     networks:
       - backend
+
+  identity-api-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "identity-api", "-app-port", "80", "-app-protocol", "http",
+      "-placement-host-address", "dapr-placement:50005",
+      "-components-path", "/dapr/components", "-config", "/dapr/config.yaml"
+    ]
+    depends_on:
+      - identity-api
+    volumes:
+      - "./dapr:/dapr"
+    network_mode: "service:identity-api"
+    restart: on-failure
 
   ocelot-gateway-api:
     image: ${DOCKER_REGISTRY-}ocelot-gateway-api

@@ -42,7 +42,7 @@ namespace MicroCommerce.Catalog.API
 
             services.AddSwagger();
             services.AddMonitoring();
-            services.AddHealthChecks().AddNpgSql(connectionString).ForwardToPrometheus();
+            services.AddHealthChecks().AddNpgSql(connectionString);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -78,7 +78,7 @@ namespace MicroCommerce.Catalog.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks();
-                endpoints.MapMetrics();
+                //endpoints.MapMetrics();
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<HealthService>();
             });

@@ -96,7 +96,7 @@ namespace MicroCommerce.Identity.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks();
-                endpoints.MapMetrics();
+                //endpoints.MapMetrics();
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<HealthService>();
