@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function SimpleAppBar() {
   const classes = useStyles();
-  const [session, loading] = useSession();
+  const [session] = useSession();
 
   return (
     <div className={classes.root}>
