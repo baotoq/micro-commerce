@@ -27,7 +27,7 @@ namespace MicroCommerce.Catalog.API.Application.Products.Queries
 
         public async Task<ProductDto> Handle(FindProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var result = await _context.Products.FindAsync(cancellationToken, request.Id);
+            var result = await _context.Products.FindAsync(new object[] { request.Id }, cancellationToken);
 
             return _mapper.Map<ProductDto>(result);
         }
