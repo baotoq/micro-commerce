@@ -34,8 +34,7 @@ namespace MicroCommerce.Identity.API
             services.AddRazorPages();
 
             services.AddSwagger();
-            services.AddMonitoring();
-            services.AddHealthChecks().AddNpgSql(connectionString).ForwardToPrometheus();
+            services.AddMonitoring(builder => builder.AddNpgSql(connectionString));
 
             services.AddDbContext(connectionString);
 
@@ -96,7 +95,7 @@ namespace MicroCommerce.Identity.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks();
-                //endpoints.MapMetrics();
+                endpoints.MapMetrics();
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<HealthService>();

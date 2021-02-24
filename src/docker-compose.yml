@@ -145,6 +145,7 @@ services:
   healthchecks-web-dapr:
     image: "daprio/daprd:latest"
     command: [ "./daprd", "-app-id", "healthchecks-web", "-app-port", "80", "-app-protocol", "http",
+      "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/dapr/components", "-config", "/dapr/config.yaml"
     ]
     depends_on:

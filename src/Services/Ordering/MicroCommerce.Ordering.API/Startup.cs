@@ -54,7 +54,7 @@ namespace MicroCommerce.Ordering.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks();
-                //endpoints.MapMetrics();
+                endpoints.MapMetrics();
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<GreeterService>();
                 endpoints.MapGrpcService<HealthService>();

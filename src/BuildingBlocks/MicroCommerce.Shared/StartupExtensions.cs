@@ -35,37 +35,47 @@ namespace MicroCommerce.Shared
                 });
         }
 
-        public static IServiceCollection AddMonitoring(this IServiceCollection services)
+        public static IServiceCollection AddMonitoring(this IServiceCollection services, Func<IHealthChecksBuilder, IHealthChecksBuilder> healthCheckBuilderFunc = null)
         {
             using var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var tracingOptions = configuration.GetSection("OpenTelemetry:Tracing").Get<TracingOptions>();
-            var serviceName = Assembly.GetCallingAssembly().GetName().Name;
+            if (string.IsNullOrEmpty(tracingOptions.ServiceName))
+            {
+                throw new ArgumentNullException(nameof(TracingOptions.ServiceName));
+            }
 
-            services.AddHealthChecks();
+            if (healthCheckBuilderFunc is not null)
+            {
+                healthCheckBuilderFunc(services.AddHealthChecks()).ForwardToPrometheus();
+            }
+            else
+            {
+                services.AddHealthChecks().ForwardToPrometheus();
+            }
 
-            //services.AddOpenTelemetryTracing(builder =>
-            //{
-            //    builder
-            //        .AddAspNetCoreInstrumentation()
-            //        .AddHttpClientInstrumentation()
-            //        .AddGrpcClientInstrumentation()
-            //        .AddSqlClientInstrumentation()
-            //        .SetSampler(new AlwaysOnSampler())
-            //        .AddZipkinExporter(options =>
-            //        {
-            //            options.ServiceName = serviceName;
-            //            options.Endpoint = new Uri(tracingOptions.Endpoint);
-            //        });
-            //});
+            services.AddOpenTelemetryTracing(builder =>
+            {
+                builder
+                    .SetSampler(new AlwaysOnSampler())
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddGrpcClientInstrumentation()
+                    .AddSqlClientInstrumentation(o => o.SetTextCommandContent = true)
+                    .AddZipkinExporter(options =>
+                    {
+                        options.ServiceName = tracingOptions.ServiceName;
+                        options.Endpoint = new Uri(tracingOptions.Endpoint);
+                    });
+            });
 
             return services;
         }
 
         public static void UseMonitoring(this IApplicationBuilder app)
         {
-            //app.UseHttpMetrics();
-            //app.UseGrpcMetrics();
+            app.UseHttpMetrics();
+            app.UseGrpcMetrics();
         }
 
         public static void MapHealthChecks(this IEndpointRouteBuilder endpoints)

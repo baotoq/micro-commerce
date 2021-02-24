@@ -41,8 +41,7 @@ namespace MicroCommerce.Catalog.API
                 .EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
 
             services.AddSwagger();
-            services.AddMonitoring();
-            services.AddHealthChecks().AddNpgSql(connectionString);
+            services.AddMonitoring(builder => builder.AddNpgSql(connectionString));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -77,7 +76,7 @@ namespace MicroCommerce.Catalog.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks();
-                //endpoints.MapMetrics();
+                endpoints.MapMetrics();
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<HealthService>();
             });
