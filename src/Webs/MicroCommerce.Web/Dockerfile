@@ -4,11 +4,10 @@ EXPOSE 3000
 
 WORKDIR /app
 
+COPY yarn.lock ./
+COPY package*.json ./
+RUN yarn install --frozen-lockfile
+
 COPY . .
 
-RUN npm install --frozen-lockfile
-
-RUN npm run build
-
-
-CMD ["yarn", "start"]
+CMD ["yarn", "start:dev"]

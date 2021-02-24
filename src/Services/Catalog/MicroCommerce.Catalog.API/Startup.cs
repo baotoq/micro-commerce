@@ -4,6 +4,7 @@ using AutoMapper;
 using Grpc.Health.V1;
 using MediatR;
 using MicroCommerce.Catalog.API.Persistence;
+using MicroCommerce.Catalog.API.Services;
 using MicroCommerce.Shared;
 using MicroCommerce.Shared.Grpc;
 using Microsoft.AspNetCore.Builder;
@@ -32,7 +33,7 @@ namespace MicroCommerce.Catalog.API
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddGrpc();
-            services.AddControllers();
+            services.AddControllers().AddDapr();
 
             services.AddIdentityAuthentication();
 
@@ -40,17 +41,17 @@ namespace MicroCommerce.Catalog.API
                 .EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
 
             services.AddSwagger();
-            services.AddMonitoring();
-            services.AddHealthChecks().AddNpgSql(connectionString).ForwardToPrometheus();
+            services.AddMonitoring(builder => builder.AddNpgSql(connectionString));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(connectionString, provider =>
-                    provider.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
+                options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            services.AddTransient<IOrderingServiceClient, OrderingServiceClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -35,26 +35,36 @@ namespace MicroCommerce.Shared
                 });
         }
 
-        public static IServiceCollection AddMonitoring(this IServiceCollection services)
+        public static IServiceCollection AddMonitoring(this IServiceCollection services, Func<IHealthChecksBuilder, IHealthChecksBuilder> healthCheckBuilderFunc = null)
         {
             using var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var tracingOptions = configuration.GetSection("OpenTelemetry:Tracing").Get<TracingOptions>();
-            var serviceName = Assembly.GetCallingAssembly().GetName().Name;
+            if (string.IsNullOrEmpty(tracingOptions.ServiceName))
+            {
+                throw new ArgumentNullException(nameof(TracingOptions.ServiceName));
+            }
 
-            services.AddHealthChecks().ForwardToPrometheus();
+            if (healthCheckBuilderFunc is not null)
+            {
+                healthCheckBuilderFunc(services.AddHealthChecks()).ForwardToPrometheus();
+            }
+            else
+            {
+                services.AddHealthChecks().ForwardToPrometheus();
+            }
 
             services.AddOpenTelemetryTracing(builder =>
             {
                 builder
+                    .SetSampler(new AlwaysOnSampler())
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddGrpcClientInstrumentation()
-                    .AddSqlClientInstrumentation()
-                    .SetSampler(new AlwaysOnSampler())
+                    .AddSqlClientInstrumentation(o => o.SetTextCommandContent = true)
                     .AddZipkinExporter(options =>
                     {
-                        options.ServiceName = serviceName;
+                        options.ServiceName = tracingOptions.ServiceName;
                         options.Endpoint = new Uri(tracingOptions.Endpoint);
                     });
             });

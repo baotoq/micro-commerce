@@ -25,7 +25,7 @@ namespace MicroCommerce.Ordering.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            services.AddControllers();
+            services.AddControllers().AddDapr();
 
             services.AddIdentityAuthentication();
 

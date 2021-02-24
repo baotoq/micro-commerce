@@ -7,5 +7,5 @@ set -o xtrace
 
 for i in react-web catalog-api identity-api
 do
-    helm uninstall $i -n bshop
+    helm uninstall $i -n app
 done
