@@ -46,5 +46,5 @@ jobs:
       working-directory: ${{env.PROJECT_PATH}}
       run: dotnet pack -c Release --no-build -o out
 
-    - name: Publish package to nuget source
-      run: dotnet nuget push "${{env.PROJECT_PATH}}/out/Microcommerce.Shared.1.0.0.nupkg" --api-key ${{secrets.PAT_GITHUB_PACKAGE}} --source https://nuget.pkg.github.com/bao2703/index.json
+    # - name: Publish package to nuget source
+    #   run: dotnet nuget push "${{env.PROJECT_PATH}}/out/Microcommerce.Shared.1.0.0.nupkg" --api-key ${{secrets.PAT_GITHUB_PACKAGE}} --source https://nuget.pkg.github.com/baotoq/index.json
