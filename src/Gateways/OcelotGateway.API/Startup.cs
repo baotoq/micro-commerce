@@ -40,8 +40,17 @@ namespace OcelotGateway.API
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
             app.UseSerilogRequestLogging();
+
+            app.UseRouting();
+
+            app.UseMonitoring();
 
             app.UseCors(builder =>
             {
@@ -50,10 +59,6 @@ namespace OcelotGateway.API
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
-
-            app.UseRouting();
-
-            app.UseMonitoring();
 
             app.UseAuthorization();
 

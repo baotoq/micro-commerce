@@ -34,8 +34,7 @@ namespace MicroCommerce.Identity.API
             services.AddRazorPages();
 
             services.AddSwagger();
-            services.AddMonitoring();
-            services.AddHealthChecks().AddNpgSql(connectionString).ForwardToPrometheus();
+            services.AddMonitoring(builder => builder.AddNpgSql(connectionString));
 
             services.AddDbContext(connectionString);
 

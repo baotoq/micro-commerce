@@ -1,76 +1,78 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using Dapr.Client;
 using Grpc.Health.V1;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Commands;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Application.Products.Queries;
 using MicroCommerce.Catalog.API.Infrastructure;
-using MicroCommerce.Catalog.API.Persistence;
-using MicroCommerce.Catalog.API.Persistence.Entities;
+using MicroCommerce.Catalog.API.Services;
+using MicroCommerce.Ordering.API;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace MicroCommerce.Catalog.API.Application.Products
 {
+    [Authorize]
     [ApiController]
     [Route("api/products")]
     public class ProductController : BaseController
     {
-        private readonly ApplicationDbContext _context;
-        private readonly Health.HealthClient _healthClient;
-
-        public ProductController(ILogger<ProductController> logger, IMediator mediator, Health.HealthClient healthClient, ApplicationDbContext context) : base(logger, mediator)
+        public ProductController(ILogger<ProductController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _healthClient = healthClient;
-            _context = context;
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<Product> Get(int id)
+        public async Task<ProductDto> Get(int id)
         {
-            return await _context.Products.FindAsync(id);
+            return await Mediator.Send(new FindProductByIdQuery
+            {
+                Id = id
+            });
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<OffsetPaged<ProductDto>> Get([FromQuery] FindProductsQuery request)
         {
             return await Mediator.Send(request);
         }
 
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<ProductDto> Create(CreateProductCommand request)
+        public async Task<ProductDto> Create([FromForm] CreateProductCommand request)
         {
             return await Mediator.Send(request);
         }
 
         [HttpPut]
-        public async Task<Product> Update(Product payload)
+        public async Task<ProductDto> Update(UpdateProductCommand request)
         {
-            var product = await _context.Products.FindAsync(payload.Id);
-            product.Name = payload.Name;
-            product.Description = payload.Description;
-            product.Price = payload.Price;
-            product.StockQuantity = payload.StockQuantity;
-            await _context.SaveChangesAsync();
-            return payload;
+            return await Mediator.Send(request);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            await Mediator.Send(new DeleteProductCommand
+            {
+                Id = id
+            });
             return Ok();
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("/health/ordering")]
-        public async Task<IActionResult> HealthOrdering()
+        public async Task<IActionResult> HealthOrdering([FromServices] Health.HealthClient healthClient, [FromServices] IOrderingServiceClient orderingServiceClient)
         {
-            var result = await _healthClient.CheckAsync(new HealthCheckRequest());
-            return Ok(result);
+            await Mediator.Send(new FindProductsQuery());
+            var a = await orderingServiceClient.SayHello(new HelloRequest());
+            //var result = await healthClient.CheckAsync(new HealthCheckRequest());
+            
+            return Ok(new {a});
         }
     }
 }

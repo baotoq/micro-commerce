@@ -4,13 +4,11 @@ import { AppProps } from "next/app";
 
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import {
-  ThemeProvider,
-  createMuiTheme,
-  makeStyles,
-} from "@material-ui/core/styles";
+import { ThemeProvider, createMuiTheme, makeStyles } from "@material-ui/core/styles";
 
 import NProgress from "nprogress";
+
+import { Provider as AuthProvider } from "next-auth/client";
 
 import { Provider } from "react-redux";
 import store from "~/store";
@@ -32,27 +30,26 @@ export default function App({ Component, pageProps }: AppProps) {
   const classes = useStyles();
 
   return (
-    <Provider store={store}>
-      <Head>
-        <title>Micro Commerce</title>
-        <link rel="icon" href="/favicon.ico" />
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
-        />
-        <meta name="description" content="MicroCommerce Web" />
-      </Head>
-      <ThemeProvider theme={createMuiTheme()}>
-        <div>
-          <CssBaseline />
-          <AppBar />
-          <Container component="main" className={classes.main} maxWidth="lg">
-            <Component {...pageProps} />
-          </Container>
-          <Footer />
-        </div>
-      </ThemeProvider>
-    </Provider>
+    <AuthProvider session={pageProps.session}>
+      <Provider store={store}>
+        <Head>
+          <title>Micro Commerce</title>
+          <link rel="icon" href="/favicon.ico" />
+          <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+          <meta name="description" content="MicroCommerce Web" />
+        </Head>
+        <ThemeProvider theme={createMuiTheme()}>
+          <div>
+            <CssBaseline />
+            <AppBar />
+            <Container component="main" className={classes.main} maxWidth="lg">
+              <Component {...pageProps} />
+            </Container>
+            <Footer />
+          </div>
+        </ThemeProvider>
+      </Provider>
+    </AuthProvider>
   );
 }
 

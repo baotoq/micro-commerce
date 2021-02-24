@@ -4,7 +4,7 @@ namespace MicroCommerce.Catalog.API.Infrastructure
 {
     public class OffsetPaged<T>
     {
-        public IEnumerable<T> PaginationResult { get; set; }
+        public IEnumerable<T> PaginationResult { get; init; }
         
         public Metadata Metadata { get; init; }
     }
