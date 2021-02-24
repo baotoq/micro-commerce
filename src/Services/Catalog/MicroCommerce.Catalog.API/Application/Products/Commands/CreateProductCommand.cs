@@ -1,10 +1,14 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using AutoMapper;
+using CSharpFunctionalExtensions;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Persistence.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Commands
 {
@@ -18,7 +22,7 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
 
         public string Description { get; set; }
 
-        public string ImageUri { get; set; }
+        public IFormFile ImageFile { get; set; }
 
         public class MapperProfile : Profile
         {
@@ -44,12 +48,27 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
 
         public async Task<ProductDto> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            var product = _mapper.Map<Product>(request);
+            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            await _context.Products.AddAsync(product, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            var result = await Result.Try(async () =>
+                {
+                    var path = "/test.pdf";
+                    await using var stream = File.Create(path);
+                    await request.ImageFile.CopyToAsync(stream, cancellationToken);
+                    return path;
+                })
+                .Map(path =>
+                {
+                    var product = _mapper.Map<Product>(request);
+                    product.ImageUri = path;
+                    return product;
+                })
+                .Tap(async product => await _context.Products.AddAsync(product, cancellationToken))
+                .Tap(async () => await _context.SaveChangesAsync(cancellationToken))
+                .Map(product => _mapper.Map<ProductDto>(product))
+                .Tap(() => transaction.Complete());
 
-            return _mapper.Map<ProductDto>(product);
+            return result.Value;
         }
     }
 }

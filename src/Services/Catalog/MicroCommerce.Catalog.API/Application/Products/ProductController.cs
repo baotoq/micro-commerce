@@ -41,8 +41,9 @@ namespace MicroCommerce.Catalog.API.Application.Products
             return await Mediator.Send(request);
         }
 
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<ProductDto> Create(CreateProductCommand request)
+        public async Task<ProductDto> Create([FromForm] CreateProductCommand request)
         {
             return await Mediator.Send(request);
         }

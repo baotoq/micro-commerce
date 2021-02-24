@@ -116,18 +116,18 @@ services:
       - "${IDENTITY_API_HTTPS_PORT}:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ./certs:/root/.aspnet/https:ro
 
   ocelot-gateway-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Dapr
       - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
-      #- Kestrel:Endpoints:HttpsDefaultCert:Url=https://0.0.0.0:443
+      - Kestrel:Endpoints:HttpsDefaultCert:Url=https://0.0.0.0:443
     ports:
-      - "${OCELOT_GATEWAY_API_HTTP_PORT}:80"
+      - "${OCELOT_GATEWAY_API_HTTP_PORT}:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ./certs:/root/.aspnet/https:ro
 
   healthchecks-web:
     environment:

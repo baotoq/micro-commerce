@@ -46,8 +46,7 @@ namespace MicroCommerce.Catalog.API
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(connectionString, provider =>
-                    provider.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
+                options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
 

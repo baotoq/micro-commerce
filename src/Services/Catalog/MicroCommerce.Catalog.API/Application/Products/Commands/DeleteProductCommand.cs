@@ -1,8 +1,12 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using AutoMapper;
+using CSharpFunctionalExtensions;
 using MediatR;
 using MicroCommerce.Catalog.API.Persistence;
+using MicroCommerce.Catalog.API.Persistence.Entities;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Commands
 {
@@ -24,10 +28,13 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
 
         public async Task<Unit> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FindAsync(request.Id);
+            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync(cancellationToken);
+            await Result.Try(async () => await _context.Products.FindAsync(request.Id))
+                .Tap(product => _context.Products.Remove(product))
+                .Tap(async () => await _context.SaveChangesAsync(cancellationToken))
+                .TapIf(product => File.Exists(product.ImageUri), product => File.Delete(product.ImageUri))
+                .Tap(() => transaction.Complete());
 
             return Unit.Value;
         }
