@@ -7,9 +7,11 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 
 WORKDIR /src
+COPY ["BuildingBlocks/MicroCommerce.Shared/MicroCommerce.Shared.csproj", "BuildingBlocks/MicroCommerce.Shared/"]
 COPY ["Webs/HealthChecks.Web/HealthChecks.Web.csproj", "Webs/HealthChecks.Web/"]
 RUN dotnet restore "Webs/HealthChecks.Web/HealthChecks.Web.csproj"
 
+COPY ["BuildingBlocks/MicroCommerce.Shared/", "BuildingBlocks/MicroCommerce.Shared/"]
 COPY ["Webs/HealthChecks.Web/", "Webs/HealthChecks.Web/"]
 
 WORKDIR "/src/Webs/HealthChecks.Web"

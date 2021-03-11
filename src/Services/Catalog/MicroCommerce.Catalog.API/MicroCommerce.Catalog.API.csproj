@@ -38,9 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\..\Ordering\MicroCommerce.Ordering.API\Protos\greet.proto" GrpcServices="Client">
-      <Link>Protos\greet.proto</Link>
-    </Protobuf>
+    <Protobuf Include="Protos\greet.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>
