@@ -21,8 +21,9 @@ namespace MicroCommerce.Catalog.API.Services
 
         public async Task<HelloReply> SayHello(HelloRequest request)
         {
-            var a = await _daprClient.InvokeMethodAsync<HelloReply>(HttpMethod.Get, "ordering-api", "localApi");
-            a = await _daprClient.InvokeMethodAsync<HelloReply>(HttpMethod.Get, "ordering-api", "localApi/2");
+            var a = await _daprClient.InvokeMethodAsync<HelloReply>("ordering-api", "localApi");
+            await _daprClient.InvokeMethodAsync("catalog-api", "health/readiness");
+            await _daprClient.InvokeMethodAsync("basket-api", "health/readiness");
 
             return a;
         }
