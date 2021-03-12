@@ -4,7 +4,7 @@ image:
 
 env:
   PathBase:
-  Identity__Uri: https://idm.dongnai-vn.com
+  Identity__Uri__External: https://idm.dongnai-vn.com
 
 ingress:
   enabled: true
