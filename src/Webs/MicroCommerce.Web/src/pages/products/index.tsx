@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps<ProductsProps> = async (cont
   const pageSize = +context.query.pageSize || 10;
 
   const { data } = await axios.get<ProductsProps>(
-    `https://localhost:16000/c/api/products?page=${page}&pageSize=${pageSize}`
+    `${process.env.MICRO_COMMERCE_GATEWAY_API_URL}/c/api/products?page=${page}&pageSize=${pageSize}`
   );
 
   return {

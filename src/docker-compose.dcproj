@@ -10,6 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".env" />
+    <None Include="dapr\components\pubsub.yaml" />
+    <None Include="dapr\components\statestore.yaml" />
+    <None Include="dapr\config.yaml" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
