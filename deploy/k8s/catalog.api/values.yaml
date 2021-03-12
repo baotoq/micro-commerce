@@ -19,13 +19,12 @@ fullnameOverride: catalog-api
 
 env:
   ASPNETCORE_ENVIRONMENT: Production
-  ASPNETCORE_URLS: http://0.0.0.0:80
   Kestrel__Endpoints__Http__Url: http://0.0.0.0:80
   Kestrel__Endpoints__Http2__Url: http://0.0.0.0:81
   PathBase: /catalog
   ConnectionStrings__DefaultConnection: Server=postgres.infra.svc.cluster.local;Port=5432;Database=catalog-api;User Id=postgres;Password=P@ssw0rd;
-  Identity__Uri__Http: http://identity-api
-  Identity__Uri__Grpc: http://identity-api:81
+  Identity__Uri__Internal: http://identity-api
+  Identity__Uri__External: http://identity-api:81
 
 service:
   type: ClusterIP

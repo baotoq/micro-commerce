@@ -1,10 +1,10 @@
 # helm upgrade catalog-api --install -f ./values.yaml -f values.local.yml --namespace=bshop .
 
 env:
-  Identity__Uri: http://localhost/identity
+  Identity__Uri__External: http://localhost/identity
 
 virtualService:
-  enabled: true
+  enabled: false
 
 ingress:
   enabled: false
