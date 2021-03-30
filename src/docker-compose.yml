@@ -43,7 +43,7 @@ services:
     restart: on-failure
 
   basket-api-dapr:
-    image: "daprio/daprd:latest"
+    image: daprio/daprd:latest
     command: [ "./daprd", "-app-id", "basket-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -51,8 +51,8 @@ services:
     depends_on:
       - basket-api
     volumes:
-      - "./dapr/components:/components"
-      - "./dapr/config.yaml:/config.yaml"
+      - ./dapr/components:/components
+      - ./dapr/config.yaml:/config.yaml
     network_mode: "service:basket-api"
     restart: on-failure
 
@@ -64,7 +64,7 @@ services:
     restart: on-failure
 
   catalog-api-dapr:
-    image: "daprio/daprd:latest"
+    image: daprio/daprd:latest
     command: [ "./daprd", "-app-id", "catalog-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -72,8 +72,8 @@ services:
     depends_on:
       - catalog-api
     volumes:
-      - "./dapr/components:/components"
-      - "./dapr/config.yaml:/config.yaml"
+      - ./dapr/components:/components
+      - ./dapr/config.yaml:/config.yaml
     network_mode: "service:catalog-api"
     restart: on-failure
 
@@ -85,7 +85,7 @@ services:
     restart: on-failure
 
   ordering-api-dapr:
-    image: "daprio/daprd:latest"
+    image: daprio/daprd:latest
     command: [ "./daprd", "-app-id", "ordering-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -93,8 +93,8 @@ services:
     depends_on:
       - ordering-api
     volumes:
-      - "./dapr/components:/components"
-      - "./dapr/config.yaml:/config.yaml"
+      - ./dapr/components:/components"
+      - ./dapr/config.yaml:/config.yaml
     network_mode: "service:ordering-api"
     restart: on-failure
 
@@ -106,7 +106,7 @@ services:
     restart: on-failure
 
   identity-api-dapr:
-    image: "daprio/daprd:latest"
+    image: daprio/daprd:latest
     command: [ "./daprd", "-app-id", "identity-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -114,9 +114,9 @@ services:
     depends_on:
       - identity-api
     volumes:
-      - "./dapr/components:/components"
-      - "./dapr/config.yaml:/config.yaml"
-    network_mode: "service:identity-api"
+      - ./dapr/components:/components
+      - ./dapr/config.yaml:/config.yaml
+    network_mode: service:identity-api
     restart: on-failure
 
   ocelot-gateway-api:
@@ -127,7 +127,7 @@ services:
     restart: on-failure
 
   ocelot-gateway-api-dapr:
-    image: "daprio/daprd:latest"
+    image: daprio/daprd:latest
     command: [ "./daprd", "-app-id", "ocelot-gateway-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -135,9 +135,9 @@ services:
     depends_on:
       - ocelot-gateway-api
     volumes:
-      - "./dapr/components:/components"
-      - "./dapr/config.yaml:/config.yaml"
-    network_mode: "service:ocelot-gateway-api"
+      - ./dapr/components:/components
+      - ./dapr/config.yaml:/config.yaml
+    network_mode: service:ocelot-gateway-api
     restart: on-failure
 
   healthchecks-web:
@@ -148,7 +148,7 @@ services:
     restart: on-failure
 
   healthchecks-web-dapr:
-    image: "daprio/daprd:latest"
+    image: daprio/daprd:latest
     command: [ "./daprd", "-app-id", "healthchecks-web", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -156,9 +156,9 @@ services:
     depends_on:
       - healthchecks-web
     volumes:
-      - "./dapr/components:/components"
-      - "./dapr/config.yaml:/config.yaml"
-    network_mode: "service:healthchecks-web"
+      - ./dapr/components:/components
+      - ./dapr/config.yaml:/config.yaml
+    network_mode: service:healthchecks-web
     restart: on-failure
 
   dapr-dashboard:
@@ -168,8 +168,8 @@ services:
     restart: on-failure
 
   dapr-placement:
-    image: "daprio/placement"
+    image: daprio/placement
     command: ["./placement", "-port", "50005"]
     ports:
-      - "50006:50005"
+      - 50006:50005
     restart: on-failure
