@@ -8,11 +8,12 @@ using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Persistence.Entities;
+using MicroCommerce.Shared.FileStorage;
 using Microsoft.AspNetCore.Http;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Commands
 {
-    public class CreateProductCommand : IRequest<ProductDto>
+    public class CreateProductCommand : IRequest<Result<ProductDto>>
     {
         public string Name { get; set; }
 
@@ -35,40 +36,33 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
         }
     }
 
-    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
+    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<ProductDto>>
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
+        private readonly IStorageService _storageService;
 
-        public CreateProductCommandHandler(IMapper mapper, ApplicationDbContext context)
+        public CreateProductCommandHandler(IMapper mapper, ApplicationDbContext context, IStorageService storageService)
         {
             _mapper = mapper;
             _context = context;
+            _storageService = storageService;
         }
 
-        public async Task<ProductDto> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+        public async Task<Result<ProductDto>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            var result = await Result.Try(async () =>
-                {
-                    var path = "/test.pdf";
-                    await using var stream = File.Create(path);
-                    await request.ImageFile.CopyToAsync(stream, cancellationToken);
-                    return path;
-                })
-                .Map(path =>
-                {
-                    var product = _mapper.Map<Product>(request);
-                    product.ImageUri = path;
-                    return product;
-                })
-                .Tap(async product => await _context.Products.AddAsync(product, cancellationToken))
-                .Tap(async () => await _context.SaveChangesAsync(cancellationToken))
-                .Map(product => _mapper.Map<ProductDto>(product))
-                .Tap(() => transaction.Complete());
+            var result = await
+                Result.Try(() => _mapper.Map<Product>(request))
+                    .Tap(product => product.ImageUri = $"{Path.GetRandomFileName()}{Path.GetExtension(request.ImageFile.FileName)}")
+                    .Tap(product => _storageService.SaveAsync(request.ImageFile.OpenReadStream(), product.ImageUri, cancellationToken))
+                    .Tap(async product => await _context.Products.AddAsync(product, cancellationToken))
+                    .Tap(() => _context.SaveChangesAsync(cancellationToken))
+                    .Map(product => _mapper.Map<ProductDto>(product))
+                    .Tap(() => transaction.Complete());
 
-            return result.Value;
+            return result;
         }
     }
 }

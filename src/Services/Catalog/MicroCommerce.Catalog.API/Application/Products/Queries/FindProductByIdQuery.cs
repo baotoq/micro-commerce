@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using CSharpFunctionalExtensions;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Persistence;
@@ -8,12 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Queries
 {
-    public class FindProductByIdQuery : IRequest<ProductDto>
+    public class FindProductByIdQuery : IRequest<Result<ProductDto>>
     {
         public int Id { get; init; }
     }
 
-    public class FindProductByIdQueryHandler : IRequestHandler<FindProductByIdQuery, ProductDto>
+    public class FindProductByIdQueryHandler : IRequestHandler<FindProductByIdQuery, Result<ProductDto>>
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
@@ -25,11 +26,11 @@ namespace MicroCommerce.Catalog.API.Application.Products.Queries
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
-        public async Task<ProductDto> Handle(FindProductByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<ProductDto>> Handle(FindProductByIdQuery request, CancellationToken cancellationToken)
         {
             var result = await _context.Products.FindAsync(new object[] { request.Id }, cancellationToken);
 
-            return _mapper.Map<ProductDto>(result);
+            return Result.Success(_mapper.Map<ProductDto>(result));
         }
     }
 }

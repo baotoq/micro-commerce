@@ -6,37 +6,37 @@ using AutoMapper;
 using CSharpFunctionalExtensions;
 using MediatR;
 using MicroCommerce.Catalog.API.Persistence;
-using MicroCommerce.Catalog.API.Persistence.Entities;
+using MicroCommerce.Shared.FileStorage;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Commands
 {
-    public class DeleteProductCommand : IRequest<Unit>
+    public class DeleteProductCommand : IRequest<Result>
     {
         public int Id { get; init; }
     }
 
-    public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Unit>
+    public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Result>
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
+        private readonly IStorageService _storageService;
 
-        public DeleteProductCommandHandler(IMapper mapper, ApplicationDbContext context)
+        public DeleteProductCommandHandler(IMapper mapper, ApplicationDbContext context, IStorageService storageService)
         {
             _mapper = mapper;
             _context = context;
+            _storageService = storageService;
         }
 
-        public async Task<Unit> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
             using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            await Result.Try(async () => await _context.Products.FindAsync(request.Id))
+            return await Result.Try(async () => await _context.Products.FindAsync(request.Id))
                 .Tap(product => _context.Products.Remove(product))
                 .Tap(async () => await _context.SaveChangesAsync(cancellationToken))
-                .TapIf(product => File.Exists(product.ImageUri), product => File.Delete(product.ImageUri))
+                .Tap(product => _storageService.DeleteAsync(product.ImageUri, cancellationToken))
                 .Tap(() => transaction.Complete());
-
-            return Unit.Value;
         }
     }
 }
