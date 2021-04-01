@@ -4,9 +4,6 @@ pr: none
 pool:
   vmImage: ubuntu-latest
 
-variables:
-- template: ../variables.yml
-
 stages:
 - stage: Install_Mssql
   displayName: Install Mssql Linux

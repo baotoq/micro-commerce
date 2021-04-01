@@ -6,17 +6,19 @@ trigger:
     - ref/tags/*
   paths:
     include:
-    - src/Identity.API
-    - tests/**/Identity.API**
-    - k8s/identity-api
+    - src/Services/Identity
+    - deploy/k8s/identity-api
     - pipeline/azure/identity-api
 pr: none
 
+parameters:
+- name: deploy
+  displayName: Deploy?
+  type: boolean
+  default: false
+
 pool:
   vmImage: ubuntu-latest
-
-variables:
-- template: ../variables.yml
 
 stages:
 - stage: Build_and_Run_Tests
@@ -28,45 +30,45 @@ stages:
     - template: ../build-test-sonar-scan.yml
       parameters:
         projectKey: identity-api
-        projectPath: Identity.API
-        runTest: true
+        projectPath: Services/Identity/MicroCommerce.Identity.API
 
-- stage: Build_and_Push_Image
-  displayName: Build and push docker image
-  jobs:
-  - job: Build_and_Push_Image
+- ${{ if eq(parameters.deploy, true) }}:
+  - stage: Build_and_Push_Image
     displayName: Build and push docker image
-    steps:
-    - template: ../compose.yml
-      parameters:
-        action: build
-        services: [identity-api]
-    - template: ../compose.yml
-      parameters:
-        action: push
-        services: [identity-api]
+    jobs:
+    - job: Build_and_Push_Image
+      displayName: Build and push docker image
+      steps:
+      - template: ../compose.yml
+        parameters:
+          action: build
+          services: [identity-api]
+      - template: ../compose.yml
+        parameters:
+          action: push
+          services: [identity-api]
 
-- stage: Deploy
-  displayName: Deploy
-  dependsOn:
-  - Build_and_Run_Tests
-  - Build_and_Push_Image
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['isDeploy'], 'true')))
-  jobs:
-  - deployment: app
-    displayName: App deployment
-    environment: dev
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - template: ../package-helm-chart.yml
-            parameters:
-              service: identity-api
+  - stage: Deploy
+    displayName: Deploy
+    dependsOn:
+    - Build_and_Run_Tests
+    - Build_and_Push_Image
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['isDeploy'], 'true')))
+    jobs:
+    - deployment: app
+      displayName: App deployment
+      environment: dev
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: ../package-helm-chart.yml
+              parameters:
+                service: identity-api
 
-          - template: ../install-helm-chart.yml
-            parameters:
-              service: identity-api
-              namespace: bshop
-              valueFile: k8s/identity-api/values.yaml
-              arguments: -f k8s/identity-api/values.azure.yaml
+            - template: ../install-helm-chart.yml
+              parameters:
+                service: identity-api
+                namespace: bshop
+                valueFile: k8s/identity-api/values.yaml
+                arguments: -f k8s/identity-api/values.azure.yaml
