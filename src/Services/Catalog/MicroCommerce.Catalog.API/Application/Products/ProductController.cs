@@ -1,6 +1,5 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Dapr.Client;
+﻿using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using Grpc.Health.V1;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Commands;
@@ -18,6 +17,7 @@ namespace MicroCommerce.Catalog.API.Application.Products
     [Authorize]
     [ApiController]
     [Route("api/products")]
+    [TranslateResultToActionResult]
     public class ProductController : BaseController
     {
         public ProductController(ILogger<ProductController> logger, IMediator mediator) : base(logger, mediator)
@@ -26,12 +26,9 @@ namespace MicroCommerce.Catalog.API.Application.Products
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ProductDto> Get(int id)
+        public async Task<Result<ProductDto>> Get(int id)
         {
-            return await Mediator.Send(new FindProductByIdQuery
-            {
-                Id = id
-            });
+            return await Mediator.Send(new FindProductByIdQuery { Id = id });
         }
 
         [AllowAnonymous]
@@ -43,25 +40,21 @@ namespace MicroCommerce.Catalog.API.Application.Products
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ProductDto> Create([FromForm] CreateProductCommand request)
+        public async Task<Result<ProductDto>> Create([FromForm] CreateProductCommand request)
         {
             return await Mediator.Send(request);
         }
 
         [HttpPut]
-        public async Task<ProductDto> Update(UpdateProductCommand request)
+        public async Task<Result<ProductDto>> Update(UpdateProductCommand request)
         {
             return await Mediator.Send(request);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<Result>> Delete(int id)
         {
-            await Mediator.Send(new DeleteProductCommand
-            {
-                Id = id
-            });
-            return Ok();
+            return await Mediator.Send(new DeleteProductCommand { Id = id });
         }
 
         [AllowAnonymous]
@@ -71,8 +64,8 @@ namespace MicroCommerce.Catalog.API.Application.Products
             await Mediator.Send(new FindProductsQuery());
             var a = await orderingServiceClient.SayHello(new HelloRequest());
             //var result = await healthClient.CheckAsync(new HealthCheckRequest());
-            
-            return Ok(new {a});
+
+            return Ok(new { a });
         }
     }
 }

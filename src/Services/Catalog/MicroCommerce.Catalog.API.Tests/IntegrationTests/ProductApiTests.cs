@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Net.Http;
-using System.Text;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -9,7 +7,6 @@ using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Persistence.Entities;
 using MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure;
-using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
@@ -111,7 +108,10 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
             // Arrange
             var client = _factory.CreateAuthenticatedClient(async context =>
             {
-                await context.AddAsync(new Product());
+                await context.AddAsync(new Product
+                {
+                    ImageUri = "test.jpeg"
+                });
                 await context.SaveChangesAsync();
             });
 
