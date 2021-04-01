@@ -23,7 +23,7 @@ steps:
     displayName: Run unit tests
     inputs:
       command: test
-      projects: tests/${{ parameters.projectPath }}/${{ parameters.projectPath }}.FunctionalTests
+      projects: src/${{ parameters.projectPath }}.Tests
       arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/coverage --logger trx
       publishTestResults: true
 

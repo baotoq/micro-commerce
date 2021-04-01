@@ -14,9 +14,6 @@ pr: none
 pool:
   vmImage: ubuntu-latest
 
-variables:
-- template: ../variables.yml
-
 stages:
 - stage: Build_and_Run_Tests
   displayName: Build and Run tests
