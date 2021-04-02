@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace MicroCommerce.Catalog.API.Infrastructure
+namespace MicroCommerce.Catalog.API.Infrastructure.Filters
 {
     public class TranslateResultToActionResultAttribute : ActionFilterAttribute
     {

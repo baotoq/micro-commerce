@@ -6,6 +6,7 @@ using MicroCommerce.Catalog.API.Application.Products.Commands;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Application.Products.Queries;
 using MicroCommerce.Catalog.API.Infrastructure;
+using MicroCommerce.Catalog.API.Infrastructure.Filters;
 using MicroCommerce.Catalog.API.Services;
 using MicroCommerce.Ordering.API;
 using Microsoft.AspNetCore.Authorization;

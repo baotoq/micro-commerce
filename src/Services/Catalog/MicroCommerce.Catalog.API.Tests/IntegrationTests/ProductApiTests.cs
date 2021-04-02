@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System.Globalization;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -6,14 +8,16 @@ using MicroCommerce.Catalog.API.Application.Products.Commands;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Persistence.Entities;
+using MicroCommerce.Catalog.API.Tests.Helpers;
 using MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
 {
     public class ProductApiTests : IClassFixture<TestWebApplicationFactory<Startup>>
     {
-        private const string Uri = "api/products";
+        private const string BaseUrl = "api/products";
         private readonly TestWebApplicationFactory<Startup> _factory;
         private readonly Fixture _fixture;
 
@@ -21,6 +25,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
         {
             _factory = factory;
             _fixture = new Fixture();
+            _fixture.Customize<CreateProductCommand>(c => c.Without(p => p.ImageFile));
         }
 
         [Fact]
@@ -29,18 +34,18 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
             // Arrange
             var client = _factory.CreateInMemoryDbClient(async context =>
             {
-                await context.AddAsync(new Product());
-                await context.AddAsync(new Product());
+                await context.Products.AddAsync(new Product());
+                await context.Products.AddAsync(new Product());
                 await context.SaveChangesAsync();
             });
 
             // Act
-            var response = await client.GetAsync(Uri);
+            var response = await client.GetAsync(BaseUrl);
 
             // Assert
             response.Should().Be200Ok().And
                 .Satisfy<OffsetPaged<ProductDto>>(s
-                    => s.PaginationResult.Should().NotBeNullOrEmpty());
+                    => s.PaginationResult.Should().HaveCount(2));
         }
 
         [Fact]
@@ -49,36 +54,70 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
             // Arrange
             var client = _factory.CreateInMemoryDbClient(async context =>
             {
-                await context.AddAsync(new Product());
+                await context.Products.AddAsync(new Product());
                 await context.SaveChangesAsync();
             });
 
             // Act
-            var response = await client.GetAsync(Uri + "/1");
+            var response = await client.GetAsync(UrlHelper.Combine(BaseUrl, "1"));
 
             // Assert
             response.Should().Be200Ok().And
                 .Satisfy<ProductDto>(s => s.Should().NotBeNull());
         }
 
-        //[Fact]
-        //public async Task Create_Success()
-        //{
-        //    // Arrange
-        //    var client = _factory.CreateInMemoryDbClient();
+        [Fact]
+        public async Task FindById_NotFound()
+        {
+            // Arrange
+            var client = _factory.CreateInMemoryDbClient();
 
-        //    var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("This is a dummy file")), 0, 0, "ImageFile", "dummy.txt");
-        //    var request = _fixture.Build<CreateProductCommand>()
-        //        .With(s => s.ImageFile, file)
-        //        .Create();
+            // Act
+            var response = await client.GetAsync(UrlHelper.Combine(BaseUrl, "1"));
 
-        //    // Act
-        //    var response = await client.PostAsJsonAsync(Uri, request);
+            // Assert
+            response.Should().Be404NotFound();
+        }
 
-        //    // Assert
-        //    response.Should().Be200Ok().And
-        //        .Satisfy<ProductDto>(s => s.Should().NotBeNull());
-        //}
+        [Fact]
+        public async Task Create_Success()
+        {
+            // Arrange
+            var client = _factory.CreateInMemoryDbClient();
+
+            var command = _fixture.Create<CreateProductCommand>();
+            var multipart = new MultipartFormDataContent
+            {
+                {new StringContent(command.Name), nameof(command.Name)},
+                {new StringContent(command.Price.ToString(CultureInfo.InvariantCulture)), nameof(command.Price)},
+                {new StringContent(command.Description), nameof(command.Description)},
+                {new StringContent(command.StockQuantity.ToString()), nameof(command.StockQuantity)},
+                {new ByteArrayContent(Encoding.UTF8.GetBytes("This is a dummy file")), nameof(command.ImageFile), "image.jpg"},
+            };
+
+            // Act
+            var response = await client.PostAsync(BaseUrl, multipart);
+
+            // Assert
+            response.Should().Be200Ok().And
+                .Satisfy<ProductDto>(s => s.Should().NotBeNull());
+        }
+
+        [Fact]
+        public async Task Create_Invalid()
+        {
+            // Arrange
+            var client = _factory.CreateInMemoryDbClient();
+
+            var multipart = new MultipartFormDataContent();
+
+            // Act
+            var response = await client.PostAsync(BaseUrl, multipart);
+
+            // Assert
+            response.Should().Be400BadRequest().And
+                .Satisfy<ValidationProblemDetails>(s => s.Should().NotBeNull());
+        }
 
         [Fact]
         public async Task Update_Success()
@@ -86,12 +125,12 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
             // Arrange
             var client = _factory.CreateAuthenticatedClient(async context =>
             {
-                await context.AddAsync(new Product());
+                await context.Products.AddAsync(new Product());
                 await context.SaveChangesAsync();
             });
 
             // Act
-            var response = await client.PutAsJsonAsync(Uri, 
+            var response = await client.PutAsJsonAsync(BaseUrl,
                 _fixture.Build<UpdateProductCommand>()
                 .With(s => s.Id, 1)
                 .Create()
@@ -106,20 +145,32 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
         public async Task DeleteById_Success()
         {
             // Arrange
+            var product = _fixture.Create<Product>();
+
             var client = _factory.CreateAuthenticatedClient(async context =>
             {
-                await context.AddAsync(new Product
-                {
-                    ImageUri = "test.jpeg"
-                });
+                await context.Products.AddAsync(product);
                 await context.SaveChangesAsync();
             });
 
             // Act
-            var response = await client.DeleteAsync(Uri + "/1");
+            var response = await client.DeleteAsync(UrlHelper.Combine(BaseUrl, product.Id.ToString()));
 
             // Assert
             response.Should().Be200Ok();
+        }
+
+        [Fact]
+        public async Task DeleteById_NotFound()
+        {
+            // Arrange
+            var client = _factory.CreateAuthenticatedClient();
+
+            // Act
+            var response = await client.DeleteAsync(UrlHelper.Combine(BaseUrl, "1"));
+
+            // Assert
+            response.Should().Be404NotFound();
         }
     }
 }

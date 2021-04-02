@@ -5,6 +5,8 @@ using CSharpFunctionalExtensions;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Persistence;
+using MicroCommerce.Catalog.API.Persistence.Entities;
+using MicroCommerce.Shared.MediatR.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Queries
@@ -28,9 +30,12 @@ namespace MicroCommerce.Catalog.API.Application.Products.Queries
 
         public async Task<Result<ProductDto>> Handle(FindProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var result = await _context.Products.FindAsync(new object[] { request.Id }, cancellationToken);
+            var result = await
+                Result.Try(async () => await _context.Products.FindAsync(new object[] {request.Id}, cancellationToken))
+                    .TapIf(product => product is null, () => throw new NotFoundException(nameof(Product), request.Id))
+                    .Map(_mapper.Map<ProductDto>);
 
-            return Result.Success(_mapper.Map<ProductDto>(result));
+            return result;
         }
     }
 }
