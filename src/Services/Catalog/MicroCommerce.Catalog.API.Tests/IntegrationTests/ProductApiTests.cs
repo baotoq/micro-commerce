@@ -25,7 +25,6 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
         {
             _factory = factory;
             _fixture = new Fixture();
-            _fixture.Customize<CreateProductCommand>(c => c.Without(p => p.ImageFile));
         }
 
         [Fact]
@@ -83,9 +82,12 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
         public async Task Create_Success()
         {
             // Arrange
-            var client = _factory.CreateInMemoryDbClient();
+            var client = _factory.CreateAuthenticatedClient();
 
-            var command = _fixture.Create<CreateProductCommand>();
+            var command = _fixture.Build<CreateProductCommand>()
+                .Without(s => s.ImageFile)
+                .Create();
+            
             var multipart = new MultipartFormDataContent
             {
                 {new StringContent(command.Name), nameof(command.Name)},
@@ -107,7 +109,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
         public async Task Create_Invalid()
         {
             // Arrange
-            var client = _factory.CreateInMemoryDbClient();
+            var client = _factory.CreateAuthenticatedClient();
 
             var multipart = new MultipartFormDataContent();
 
@@ -129,12 +131,23 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
                 await context.SaveChangesAsync();
             });
 
-            // Act
-            var response = await client.PutAsJsonAsync(BaseUrl,
-                _fixture.Build<UpdateProductCommand>()
+            var command = _fixture.Build<UpdateProductCommand>()
                 .With(s => s.Id, 1)
-                .Create()
-            );
+                .Without(s => s.ImageFile)
+                .Create();
+            
+            var multipart = new MultipartFormDataContent
+            {
+                {new StringContent(command.Id.ToString()), nameof(command.Id)},
+                {new StringContent(command.Name), nameof(command.Name)},
+                {new StringContent(command.Price.ToString(CultureInfo.InvariantCulture)), nameof(command.Price)},
+                {new StringContent(command.Description), nameof(command.Description)},
+                {new StringContent(command.StockQuantity.ToString()), nameof(command.StockQuantity)},
+                {new ByteArrayContent(Encoding.UTF8.GetBytes("This is a dummy file")), nameof(command.ImageFile), "image.jpg"},
+            };
+
+            // Act
+            var response = await client.PutAsync(BaseUrl, multipart);
 
             // Assert
             response.Should().Be200Ok().And

@@ -6,7 +6,7 @@ namespace MicroCommerce.Shared.FileStorage
 {
     public interface IStorageService
     {
-        Task DeleteAsync(string fileName, CancellationToken cancellationToken = default);
-        Task SaveAsync(Stream stream, string fileName, CancellationToken cancellationToken = default);
+        Task DeleteAsync(string path, CancellationToken cancellationToken = default);
+        Task SaveAsync(Stream stream, string path, CancellationToken cancellationToken = default);
     }
 }
