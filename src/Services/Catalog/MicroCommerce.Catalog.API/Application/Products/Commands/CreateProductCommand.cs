@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -52,16 +53,14 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
 
         public async Task<Result<ProductDto>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
             var result = await
                 Result.Try(() => _mapper.Map<Product>(request))
-                    .Tap(product => product.ImageUri = $"{Path.GetRandomFileName()}{Path.GetExtension(request.ImageFile.FileName)}")
+                    .Tap(product =>
+                        product.ImageUri = $"{Path.GetRandomFileName()}{Path.GetExtension(request.ImageFile.FileName)}")
                     .Tap(product => _storageService.SaveAsync(request.ImageFile.OpenReadStream(), product.ImageUri, cancellationToken))
                     .Tap(async product => await _context.Products.AddAsync(product, cancellationToken))
                     .Tap(() => _context.SaveChangesAsync(cancellationToken))
-                    .Map(_mapper.Map<ProductDto>)
-                    .Tap(transaction.Complete);
+                    .Map(_mapper.Map<ProductDto>);
 
             return result;
         }

@@ -39,7 +39,6 @@ namespace MicroCommerce.Catalog.API.Application.Products
             return await Mediator.Send(request);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         public async Task<Result<ProductDto>> Create([FromForm] CreateProductCommand request)
         {
@@ -47,7 +46,7 @@ namespace MicroCommerce.Catalog.API.Application.Products
         }
 
         [HttpPut]
-        public async Task<Result<ProductDto>> Update(UpdateProductCommand request)
+        public async Task<Result<ProductDto>> Update([FromForm] UpdateProductCommand request)
         {
             return await Mediator.Send(request);
         }

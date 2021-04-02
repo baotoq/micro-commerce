@@ -13,16 +13,16 @@ namespace MicroCommerce.Shared.FileStorage
             _rootPath = rootPath;
         }
 
-        public async Task SaveAsync(Stream stream, string fileName, CancellationToken cancellationToken = default)
+        public async Task SaveAsync(Stream stream, string path, CancellationToken cancellationToken = default)
         {
-            var filePath = Path.Combine(_rootPath, fileName);
+            var filePath = Path.Combine(_rootPath, path);
             await using var output = File.Create(filePath);
             await stream.CopyToAsync(output, cancellationToken);
         }
 
-        public Task DeleteAsync(string fileName, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(string path, CancellationToken cancellationToken = default)
         {
-            var filePath = Path.Combine(_rootPath, fileName);
+            var filePath = Path.Combine(_rootPath, path);
 
             if (File.Exists(filePath))
             {

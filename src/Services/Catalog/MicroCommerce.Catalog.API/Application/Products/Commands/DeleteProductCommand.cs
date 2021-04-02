@@ -32,14 +32,11 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
 
         public async Task<Result> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
             return await Result.Try(async () => await _context.Products.FindAsync(request.Id))
                 .TapIf(product => product is null, () => throw new NotFoundException(nameof(Product), request.Id))
                 .Tap(product => _context.Products.Remove(product))
                 .Tap(async () => await _context.SaveChangesAsync(cancellationToken))
-                .Tap(product => _storageService.DeleteAsync(product.ImageUri, cancellationToken))
-                .Tap(transaction.Complete);
+                .Tap(product => _storageService.DeleteAsync(product.ImageUri, cancellationToken));
         }
     }
 }
