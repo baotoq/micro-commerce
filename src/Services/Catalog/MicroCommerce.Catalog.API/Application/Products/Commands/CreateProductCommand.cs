@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using AutoMapper;
 using CSharpFunctionalExtensions;
+using FluentValidation;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Persistence;
@@ -59,10 +60,22 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
                     .Tap(product => _storageService.SaveAsync(request.ImageFile.OpenReadStream(), product.ImageUri, cancellationToken))
                     .Tap(async product => await _context.Products.AddAsync(product, cancellationToken))
                     .Tap(() => _context.SaveChangesAsync(cancellationToken))
-                    .Map(product => _mapper.Map<ProductDto>(product))
-                    .Tap(() => transaction.Complete());
+                    .Map(_mapper.Map<ProductDto>)
+                    .Tap(transaction.Complete);
 
             return result;
+        }
+    }
+
+    public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+    {
+        public CreateProductCommandValidator()
+        {
+            RuleFor(s => s.Name).NotEmpty();
+            RuleFor(s => s.Description).NotEmpty();
+            RuleFor(s => s.Price).NotEmpty();
+            RuleFor(s => s.StockQuantity).NotEmpty();
+            RuleFor(s => s.ImageFile).NotNull();
         }
     }
 }

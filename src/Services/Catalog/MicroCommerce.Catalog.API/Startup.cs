@@ -2,12 +2,14 @@
 using System.Reflection;
 using AutoMapper;
 using Grpc.Health.V1;
-using MediatR;
+using MicroCommerce.Catalog.API.Infrastructure;
+using MicroCommerce.Catalog.API.Infrastructure.Filters;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Services;
 using MicroCommerce.Shared;
 using MicroCommerce.Shared.FileStorage;
 using MicroCommerce.Shared.Grpc;
+using MicroCommerce.Shared.MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +38,7 @@ namespace MicroCommerce.Catalog.API
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddGrpc();
-            services.AddControllers().AddDapr();
+            services.AddControllers(s => s.Filters.Add<CustomExceptionFilterAttribute>()).AddDapr();
 
             services.AddIdentityAuthentication();
 
@@ -50,7 +52,7 @@ namespace MicroCommerce.Catalog.API
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR().AddValidators();
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 

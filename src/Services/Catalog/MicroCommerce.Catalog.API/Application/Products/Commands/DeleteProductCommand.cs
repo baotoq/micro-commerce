@@ -6,7 +6,9 @@ using AutoMapper;
 using CSharpFunctionalExtensions;
 using MediatR;
 using MicroCommerce.Catalog.API.Persistence;
+using MicroCommerce.Catalog.API.Persistence.Entities;
 using MicroCommerce.Shared.FileStorage;
+using MicroCommerce.Shared.MediatR.Exceptions;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Commands
 {
@@ -33,10 +35,11 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
             using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
             return await Result.Try(async () => await _context.Products.FindAsync(request.Id))
+                .TapIf(product => product is null, () => throw new NotFoundException(nameof(Product), request.Id))
                 .Tap(product => _context.Products.Remove(product))
                 .Tap(async () => await _context.SaveChangesAsync(cancellationToken))
                 .Tap(product => _storageService.DeleteAsync(product.ImageUri, cancellationToken))
-                .Tap(() => transaction.Complete());
+                .Tap(transaction.Complete);
         }
     }
 }
