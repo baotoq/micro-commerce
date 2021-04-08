@@ -18,8 +18,6 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
                 services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
                 
                 services.AddSingleton<IEventBus, FakeEventBus>();
-
-                services.AddFileStorage("./");
             });
         }
     }

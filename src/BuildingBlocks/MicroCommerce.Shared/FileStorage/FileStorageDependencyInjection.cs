@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MicroCommerce.Shared.FileStorage
@@ -9,7 +9,7 @@ namespace MicroCommerce.Shared.FileStorage
         {
             if (string.IsNullOrEmpty(rootPath))
             {
-                throw new ArgumentNullException(nameof(rootPath));
+                rootPath = Directory.GetCurrentDirectory();
             }
             services.AddTransient<IStorageService>(_ => new FileStorageService(rootPath));
         }
