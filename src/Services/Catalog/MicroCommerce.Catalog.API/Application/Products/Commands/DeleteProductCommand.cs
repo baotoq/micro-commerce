@@ -1,12 +1,11 @@
-﻿using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
-using AutoMapper;
 using CSharpFunctionalExtensions;
 using MediatR;
+using MicroCommerce.Catalog.API.IntegrationEvents;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Persistence.Entities;
+using MicroCommerce.Shared.EventBus.Abstractions;
 using MicroCommerce.Shared.FileStorage;
 using MicroCommerce.Shared.MediatR.Exceptions;
 
@@ -19,24 +18,28 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
 
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Result>
     {
-        private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
         private readonly IStorageService _storageService;
+        private readonly IEventBus _eventBus;
 
-        public DeleteProductCommandHandler(IMapper mapper, ApplicationDbContext context, IStorageService storageService)
+        public DeleteProductCommandHandler(ApplicationDbContext context, IStorageService storageService, IEventBus eventBus)
         {
-            _mapper = mapper;
             _context = context;
             _storageService = storageService;
+            _eventBus = eventBus;
         }
 
         public async Task<Result> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            return await Result.Try(async () => await _context.Products.FindAsync(request.Id))
+             var result = await Result.Try(async () => await _context.Products.FindAsync(request.Id))
                 .TapIf(product => product is null, () => throw new NotFoundException(nameof(Product), request.Id))
                 .Tap(product => _context.Products.Remove(product))
                 .Tap(async () => await _context.SaveChangesAsync(cancellationToken))
-                .Tap(product => _storageService.DeleteAsync(product.ImageUri, cancellationToken));
+                .Tap(product => _eventBus.PublishAsync(new ProductDeleted(product.ImageUri), cancellationToken));
+
+            await Result.Try(() => _eventBus.PublishAsync(new ProductDeleted(result.Value.ImageUri), cancellationToken));
+
+            return result;
         }
     }
 }

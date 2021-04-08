@@ -54,7 +54,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
                     builder.ConfigureTestServices(services =>
                     {
                         var databaseName = Guid.NewGuid().ToString();
-                        services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(databaseName));
+                        services.AddDbContext<ApplicationDbContext>(o => o.UseInMemoryDatabase(databaseName));
 
                         using var scope = services.BuildServiceProvider().CreateScope();
 

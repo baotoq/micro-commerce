@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace MicroCommerce.Catalog.API.Application.Products
+namespace MicroCommerce.Catalog.API.Controllers
 {
     [Authorize]
     [ApiController]
