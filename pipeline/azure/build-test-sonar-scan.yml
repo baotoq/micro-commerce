@@ -8,9 +8,9 @@ steps:
   displayName: Prepare analysis on Sonar
   inputs:
     SonarCloud: sonarcloud
-    organization: bao2703
+    organization: baotoq
     scannerMode: MSBuild
-    projectKey: bshop-${{ parameters.projectKey }}
+    projectKey: ${{ parameters.projectKey }}
 
 - task: DotNetCoreCLI@2
   displayName: Build project
