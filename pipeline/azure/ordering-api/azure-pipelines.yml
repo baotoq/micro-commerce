@@ -6,9 +6,9 @@ trigger:
     - ref/tags/*
   paths:
     include:
-    - src/Services/Catalog
-    - deploy/k8s/catalog-api
-    - pipeline/azure/catalog-api
+    - src/Services/Ordering
+    - deploy/k8s/ordering-api
+    - pipeline/azure/ordering-api
 pr: none
 
 pool:
@@ -22,7 +22,7 @@ parameters:
 
 variables:
 - name: serviceName
-  value: catalog-api
+  value: ordering-api
 
 stages:
 - stage: Build_and_Run_Tests
@@ -34,7 +34,7 @@ stages:
     - template: ../build-test-sonar-scan.yml
       parameters:
         projectKey: $(serviceName)
-        projectPath: Services/Catalog/MicroCommerce.Catalog.API
+        projectPath: Services/Ordering/MicroCommerce.Ordering.API
 
 - ${{ if eq(parameters.isDeploy, true) }}:
   - stage: Build_and_Push_Image

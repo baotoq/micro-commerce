@@ -11,14 +11,18 @@ trigger:
     - pipeline/azure/identity-api
 pr: none
 
+pool:
+  vmImage: ubuntu-latest
+
 parameters:
-- name: deploy
+- name: isDeploy
   displayName: Deploy?
   type: boolean
   default: false
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+- name: serviceName
+  value: identity-api
 
 stages:
 - stage: Build_and_Run_Tests
@@ -29,10 +33,10 @@ stages:
     steps:
     - template: ../build-test-sonar-scan.yml
       parameters:
-        projectKey: identity-api
+        projectKey: $(serviceName)
         projectPath: Services/Identity/MicroCommerce.Identity.API
 
-- ${{ if eq(parameters.deploy, true) }}:
+- ${{ if eq(parameters.isDeploy, true) }}:
   - stage: Build_and_Push_Image
     displayName: Build and push docker image
     jobs:
@@ -42,18 +46,18 @@ stages:
       - template: ../compose.yml
         parameters:
           action: build
-          services: [identity-api]
+          services: [$(serviceName)]
       - template: ../compose.yml
         parameters:
           action: push
-          services: [identity-api]
+          services: [$(serviceName)]
 
   - stage: Deploy
     displayName: Deploy
     dependsOn:
     - Build_and_Run_Tests
     - Build_and_Push_Image
-    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['isDeploy'], 'true')))
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(parameters.isDeploy, 'true')))
     jobs:
     - deployment: app
       displayName: App deployment
@@ -64,11 +68,11 @@ stages:
             steps:
             - template: ../package-helm-chart.yml
               parameters:
-                service: identity-api
+                service: $(serviceName)
 
             - template: ../install-helm-chart.yml
               parameters:
-                service: identity-api
+                service: $(serviceName)
                 namespace: bshop
-                valueFile: k8s/identity-api/values.yaml
-                arguments: -f k8s/identity-api/values.azure.yaml
+                valueFile: deploy/k8s/$(serviceName)/values.yaml
+                arguments: -f deploy/k8s/$(serviceName)/values.azure.yaml
