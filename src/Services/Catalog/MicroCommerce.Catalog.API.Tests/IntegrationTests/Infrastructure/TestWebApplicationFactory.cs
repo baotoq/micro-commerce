@@ -1,5 +1,6 @@
 ﻿using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Shared.EventBus.Abstractions;
+using MicroCommerce.Shared.FileStorage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,8 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
                 services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
                 
                 services.AddSingleton<IEventBus, FakeEventBus>();
+
+                services.AddFileStorage("./");
             });
         }
     }
