@@ -6,9 +6,9 @@ trigger:
     - ref/tags/*
   paths:
     include:
-    - src/Services/Catalog
-    - deploy/k8s/catalog-api
-    - pipeline/azure/catalog-api
+    - src/Services/Basket
+    - deploy/k8s/basket-api
+    - pipeline/azure/basket-api
 pr: none
 
 pool:
@@ -22,7 +22,7 @@ parameters:
 
 variables:
 - name: serviceName
-  value: catalog-api
+  value: basket-api
 
 stages:
 - stage: Build_and_Run_Tests
@@ -34,7 +34,7 @@ stages:
     - template: ../build-test-sonar-scan.yml
       parameters:
         projectKey: $(serviceName)
-        projectPath: Services/Catalog/MicroCommerce.Catalog.API
+        projectPath: Services/Basket/MicroCommerce.Basket.API
 
 - ${{ if eq(parameters.isDeploy, true) }}:
   - stage: Build_and_Push_Image
