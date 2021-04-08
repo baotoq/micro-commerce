@@ -1,7 +1,9 @@
 ﻿using MicroCommerce.Catalog.API.Persistence;
+using MicroCommerce.Shared.EventBus.Abstractions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
@@ -13,6 +15,8 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
             builder.ConfigureServices(services =>
             {
                 services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
+                
+                services.AddSingleton<IEventBus, FakeEventBus>();
             });
         }
     }

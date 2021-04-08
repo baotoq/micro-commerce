@@ -6,8 +6,10 @@ using CSharpFunctionalExtensions;
 using FluentValidation;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Models;
+using MicroCommerce.Catalog.API.IntegrationEvents;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Persistence.Entities;
+using MicroCommerce.Shared.EventBus.Abstractions;
 using MicroCommerce.Shared.FileStorage;
 using MicroCommerce.Shared.MediatR.Exceptions;
 using Microsoft.AspNetCore.Http;
@@ -34,12 +36,14 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
         private readonly IStorageService _storageService;
+        private readonly IEventBus _eventBus;
 
-        public UpdateProductCommandHandler(IMapper mapper, ApplicationDbContext context, IStorageService storageService)
+        public UpdateProductCommandHandler(IMapper mapper, ApplicationDbContext context, IStorageService storageService, IEventBus eventBus)
         {
             _mapper = mapper;
             _context = context;
             _storageService = storageService;
+            _eventBus = eventBus;
         }
 
         public async Task<Result<ProductDto>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
@@ -61,7 +65,7 @@ namespace MicroCommerce.Catalog.API.Application.Products.Commands
                 .Tap(() => _context.SaveChangesAsync(cancellationToken))
                 .Map(_mapper.Map<ProductDto>);
             
-            await Result.Try(() => _storageService.DeleteAsync(oldFilePath, cancellationToken));
+            await Result.Try(() => _eventBus.PublishAsync(new ProductUpdated(oldFilePath), cancellationToken));
             
             return result;
         }
