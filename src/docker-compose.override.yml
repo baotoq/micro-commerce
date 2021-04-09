@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   redis:
-    command: ["redis-server", "--appendonly", "yes"]
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "P@ssw0rd"]
     ports:
       - "${REDIS_PORT}:6379"
     volumes:
@@ -106,7 +106,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
-      - Kestrel:Endpoints:Https:Url=https://0.0.0.0:443
+      - Kestrel:Endpoints:Https:Url=
     ports:
       - "${IDENTITY_API_HTTP_PORT}:80"
       - "${IDENTITY_API_HTTPS_PORT}:443"
@@ -118,7 +118,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Dapr
       - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
-      - Kestrel:Endpoints:Https:Url=https://0.0.0.0:443
+      - Kestrel:Endpoints:Https:Url=
     ports:
       - "${OCELOT_GATEWAY_API_HTTP_PORT}:80"
       - "${OCELOT_GATEWAY_API_HTTPS_PORT}:443"

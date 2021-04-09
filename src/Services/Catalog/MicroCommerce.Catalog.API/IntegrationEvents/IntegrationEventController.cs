@@ -2,42 +2,34 @@
 using Dapr;
 using MediatR;
 using MicroCommerce.Catalog.API.Infrastructure;
-using MicroCommerce.Catalog.API.IntegrationEvents;
+using MicroCommerce.Catalog.API.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace MicroCommerce.Catalog.API.Controllers
+namespace MicroCommerce.Catalog.API.IntegrationEvents
 {
     public class IntegrationEventController : BaseController
     {
+        public const string PubsubName = "pubsub";
+        
         public IntegrationEventController(ILogger<IntegrationEventController> logger, IMediator mediator) : base(logger, mediator)
         {
         }
 
-        [Topic("pubsub", "product-deleted")]
-        [HttpPost("product-deleted")]
-        public async Task<IActionResult> Handle(ProductDeleted @event)
+        [Topic(PubsubName, nameof(ProductDeleted))]
+        [HttpPost(nameof(ProductDeleted))]
+        public async Task Handle(ProductDeleted @event)
         {
-            Logger.LogInformation("Hellpoooooo");
-            
-            await Task.Delay(10000);
-            
-            Logger.LogInformation("22222");
-
-            return Ok();
+            await Task.Delay(1000);
+            await Mediator.Send(@event);
         }
 
-        [Topic("pubsub", "product-updated")]
-        [HttpPost("product-updated")]
-        public async Task<IActionResult> Handle(ProductUpdated @event)
+        [Topic(PubsubName, nameof(ProductUpdated))]
+        [HttpPost(nameof(ProductUpdated))]
+        public async Task Handle(ProductUpdated @event)
         {
-            Logger.LogInformation("Hellpoooooo");
-
-            await Task.Delay(10000);
-
-            Logger.LogInformation("22222");
-
-            return Ok();
+            await Task.Delay(1000);
+            await Mediator.Send(@event);
         }
     }
 }
