@@ -8,4 +8,8 @@ spec:
   - name: redisHost
     value: redis:6379
   - name: redisPassword
-    value: ""
+    secretKeyRef:
+      name: redisPassword
+
+auth:
+  secretStore: secretstore

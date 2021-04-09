@@ -5,7 +5,7 @@ using MediatR;
 using MicroCommerce.Shared.EventBus;
 using MicroCommerce.Shared.FileStorage;
 
-namespace MicroCommerce.Catalog.API.IntegrationEvents
+namespace MicroCommerce.Catalog.API.IntegrationEvents.Events
 {
     public record ProductUpdated : IntegrationEvent, IRequest<Result>
     {

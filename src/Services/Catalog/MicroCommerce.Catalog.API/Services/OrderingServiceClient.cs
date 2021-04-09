@@ -1,17 +1,21 @@
 ﻿using System.Threading.Tasks;
 using Dapr.Client;
 using MicroCommerce.Catalog.API.IntegrationEvents;
+using MicroCommerce.Catalog.API.IntegrationEvents.Events;
 using MicroCommerce.Ordering.API;
+using MicroCommerce.Shared.EventBus.Abstractions;
 
 namespace MicroCommerce.Catalog.API.Services
 {
     public class OrderingServiceClient : IOrderingServiceClient
     {
         private readonly DaprClient _daprClient;
+        private readonly IEventBus _eventBus;
 
-        public OrderingServiceClient(DaprClient daprClient)
+        public OrderingServiceClient(DaprClient daprClient, IEventBus eventBus)
         {
             _daprClient = daprClient;
+            _eventBus = eventBus;
         }
 
         public async Task<HelloReply> SayHello(HelloRequest request)
@@ -23,8 +27,8 @@ namespace MicroCommerce.Catalog.API.Services
 
             for (int i = 0; i < 100; i++)
             {
-                await _daprClient.PublishEventAsync("pubsub", "product-deleted", new ProductDeleted("test"));
-                await _daprClient.PublishEventAsync("pubsub", "product-updated", new ProductUpdated("test"));
+                await _eventBus.PublishAsync(new ProductDeleted("test"));
+                await _eventBus.PublishAsync(new ProductUpdated("test"));
             }
 
             return a;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using AutoMapper;
+using Dapr.Client;
 using Grpc.Health.V1;
 using MicroCommerce.Catalog.API.Infrastructure.Filters;
 using MicroCommerce.Catalog.API.Persistence;
@@ -17,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Prometheus;
 using Serilog;
 
@@ -61,7 +63,8 @@ namespace MicroCommerce.Catalog.API
 
             services.AddFileStorage(Environment.WebRootPath);
 
-            services.AddScoped<IEventBus, DaprEventBus>();
+            services.AddScoped<IEventBus>(resolver =>
+                new DaprEventBus("pubsub", resolver.GetRequiredService<DaprClient>(), resolver.GetRequiredService<ILogger<DaprEventBus>>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

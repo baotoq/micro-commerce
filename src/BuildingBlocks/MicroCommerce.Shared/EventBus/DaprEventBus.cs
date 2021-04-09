@@ -8,13 +8,14 @@ namespace MicroCommerce.Shared.EventBus
 {
     public class DaprEventBus : IEventBus
     {
-        private const string PubSubName = "pubsub";
+        private readonly string _pubsubName;
 
         private readonly DaprClient _dapr;
         private readonly ILogger<DaprEventBus> _logger;
 
-        public DaprEventBus(DaprClient dapr, ILogger<DaprEventBus> logger)
+        public DaprEventBus(string pubsubName, DaprClient dapr, ILogger<DaprEventBus> logger)
         {
+            _pubsubName = pubsubName;
             _dapr = dapr;
             _logger = logger;
         }
@@ -23,9 +24,9 @@ namespace MicroCommerce.Shared.EventBus
         {
             var topicName = @event.GetType().Name;
 
-            _logger.LogInformation("Publishing event {@Event} to {PubSubName}.{TopicName}", @event, PubSubName, topicName);
+            _logger.LogInformation("Publishing event {@Event} to {PubSubName}.{TopicName}", @event, _pubsubName, topicName);
 
-            await _dapr.PublishEventAsync(PubSubName, topicName, @event, cancellationToken);
+            await _dapr.PublishEventAsync(_pubsubName, topicName, @event, cancellationToken);
         }
     }
 }

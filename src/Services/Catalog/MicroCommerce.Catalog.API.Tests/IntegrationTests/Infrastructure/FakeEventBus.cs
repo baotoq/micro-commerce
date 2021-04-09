@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MicroCommerce.Shared.EventBus;
 using MicroCommerce.Shared.EventBus.Abstractions;
@@ -9,6 +10,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
     {
         public Task PublishAsync<TIntegrationEvent>(TIntegrationEvent @event, CancellationToken cancellationToken = default) where TIntegrationEvent : IntegrationEvent
         {
+            throw new Exception();
             return Task.CompletedTask;
         }
     }
