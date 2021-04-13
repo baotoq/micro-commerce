@@ -7,7 +7,7 @@ using MicroCommerce.Catalog.API.Persistence.Entities;
 using MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure;
 using Xunit;
 
-namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
+namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Http
 {
     public class CategoryApiTests : IClassFixture<TestWebApplicationFactory<Startup>>
     {

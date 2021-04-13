@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Reflection;
 using AutoMapper;
-using Dapr.Client;
 using Grpc.Health.V1;
 using MicroCommerce.Catalog.API.Infrastructure.Filters;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Services;
 using MicroCommerce.Shared;
 using MicroCommerce.Shared.EventBus;
-using MicroCommerce.Shared.EventBus.Abstractions;
 using MicroCommerce.Shared.FileStorage;
 using MicroCommerce.Shared.Grpc;
+using MicroCommerce.Shared.Identity;
 using MicroCommerce.Shared.MediatR;
+using MicroCommerce.Shared.Monitoring;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Prometheus;
 using Serilog;
 
@@ -38,8 +37,6 @@ namespace MicroCommerce.Catalog.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-
             services.AddGrpc();
             services.AddControllers(s => s.Filters.Add<CustomExceptionFilterAttribute>()).AddDapr();
 
@@ -49,11 +46,11 @@ namespace MicroCommerce.Catalog.API
                 .EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
 
             services.AddSwagger();
-            services.AddMonitoring(builder => builder.AddNpgSql(connectionString));
+            services.AddMonitoring(builder => builder.AddDbContextCheck<ApplicationDbContext>());
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")).UseSnakeCaseNamingConvention());
 
             services.AddMediatR().AddValidators();
 
@@ -63,8 +60,7 @@ namespace MicroCommerce.Catalog.API
 
             services.AddFileStorage(Environment.WebRootPath);
 
-            services.AddScoped<IEventBus>(resolver =>
-                new DaprEventBus("pubsub", resolver.GetRequiredService<DaprClient>(), resolver.GetRequiredService<ILogger<DaprEventBus>>()));
+            services.AddDaprEvenBus();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,13 +83,14 @@ namespace MicroCommerce.Catalog.API
 
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks();
                 endpoints.MapMetrics();
                 endpoints.MapControllers();
-                endpoints.MapGrpcService<HealthService>();
                 endpoints.MapSubscribeHandler();
+                endpoints.MapGrpcService<HealthService>();
             });
         }
     }

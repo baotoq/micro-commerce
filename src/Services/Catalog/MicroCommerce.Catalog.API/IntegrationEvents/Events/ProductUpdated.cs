@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using MediatR;
-using MicroCommerce.Shared.EventBus;
+using MicroCommerce.Shared.EventBus.Models;
 using MicroCommerce.Shared.FileStorage;
 
 namespace MicroCommerce.Catalog.API.IntegrationEvents.Events

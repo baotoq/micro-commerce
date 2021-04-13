@@ -1,4 +1,4 @@
-﻿using MicroCommerce.Shared;
+﻿using MicroCommerce.Shared.Monitoring;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;

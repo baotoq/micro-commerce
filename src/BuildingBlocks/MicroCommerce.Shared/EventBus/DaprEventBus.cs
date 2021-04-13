@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Dapr.Client;
 using MicroCommerce.Shared.EventBus.Abstractions;
+using MicroCommerce.Shared.EventBus.Models;
 using Microsoft.Extensions.Logging;
 
 namespace MicroCommerce.Shared.EventBus

@@ -2,6 +2,8 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Grpc.Core;
+using Grpc.Net.Client;
 using MicroCommerce.Catalog.API.Persistence;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -56,17 +58,31 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
                         var databaseName = Guid.NewGuid().ToString();
                         services.AddDbContext<ApplicationDbContext>(o => o.UseInMemoryDatabase(databaseName));
 
-                        using var scope = services.BuildServiceProvider().CreateScope();
+                        if (seedAction is not null)
+                        {
+                            using var scope = services.BuildServiceProvider().CreateScope();
 
-                        var scopedServices = scope.ServiceProvider;
-                        var context = scopedServices.GetRequiredService<ApplicationDbContext>();
+                            var scopedServices = scope.ServiceProvider;
+                            var context = scopedServices.GetRequiredService<ApplicationDbContext>();
 
-                        seedAction?.Invoke(context).GetAwaiter().GetResult();
+                            seedAction.Invoke(context).GetAwaiter().GetResult();
+                        }
                     });
                 })
                 .CreateClient(options ?? new WebApplicationFactoryClientOptions());
 
             return client;
+        }
+
+        public static TClient CreateGrpcClient<TClient>(this WebApplicationFactory<Startup> factory)
+            where TClient : ClientBase<TClient>
+        {
+            var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions
+            {
+                HttpClient = factory.CreateInMemoryDbClient()
+            });
+
+            return Activator.CreateInstance(typeof(TClient), channel) as TClient;
         }
     }
 }
