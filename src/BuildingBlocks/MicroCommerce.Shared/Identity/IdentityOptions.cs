@@ -1,4 +1,4 @@
-﻿namespace MicroCommerce.Shared.Options
+﻿namespace MicroCommerce.Shared.Identity
 {
     public class IdentityOptions
     {

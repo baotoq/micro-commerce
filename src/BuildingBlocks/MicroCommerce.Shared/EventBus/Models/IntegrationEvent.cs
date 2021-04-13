@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MicroCommerce.Shared.EventBus
+namespace MicroCommerce.Shared.EventBus.Models
 {
     public record IntegrationEvent
     {

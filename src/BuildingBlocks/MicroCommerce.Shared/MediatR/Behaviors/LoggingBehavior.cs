@@ -1,10 +1,12 @@
-﻿using System.Threading;
+﻿using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace MicroCommerce.Shared.MediatR.Behaviors
 {
+    [DebuggerNonUserCode]
     public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;

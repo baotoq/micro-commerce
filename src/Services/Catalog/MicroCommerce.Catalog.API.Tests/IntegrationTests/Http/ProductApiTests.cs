@@ -13,7 +13,7 @@ using MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
-namespace MicroCommerce.Catalog.API.Tests.IntegrationTests
+namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Http
 {
     public class ProductApiTests : IClassFixture<TestWebApplicationFactory<Startup>>
     {

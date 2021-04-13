@@ -5,6 +5,8 @@ using Microsoft.Extensions.Hosting;
 using MicroCommerce.Ordering.API.Services;
 using MicroCommerce.Shared;
 using MicroCommerce.Shared.Grpc;
+using MicroCommerce.Shared.Identity;
+using MicroCommerce.Shared.Monitoring;
 using Microsoft.Extensions.Configuration;
 using Prometheus;
 using Serilog;

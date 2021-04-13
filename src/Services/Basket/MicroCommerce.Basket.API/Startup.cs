@@ -1,5 +1,7 @@
 ﻿using MicroCommerce.Shared;
 using MicroCommerce.Shared.Grpc;
+using MicroCommerce.Shared.Identity;
+using MicroCommerce.Shared.Monitoring;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

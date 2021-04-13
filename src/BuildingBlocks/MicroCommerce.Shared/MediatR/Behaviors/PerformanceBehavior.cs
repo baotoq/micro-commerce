@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MicroCommerce.Shared.MediatR.Behaviors
 {
+    [DebuggerNonUserCode]
     public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly Stopwatch _timer;
