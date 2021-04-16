@@ -1,31 +1,25 @@
 name: Build and run unit tests
-
-env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
+description: Build and run unit tests
 
 inputs:
   project-path:
     required: true
-  dotnet-version:
-    default: 5.0.100
+    description: "Project path"
 
 runs:
   using: composite
   steps:
-    - name: Setup .NET Core ${{env.DOTNET_VERSION}}
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{inputs.project-path}}
-
     - name: Install dependencies
       working-directory: ${{inputs.project-path}}
+      shell: bash
       run: dotnet restore
 
     - name: Build
       working-directory: ${{inputs.project-path}}
+      shell: bash
       run: dotnet build -c Release --no-restore
 
     - name: Run Tests
       working-directory: ${{inputs.project-path}}.Tests
+      shell: bash
       run: dotnet test -c Release /p:CollectCoverage=true

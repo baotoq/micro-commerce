@@ -15,8 +15,6 @@ on:
     types: [ published ]
 
 env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_VERSION: 5.0.100
 
   PROJECT_PATH: ./src/Services/Identity/MicroCommerce.Identity.API
@@ -37,17 +35,9 @@ jobs:
       with:
         dotnet-version: ${{env.DOTNET_VERSION}}
 
-    - name: Install dependencies
-      working-directory: ${{env.PROJECT_PATH}}
-      run: dotnet restore
-
-    - name: Build
-      working-directory: ${{env.PROJECT_PATH}}
-      run: dotnet build -c Release --no-restore
-
-    - name: Run Tests
-      working-directory: ${{env.PROJECT_PATH}}.Tests
-      run: dotnet test -c Release /p:CollectCoverage=true
+    - uses: ./.github/actions/build-test-dotnet
+      with:
+        project-path: ${{env.PROJECT_PATH}}
 
   build_and_push_image:
     name: Build and Push image to registry
