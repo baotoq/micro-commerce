@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Dapr.Client;
 using MicroCommerce.Catalog.API.IntegrationEvents;
-using MicroCommerce.Ordering.API;
 using MicroCommerce.Shared.EventBus.Abstractions;
 
 namespace MicroCommerce.Catalog.API.Services
@@ -17,9 +16,9 @@ namespace MicroCommerce.Catalog.API.Services
             _eventBus = eventBus;
         }
 
-        public async Task<HelloReply> SayHello(HelloRequest request)
+        public async Task<object> SayHello()
         {
-            var a = await _daprClient.InvokeMethodAsync<HelloReply>("ordering-api", "localApi");
+            var a = await _daprClient.InvokeMethodAsync<object>("ordering-api", "localApi");
             await _daprClient.InvokeMethodAsync("catalog-api", "health/readiness");
             await _daprClient.InvokeMethodAsync("basket-api", "health/readiness");
 

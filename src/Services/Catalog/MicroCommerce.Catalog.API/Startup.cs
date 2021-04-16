@@ -37,13 +37,9 @@ namespace MicroCommerce.Catalog.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
             services.AddControllers(s => s.Filters.Add<CustomExceptionFilterAttribute>()).AddDapr();
 
             services.AddIdentityAuthentication();
-
-            services.AddGrpcClient<Health.HealthClient>(options => options.Address = new Uri(Configuration["Client:Ordering:Uri:Grpc"]))
-                .EnableCallContextPropagation(options => options.SuppressContextNotFoundErrors = true);
 
             services.AddSwagger();
             services.AddMonitoring(builder => builder.AddDbContextCheck<ApplicationDbContext>());
@@ -89,7 +85,6 @@ namespace MicroCommerce.Catalog.API
                 endpoints.MapMetrics();
                 endpoints.MapControllers();
                 endpoints.MapSubscribeHandler();
-                endpoints.MapGrpcService<HealthService>();
             });
         }
     }

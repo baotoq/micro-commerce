@@ -28,15 +28,10 @@
 
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Dapr.AspNetCore" Version="1.0.0" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.32.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\MicroCommerce.Shared\MicroCommerce.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

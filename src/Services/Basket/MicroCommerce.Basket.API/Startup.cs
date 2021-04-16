@@ -26,7 +26,6 @@ namespace MicroCommerce.Basket.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
             services.AddControllers().AddDapr();
 
             services.AddIdentityAuthentication();
@@ -62,7 +61,6 @@ namespace MicroCommerce.Basket.API
                 endpoints.MapMetrics();
                 endpoints.MapControllers();
                 endpoints.MapSubscribeHandler();
-                endpoints.MapGrpcService<HealthService>();
             });
         }
     }
