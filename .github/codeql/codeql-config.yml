@@ -2,5 +2,5 @@ name: "CodeQL config"
 
 paths:
   - src
-paths-ignore: 
-  - '**/wwwroot/lib'
+paths-ignore:
+  - "**/wwwroot/lib"
