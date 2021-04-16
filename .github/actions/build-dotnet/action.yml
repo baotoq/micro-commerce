@@ -1,5 +1,5 @@
-name: Build and run unit tests
-description: Build and run unit tests
+name: Restore and build dotnet
+description: Restore and build dotnet
 
 inputs:
   project-path:
@@ -18,8 +18,3 @@ runs:
       working-directory: ${{inputs.project-path}}
       shell: bash
       run: dotnet build -c Release --no-restore
-
-    - name: Run Tests
-      working-directory: ${{inputs.project-path}}.Tests
-      shell: bash
-      run: dotnet test -c Release /p:CollectCoverage=true
