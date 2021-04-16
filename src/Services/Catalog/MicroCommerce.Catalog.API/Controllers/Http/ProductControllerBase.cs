@@ -9,7 +9,6 @@ using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Infrastructure.Filters;
 using MicroCommerce.Catalog.API.Infrastructure.Paged;
 using MicroCommerce.Catalog.API.Services;
-using MicroCommerce.Ordering.API;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -59,11 +58,10 @@ namespace MicroCommerce.Catalog.API.Controllers.Http
 
         [AllowAnonymous]
         [HttpGet("/health/ordering")]
-        public async Task<IActionResult> HealthOrdering([FromServices] Health.HealthClient healthClient, [FromServices] IOrderingServiceClient orderingServiceClient)
+        public async Task<IActionResult> HealthOrdering([FromServices] IOrderingServiceClient orderingServiceClient)
         {
             await Mediator.Send(new FindProductsQuery());
-            var a = await orderingServiceClient.SayHello(new HelloRequest());
-            //var result = await healthClient.CheckAsync(new HealthCheckRequest());
+            var a = await orderingServiceClient.SayHello();
 
             return Ok(new { a });
         }

@@ -8,7 +8,7 @@ namespace MicroCommerce.Ordering.API.Controllers
         [HttpPost]
         public IActionResult Get()
         {
-            return Ok(new HelloReply
+            return Ok(new
             {
                 Message = "Hello"
             });

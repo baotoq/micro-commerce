@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MicroCommerce.Ordering.API.Services;
 using MicroCommerce.Shared;
 using MicroCommerce.Shared.Grpc;
 using MicroCommerce.Shared.Identity;
@@ -26,7 +25,6 @@ namespace MicroCommerce.Ordering.API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
             services.AddControllers().AddDapr();
 
             services.AddIdentityAuthentication();
@@ -58,8 +56,6 @@ namespace MicroCommerce.Ordering.API
                 endpoints.MapHealthChecks();
                 endpoints.MapMetrics();
                 endpoints.MapControllers();
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<HealthService>();
             });
         }
     }

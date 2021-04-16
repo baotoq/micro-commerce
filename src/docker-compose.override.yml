@@ -75,8 +75,7 @@ services:
   basket-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
-      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
+      - ASPNETCORE_URLS=http://0.0.0.0:80
     ports:
       - "${BASKET_API_HTTP_PORT}:80"
     volumes:
@@ -85,8 +84,7 @@ services:
   catalog-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
-      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
+      - ASPNETCORE_URLS=http://0.0.0.0:80
     ports:
       - "${CATALOG_API_HTTP_PORT}:80"
     volumes:
@@ -95,8 +93,7 @@ services:
   ordering-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
-      - Kestrel:Endpoints:Http2:Url=http://0.0.0.0:81
+      - ASPNETCORE_URLS=http://0.0.0.0:80
     ports:
       - "${ORDERING_API_HTTP_PORT}:80"
     volumes:
@@ -105,8 +102,7 @@ services:
   identity-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
-      - Kestrel:Endpoints:Https:Url=
+      - ASPNETCORE_URLS=http://0.0.0.0:80
     ports:
       - "${IDENTITY_API_HTTP_PORT}:80"
       - "${IDENTITY_API_HTTPS_PORT}:443"
@@ -117,8 +113,7 @@ services:
   ocelot-gateway-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Dapr
-      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
-      - Kestrel:Endpoints:Https:Url=
+      - ASPNETCORE_URLS=http://0.0.0.0:80
     ports:
       - "${OCELOT_GATEWAY_API_HTTP_PORT}:80"
       - "${OCELOT_GATEWAY_API_HTTPS_PORT}:443"
@@ -129,7 +124,7 @@ services:
   healthchecks-web:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - Kestrel:Endpoints:Http:Url=http://0.0.0.0:80
+      - ASPNETCORE_URLS=http://0.0.0.0:80
     ports:
       - "${HEALTH_CHECKS_WEB_HTTP_PORT}:80"
 

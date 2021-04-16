@@ -30,7 +30,6 @@ namespace MicroCommerce.Identity.API
         {
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
-            services.AddGrpc();
             services.AddControllers();
             services.AddRazorPages();
 
@@ -99,7 +98,6 @@ namespace MicroCommerce.Identity.API
                 endpoints.MapMetrics();
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapGrpcService<HealthService>();
             });
         }
     }
