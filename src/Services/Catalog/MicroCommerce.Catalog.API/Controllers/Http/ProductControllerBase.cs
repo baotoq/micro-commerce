@@ -7,19 +7,19 @@ using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Application.Products.Queries;
 using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Infrastructure.Filters;
+using MicroCommerce.Catalog.API.Infrastructure.Paged;
 using MicroCommerce.Catalog.API.Services;
 using MicroCommerce.Ordering.API;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace MicroCommerce.Catalog.API.Controllers
+namespace MicroCommerce.Catalog.API.Controllers.Http
 {
     [Authorize]
-    [ApiController]
     [Route("api/products")]
     [TranslateResultToActionResult]
-    public class ProductController : BaseController
+    public class ProductController : ApiControllerBase
     {
         public ProductController(ILogger<ProductController> logger, IMediator mediator) : base(logger, mediator)
         {

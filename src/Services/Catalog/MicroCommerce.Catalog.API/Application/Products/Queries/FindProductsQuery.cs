@@ -4,6 +4,7 @@ using AutoMapper;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Infrastructure;
+using MicroCommerce.Catalog.API.Infrastructure.Paged;
 using MicroCommerce.Catalog.API.Persistence;
 using Microsoft.EntityFrameworkCore;
 

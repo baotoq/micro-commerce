@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MicroCommerce.Catalog.API.Infrastructure;
+using MicroCommerce.Catalog.API.Infrastructure.Paged;
 using MicroCommerce.Catalog.API.Persistence.Entities;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Models

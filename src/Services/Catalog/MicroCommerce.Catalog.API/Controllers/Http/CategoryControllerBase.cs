@@ -10,13 +10,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace MicroCommerce.Catalog.API.Application.Categories
+namespace MicroCommerce.Catalog.API.Controllers.Http
 {
     [Authorize]
-    [ApiController]
     [Route("api/categories")]
     [TranslateResultToActionResult]
-    public class CategoryController : BaseController
+    public class CategoryController : ApiControllerBase
     {
         public CategoryController(ILogger<CategoryController> logger, IMediator mediator) : base(logger, mediator)
         {

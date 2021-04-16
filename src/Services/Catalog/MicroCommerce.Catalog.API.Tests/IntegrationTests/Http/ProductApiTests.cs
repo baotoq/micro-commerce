@@ -7,6 +7,7 @@ using FluentAssertions;
 using MicroCommerce.Catalog.API.Application.Products.Commands;
 using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Infrastructure;
+using MicroCommerce.Catalog.API.Infrastructure.Paged;
 using MicroCommerce.Catalog.API.Persistence.Entities;
 using MicroCommerce.Catalog.API.Tests.Helpers;
 using MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure;

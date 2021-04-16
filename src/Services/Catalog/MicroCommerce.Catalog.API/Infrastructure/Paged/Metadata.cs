@@ -1,4 +1,4 @@
-﻿namespace MicroCommerce.Catalog.API.Infrastructure
+﻿namespace MicroCommerce.Catalog.API.Infrastructure.Paged
 {
     public class Metadata
     {

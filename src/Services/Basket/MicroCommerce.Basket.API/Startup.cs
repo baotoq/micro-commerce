@@ -1,4 +1,6 @@
-﻿using MicroCommerce.Shared;
+﻿using MicroCommerce.Basket.API.Persistence.Repositories;
+using MicroCommerce.Basket.API.Persistence.Repositories.Abstractions;
+using MicroCommerce.Shared;
 using MicroCommerce.Shared.Grpc;
 using MicroCommerce.Shared.Identity;
 using MicroCommerce.Shared.Monitoring;
@@ -25,12 +27,14 @@ namespace MicroCommerce.Basket.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            services.AddControllers();
+            services.AddControllers().AddDapr();
 
             services.AddIdentityAuthentication();
 
             services.AddSwagger();
             services.AddMonitoring();
+            
+            services.AddTransient<IBasketRepository, DaprBasketRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,6 +49,7 @@ namespace MicroCommerce.Basket.API
             app.UseSerilogRequestLogging();
 
             app.UseRouting();
+            app.UseCloudEvents();
 
             app.UseMonitoring();
 
@@ -56,6 +61,7 @@ namespace MicroCommerce.Basket.API
                 endpoints.MapHealthChecks();
                 endpoints.MapMetrics();
                 endpoints.MapControllers();
+                endpoints.MapSubscribeHandler();
                 endpoints.MapGrpcService<HealthService>();
             });
         }

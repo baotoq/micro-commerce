@@ -75,9 +75,8 @@ namespace MicroCommerce.Catalog.API
 
             app.UseSerilogRequestLogging();
 
-            app.UseCloudEvents();
-
             app.UseRouting();
+            app.UseCloudEvents();
 
             app.UseMonitoring();
 
