@@ -1,4 +1,4 @@
-name: catalog-api
+name: identity-api
 
 on:
   workflow_dispatch:
