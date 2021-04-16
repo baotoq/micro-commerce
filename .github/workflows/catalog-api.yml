@@ -39,10 +39,9 @@ jobs:
       with:
         project-path: ${{env.PROJECT_PATH}}
 
-    - name: Run Tests
-      working-directory: ${{env.PROJECT_PATH}}.Tests
-      shell: bash
-      run: dotnet test -c Release /p:CollectCoverage=true
+    - uses: ./.github/actions/test-dotnet
+      with:
+        project-path: ${{env.PROJECT_PATH}}.Tests
 
   build_and_push_image:
     name: Build and Push image to registry
