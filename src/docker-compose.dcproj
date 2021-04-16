@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".env" />
+    <None Include="dapr\components\binding-cron-test.yaml" />
     <None Include="dapr\components\secret.json" />
     <None Include="dapr\components\pubsub.yaml" />
     <None Include="dapr\components\secretstore.yaml" />

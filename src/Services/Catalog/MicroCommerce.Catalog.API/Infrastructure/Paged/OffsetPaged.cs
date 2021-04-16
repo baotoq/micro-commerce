@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MicroCommerce.Catalog.API.Infrastructure
+namespace MicroCommerce.Catalog.API.Infrastructure.Paged
 {
     public class OffsetPaged<T>
     {

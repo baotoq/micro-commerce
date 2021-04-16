@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Dapr.Client;
-using MicroCommerce.Catalog.API.IntegrationEvents.Events;
+using MicroCommerce.Catalog.API.IntegrationEvents;
 using MicroCommerce.Ordering.API;
 using MicroCommerce.Shared.EventBus.Abstractions;
 

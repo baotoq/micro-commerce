@@ -2,13 +2,14 @@
 using Dapr;
 using MediatR;
 using MicroCommerce.Catalog.API.Infrastructure;
-using MicroCommerce.Catalog.API.IntegrationEvents.Events;
+using MicroCommerce.Catalog.API.IntegrationEvents;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace MicroCommerce.Catalog.API.IntegrationEvents
+namespace MicroCommerce.Catalog.API.Controllers
 {
-    public class IntegrationEventController : BaseController
+    [Route("events")]
+    public class IntegrationEventController : ApiControllerBase
     {
         public const string PubsubName = "pubsub";
         

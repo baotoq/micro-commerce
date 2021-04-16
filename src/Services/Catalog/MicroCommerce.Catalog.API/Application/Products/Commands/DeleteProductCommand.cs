@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using MediatR;
-using MicroCommerce.Catalog.API.IntegrationEvents.Events;
+using MicroCommerce.Catalog.API.IntegrationEvents;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Persistence.Entities;
 using MicroCommerce.Shared.EventBus.Abstractions;

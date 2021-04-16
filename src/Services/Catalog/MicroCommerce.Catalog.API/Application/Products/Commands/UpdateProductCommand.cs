@@ -6,7 +6,7 @@ using CSharpFunctionalExtensions;
 using FluentValidation;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Models;
-using MicroCommerce.Catalog.API.IntegrationEvents.Events;
+using MicroCommerce.Catalog.API.IntegrationEvents;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Persistence.Entities;
 using MicroCommerce.Shared.EventBus.Abstractions;

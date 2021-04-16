@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace MicroCommerce.Catalog.API.Infrastructure
+namespace MicroCommerce.Catalog.API.Infrastructure.Paged
 {
     public static class OffsetPagedExtensions
     {

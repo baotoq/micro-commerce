@@ -5,7 +5,7 @@ using MediatR;
 using MicroCommerce.Shared.EventBus.Models;
 using MicroCommerce.Shared.FileStorage;
 
-namespace MicroCommerce.Catalog.API.IntegrationEvents.Events
+namespace MicroCommerce.Catalog.API.IntegrationEvents
 {
     public record ProductDeleted : IntegrationEvent, IRequest<Result>
     {
