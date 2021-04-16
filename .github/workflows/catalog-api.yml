@@ -28,7 +28,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - uses: actions/build-test-dotnet@v1
+    - uses: .github/workflows/build-test-dotnet
       with:
         project-path: ${{env.PROJECT_PATH}}
 
