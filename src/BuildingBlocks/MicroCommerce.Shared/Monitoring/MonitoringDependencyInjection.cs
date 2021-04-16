@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Prometheus;
 
@@ -42,13 +43,13 @@ namespace MicroCommerce.Shared.Monitoring
             {
                 builder
                     .SetSampler(new AlwaysOnSampler())
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(tracingOptions.ServiceName))
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddGrpcClientInstrumentation()
-                    .AddSqlClientInstrumentation(o => o.SetTextCommandContent = true)
+                    .AddSqlClientInstrumentation(o => o.SetDbStatementForText = true)
                     .AddZipkinExporter(options =>
                     {
-                        options.ServiceName = tracingOptions.ServiceName;
                         options.Endpoint = new Uri(tracingOptions.Endpoint);
                     });
             });
