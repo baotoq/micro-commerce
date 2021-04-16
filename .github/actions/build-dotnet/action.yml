@@ -1,10 +1,14 @@
-name: Restore and build dotnet
-description: Restore and build dotnet
+name: Run dotnet restore and build
+description: Run dotnet restore and build
 
 inputs:
   project-path:
     required: true
-    description: "Project path"
+    description: Project path
+  configuration:
+    required: false
+    default: Release
+    description: Build configuration
 
 runs:
   using: composite
@@ -17,4 +21,4 @@ runs:
     - name: Build
       working-directory: ${{inputs.project-path}}
       shell: bash
-      run: dotnet build -c Release --no-restore
+      run: dotnet build -c ${{inputs.configuration}} --no-restore
