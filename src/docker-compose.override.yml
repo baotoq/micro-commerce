@@ -72,6 +72,11 @@ services:
       - ./monitoring:/etc/alertmanager
       - alertmanager-data:/alertmanager
 
+  mail:
+    ports:
+      - "37408:37408"
+      - "25:25"
+
   basket-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
