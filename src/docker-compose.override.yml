@@ -107,7 +107,7 @@ services:
   identity-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
     ports:
       - "${IDENTITY_API_HTTP_PORT}:80"
       - "${IDENTITY_API_HTTPS_PORT}:443"
@@ -118,7 +118,7 @@ services:
   ocelot-gateway-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Dapr
-      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
     ports:
       - "${OCELOT_GATEWAY_API_HTTP_PORT}:80"
       - "${OCELOT_GATEWAY_API_HTTPS_PORT}:443"
