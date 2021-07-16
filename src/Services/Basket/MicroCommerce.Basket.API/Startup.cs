@@ -1,7 +1,6 @@
 ﻿using MicroCommerce.Basket.API.Persistence.Repositories;
 using MicroCommerce.Basket.API.Persistence.Repositories.Abstractions;
 using MicroCommerce.Shared;
-using MicroCommerce.Shared.Grpc;
 using MicroCommerce.Shared.Identity;
 using MicroCommerce.Shared.Monitoring;
 using Microsoft.AspNetCore.Builder;
@@ -32,7 +31,7 @@ namespace MicroCommerce.Basket.API
 
             services.AddSwagger();
             services.AddMonitoring();
-            
+
             services.AddTransient<IBasketRepository, DaprBasketRepository>();
         }
 

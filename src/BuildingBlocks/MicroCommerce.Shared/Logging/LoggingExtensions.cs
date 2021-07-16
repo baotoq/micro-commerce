@@ -7,9 +7,11 @@ namespace MicroCommerce.Shared.Logging
     {
         public static IHostBuilder UseLogging(this IHostBuilder hostBuilder)
         {
-            hostBuilder.UseSerilog((context, loggerConfiguration) =>
+            hostBuilder.UseSerilog((context, services, loggerConfiguration) =>
             {
-                loggerConfiguration.ReadFrom.Configuration(context.Configuration);
+                loggerConfiguration
+                    .ReadFrom.Configuration(context.Configuration)
+                    .ReadFrom.Services(services);
             });
 
             return hostBuilder;
