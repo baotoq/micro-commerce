@@ -18,7 +18,7 @@ services:
       - ./create-database.sh:/docker-entrypoint-initdb.d/create-database.sh
     ports:
       - "${POSTGRES_PORT}:5432"
-  
+
   flyway:
     entrypoint: []
     command:

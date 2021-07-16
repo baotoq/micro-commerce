@@ -1,0 +1,33 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "alertmanager": "StartWithoutDebugging",
+        "basket-api": "StartDebugging",
+        "basket-api-dapr": "StartWithoutDebugging",
+        "catalog-api": "StartDebugging",
+        "catalog-api-dapr": "StartWithoutDebugging",
+        "dapr-dashboard": "StartWithoutDebugging",
+        "dapr-placement": "StartWithoutDebugging",
+        "flyway": "StartWithoutDebugging",
+        "grafana": "StartWithoutDebugging",
+        "healthchecks-web": "StartDebugging",
+        "healthchecks-web-dapr": "StartWithoutDebugging",
+        "identity-api": "StartDebugging",
+        "identity-api-dapr": "StartWithoutDebugging",
+        "mail": "StartWithoutDebugging",
+        "ocelot-gateway-api": "StartDebugging",
+        "ocelot-gateway-api-dapr": "StartWithoutDebugging",
+        "ordering-api": "StartDebugging",
+        "ordering-api-dapr": "StartWithoutDebugging",
+        "postgres": "StartWithoutDebugging",
+        "prometheus": "StartWithoutDebugging",
+        "redis": "StartWithoutDebugging",
+        "seq": "StartWithoutDebugging",
+        "zipkin": "StartWithoutDebugging"
+      }
+    }
+  }
+}
