@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import Link from "next/link";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { useSession, getSession } from 'next-auth/client'
 
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
@@ -47,6 +48,8 @@ export const getServerSideProps: GetServerSideProps<ProductsProps> = async (cont
   const { data } = await axios.get<ProductsProps>(
     `${process.env.MICRO_COMMERCE_GATEWAY_API_URL}/c/api/products?page=${page}&pageSize=${pageSize}`
   );
+
+  console.log((await getSession(context)))
 
   return {
     props: {

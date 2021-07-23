@@ -12,7 +12,7 @@ namespace MicroCommerce.Catalog.API.Controllers
     public class IntegrationEventController : ApiControllerBase
     {
         public const string PubsubName = "pubsub";
-        
+
         public IntegrationEventController(ILogger<IntegrationEventController> logger, IMediator mediator) : base(logger, mediator)
         {
         }
