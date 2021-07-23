@@ -47,6 +47,7 @@ namespace MicroCommerce.Identity.API
 
             services.AddIdentityServer(options =>
                 {
+                    options.IssuerUri = Configuration["Identity:IssuerUri"];
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;

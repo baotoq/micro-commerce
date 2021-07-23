@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
@@ -12,16 +13,17 @@ namespace MicroCommerce.Identity.API.Configuration
             new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
+                new IdentityResources.Email(),
+                new IdentityResourceProfileWithRole()
             };
 
         public static IEnumerable<ApiResource> ApiResources =>
             new[]
             {
                 new ApiResource(IdentityConstants.ApiResource.BasketApi) { Scopes = new[] { IdentityConstants.ApiResource.BasketApi } },
-                new ApiResource(IdentityConstants.ApiResource.CatalogApi) { Scopes = new[] { IdentityConstants.ApiResource.CatalogApi } },
+                new ApiResource(IdentityConstants.ApiResource.CatalogApi) { Scopes = new[] { IdentityConstants.ApiResource.CatalogApi }, UserClaims = new[] { JwtClaimTypes.Role } },
                 new ApiResource(IdentityConstants.ApiResource.OrderingApi) { Scopes = new[] { IdentityConstants.ApiResource.OrderingApi } },
-                new ApiResource(IdentityServerConstants.LocalApi.ScopeName) { Scopes = new[] { IdentityServerConstants.LocalApi.ScopeName } },
+                new ApiResource(IdentityServerConstants.LocalApi.ScopeName) { Scopes = new[] { IdentityServerConstants.LocalApi.ScopeName }, UserClaims = new[] { JwtClaimTypes.Role }  },
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
@@ -73,7 +75,6 @@ namespace MicroCommerce.Identity.API.Configuration
                     {
                         $"{configuration["Client:React:Uri"]}/api/auth/callback/identity-server4",
                         $"{configuration["Client:React:Uri"]}/auth/login-callback",
-                        $"{configuration["Client:React:Uri"]}/auth/login-callback",
                         $"{configuration["Client:React:Uri"]}/silent-renew.html",
                         $"{configuration["Client:React:Uri"]}",
                     },
@@ -91,6 +92,46 @@ namespace MicroCommerce.Identity.API.Configuration
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.LocalApi.ScopeName,
+                        IdentityConstants.ApiResource.BasketApi,
+                        IdentityConstants.ApiResource.CatalogApi,
+                        IdentityConstants.ApiResource.OrderingApi,
+                    }
+                },
+                new Client
+                {
+                    ClientName = "angular-web",
+                    ClientId = "angular-web",
+                    AccessTokenType = AccessTokenType.Jwt,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowAccessTokensViaBrowser = true,
+
+                    RequireClientSecret = false,
+                    RequireConsent = false,
+                    RequirePkce = true,
+
+                    AllowOfflineAccess = true,
+
+                    RedirectUris =
+                    {
+                        $"{configuration["Client:Angular:Uri"]}/silent-renew.html",
+                        $"{configuration["Client:Angular:Uri"]}/index.html",
+                        $"{configuration["Client:Angular:Uri"]}",
+                    },
+                    PostLogoutRedirectUris =
+                    {
+                        $"{configuration["Client:Angular:Uri"]}"
+                    },
+                    AllowedCorsOrigins =
+                    {
+                        $"{configuration["Client:Angular:Uri"]}"
+                    },
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
                         IdentityServerConstants.LocalApi.ScopeName,
                         IdentityConstants.ApiResource.BasketApi,
                         IdentityConstants.ApiResource.CatalogApi,
