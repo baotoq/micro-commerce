@@ -1,6 +1,14 @@
 version: '3.8'
 
 services:
+  nginx-proxy:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: on-failure
+
   redis:
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "P@ssw0rd"]
     ports:
@@ -36,18 +44,21 @@ services:
       - ./Services/Identity/MicroCommerce.Identity.API/Migrations/scripts:/sql/identity
 
   zipkin:
+    environment:
+      - VIRTUAL_HOST=local.zipkin.com
     ports:
       - "${ZIPKIN_PORT}:9411"
 
   seq:
     environment:
+      - VIRTUAL_HOST=local.seq.com
       - ACCEPT_EULA=Y
     volumes:
       - seq-data:/data
-    ports:
-      - "${SEQ_PORT}:80"
 
   prometheus:
+    environment:
+      - VIRTUAL_HOST=local.prometheus.com
     ports:
       - "${PROMETHEUS_PORT}:9090"
     volumes:
@@ -56,6 +67,7 @@ services:
 
   grafana:
     environment:
+      - VIRTUAL_HOST=local.grafana.com
       - GF_SECURITY_ADMIN_PASSWORD=P@ssw0rd
       - PROMETHEUS_URL=http://prometheus:9090
       - DASHBOARDS_BACKUP_FOLDER=/var/lib/grafana/dashboards
@@ -66,6 +78,8 @@ services:
       - ./monitoring/grafana/dashboard-backup:/var/lib/grafana/dashboards
 
   alertmanager:
+    environment:
+      - VIRTUAL_HOST=local.alertmanager.com
     ports:
       - "${ALERTMANAGER_PORT}:9093"
     volumes:
@@ -79,50 +93,45 @@ services:
 
   basket-api:
     environment:
+      - VIRTUAL_HOST=local.basket-api.com
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-    ports:
-      - "${BASKET_API_HTTP_PORT}:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   catalog-api:
     environment:
+      - VIRTUAL_HOST=local.catalog-api.com
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-    ports:
-      - "${CATALOG_API_HTTP_PORT}:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   ordering-api:
     environment:
+      - VIRTUAL_HOST=local.ordering-api.com
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-    ports:
-      - "${ORDERING_API_HTTP_PORT}:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   identity-api:
     environment:
+      - VIRTUAL_HOST=local.identity-api.com
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
     ports:
-      - "${IDENTITY_API_HTTP_PORT}:80"
       - "${IDENTITY_API_HTTPS_PORT}:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       #- ./certs:/root/.aspnet/https:ro
 
-  ocelot-gateway-api:
+  gateway-api:
     environment:
+      - VIRTUAL_HOST=local.gateway-api.com
       - ASPNETCORE_ENVIRONMENT=Dapr
       - ASPNETCORE_URLS=http://0.0.0.0:80
-    ports:
-      - "${OCELOT_GATEWAY_API_HTTP_PORT}:80"
-      - "${OCELOT_GATEWAY_API_HTTPS_PORT}:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -130,10 +139,9 @@ services:
 
   healthchecks-web:
     environment:
+      - VIRTUAL_HOST=local.healthchecks-web.com
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-    ports:
-      - "${HEALTH_CHECKS_WEB_HTTP_PORT}:80"
 
 volumes:
   postgres-data:

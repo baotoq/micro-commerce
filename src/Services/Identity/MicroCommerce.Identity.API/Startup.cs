@@ -2,7 +2,6 @@
 using MicroCommerce.Identity.API.Data;
 using MicroCommerce.Identity.API.Data.Models;
 using MicroCommerce.Shared;
-using MicroCommerce.Shared.Grpc;
 using MicroCommerce.Shared.Monitoring;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,7 +46,7 @@ namespace MicroCommerce.Identity.API
 
             services.AddIdentityServer(options =>
                 {
-                    options.IssuerUri = Configuration["Identity:IssuerUri"];
+                    options.IssuerUri = Configuration["Identity:Uri:External"];
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;

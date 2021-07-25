@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -61,6 +61,7 @@ namespace MicroCommerce.Shared
                 c.OAuthClientSecret(secret);
                 c.OAuthUsePkce();
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", name);
+                c.RoutePrefix = string.Empty;
             });
         }
     }

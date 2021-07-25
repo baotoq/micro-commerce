@@ -1,46 +1,61 @@
 version: '3.8'
 
 services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: microcommerce-nginx-proxy
+    restart: on-failure
+
   redis:
     image: redis:alpine
+    container_name: microcommerce-redis
     restart: on-failure
 
   postgres:
     image: postgres:latest
+    container_name: microcommerce-postgres
     restart: on-failure
 
   flyway:
     image: flyway/flyway:latest-alpine
+    container_name: microcommerce-flyway
     restart: on-failure
     depends_on:
       - postgres
 
   zipkin:
     image: openzipkin/zipkin:latest
+    container_name: microcommerce-zipkin
     restart: on-failure
 
   seq:
     image: datalust/seq:latest
+    container_name: microcommerce-seq
     restart: on-failure
 
   prometheus:
     image: prom/prometheus:latest
+    container_name: microcommerce-prometheus
     restart: on-failure
 
   grafana:
     image: grafana/grafana:latest
+    container_name: microcommerce-grafana
     restart: on-failure
 
   alertmanager:
     image: prom/alertmanager:latest
+    container_name: microcommerce-alertmanager
     restart: on-failure
 
   mail:
     image: jijiechen/papercut:latest
+    container_name: microcommerce-mail
     restart: on-failure
 
   basket-api:
     image: ${DOCKER_REGISTRY-}microcommerce-basket-api
+    container_name: microcommerce-basket-api
     build:
       context: .
       dockerfile: Services/Basket/MicroCommerce.Basket.API/Dockerfile
@@ -48,6 +63,7 @@ services:
 
   basket-api-dapr:
     image: daprio/daprd:latest
+    container_name: microcommerce-basket-api-dapr
     command: [ "./daprd", "-app-id", "basket-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -62,6 +78,7 @@ services:
 
   catalog-api:
     image: ${DOCKER_REGISTRY-}microcommerce-catalog-api
+    container_name: microcommerce-catalog-api
     build:
       context: .
       dockerfile: Services/Catalog/MicroCommerce.Catalog.API/Dockerfile
@@ -69,6 +86,7 @@ services:
 
   catalog-api-dapr:
     image: daprio/daprd:latest
+    container_name: microcommerce-catalog-api-dapr
     command: [ "./daprd", "-app-id", "catalog-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -83,6 +101,7 @@ services:
 
   ordering-api:
     image: ${DOCKER_REGISTRY-}microcommerce-ordering-api
+    container_name: microcommerce-ordering-api
     build:
       context: .
       dockerfile: Services/Ordering/MicroCommerce.Ordering.API/Dockerfile
@@ -90,6 +109,7 @@ services:
 
   ordering-api-dapr:
     image: daprio/daprd:latest
+    container_name: microcommerce-ordering-api-dapr
     command: [ "./daprd", "-app-id", "ordering-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -104,6 +124,7 @@ services:
 
   identity-api:
     image: ${DOCKER_REGISTRY-}microcommerce-identity-api
+    container_name: microcommerce-identity-api
     build:
       context: .
       dockerfile: Services/Identity/MicroCommerce.Identity.API/Dockerfile
@@ -111,6 +132,7 @@ services:
 
   identity-api-dapr:
     image: daprio/daprd:latest
+    container_name: microcommerce-identity-api-dapr
     command: [ "./daprd", "-app-id", "identity-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
@@ -123,29 +145,32 @@ services:
     network_mode: service:identity-api
     restart: on-failure
 
-  ocelot-gateway-api:
+  gateway-api:
     image: ${DOCKER_REGISTRY-}ocelot-gateway-api
+    container_name: microcommerce-gateway-api
     build:
       context: .
       dockerfile: Gateways/OcelotGateway.API/Dockerfile
     restart: on-failure
 
-  ocelot-gateway-api-dapr:
+  gateway-api-dapr:
     image: daprio/daprd:latest
-    command: [ "./daprd", "-app-id", "ocelot-gateway-api", "-app-port", "80", "-app-protocol", "http",
+    container_name: microcommerce-gateway-api-dapr
+    command: [ "./daprd", "-app-id", "gateway-api", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
     ]
     depends_on:
-      - ocelot-gateway-api
+      - gateway-api
     volumes:
       - ./dapr/components:/components
       - ./dapr/config.yaml:/config.yaml
-    network_mode: service:ocelot-gateway-api
+    network_mode: service:gateway-api
     restart: on-failure
 
   healthchecks-web:
     image: ${DOCKER_REGISTRY-}healthchecks-web
+    container_name: microcommerce-healthchecks-web
     build:
       context: .
       dockerfile: Webs/HealthChecks.Web/Dockerfile
@@ -153,6 +178,7 @@ services:
 
   healthchecks-web-dapr:
     image: daprio/daprd:latest
+    container_name: microcommerce-healthchecks-web-dapr
     command: [ "./daprd", "-app-id", "healthchecks-web", "-app-port", "80", "-app-protocol", "http",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components", "-config", "/config.yaml"
