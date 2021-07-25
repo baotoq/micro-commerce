@@ -20,6 +20,8 @@ namespace MicroCommerce.Shared.Identity
                     options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters.ValidateIssuer = false;
                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+                    options.TokenValidationParameters.NameClaimType = "name";
+                    options.TokenValidationParameters.RoleClaimType = "role";
                 });
         }
     }

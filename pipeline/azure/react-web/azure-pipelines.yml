@@ -6,7 +6,7 @@ trigger:
       - ref/tags/*
   paths:
     include:
-      - src/Webs/MicroCommerce.Web
+      - src/Webs/MicroCommerce.React.Web
       - deploy/k8s/react-web
       - pipeline/azure/react-web
 pr: none

@@ -20,7 +20,7 @@ namespace MicroCommerce.Identity.API.Configuration
         public static IEnumerable<ApiResource> ApiResources =>
             new[]
             {
-                new ApiResource(IdentityConstants.ApiResource.BasketApi) { Scopes = new[] { IdentityConstants.ApiResource.BasketApi } },
+                new ApiResource(IdentityConstants.ApiResource.BasketApi) { Scopes = new[] { IdentityConstants.ApiResource.BasketApi }, UserClaims = new[] { JwtClaimTypes.Role } },
                 new ApiResource(IdentityConstants.ApiResource.CatalogApi) { Scopes = new[] { IdentityConstants.ApiResource.CatalogApi }, UserClaims = new[] { JwtClaimTypes.Role } },
                 new ApiResource(IdentityConstants.ApiResource.OrderingApi) { Scopes = new[] { IdentityConstants.ApiResource.OrderingApi } },
                 new ApiResource(IdentityServerConstants.LocalApi.ScopeName) { Scopes = new[] { IdentityServerConstants.LocalApi.ScopeName }, UserClaims = new[] { JwtClaimTypes.Role }  },
@@ -41,18 +41,23 @@ namespace MicroCommerce.Identity.API.Configuration
                 new Client
                 {
                     ClientId = "swagger",
+                    ClientName = "swagger",
                     ClientSecrets = { new Secret("secret".Sha256()) },
+                    AccessTokenType = AccessTokenType.Jwt,
                     AllowedGrantTypes = GrantTypes.Code,
 
                     RequireConsent = false,
                     RequirePkce = true,
 
-                    RedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/swagger/oauth2-redirect.html").ToList(),
-                    PostLogoutRedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/swagger/oauth2-redirect.html").ToList(),
+                    RedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/oauth2-redirect.html").ToList(),
+                    PostLogoutRedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/oauth2-redirect.html").ToList(),
                     AllowedCorsOrigins = configuration.GetSection("Client:Swagger:Uri").Get<string[]>(),
 
                     AllowedScopes = new List<string>
                     {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
                         IdentityServerConstants.LocalApi.ScopeName,
                         IdentityConstants.ApiResource.BasketApi,
                         IdentityConstants.ApiResource.CatalogApi,
@@ -61,13 +66,13 @@ namespace MicroCommerce.Identity.API.Configuration
                 },
                 new Client
                 {
-                    ClientName = "react-web",
                     ClientId = "react-web",
+                    ClientName = "react-web",
+                    ClientSecrets =  { new Secret("secret".Sha256()) },
                     AccessTokenType = AccessTokenType.Jwt,
                     AllowedGrantTypes = GrantTypes.Code,
                     AllowAccessTokensViaBrowser = true,
 
-                    ClientSecrets =  { new Secret("secret".Sha256()) },
                     RequireConsent = false,
                     RequirePkce = false,
 
@@ -101,8 +106,8 @@ namespace MicroCommerce.Identity.API.Configuration
                 },
                 new Client
                 {
-                    ClientName = "angular-web",
                     ClientId = "angular-web",
+                    ClientName = "angular-web",
                     AccessTokenType = AccessTokenType.Jwt,
                     AllowedGrantTypes = GrantTypes.Code,
                     AllowAccessTokensViaBrowser = true,
