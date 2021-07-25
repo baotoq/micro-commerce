@@ -20,10 +20,26 @@ namespace MicroCommerce.Identity.API.Configuration
         public static IEnumerable<ApiResource> ApiResources =>
             new[]
             {
-                new ApiResource(IdentityConstants.ApiResource.BasketApi) { Scopes = new[] { IdentityConstants.ApiResource.BasketApi }, UserClaims = new[] { JwtClaimTypes.Role, JwtClaimTypes.Name } },
-                new ApiResource(IdentityConstants.ApiResource.CatalogApi) { Scopes = new[] { IdentityConstants.ApiResource.CatalogApi }, UserClaims = new[] { JwtClaimTypes.Role } },
-                new ApiResource(IdentityConstants.ApiResource.OrderingApi) { Scopes = new[] { IdentityConstants.ApiResource.OrderingApi } },
-                new ApiResource(IdentityServerConstants.LocalApi.ScopeName) { Scopes = new[] { IdentityServerConstants.LocalApi.ScopeName }, UserClaims = new[] { JwtClaimTypes.Role }  },
+                new ApiResource(IdentityConstants.ApiResource.BasketApi)
+                {
+                    Scopes = new[] { IdentityConstants.ApiResource.BasketApi },
+                    UserClaims = new[] { JwtClaimTypes.Name, JwtClaimTypes.Role }
+                },
+                new ApiResource(IdentityConstants.ApiResource.CatalogApi)
+                {
+                    Scopes = new[] { IdentityConstants.ApiResource.CatalogApi },
+                    UserClaims = new[] { JwtClaimTypes.Name, JwtClaimTypes.Role }
+                },
+                new ApiResource(IdentityConstants.ApiResource.OrderingApi)
+                {
+                    Scopes = new[] { IdentityConstants.ApiResource.OrderingApi },
+                    UserClaims = new[] { JwtClaimTypes.Name, JwtClaimTypes.Role }
+                },
+                new ApiResource(IdentityServerConstants.LocalApi.ScopeName)
+                {
+                    Scopes = new[] { IdentityServerConstants.LocalApi.ScopeName },
+                    UserClaims = new[] { JwtClaimTypes.Name, JwtClaimTypes.Role, }
+                },
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
@@ -55,9 +71,6 @@ namespace MicroCommerce.Identity.API.Configuration
 
                     AllowedScopes = new List<string>
                     {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.Email,
                         IdentityServerConstants.LocalApi.ScopeName,
                         IdentityConstants.ApiResource.BasketApi,
                         IdentityConstants.ApiResource.CatalogApi,
@@ -135,6 +148,7 @@ namespace MicroCommerce.Identity.API.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.OfflineAccess,
                         IdentityServerConstants.LocalApi.ScopeName,
                         IdentityConstants.ApiResource.BasketApi,
                         IdentityConstants.ApiResource.CatalogApi,
