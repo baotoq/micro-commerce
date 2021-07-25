@@ -7,25 +7,27 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs:ro 
     restart: on-failure
 
   redis:
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "P@ssw0rd"]
-    ports:
-      - "${REDIS_PORT}:6379"
+    environment:
+      - VIRTUAL_HOST=redis.${DOMAIN}
+      - VIRTUAL_PORT=6379
     volumes:
       - redis-data:/data
 
   postgres:
     environment:
+      - VIRTUAL_HOST=postgres.${DOMAIN}
+      - VIRTUAL_PORT=5432
       - POSTGRES_MULTIPLE_DATABASES=catalog,identity
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=P@ssw0rd
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./create-database.sh:/docker-entrypoint-initdb.d/create-database.sh
-    ports:
-      - "${POSTGRES_PORT}:5432"
 
   flyway:
     entrypoint: []
@@ -45,43 +47,39 @@ services:
 
   zipkin:
     environment:
-      - VIRTUAL_HOST=local.zipkin.com
-    ports:
-      - "${ZIPKIN_PORT}:9411"
+      - VIRTUAL_HOST=zipkin.${DOMAIN}
+      - VIRTUAL_PORT=9411
 
   seq:
     environment:
-      - VIRTUAL_HOST=local.seq.com
+      - VIRTUAL_HOST=seq.${DOMAIN}
       - ACCEPT_EULA=Y
     volumes:
       - seq-data:/data
 
   prometheus:
     environment:
-      - VIRTUAL_HOST=local.prometheus.com
-    ports:
-      - "${PROMETHEUS_PORT}:9090"
+      - VIRTUAL_HOST=prometheus.${DOMAIN}
+      - VIRTUAL_PORT=9090
     volumes:
       - ./monitoring:/etc/prometheus
       - prometheus-data:/prometheus
 
   grafana:
     environment:
-      - VIRTUAL_HOST=local.grafana.com
+      - VIRTUAL_HOST=grafana.${DOMAIN}
+      - VIRTUAL_PORT=3000
       - GF_SECURITY_ADMIN_PASSWORD=P@ssw0rd
       - PROMETHEUS_URL=http://prometheus:9090
       - DASHBOARDS_BACKUP_FOLDER=/var/lib/grafana/dashboards
-    ports:
-      - "${GRAFANA_PORT}:3000"
     volumes:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
       - ./monitoring/grafana/dashboard-backup:/var/lib/grafana/dashboards
 
   alertmanager:
     environment:
-      - VIRTUAL_HOST=local.alertmanager.com
-    ports:
-      - "${ALERTMANAGER_PORT}:9093"
+      - VIRTUAL_HOST=alertmanager.${DOMAIN}
+      - VIRTUAL_PORT=9093
     volumes:
       - ./monitoring:/etc/alertmanager
       - alertmanager-data:/alertmanager
@@ -93,55 +91,44 @@ services:
 
   basket-api:
     environment:
-      - VIRTUAL_HOST=local.basket-api.com
+      - VIRTUAL_HOST=basket-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   catalog-api:
     environment:
-      - VIRTUAL_HOST=local.catalog-api.com
+      - VIRTUAL_HOST=catalog-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   ordering-api:
     environment:
-      - VIRTUAL_HOST=local.ordering-api.com
+      - VIRTUAL_HOST=ordering-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   identity-api:
     environment:
-      - VIRTUAL_HOST=local.identity-api.com
+      - VIRTUAL_HOST=identity-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
-    ports:
-      - "${IDENTITY_API_HTTPS_PORT}:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      #- ./certs:/root/.aspnet/https:ro
+      - ./certs/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt
 
   gateway-api:
     environment:
-      - VIRTUAL_HOST=local.gateway-api.com
+      - VIRTUAL_HOST=gateway-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Dapr
-      - ASPNETCORE_URLS=http://0.0.0.0:80
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      #- ./certs:/root/.aspnet/https:ro
 
   healthchecks-web:
     environment:
-      - VIRTUAL_HOST=local.healthchecks-web.com
+      - VIRTUAL_HOST=healthchecks-web.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
 
 volumes:
   postgres-data:

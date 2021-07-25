@@ -20,7 +20,7 @@ namespace MicroCommerce.Identity.API.Configuration
         public static IEnumerable<ApiResource> ApiResources =>
             new[]
             {
-                new ApiResource(IdentityConstants.ApiResource.BasketApi) { Scopes = new[] { IdentityConstants.ApiResource.BasketApi }, UserClaims = new[] { JwtClaimTypes.Role } },
+                new ApiResource(IdentityConstants.ApiResource.BasketApi) { Scopes = new[] { IdentityConstants.ApiResource.BasketApi }, UserClaims = new[] { JwtClaimTypes.Role, JwtClaimTypes.Name } },
                 new ApiResource(IdentityConstants.ApiResource.CatalogApi) { Scopes = new[] { IdentityConstants.ApiResource.CatalogApi }, UserClaims = new[] { JwtClaimTypes.Role } },
                 new ApiResource(IdentityConstants.ApiResource.OrderingApi) { Scopes = new[] { IdentityConstants.ApiResource.OrderingApi } },
                 new ApiResource(IdentityServerConstants.LocalApi.ScopeName) { Scopes = new[] { IdentityServerConstants.LocalApi.ScopeName }, UserClaims = new[] { JwtClaimTypes.Role }  },
@@ -49,8 +49,8 @@ namespace MicroCommerce.Identity.API.Configuration
                     RequireConsent = false,
                     RequirePkce = true,
 
-                    RedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/oauth2-redirect.html").ToList(),
-                    PostLogoutRedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/oauth2-redirect.html").ToList(),
+                    RedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/swagger/oauth2-redirect.html").ToList(),
+                    PostLogoutRedirectUris = configuration.GetSection("Client:Swagger:Uri").Get<string[]>().Select(s => s + "/swagger/oauth2-redirect.html").ToList(),
                     AllowedCorsOrigins = configuration.GetSection("Client:Swagger:Uri").Get<string[]>(),
 
                     AllowedScopes = new List<string>
@@ -62,7 +62,7 @@ namespace MicroCommerce.Identity.API.Configuration
                         IdentityConstants.ApiResource.BasketApi,
                         IdentityConstants.ApiResource.CatalogApi,
                         IdentityConstants.ApiResource.OrderingApi,
-                    }
+                    },
                 },
                 new Client
                 {
@@ -71,7 +71,7 @@ namespace MicroCommerce.Identity.API.Configuration
                     ClientSecrets =  { new Secret("secret".Sha256()) },
                     AccessTokenType = AccessTokenType.Jwt,
                     AllowedGrantTypes = GrantTypes.Code,
-                    AllowAccessTokensViaBrowser = true,
+                    AllowOfflineAccess = true,
 
                     RequireConsent = false,
                     RequirePkce = false,
@@ -110,13 +110,11 @@ namespace MicroCommerce.Identity.API.Configuration
                     ClientName = "angular-web",
                     AccessTokenType = AccessTokenType.Jwt,
                     AllowedGrantTypes = GrantTypes.Code,
-                    AllowAccessTokensViaBrowser = true,
+                    AllowOfflineAccess = true,
 
                     RequireClientSecret = false,
                     RequireConsent = false,
                     RequirePkce = true,
-
-                    AllowOfflineAccess = true,
 
                     RedirectUris =
                     {
