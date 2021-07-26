@@ -1,13 +1,8 @@
+﻿using MicroCommerce.Shared.Logging;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace MicroCommerce.Identity.Web
+namespace MicroCommerce.Identity.STS.Identity
 {
     public class Program
     {
@@ -18,6 +13,7 @@ namespace MicroCommerce.Identity.Web
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
