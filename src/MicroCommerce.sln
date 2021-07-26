@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31512.422
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{86BE01A9-6F1C-4BC0-8D85-18ADEEDAD068}"
 EndProject
@@ -54,7 +54,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{85E1C3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.Shared", "Services\Identity\Shared\MicroCommerce.Identity.Shared\MicroCommerce.Identity.Shared.csproj", "{E0BD4F37-E399-4B8A-A159-172F54B6FEEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Identity.EntityFramework", "Services\Identity\Shared\MicroCommerce.Identity.EntityFramework\MicroCommerce.Identity.EntityFramework.csproj", "{EC665434-856B-4FCF-96D4-379B19D5B68F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.EntityFramework", "Services\Identity\Shared\MicroCommerce.Identity.EntityFramework\MicroCommerce.Identity.EntityFramework.csproj", "{EC665434-856B-4FCF-96D4-379B19D5B68F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.EntityFramework.Npgsql", "Services\Identity\Shared\MicroCommerce.Identity.EntityFramework.Npgsql\MicroCommerce.Identity.EntityFramework.Npgsql.csproj", "{5B876289-7EE8-47D6-999A-F467C54E9D83}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Webs", "Webs", "{9F61EC93-EB37-4915-88EC-15C995C3D3DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.Web", "Services\Identity\Webs\MicroCommerce.Identity.Web\MicroCommerce.Identity.Web.csproj", "{2DE046D4-EDC0-412C-BB14-E3FDD7369637}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Identity.Web.Admin", "Services\Identity\Webs\MicroCommerce.Identity.Web.Admin\MicroCommerce.Identity.Web.Admin.csproj", "{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -118,6 +126,18 @@ Global
 		{EC665434-856B-4FCF-96D4-379B19D5B68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC665434-856B-4FCF-96D4-379B19D5B68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC665434-856B-4FCF-96D4-379B19D5B68F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B876289-7EE8-47D6-999A-F467C54E9D83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B876289-7EE8-47D6-999A-F467C54E9D83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B876289-7EE8-47D6-999A-F467C54E9D83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B876289-7EE8-47D6-999A-F467C54E9D83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DE046D4-EDC0-412C-BB14-E3FDD7369637}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DE046D4-EDC0-412C-BB14-E3FDD7369637}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DE046D4-EDC0-412C-BB14-E3FDD7369637}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DE046D4-EDC0-412C-BB14-E3FDD7369637}.Release|Any CPU.Build.0 = Release|Any CPU
+		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +161,10 @@ Global
 		{85E1C3C7-DDE0-410A-B2AF-3E3391770365} = {08E0DE9A-9263-41BB-B6F3-88B8FA4A7D85}
 		{E0BD4F37-E399-4B8A-A159-172F54B6FEEA} = {85E1C3C7-DDE0-410A-B2AF-3E3391770365}
 		{EC665434-856B-4FCF-96D4-379B19D5B68F} = {85E1C3C7-DDE0-410A-B2AF-3E3391770365}
+		{5B876289-7EE8-47D6-999A-F467C54E9D83} = {85E1C3C7-DDE0-410A-B2AF-3E3391770365}
+		{9F61EC93-EB37-4915-88EC-15C995C3D3DD} = {08E0DE9A-9263-41BB-B6F3-88B8FA4A7D85}
+		{2DE046D4-EDC0-412C-BB14-E3FDD7369637} = {9F61EC93-EB37-4915-88EC-15C995C3D3DD}
+		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4} = {9F61EC93-EB37-4915-88EC-15C995C3D3DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8519BD33-1A81-4DD1-B549-06A9FF84481E}
