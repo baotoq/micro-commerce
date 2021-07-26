@@ -1,21 +1,29 @@
-﻿using MicroCommerce.Identity.Web.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace MicroCommerce.Identity.Web.Controllers
+// Original file: https://github.com/IdentityServer/IdentityServer4.Quickstart.UI
+// Modified by Jan Škoruba
+
+using System;
+using System.Threading.Tasks;
+using IdentityServer4.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Skoruba.IdentityServer4.Shared.Configuration.Helpers;
+using MicroCommerce.Identity.STS.Identity.Helpers;
+using MicroCommerce.Identity.STS.Identity.ViewModels.Home;
+
+namespace MicroCommerce.Identity.STS.Identity.Controllers
 {
+    [SecurityHeaders]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IIdentityServerInteractionService _interaction;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IIdentityServerInteractionService interaction)
         {
-            _logger = logger;
+            _interaction = interaction;
         }
 
         public IActionResult Index()
@@ -23,15 +31,46 @@ namespace MicroCommerce.Identity.Web.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SetLanguage(string culture, string returnUrl)
         {
-            return View();
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+            return LocalRedirect(returnUrl);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SelectTheme(string theme, string returnUrl)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            Response.Cookies.Append(
+                ThemeHelpers.CookieThemeKey,
+                theme,
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+
+            return LocalRedirect(returnUrl);
+        }
+
+        /// <summary>
+        /// Shows the error page
+        /// </summary>
+        public async Task<IActionResult> Error(string errorId)
+        {
+            var vm = new ErrorViewModel();
+
+            // retrieve error details from identityserver
+            var message = await _interaction.GetErrorContextAsync(errorId);
+            if (message != null)
+            {
+                vm.Error = message;
+            }
+
+            return View("Error", vm);
         }
     }
 }

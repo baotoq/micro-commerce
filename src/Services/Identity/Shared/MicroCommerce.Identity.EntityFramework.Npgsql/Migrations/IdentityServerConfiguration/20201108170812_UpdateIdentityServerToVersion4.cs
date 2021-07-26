@@ -30,7 +30,7 @@ namespace MicroCommerce.Identity.Admin.EntityFramework.PostgreSQL.Migrations.Ide
             migrationBuilder.DropForeignKey(
                 name: "FK_IdentityProperties_IdentityResources_IdentityResourceId",
                 table: "IdentityProperties");
-            
+
             migrationBuilder.DropIndex(
                 name: "IX_ApiScopes_ApiResourceId",
                 table: "ApiScopes");
@@ -257,13 +257,13 @@ namespace MicroCommerce.Identity.Admin.EntityFramework.PostgreSQL.Migrations.Ide
 
             migrationBuilder.Sql(@"INSERT INTO ""IdentityResourceClaims""
  (""Id"", ""Type"", ""IdentityResourceId"")
-SELECT 
+SELECT
  ""Id"", ""Type"", ""IdentityResourceId""
 FROM ""IdentityClaims"";");
 
             migrationBuilder.Sql(@"INSERT INTO ""ApiResourceScopes""
  (""Scope"", ""ApiResourceId"")
-SELECT 
+SELECT
  ""Name"", ""ApiResourceId""
 FROM ""ApiScopes"";");
 
@@ -488,7 +488,7 @@ FROM ""ApiResourceSecrets"";");
 
             migrationBuilder.Sql(@"INSERT INTO ""IdentityClaims""
  (""Id"", ""Type"", ""IdentityResourceId"")
-SELECT 
+SELECT
  ""Id"", ""Type"", ""IdentityResourceId""
 FROM ""IdentityResourceClaims"";");
 

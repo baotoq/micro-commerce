@@ -7,7 +7,7 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./certs:/etc/nginx/certs:ro 
+      - ./certs:/etc/nginx/certs:ro
     restart: on-failure
 
   redis:
@@ -109,6 +109,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+
+  identity-web:
+    environment:
+      - VIRTUAL_HOST=identity-web.${DOMAIN}
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ./certs/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt
 
   identity-api:
     environment:

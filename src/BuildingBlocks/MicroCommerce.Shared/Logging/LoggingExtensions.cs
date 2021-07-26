@@ -5,7 +5,7 @@ namespace MicroCommerce.Shared.Logging
 {
     public static class LoggingExtensions
     {
-        public static IHostBuilder UseLogging(this IHostBuilder hostBuilder)
+        public static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder)
         {
             hostBuilder.UseSerilog((context, services, loggerConfiguration) =>
             {
