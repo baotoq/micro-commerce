@@ -93,45 +93,31 @@ services:
     environment:
       - VIRTUAL_HOST=basket-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   catalog-api:
     environment:
       - VIRTUAL_HOST=catalog-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   ordering-api:
     environment:
       - VIRTUAL_HOST=ordering-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   identity-web:
     environment:
       - VIRTUAL_HOST=identity-web.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ./certs/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt
 
   identity-api:
     environment:
       - VIRTUAL_HOST=identity-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ./certs/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt
 
   gateway-api:
     environment:
       - VIRTUAL_HOST=gateway-api.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Dapr
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   healthchecks-web:
     environment:
