@@ -1,44 +1,41 @@
-﻿using System.Threading.Tasks;
-using Dapr.Client;
+﻿using Dapr.Client;
 using MicroCommerce.Basket.API.Models;
 using MicroCommerce.Basket.API.Persistence.Repositories.Abstractions;
-using Microsoft.Extensions.Logging;
 
-namespace MicroCommerce.Basket.API.Persistence.Repositories
+namespace MicroCommerce.Basket.API.Persistence.Repositories;
+
+public class DaprBasketRepository : IBasketRepository
 {
-    public class DaprBasketRepository : IBasketRepository
+    private const string StoreName = "statestore";
+
+    private readonly ILogger<DaprBasketRepository> _logger;
+    private readonly DaprClient _daprClient;
+
+    public DaprBasketRepository(ILogger<DaprBasketRepository> logger, DaprClient daprClient)
     {
-        private const string StoreName = "statestore";
+        _logger = logger;
+        _daprClient = daprClient;
+    }
 
-        private readonly ILogger<DaprBasketRepository> _logger;
-        private readonly DaprClient _daprClient;
+    public Task<CustomerBasket> GetBasketAsync(string buyerId)
+    {
+        return _daprClient.GetStateAsync<CustomerBasket>(StoreName, buyerId);
+    }
 
-        public DaprBasketRepository(ILogger<DaprBasketRepository> logger, DaprClient daprClient)
-        {
-            _logger = logger;
-            _daprClient = daprClient;
-        }
+    public async Task<CustomerBasket> UpdateBasketAsync(CustomerBasket basket)
+    {
+        var state = await _daprClient.GetStateEntryAsync<CustomerBasket>(StoreName, basket.BuyerId);
+        state.Value = basket;
 
-        public Task<CustomerBasket> GetBasketAsync(string buyerId)
-        {
-            return _daprClient.GetStateAsync<CustomerBasket>(StoreName, buyerId);
-        }
+        await state.SaveAsync();
 
-        public async Task<CustomerBasket> UpdateBasketAsync(CustomerBasket basket)
-        {
-            var state = await _daprClient.GetStateEntryAsync<CustomerBasket>(StoreName, basket.BuyerId);
-            state.Value = basket;
+        _logger.LogInformation("Basket item persisted successfully");
 
-            await state.SaveAsync();
+        return await GetBasketAsync(basket.BuyerId);
+    }
 
-            _logger.LogInformation("Basket item persisted successfully");
-
-            return await GetBasketAsync(basket.BuyerId);
-        }
-
-        public async Task DeleteBasketAsync(string id)
-        {
-            await _daprClient.DeleteStateAsync(StoreName, id);
-        }
+    public async Task DeleteBasketAsync(string id)
+    {
+        await _daprClient.DeleteStateAsync(StoreName, id);
     }
 }

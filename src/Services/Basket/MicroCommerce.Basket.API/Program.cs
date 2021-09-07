@@ -1,22 +1,30 @@
-﻿using MicroCommerce.Shared.Logging;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+﻿using MicroCommerce.Basket.API.EndpointDefinitions;
+using MicroCommerce.Basket.API.Models;
+using MicroCommerce.Shared.Identity;
+using Serilog;
 
-namespace MicroCommerce.Basket.API
+var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+
+builder.Services.AddEndpointDefinitions(typeof(BasketItem));
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityAuthentication();
+
+await using var app = builder.Build();
+
+if (builder.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureLogging()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseRouting();
+
+app.UseSerilogRequestLogging();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpointDefinitions();
+
+app.Run();
