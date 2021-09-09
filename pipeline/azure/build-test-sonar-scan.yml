@@ -4,6 +4,12 @@ parameters:
   runTest: true
 
 steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk'
+    inputs:
+      version: 6.x
+      includePreviewVersions: true
+
   - task: SonarCloudPrepare@1
     displayName: Prepare analysis on Sonar
     inputs:
