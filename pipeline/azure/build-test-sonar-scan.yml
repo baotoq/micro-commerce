@@ -9,6 +9,11 @@ steps:
     inputs:
       version: 6.x
       includePreviewVersions: true
+  
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk'
+    inputs:
+      version: 5.x
 
   - task: SonarCloudPrepare@1
     displayName: Prepare analysis on Sonar
@@ -32,12 +37,13 @@ steps:
           projects: src/${{ parameters.projectPath }}.Tests
           arguments: /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/coverage --logger trx
           publishTestResults: true
+          nobuild: true
 
-  - task: PublishCodeCoverageResults@1
-    displayName: Publish code coverage report
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
+      - task: PublishCodeCoverageResults@1
+        displayName: Publish code coverage report
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
 
   - task: SonarCloudAnalyze@1
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
