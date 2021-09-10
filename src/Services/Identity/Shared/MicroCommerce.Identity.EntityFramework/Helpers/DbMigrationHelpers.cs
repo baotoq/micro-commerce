@@ -44,13 +44,13 @@ namespace MicroCommerce.Identity.Admin.EntityFramework.Shared.Helpers
                 var services = serviceScope.ServiceProvider;
 
                 if ((databaseMigrationsConfiguration != null && databaseMigrationsConfiguration.ApplyDatabaseMigrations)
-                    || (applyDbMigrationWithDataSeedFromProgramArguments))
+                    || applyDbMigrationWithDataSeedFromProgramArguments)
                 {
                     await EnsureDatabasesMigratedAsync<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(services);
                 }
 
                 if ((seedConfiguration != null && seedConfiguration.ApplySeed)
-                    || (applyDbMigrationWithDataSeedFromProgramArguments))
+                    || applyDbMigrationWithDataSeedFromProgramArguments)
                 {
                     await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(services);
                 }
@@ -65,56 +65,54 @@ namespace MicroCommerce.Identity.Admin.EntityFramework.Shared.Helpers
             where TAuditLogDbContext : DbContext
             where TDataProtectionDbContext : DbContext
         {
-            using (var scope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using var scope = services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+            using (var context = scope.ServiceProvider.GetRequiredService<TPersistedGrantDbContext>())
             {
-                using (var context = scope.ServiceProvider.GetRequiredService<TPersistedGrantDbContext>())
-                {
-                    await context.Database.MigrateAsync();
-                }
+                await context.Database.MigrateAsync();
+            }
 
-                using (var context = scope.ServiceProvider.GetRequiredService<TIdentityDbContext>())
-                {
-                    await context.Database.MigrateAsync();
-                }
+            using (var context = scope.ServiceProvider.GetRequiredService<TIdentityDbContext>())
+            {
+                await context.Database.MigrateAsync();
+            }
 
-                using (var context = scope.ServiceProvider.GetRequiredService<TConfigurationDbContext>())
-                {
-                    await context.Database.MigrateAsync();
-                }
+            using (var context = scope.ServiceProvider.GetRequiredService<TConfigurationDbContext>())
+            {
+                await context.Database.MigrateAsync();
+            }
 
-                using (var context = scope.ServiceProvider.GetRequiredService<TLogDbContext>())
-                {
-                    await context.Database.MigrateAsync();
-                }
+            using (var context = scope.ServiceProvider.GetRequiredService<TLogDbContext>())
+            {
+                await context.Database.MigrateAsync();
+            }
 
-                using (var context = scope.ServiceProvider.GetRequiredService<TAuditLogDbContext>())
-                {
-                    await context.Database.MigrateAsync();
-                }
+            using (var context = scope.ServiceProvider.GetRequiredService<TAuditLogDbContext>())
+            {
+                await context.Database.MigrateAsync();
+            }
 
-                using (var context = scope.ServiceProvider.GetRequiredService<TDataProtectionDbContext>())
-                {
-                    await context.Database.MigrateAsync();
-                }
+            using (var context = scope.ServiceProvider.GetRequiredService<TDataProtectionDbContext>())
+            {
+                await context.Database.MigrateAsync();
             }
         }
 
         public static async Task EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(IServiceProvider serviceProvider)
-        where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
-        where TUser : IdentityUser, new()
-        where TRole : IdentityRole, new()
+            where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
+            where TUser : IdentityUser, new()
+            where TRole : IdentityRole, new()
         {
-            using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<TIdentityServerDbContext>();
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TUser>>();
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<TRole>>();
-                var idsDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityServerData>();
-                var idDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityData>();
+            using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
-                await EnsureSeedIdentityServerData(context, idsDataConfiguration);
-                await EnsureSeedIdentityData(userManager, roleManager, idDataConfiguration);
-            }
+            var context = scope.ServiceProvider.GetRequiredService<TIdentityServerDbContext>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TUser>>();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<TRole>>();
+            var idsDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityServerData>();
+            var idDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityData>();
+
+            await EnsureSeedIdentityServerData(context, idsDataConfiguration);
+            await EnsureSeedIdentityData(userManager, roleManager, idDataConfiguration);
         }
 
         /// <summary>
@@ -260,11 +258,3 @@ namespace MicroCommerce.Identity.Admin.EntityFramework.Shared.Helpers
         }
     }
 }
-
-
-
-
-
-
-
-

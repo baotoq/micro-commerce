@@ -12,4 +12,8 @@
     <ProjectReference Include="..\MicroCommerce.Identity.EntityFramework\MicroCommerce.Identity.EntityFramework.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="scripts\" />
+  </ItemGroup>
+
 </Project>

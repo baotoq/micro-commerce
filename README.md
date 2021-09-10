@@ -24,6 +24,7 @@ It demonstrates how to wire up small micro-services into a larger application us
 
 - **[`TypeScript`](https://www.typescriptlang.org)** - A typed superset of JavaScript that compiles to plain JavaScript
 - **[`Next.js`](https://nextjs.org)** - A modern server side rendering for React application
+- **[`Angular`](https://angular.io/)** - A modern SPA application
   
 ### Back-end
 

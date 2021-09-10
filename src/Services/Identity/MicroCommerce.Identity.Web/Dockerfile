@@ -11,7 +11,7 @@ COPY --from=node_base . .
 
 WORKDIR /src
 
-COPY ["Services/Identity/Webs/MicroCommerce.Identity.Web/package.json", "Services/Identity/Webs/MicroCommerce.Identity.Web/"]
+COPY ["Services/Identity/MicroCommerce.Identity.Web/package*.json", "Services/Identity/MicroCommerce.Identity.Web/"]
 RUN npm install
 
 COPY ["BuildingBlocks/MicroCommerce.Shared/MicroCommerce.Shared.csproj", "BuildingBlocks/MicroCommerce.Shared/"]
