@@ -21,10 +21,13 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.PostgreSQL;
 using Skoruba.IdentityServer4.Shared.Configuration.Authentication;
 using Skoruba.IdentityServer4.Shared.Configuration.Configuration.Identity;
 using MicroCommerce.Shared.Monitoring;
+using IdentityServer4.EntityFramework.Storage;
+using System.Reflection;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
+using MicroCommerce.Identity.EntityFramework.Npgsql;
 
 namespace MicroCommerce.Identity.STS.Identity.Helpers
 {
@@ -163,10 +166,15 @@ namespace MicroCommerce.Identity.STS.Identity.Helpers
         {
             var identityConnectionString = configuration.GetConnectionString(ConfigurationConsts.IdentityDbConnectionStringKey);
             var configurationConnectionString = configuration.GetConnectionString(ConfigurationConsts.ConfigurationDbConnectionStringKey);
-            var persistedGrantsConnectionString = configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey);
+            var persistedGrantConnectionString = configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey);
             var dataProtectionConnectionString = configuration.GetConnectionString(ConfigurationConsts.DataProtectionDbConnectionStringKey);
 
-            services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TDataProtectionDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, dataProtectionConnectionString);
+            var migrationsAssembly = new Action<NpgsqlDbContextOptionsBuilder>(sql => sql.MigrationsAssembly(typeof(NpgsqlMigration).GetTypeInfo().Assembly.GetName().Name));
+
+            services.AddDbContext<TIdentityDbContext>(options => options.UseNpgsql(identityConnectionString, migrationsAssembly));
+            services.AddConfigurationDbContext<TConfigurationDbContext>(options => options.ConfigureDbContext = b => b.UseNpgsql(configurationConnectionString, migrationsAssembly));
+            services.AddOperationalDbContext<TPersistedGrantDbContext>(options => options.ConfigureDbContext = b => b.UseNpgsql(persistedGrantConnectionString, migrationsAssembly));
+            services.AddDbContext<TDataProtectionDbContext>(options => options.UseNpgsql(dataProtectionConnectionString, migrationsAssembly));
         }
 
         /// <summary>
@@ -341,14 +349,15 @@ namespace MicroCommerce.Identity.STS.Identity.Helpers
             var dataProtectionTableName = DbContextHelpers.GetEntityTable<TDataProtectionDbContext>(scope.ServiceProvider);
 
             healthChecksBuilder
-                       .AddNpgSql(configurationDbConnectionString, name: "ConfigurationDb",
-                           healthQuery: $"SELECT * FROM \"{configurationTableName}\" LIMIT 1")
-                       .AddNpgSql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
-                           healthQuery: $"SELECT * FROM \"{persistedGrantTableName}\" LIMIT 1")
-                       .AddNpgSql(identityDbConnectionString, name: "IdentityDb",
-                           healthQuery: $"SELECT * FROM \"{identityTableName}\" LIMIT 1")
-                       .AddNpgSql(dataProtectionDbConnectionString, name: "DataProtectionDb",
-                           healthQuery: $"SELECT * FROM \"{dataProtectionTableName}\"  LIMIT 1");
+                       .AddNpgSql(configurationDbConnectionString, healthQuery: queryGenerate(configurationTableName), name: "ConfigurationDb")
+                       .AddNpgSql(configurationDbConnectionString, healthQuery: queryGenerate(persistedGrantTableName), name: "PersistentGrantsDb")
+                       .AddNpgSql(configurationDbConnectionString, healthQuery: queryGenerate(identityTableName), name: "IdentityDb")
+                       .AddNpgSql(configurationDbConnectionString, healthQuery: queryGenerate(dataProtectionTableName), name: "DataProtectionDb");
+
+            static string queryGenerate(string tableName)
+            {
+                return $"SELECT * FROM \"{tableName}\" LIMIT 1";
+            }
         }
     }
 }

@@ -20,11 +20,13 @@ services:
 
   postgres:
     environment:
-      - VIRTUAL_HOST=postgres.${DOMAIN}
-      - VIRTUAL_PORT=5432
-      - POSTGRES_MULTIPLE_DATABASES=catalog,identity
+      #- VIRTUAL_HOST=postgres.${DOMAIN}
+      #- VIRTUAL_PORT=5432
+      - POSTGRES_MULTIPLE_DATABASES=catalog,identity-api,identity-web
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=P@ssw0rd
+    ports:
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./create-database.sh:/docker-entrypoint-initdb.d/create-database.sh
@@ -36,14 +38,16 @@ services:
       - -c
       - |
         flyway -url=jdbc:postgresql://postgres:5432/catalog -locations=filesystem:/sql/catalog migrate
-        flyway -url=jdbc:postgresql://postgres:5432/identity -locations=filesystem:/sql/identity migrate
+        flyway -url=jdbc:postgresql://postgres:5432/identity-api -locations=filesystem:/sql/identity-api migrate
+        flyway -url=jdbc:postgresql://postgres:5432/identity-web -locations=filesystem:/sql/identity-web migrate
     environment:
       - FLYWAY_USER=postgres
       - FLYWAY_PASSWORD=P@ssw0rd
       - FLYWAY_CONNECT_RETRIES=15
     volumes:
       - ./Services/Catalog/MicroCommerce.Catalog.API/Migrations/scripts:/sql/catalog
-      - ./Services/Identity/MicroCommerce.Identity.API/Migrations/scripts:/sql/identity
+      - ./Services/Identity/MicroCommerce.Identity.API/Migrations/scripts:/sql/identity-api
+      - ./Services/Identity/Shared/MicroCommerce.Identity.EntityFramework.Npgsql/scripts:/sql/identity-web
 
   zipkin:
     environment:
