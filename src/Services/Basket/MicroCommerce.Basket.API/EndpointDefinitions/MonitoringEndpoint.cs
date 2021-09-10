@@ -12,7 +12,8 @@ public class MonitoringEndpoint : IEndpointDefinition
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapSubscribeHandler();
+            endpoints.MapHealthChecks();
+            endpoints.MapMetrics();
         });
     }
 

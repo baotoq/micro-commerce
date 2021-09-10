@@ -1,6 +1,4 @@
-﻿using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +13,7 @@ using System;
 using Skoruba.IdentityServer4.Shared.Configuration.Helpers;
 using MicroCommerce.Shared.Monitoring;
 using Serilog;
+using Prometheus;
 
 namespace MicroCommerce.Identity.STS.Identity
 {
@@ -63,7 +62,7 @@ namespace MicroCommerce.Identity.STS.Identity
             // Add authorization policies for MVC
             services.AddAuthorizationPolicies(rootConfiguration);
 
-            services.AddIdSHealthChecks<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminIdentityDbContext, IdentityServerDataProtectionDbContext>(Configuration);
+            services.AddIdSMonitoring<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminIdentityDbContext, IdentityServerDataProtectionDbContext>(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -90,6 +89,9 @@ namespace MicroCommerce.Identity.STS.Identity
             app.UseMvcLocalizationServices();
 
             app.UseRouting();
+
+            app.UseMonitoring();
+
             app.UseIdentityServer();
             app.UseAuthorization();
 
@@ -97,6 +99,7 @@ namespace MicroCommerce.Identity.STS.Identity
             {
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapHealthChecks();
+                endpoints.MapMetrics();
             });
         }
 

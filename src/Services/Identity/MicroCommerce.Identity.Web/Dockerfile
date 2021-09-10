@@ -16,12 +16,12 @@ RUN npm install
 
 COPY ["BuildingBlocks/MicroCommerce.Shared/MicroCommerce.Shared.csproj", "BuildingBlocks/MicroCommerce.Shared/"]
 COPY ["Services/Identity/Shared/", "Services/Identity/Shared/"]
-COPY ["Services/Identity/Webs/MicroCommerce.Identity.Web/MicroCommerce.Identity.Web.csproj", "Services/Identity/Webs/MicroCommerce.Identity.Web/"]
+COPY ["Services/Identity/MicroCommerce.Identity.Web/MicroCommerce.Identity.Web.csproj", "Services/Identity/Webs/MicroCommerce.Identity.Web/"]
 RUN dotnet restore "Services/Identity/Webs/MicroCommerce.Identity.Web/MicroCommerce.Identity.Web.csproj"
 
 COPY ["BuildingBlocks/MicroCommerce.Shared/", "BuildingBlocks/MicroCommerce.Shared/"]
-COPY ["Services/Identity/Webs/MicroCommerce.Identity.Web/", "Services/Identity/Webs/MicroCommerce.Identity.Web/"]
-WORKDIR "/src/Services/Identity/Webs/MicroCommerce.Identity.Web"
+COPY ["Services/Identity/MicroCommerce.Identity.Web/", "Services/Identity/MicroCommerce.Identity.Web/"]
+WORKDIR "/src/Services/Identity/MicroCommerce.Identity.Web"
 RUN dotnet build "MicroCommerce.Identity.Web.csproj" -c Release -o /app/build
 
 FROM build AS publish

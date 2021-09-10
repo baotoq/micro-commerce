@@ -127,7 +127,22 @@ services:
     container_name: microcommerce-identity-web
     build:
       context: .
-      dockerfile: Services/Identity/Webs/MicroCommerce.Identity.Web/Dockerfile
+      dockerfile: Services/Identity/MicroCommerce.Identity.Web/Dockerfile
+    restart: on-failure
+
+  identity-web-dapr:
+    image: daprio/daprd:latest
+    container_name: microcommerce-identity-web-dapr
+    command: [ "./daprd", "-app-id", "identity-web", "-app-port", "80", "-app-protocol", "http",
+      "-placement-host-address", "dapr-placement:50005",
+      "-components-path", "/components", "-config", "/config.yaml"
+    ]
+    depends_on:
+      - identity-web
+    volumes:
+      - ./dapr/components:/components
+      - ./dapr/config.yaml:/config.yaml
+    network_mode: service:identity-web
     restart: on-failure
 
   identity-api:
