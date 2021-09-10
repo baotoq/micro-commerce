@@ -28,9 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\BuildingBlocks\MicroCommerce.Shared\MicroCommerce.Shared.csproj" />
-    <ProjectReference Include="..\..\Shared\MicroCommerce.Identity.EntityFramework.Npgsql\MicroCommerce.Identity.EntityFramework.Npgsql.csproj" />
-    <ProjectReference Include="..\..\Shared\MicroCommerce.Identity.EntityFramework\MicroCommerce.Identity.EntityFramework.csproj" />
-    <ProjectReference Include="..\..\Shared\MicroCommerce.Identity.Shared\MicroCommerce.Identity.Shared.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\MicroCommerce.Shared\MicroCommerce.Shared.csproj" />
+    <ProjectReference Include="..\Shared\MicroCommerce.Identity.EntityFramework.Npgsql\MicroCommerce.Identity.EntityFramework.Npgsql.csproj" />
+    <ProjectReference Include="..\Shared\MicroCommerce.Identity.EntityFramework\MicroCommerce.Identity.EntityFramework.csproj" />
+    <ProjectReference Include="..\Shared\MicroCommerce.Identity.Shared\MicroCommerce.Identity.Shared.csproj" />
   </ItemGroup>
 </Project>

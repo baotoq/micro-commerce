@@ -58,11 +58,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.Enti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.EntityFramework.Npgsql", "Services\Identity\Shared\MicroCommerce.Identity.EntityFramework.Npgsql\MicroCommerce.Identity.EntityFramework.Npgsql.csproj", "{5B876289-7EE8-47D6-999A-F467C54E9D83}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Webs", "Webs", "{9F61EC93-EB37-4915-88EC-15C995C3D3DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.Web", "Services\Identity\MicroCommerce.Identity.Web\MicroCommerce.Identity.Web.csproj", "{DD05B737-5BCF-4807-80F1-29D6693DDCE5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.Web", "Services\Identity\Webs\MicroCommerce.Identity.Web\MicroCommerce.Identity.Web.csproj", "{2DE046D4-EDC0-412C-BB14-E3FDD7369637}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Identity.Web.Admin", "Services\Identity\Webs\MicroCommerce.Identity.Web.Admin\MicroCommerce.Identity.Web.Admin.csproj", "{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.Web.Admin", "Services\Identity\MicroCommerce.Identity.Web.Admin\MicroCommerce.Identity.Web.Admin.csproj", "{8866C4CF-FAC9-4191-9A63-CDC26F56E65C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,14 +128,14 @@ Global
 		{5B876289-7EE8-47D6-999A-F467C54E9D83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B876289-7EE8-47D6-999A-F467C54E9D83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B876289-7EE8-47D6-999A-F467C54E9D83}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2DE046D4-EDC0-412C-BB14-E3FDD7369637}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2DE046D4-EDC0-412C-BB14-E3FDD7369637}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2DE046D4-EDC0-412C-BB14-E3FDD7369637}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2DE046D4-EDC0-412C-BB14-E3FDD7369637}.Release|Any CPU.Build.0 = Release|Any CPU
-		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD05B737-5BCF-4807-80F1-29D6693DDCE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD05B737-5BCF-4807-80F1-29D6693DDCE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD05B737-5BCF-4807-80F1-29D6693DDCE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD05B737-5BCF-4807-80F1-29D6693DDCE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8866C4CF-FAC9-4191-9A63-CDC26F56E65C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8866C4CF-FAC9-4191-9A63-CDC26F56E65C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8866C4CF-FAC9-4191-9A63-CDC26F56E65C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8866C4CF-FAC9-4191-9A63-CDC26F56E65C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -162,9 +160,8 @@ Global
 		{E0BD4F37-E399-4B8A-A159-172F54B6FEEA} = {85E1C3C7-DDE0-410A-B2AF-3E3391770365}
 		{EC665434-856B-4FCF-96D4-379B19D5B68F} = {85E1C3C7-DDE0-410A-B2AF-3E3391770365}
 		{5B876289-7EE8-47D6-999A-F467C54E9D83} = {85E1C3C7-DDE0-410A-B2AF-3E3391770365}
-		{9F61EC93-EB37-4915-88EC-15C995C3D3DD} = {08E0DE9A-9263-41BB-B6F3-88B8FA4A7D85}
-		{2DE046D4-EDC0-412C-BB14-E3FDD7369637} = {9F61EC93-EB37-4915-88EC-15C995C3D3DD}
-		{685222AC-2ED7-4F8A-ABF5-9714DA1F58E4} = {9F61EC93-EB37-4915-88EC-15C995C3D3DD}
+		{DD05B737-5BCF-4807-80F1-29D6693DDCE5} = {08E0DE9A-9263-41BB-B6F3-88B8FA4A7D85}
+		{8866C4CF-FAC9-4191-9A63-CDC26F56E65C} = {08E0DE9A-9263-41BB-B6F3-88B8FA4A7D85}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8519BD33-1A81-4DD1-B549-06A9FF84481E}
