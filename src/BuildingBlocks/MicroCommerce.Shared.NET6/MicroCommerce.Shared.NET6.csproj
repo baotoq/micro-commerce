@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\BuildingBlocks\MicroCommerce.Shared\MicroCommerce.Shared.csproj" />
+    <ProjectReference Include="..\MicroCommerce.Shared\MicroCommerce.Shared.csproj" />
   </ItemGroup>
 
 </Project>
