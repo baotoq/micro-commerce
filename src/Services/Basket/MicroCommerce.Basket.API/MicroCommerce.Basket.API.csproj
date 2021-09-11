@@ -14,11 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BuildingBlocks\MicroCommerce.Shared\MicroCommerce.Shared.csproj" />
+    <Folder Include="IntegrationEvents\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IntegrationEvents\" />
+    <ProjectReference Include="..\..\..\..\MicroCommerce.Shared.NET6\MicroCommerce.Shared.NET6.csproj" />
   </ItemGroup>
 
 </Project>

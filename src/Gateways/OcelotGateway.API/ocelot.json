@@ -29,11 +29,11 @@
       "UpstreamHttpMethod": [],
       "DownstreamHostAndPorts": [
         {
-          "Host": "catalog-api",
-          "Port": 80
+          "Host": "127.0.0.1",
+          "Port": 3500
         }
       ],
-      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamPathTemplate": "/v1.0/invoke/catalog-api/method/{everything}",
       "DownstreamScheme": "http"
     },
     {

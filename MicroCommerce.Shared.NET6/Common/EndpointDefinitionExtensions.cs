@@ -1,4 +1,7 @@
-﻿namespace MicroCommerce.Basket.API.EndpointDefinitions;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace MicroCommerce.Shared.Common;
 
 public static class EndpointDefinitionExtensions
 {
@@ -27,5 +30,28 @@ public static class EndpointDefinitionExtensions
         {
             endpoint.DefineEnpoints(app);
         }
+    }
+
+    public static IServiceCollection AddEndpointDefinition<TEndpoint>(this IServiceCollection services) where TEndpoint : class
+    {
+        if (!typeof(TEndpoint).IsAssignableTo(typeof(IEndpointDefinition)))
+        {
+            throw new ArgumentException($"{nameof(TEndpoint)} must be implemented {nameof(IEndpointDefinition)}");
+        }
+
+        var endpoint = Activator.CreateInstance(typeof(TEndpoint)) as IEndpointDefinition;
+
+        endpoint!.DefineServices(services);
+
+        services.AddSingleton<TEndpoint>();
+
+        return services;
+    }
+
+    public static WebApplication UseEndpointDefinition<TEndpoint>(this WebApplication app) where TEndpoint : IEndpointDefinition
+    {
+        var endpoint = app.Services.GetRequiredService<TEndpoint>();
+        endpoint.DefineEnpoints(app);
+        return app;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using MicroCommerce.Basket.API.Models;
 using MicroCommerce.Basket.API.Persistence.Repositories;
 using MicroCommerce.Basket.API.Persistence.Repositories.Abstractions;
+using MicroCommerce.Shared.Common;
 
 namespace MicroCommerce.Basket.API.EndpointDefinitions;
 

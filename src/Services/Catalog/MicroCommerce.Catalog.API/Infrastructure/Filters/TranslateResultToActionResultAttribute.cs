@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using IResult = CSharpFunctionalExtensions.IResult;
 
 namespace MicroCommerce.Catalog.API.Infrastructure.Filters
 {

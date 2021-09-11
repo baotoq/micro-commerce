@@ -1,4 +1,7 @@
-﻿namespace MicroCommerce.Basket.API.EndpointDefinitions;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace MicroCommerce.Shared.Common;
 
 public interface IEndpointDefinition
 {

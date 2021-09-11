@@ -1,7 +1,9 @@
 ﻿using MicroCommerce.Shared.Monitoring;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 
-namespace MicroCommerce.Basket.API.EndpointDefinitions;
+namespace MicroCommerce.Shared.Common;
 
 public class MonitoringEndpoint : IEndpointDefinition
 {
