@@ -64,7 +64,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Identity.Web.
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "MicroCommerce.Angular.Web", "Webs\MicroCommerce.Angular.Web\MicroCommerce.Angular.Web.esproj", "{563339DF-EF8A-410E-A74C-67A71DCF41DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Shared.NET6", "..\MicroCommerce.Shared.NET6\MicroCommerce.Shared.NET6.csproj", "{39185D7E-D6C6-48E8-95D0-D45AD0980DC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCommerce.Shared.NET6", "BuildingBlocks\MicroCommerce.Shared.NET6\MicroCommerce.Shared.NET6.csproj", "{C669D7F2-5E36-4D17-AE91-0B679A564062}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -146,10 +146,10 @@ Global
 		{563339DF-EF8A-410E-A74C-67A71DCF41DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{563339DF-EF8A-410E-A74C-67A71DCF41DB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{563339DF-EF8A-410E-A74C-67A71DCF41DB}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{39185D7E-D6C6-48E8-95D0-D45AD0980DC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39185D7E-D6C6-48E8-95D0-D45AD0980DC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39185D7E-D6C6-48E8-95D0-D45AD0980DC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39185D7E-D6C6-48E8-95D0-D45AD0980DC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C669D7F2-5E36-4D17-AE91-0B679A564062}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C669D7F2-5E36-4D17-AE91-0B679A564062}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C669D7F2-5E36-4D17-AE91-0B679A564062}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C669D7F2-5E36-4D17-AE91-0B679A564062}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -177,7 +177,7 @@ Global
 		{DD05B737-5BCF-4807-80F1-29D6693DDCE5} = {08E0DE9A-9263-41BB-B6F3-88B8FA4A7D85}
 		{8866C4CF-FAC9-4191-9A63-CDC26F56E65C} = {08E0DE9A-9263-41BB-B6F3-88B8FA4A7D85}
 		{563339DF-EF8A-410E-A74C-67A71DCF41DB} = {9128FCAF-533C-4590-96FD-25C173E46C64}
-		{39185D7E-D6C6-48E8-95D0-D45AD0980DC6} = {F61E80D3-0322-418F-AE08-EAC1ED02DFD3}
+		{C669D7F2-5E36-4D17-AE91-0B679A564062} = {F61E80D3-0322-418F-AE08-EAC1ED02DFD3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8519BD33-1A81-4DD1-B549-06A9FF84481E}
