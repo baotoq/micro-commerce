@@ -121,7 +121,7 @@ services:
   gateway-api:
     environment:
       - VIRTUAL_HOST=gateway-api.${DOMAIN}
-      - ASPNETCORE_ENVIRONMENT=Dapr
+      - ASPNETCORE_ENVIRONMENT=Development
 
   healthchecks-web:
     environment:

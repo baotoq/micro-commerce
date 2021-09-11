@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using MicroCommerce.Shared;
+using MicroCommerce.Shared.Common;
 
 namespace MicroCommerce.Basket.API.EndpointDefinitions;
 

@@ -214,12 +214,6 @@ services:
     network_mode: service:healthchecks-web
     restart: on-failure
 
-  dapr-dashboard:
-    image: daprio/dashboard:latest
-    ports:
-      - "8081:8080"
-    restart: on-failure
-
   dapr-placement:
     image: daprio/placement
     command: ["./placement", "-port", "50005"]

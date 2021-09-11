@@ -1,4 +1,6 @@
-﻿namespace MicroCommerce.Basket.API.EndpointDefinitions;
+﻿using MicroCommerce.Shared.Common;
+
+namespace MicroCommerce.Basket.API.EndpointDefinitions;
 
 public class DaprEndpoint : IEndpointDefinition
 {

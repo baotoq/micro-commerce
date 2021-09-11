@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 
 namespace MicroCommerce.Shared.Logging
@@ -15,6 +16,13 @@ namespace MicroCommerce.Shared.Logging
             });
 
             return hostBuilder;
+        }
+
+        public static IWebHostBuilder ConfigureLogging(this IWebHostBuilder webHostBuilder)
+        {
+            webHostBuilder.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+
+            return webHostBuilder;
         }
     }
 }

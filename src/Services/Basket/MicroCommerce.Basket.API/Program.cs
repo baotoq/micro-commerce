@@ -1,13 +1,15 @@
-﻿using MicroCommerce.Basket.API.EndpointDefinitions;
-using MicroCommerce.Basket.API.Models;
+﻿using MicroCommerce.Basket.API.Models;
+using MicroCommerce.Shared.Common;
 using MicroCommerce.Shared.Identity;
+using MicroCommerce.Shared.Logging;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+builder.WebHost.ConfigureLogging();
 
 builder.Services.AddEndpointDefinitions(typeof(BasketItem));
+builder.Services.AddEndpointDefinition<MonitoringEndpoint>();
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityAuthentication();
 
@@ -18,13 +20,14 @@ if (builder.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.UseRouting();
-
 app.UseSerilogRequestLogging();
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseEndpointDefinitions();
+app.UseEndpointDefinition<MonitoringEndpoint>();
 
-app.Run();
+await app.RunAsync();
