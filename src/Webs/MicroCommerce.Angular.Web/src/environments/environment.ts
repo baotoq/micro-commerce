@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   uri: {
-    authority: 'https://localhost:15001',
-    gateway: 'http://localhost:16000',
+    authority: 'https://identity-web.microcommerce.localhost',
+    gateway: 'https://gateway-api.microcommerce.localhost',
   },
 };
 

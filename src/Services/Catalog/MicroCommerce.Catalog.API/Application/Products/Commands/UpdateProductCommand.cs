@@ -16,19 +16,19 @@ using Microsoft.AspNetCore.Http;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Commands
 {
-    public class UpdateProductCommand : IRequest<Result<ProductDto>>
+    public record UpdateProductCommand : IRequest<Result<ProductDto>>
     {
         public int Id { get; init; }
 
-        public string Name { get; set; }
+        public string Name { get; init; }
 
-        public decimal Price { get; set; }
+        public decimal Price { get; init; }
 
-        public int StockQuantity { get; set; }
+        public int StockQuantity { get; init; }
 
-        public string Description { get; set; }
+        public string Description { get; init; }
 
-        public IFormFile ImageFile { get; set; }
+        public IFormFile ImageFile { get; init; }
     }
 
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Result<ProductDto>>

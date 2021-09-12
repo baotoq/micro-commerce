@@ -6,7 +6,6 @@ using MicroCommerce.Catalog.API.Application.Products.Models;
 using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Infrastructure.Paged;
 using MicroCommerce.Catalog.API.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Queries
 {
@@ -14,16 +13,15 @@ namespace MicroCommerce.Catalog.API.Application.Products.Queries
     {
     }
 
-    public class FindProductsQueryHandler : IRequestHandler<FindProductsQuery, OffsetPaged<ProductDto>>
+    public class FindProductsQueryHandler : NoTrackingQueryHandler, IRequestHandler<FindProductsQuery, OffsetPaged<ProductDto>>
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
-        public FindProductsQueryHandler(IMapper mapper, ApplicationDbContext context)
+        public FindProductsQueryHandler(IMapper mapper, ApplicationDbContext context) : base(context)
         {
             _mapper = mapper;
             _context = context;
-            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public async Task<OffsetPaged<ProductDto>> Handle(FindProductsQuery request, CancellationToken cancellationToken)

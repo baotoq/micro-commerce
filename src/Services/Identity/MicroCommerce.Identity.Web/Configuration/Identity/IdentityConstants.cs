@@ -1,4 +1,4 @@
-﻿namespace MicroCommerce.Identity.API.Configuration
+﻿namespace MicroCommerce.Identity.Web.Configuration.Identity
 {
     public static class IdentityConstants
     {

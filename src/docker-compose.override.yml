@@ -113,11 +113,6 @@ services:
       - VIRTUAL_HOST=identity-web.${DOMAIN}
       - ASPNETCORE_ENVIRONMENT=Development
 
-  identity-api:
-    environment:
-      - VIRTUAL_HOST=identity-api.${DOMAIN}
-      - ASPNETCORE_ENVIRONMENT=Development
-
   gateway-api:
     environment:
       - VIRTUAL_HOST=gateway-api.${DOMAIN}

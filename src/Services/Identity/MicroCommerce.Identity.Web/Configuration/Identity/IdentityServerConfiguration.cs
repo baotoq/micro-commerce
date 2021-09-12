@@ -5,11 +5,11 @@ using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 
-namespace MicroCommerce.Identity.API.Configuration
+namespace MicroCommerce.Identity.Web.Configuration.Identity
 {
     public static class IdentityServerConfiguration
     {
-        public static IEnumerable<IdentityResource> IdentityResources =>
+        public readonly static IEnumerable<IdentityResource> IdentityResources =
             new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
@@ -17,7 +17,7 @@ namespace MicroCommerce.Identity.API.Configuration
                 new IdentityResourceProfileWithRole()
             };
 
-        public static IEnumerable<ApiResource> ApiResources =>
+        public readonly static IEnumerable<ApiResource> ApiResources =
             new[]
             {
                 new ApiResource(IdentityConstants.ApiResource.BasketApi)
@@ -42,7 +42,7 @@ namespace MicroCommerce.Identity.API.Configuration
                 },
             };
 
-        public static IEnumerable<ApiScope> ApiScopes =>
+        public readonly static IEnumerable<ApiScope> ApiScopes =
             new[]
             {
                 new ApiScope(IdentityConstants.ApiResource.BasketApi),

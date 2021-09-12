@@ -35,7 +35,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
                         });
                     });
                 })
-                .CreateInMemoryDbClient(seedAction, new WebApplicationFactoryClientOptions
+                .CreateUnauthenticatedClient(seedAction, new WebApplicationFactoryClientOptions
                 {
                     AllowAutoRedirect = false,
                 });
@@ -45,7 +45,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
             return client;
         }
 
-        public static HttpClient CreateInMemoryDbClient<TStartup>(
+        public static HttpClient CreateUnauthenticatedClient<TStartup>(
             this WebApplicationFactory<TStartup> factory,
             Func<ApplicationDbContext, Task> seedAction = null,
             WebApplicationFactoryClientOptions options = null)
@@ -79,7 +79,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Infrastructure
         {
             var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions
             {
-                HttpClient = factory.CreateInMemoryDbClient()
+                HttpClient = factory.CreateUnauthenticatedClient()
             });
 
             return Activator.CreateInstance(typeof(TClient), channel) as TClient;
