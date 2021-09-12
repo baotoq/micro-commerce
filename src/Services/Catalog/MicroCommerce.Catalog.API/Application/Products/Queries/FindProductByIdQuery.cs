@@ -4,28 +4,27 @@ using AutoMapper;
 using CSharpFunctionalExtensions;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Products.Models;
+using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Persistence;
 using MicroCommerce.Catalog.API.Persistence.Entities;
 using MicroCommerce.Shared.MediatR.Exceptions;
-using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Queries
 {
-    public class FindProductByIdQuery : IRequest<Result<ProductDto>>
+    public record FindProductByIdQuery : IRequest<Result<ProductDto>>
     {
         public int Id { get; init; }
     }
 
-    public class FindProductByIdQueryHandler : IRequestHandler<FindProductByIdQuery, Result<ProductDto>>
+    public class FindProductByIdQueryHandler : NoTrackingQueryHandler, IRequestHandler<FindProductByIdQuery, Result<ProductDto>>
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
-        public FindProductByIdQueryHandler(IMapper mapper, ApplicationDbContext context)
+        public FindProductByIdQueryHandler(IMapper mapper, ApplicationDbContext context) : base(context)
         {
             _mapper = mapper;
             _context = context;
-            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public async Task<Result<ProductDto>> Handle(FindProductByIdQuery request, CancellationToken cancellationToken)

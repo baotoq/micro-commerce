@@ -96,6 +96,7 @@ services:
     volumes:
       - ./dapr/components:/components
       - ./dapr/config.yaml:/config.yaml
+      - ./dapr/catalog/binding-cron-test.yaml:/components/binding-cron-test.yaml
     network_mode: "service:catalog-api"
     restart: on-failure
 
@@ -143,29 +144,6 @@ services:
       - ./dapr/components:/components
       - ./dapr/config.yaml:/config.yaml
     network_mode: service:identity-web
-    restart: on-failure
-
-  identity-api:
-    image: ${DOCKER_REGISTRY-}microcommerce-identity-api
-    container_name: microcommerce-identity-api
-    build:
-      context: .
-      dockerfile: Services/Identity/MicroCommerce.Identity.API/Dockerfile
-    restart: on-failure
-
-  identity-api-dapr:
-    image: daprio/daprd:latest
-    container_name: microcommerce-identity-api-dapr
-    command: [ "./daprd", "-app-id", "identity-api", "-app-port", "80", "-app-protocol", "http",
-      "-placement-host-address", "dapr-placement:50005",
-      "-components-path", "/components", "-config", "/config.yaml"
-    ]
-    depends_on:
-      - identity-api
-    volumes:
-      - ./dapr/components:/components
-      - ./dapr/config.yaml:/config.yaml
-    network_mode: service:identity-api
     restart: on-failure
 
   gateway-api:

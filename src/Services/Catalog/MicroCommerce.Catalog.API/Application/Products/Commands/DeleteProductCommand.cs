@@ -10,7 +10,7 @@ using MicroCommerce.Shared.MediatR.Exceptions;
 
 namespace MicroCommerce.Catalog.API.Application.Products.Commands
 {
-    public class DeleteProductCommand : IRequest<Result>
+    public record DeleteProductCommand : IRequest<Result>
     {
         public int Id { get; init; }
     }

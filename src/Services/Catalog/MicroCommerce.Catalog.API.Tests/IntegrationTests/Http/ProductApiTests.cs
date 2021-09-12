@@ -32,7 +32,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Http
         public async Task Find_Success()
         {
             // Arrange
-            var client = _factory.CreateInMemoryDbClient(async context =>
+            var client = _factory.CreateUnauthenticatedClient(async context =>
             {
                 await context.Products.AddAsync(new Product());
                 await context.Products.AddAsync(new Product());
@@ -52,7 +52,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Http
         public async Task FindById_Success()
         {
             // Arrange
-            var client = _factory.CreateInMemoryDbClient(async context =>
+            var client = _factory.CreateUnauthenticatedClient(async context =>
             {
                 await context.Products.AddAsync(new Product());
                 await context.SaveChangesAsync();
@@ -70,7 +70,7 @@ namespace MicroCommerce.Catalog.API.Tests.IntegrationTests.Http
         public async Task FindById_NotFound()
         {
             // Arrange
-            var client = _factory.CreateInMemoryDbClient();
+            var client = _factory.CreateUnauthenticatedClient();
 
             // Act
             var response = await client.GetAsync(UrlHelper.Combine(BaseUrl, "1"));

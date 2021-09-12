@@ -5,25 +5,25 @@ using AutoMapper;
 using CSharpFunctionalExtensions;
 using MediatR;
 using MicroCommerce.Catalog.API.Application.Categories.Models;
+using MicroCommerce.Catalog.API.Infrastructure;
 using MicroCommerce.Catalog.API.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.API.Application.Categories.Queries
 {
-    public class FindCategoriesQuery : IRequest<Result<IEnumerable<CategoryDto>>>
+    public record FindCategoriesQuery : IRequest<Result<IEnumerable<CategoryDto>>>
     {
     }
 
-    public class FindCategoriesQueryHandler : IRequestHandler<FindCategoriesQuery, Result<IEnumerable<CategoryDto>>>
+    public class FindCategoriesQueryHandler : NoTrackingQueryHandler, IRequestHandler<FindCategoriesQuery, Result<IEnumerable<CategoryDto>>>
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
-        public FindCategoriesQueryHandler(IMapper mapper, ApplicationDbContext context)
+        public FindCategoriesQueryHandler(IMapper mapper, ApplicationDbContext context) : base(context)
         {
             _mapper = mapper;
             _context = context;
-            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public async Task<Result<IEnumerable<CategoryDto>>> Handle(FindCategoriesQuery request, CancellationToken cancellationToken)

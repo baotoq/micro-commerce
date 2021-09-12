@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { filter } from 'rxjs/operators';
 import { authConfig } from './auth.config';
+import { environment } from '@environments';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +30,7 @@ export class AppComponent {
   }
 
   get() {
-    this.http.get('http://localhost:16000/i/api/localApi').subscribe();
+    this.http.get(`${environment.uri.gateway}/c/api/categories`).subscribe();
   }
 
   logout() {
