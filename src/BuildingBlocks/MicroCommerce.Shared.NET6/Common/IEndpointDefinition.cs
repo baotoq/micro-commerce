@@ -5,6 +5,6 @@ namespace MicroCommerce.Shared.Common;
 
 public interface IEndpointDefinition
 {
-    void DefineEnpoints(WebApplication app);
+    void DefineEndpoints(WebApplication app);
     void DefineServices(IServiceCollection services);
 }
