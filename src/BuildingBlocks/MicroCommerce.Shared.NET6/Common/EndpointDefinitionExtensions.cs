@@ -51,7 +51,7 @@ public static class EndpointDefinitionExtensions
     public static WebApplication UseEndpointDefinition<TEndpoint>(this WebApplication app) where TEndpoint : IEndpointDefinition
     {
         var endpoint = app.Services.GetRequiredService<TEndpoint>();
-        endpoint.DefineEnpoints(app);
+        endpoint.DefineEndpoints(app);
         return app;
     }
 }

@@ -7,7 +7,7 @@ namespace MicroCommerce.Shared.Common;
 
 public class MonitoringEndpoint : IEndpointDefinition
 {
-    public void DefineEnpoints(WebApplication app)
+    public void DefineEndpoints(WebApplication app)
     {
         app.UseHttpMetrics();
         app.UseGrpcMetrics();
