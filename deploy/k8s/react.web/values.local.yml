@@ -1,4 +1,0 @@
-# helm upgrade react-web --install -f ./values.yaml -f values.local.yml --namespace=bshop .
-
-ingress:
-  enabled: false

@@ -1,6 +1,0 @@
-# helm upgrade postgres bitnami/postgresql --install -f ./values.yaml --namespace=infra
-
-postgresqlPassword: P@ssw0rd
-
-nameOverride: postgres
-fullnameOverride: postgres
