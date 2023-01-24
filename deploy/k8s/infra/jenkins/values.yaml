@@ -1,7 +1,0 @@
-# helm install jenkins stable/jenkins --namespace=infra
-
-master:
-  adminUser: admin
-  adminPassword: admin
-  additionalPlugins:
-  numExecutors: 1

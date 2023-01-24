@@ -1,1 +1,0 @@
-# helm upgrade nginx-ingress stable/nginx-ingress --install -f ./values.yaml --namespace=default
