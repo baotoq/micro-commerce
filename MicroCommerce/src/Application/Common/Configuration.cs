@@ -1,7 +1,10 @@
 using System.Reflection;
 using Application.Common.AutoMapper;
+using Application.Common.Options;
 using Application.UseCases.Ping;
+using Application.UseCases.Products.Events;
 using Infrastructure.Persistence;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -38,11 +41,29 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         
-        builder.Services.AddHealthChecks();
+        builder.Services.AddHealthChecks()
+            .AddDbContextCheck<ApplicationDbContext>();
         
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         builder.Services.AddDbContext<ApplicationDbContext>(options => {
             options.UseNpgsql(connectionString);
+        });
+
+        builder.Services.AddMassTransit(s =>
+        {
+            var messageBroker = builder.Configuration.GetSection(MessageBrokerOptions.Key).Get<MessageBrokerOptions>()!;
+            
+            s.SetKebabCaseEndpointNameFormatter();
+            s.AddConsumers(Assembly.GetExecutingAssembly());
+            s.UsingRabbitMq((context,cfg) =>
+            {
+                cfg.AutoDelete = true;
+                cfg.Host(messageBroker.Host, messageBroker.Port, "/", h => {
+                    h.Username(messageBroker.User);
+                    h.Password(messageBroker.Password);
+                });
+                cfg.ConfigureEndpoints(context);
+            });
         });
     }
 }

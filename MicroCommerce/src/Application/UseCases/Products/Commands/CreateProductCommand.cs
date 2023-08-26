@@ -1,7 +1,7 @@
 using Application.Common;
-using Application.UseCases.Carts.Queries;
-using Domain.Entities;
+using Application.UseCases.Products.Events;
 using Infrastructure.Persistence;
+using MassTransit;
 using MediatR;
 
 namespace Application.UseCases.Products.Commands;
@@ -17,22 +17,31 @@ public class CreateProductCommand : IRequest<CreateProductCommand.Response>
     
     public class Handler : RequestHandlerBase<CreateProductCommand, Response>
     {
-        public Handler(ApplicationDbContext context) : base(context)
+        private readonly IPublishEndpoint _publishEndpoint;
+        
+        public Handler(ApplicationDbContext context, IPublishEndpoint publishEndpoint) : base(context)
         {
+            _publishEndpoint = publishEndpoint;
         }
 
         public override async Task<Response> Handle(CreateProductCommand request, CancellationToken cancellationToken = default)
         {
-            await Context.Products.AddAsync(new Product
+            // var added = await Context.Products.AddAsync(new Product
+            // {
+            //     Name = request.Name
+            // }, cancellationToken);
+            //
+            // await Context.SaveChangesAsync(cancellationToken);
+
+            await _publishEndpoint.Publish(new ProductCreatedEvent
             {
-                Name = request.Name
-            }, cancellationToken);
-
-            await Context.SaveChangesAsync(cancellationToken);
-
+                Id = "added.Entity.Id",
+                Name = "added.Entity.Name"
+            }, CancellationToken.None);
+            
             return new Response
             {
-                Name = request.Name
+                Name = "added.Entity.Name"
             };
         }
     }
