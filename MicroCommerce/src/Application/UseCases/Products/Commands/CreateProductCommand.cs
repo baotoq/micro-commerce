@@ -1,3 +1,4 @@
+using Application.Common;
 using Application.UseCases.Carts.Queries;
 using Domain.Entities;
 using Infrastructure.Persistence;

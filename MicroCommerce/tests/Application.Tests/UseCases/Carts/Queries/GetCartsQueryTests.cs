@@ -1,10 +1,6 @@
-using Application.Common.AutoMapper;
 using Application.UseCases.Carts.Queries;
-using AutoMapper;
 using Domain.Entities;
 using FluentAssertions;
-using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Tests.UseCases.Carts.Queries;
 

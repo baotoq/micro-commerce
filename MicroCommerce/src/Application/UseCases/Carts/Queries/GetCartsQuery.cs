@@ -1,3 +1,4 @@
+using Application.Common;
 using Application.Common.AutoMapper;
 using AutoMapper;
 using Domain.Entities;
