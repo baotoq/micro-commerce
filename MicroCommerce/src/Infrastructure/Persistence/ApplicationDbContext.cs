@@ -1,10 +1,14 @@
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Domain;
+namespace Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContext
 {
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
+    {
+    }
+    
     public DbSet<Product> Products { get; set; } = null!;
     public DbSet<Cart> Carts { get; set; } = null!;
     
