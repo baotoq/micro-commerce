@@ -10,7 +10,7 @@ public class TestBase
     protected readonly ApplicationDbContext Context;
     protected readonly IMapper Mapper;
 
-    public TestBase()
+    protected TestBase()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())

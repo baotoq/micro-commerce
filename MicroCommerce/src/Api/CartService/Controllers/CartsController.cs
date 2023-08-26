@@ -1,4 +1,5 @@
 using Application;
+using Application.Common;
 using Application.UseCases.Carts.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,8 @@ public class CartsController : ApiController
     }
 
     [HttpGet]
-    public async Task<GetCartsQuery.Response> GetAll(CancellationToken cancellationToken)
+    public Task<GetCartsQuery.Response> GetAll(CancellationToken cancellationToken)
     {
-        var result = await Mediator.Send(new GetCartsQuery(), cancellationToken);
-        return result;
+        return Mediator.Send(new GetCartsQuery(), cancellationToken);
     }
 }
