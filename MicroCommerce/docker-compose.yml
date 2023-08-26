@@ -1,0 +1,44 @@
+﻿services:
+  
+  db:
+    container_name: "db"
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5431:5432"
+  
+  redis:
+    container_name: "redis"
+    image: "redis:latest"
+    ports:
+      - "6371:6379"
+  
+  cart-service:
+    container_name: "cart-service"
+    image: cart-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: CartService
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5001:80"
+
+  product-service:
+    container_name: "product-service"
+    image: product-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: CartService
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5002:80"
+
