@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Application;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public abstract class ApiController : ControllerBase
 {
     protected readonly IMediator Mediator;

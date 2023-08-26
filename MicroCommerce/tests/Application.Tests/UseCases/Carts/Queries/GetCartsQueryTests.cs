@@ -1,4 +1,6 @@
-using Application.Carts.Queries;
+using Application.Common.AutoMapper;
+using Application.UseCase.Carts.Queries;
+using AutoMapper;
 using Domain.Entities;
 using FluentAssertions;
 using Infrastructure.Persistence;
@@ -13,12 +15,14 @@ public class GetCartsQueryTests
 
     public GetCartsQueryTests()
     {
+        var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
+        
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
         
         _context = new ApplicationDbContext(options);
-        _sut = new GetCartsQueryHandler(_context);
+        _sut = new GetCartsQueryHandler(_context, config.CreateMapper());
     }
     
     [Fact]
