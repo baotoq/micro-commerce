@@ -26,8 +26,9 @@
         SERVICE_NAME: CartService
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Port=5432;Database=micro-commerce;User Id=admin;Password=admin;
     ports:
-      - "5001:80"
+      - "50011:80"
 
   product-service:
     container_name: "product-service"
@@ -39,6 +40,7 @@
         SERVICE_NAME: CartService
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Port=5432;Database=micro-commerce;User Id=admin;Password=admin;
     ports:
-      - "5002:80"
+      - "50021:80"
 
