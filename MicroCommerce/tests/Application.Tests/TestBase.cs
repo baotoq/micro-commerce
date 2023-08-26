@@ -1,0 +1,24 @@
+using Application.Common.AutoMapper;
+using AutoMapper;
+using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace Application.Tests;
+
+public class TestBase
+{
+    protected readonly ApplicationDbContext Context;
+    protected readonly IMapper Mapper;
+
+    public TestBase()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        
+        Context = new ApplicationDbContext(options);
+        
+        var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
+        Mapper = config.CreateMapper();
+    }
+}
