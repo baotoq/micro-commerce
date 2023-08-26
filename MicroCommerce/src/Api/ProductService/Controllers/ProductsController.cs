@@ -1,14 +1,15 @@
+using Application;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ProductService.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class ProductsController : ControllerBase
+
+public class ProductsController : ApiController
 {
     private readonly ILogger<ProductsController> _logger;
 
-    public ProductsController(ILogger<ProductsController> logger)
+    public ProductsController(IMediator mediator, ILogger<ProductsController> logger) : base(mediator)
     {
         _logger = logger;
     }
