@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F7A0BAE5-86F9-44A1-B342-96BDD989BC21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService", "src\ProductService\ProductService.csproj", "{362446C1-2F14-478C-8E9B-876BF2E0A917}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService", "src\CartService\CartService.csproj", "{22E5914F-1D1E-4AA6-97A6-46B29D759EB7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{362446C1-2F14-478C-8E9B-876BF2E0A917} = {F7A0BAE5-86F9-44A1-B342-96BDD989BC21}
+		{22E5914F-1D1E-4AA6-97A6-46B29D759EB7} = {F7A0BAE5-86F9-44A1-B342-96BDD989BC21}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{362446C1-2F14-478C-8E9B-876BF2E0A917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{362446C1-2F14-478C-8E9B-876BF2E0A917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{362446C1-2F14-478C-8E9B-876BF2E0A917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{362446C1-2F14-478C-8E9B-876BF2E0A917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22E5914F-1D1E-4AA6-97A6-46B29D759EB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22E5914F-1D1E-4AA6-97A6-46B29D759EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22E5914F-1D1E-4AA6-97A6-46B29D759EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22E5914F-1D1E-4AA6-97A6-46B29D759EB7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
