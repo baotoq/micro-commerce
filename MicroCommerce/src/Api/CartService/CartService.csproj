@@ -8,12 +8,13 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
+
+
     <ItemGroup>
-      <ProjectReference Include="..\Domain\Domain\Domain.csproj" />
+      <ProjectReference Include="..\..\Application\Application.csproj" />
     </ItemGroup>
 
 </Project>
