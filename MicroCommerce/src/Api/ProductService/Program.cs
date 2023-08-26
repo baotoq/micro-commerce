@@ -1,7 +1,4 @@
-using Domain;
-using Infrastructure;
-using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +8,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options => {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.AddRequiredServices();
 
 var app = builder.Build();
 
@@ -30,5 +24,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapPing();
 
 app.Run();

@@ -11,9 +11,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="12.1.1" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="MediatR" Version="12.1.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.10" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     </ItemGroup>
-
 
 </Project>
