@@ -1,4 +1,5 @@
-using Domain;
+using Application.Carts.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CartService.Controllers;
@@ -7,17 +8,17 @@ namespace CartService.Controllers;
 [Route("[controller]")]
 public class CartsController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IMediator _mediator;
 
-    public CartsController(ApplicationDbContext context)
+    public CartsController(IMediator mediator)
     {
-        _context = context;
+        _mediator = mediator;
     }
 
     [HttpGet(Name = "Get Carts")]
-    public IActionResult GetAll()
+    public IActionResult GetAll(CancellationToken cancellationToken = default)
     {
-        var result = _context.Carts.Where(s => s.Id == "");
+        var result = _mediator.Send(new GetCartsQuery(), cancellationToken);
         return Ok(result);
     }
 }

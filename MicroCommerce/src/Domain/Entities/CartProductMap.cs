@@ -5,10 +5,10 @@ namespace Domain.Entities;
 
 public class CartProductMap
 {
-    public string CartId { get; set; } = "";
+    public string CartId { get; set; } = string.Empty;
     public Cart Cart { get; set; } = null!;
 
-    public string ProductId { get; set; } = "";
+    public string ProductId { get; set; } = string.Empty;
     public Product Product { get; set; } = null!;
 }
 
