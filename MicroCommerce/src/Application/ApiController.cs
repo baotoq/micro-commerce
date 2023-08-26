@@ -12,7 +12,7 @@ namespace Application;
 
 [ApiController]
 [Route("[controller]")]
-public abstract class ApiController : Controller
+public abstract class ApiController : ControllerBase
 {
     protected readonly IMediator Mediator;
 

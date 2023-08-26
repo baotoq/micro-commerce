@@ -1,24 +1,20 @@
+using Application;
 using Application.Carts.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CartService.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class CartsController : Controller
+public class CartsController : ApiController
 {
-    private readonly IMediator _mediator;
-
-    public CartsController(IMediator mediator)
+    public CartsController(IMediator mediator) : base(mediator)
     {
-        _mediator = mediator;
     }
 
-    [HttpGet(Name = "Get Carts")]
+    [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
     {
-        var result = await _mediator.Send(new GetCartsQuery(), cancellationToken);
+        var result = await Mediator.Send(new GetCartsQuery(), cancellationToken);
         return Ok(result);
     }
 }
