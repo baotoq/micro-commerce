@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Application;
+namespace Application.Ping;
 
 public class PingCommand : IRequest<string>
 {
