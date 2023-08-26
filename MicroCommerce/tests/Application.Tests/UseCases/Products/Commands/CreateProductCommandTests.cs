@@ -1,15 +1,20 @@
 using Application.UseCases.Products.Commands;
+using Application.UseCases.Products.Events;
 using FluentAssertions;
+using MassTransit;
+using NSubstitute;
 
 namespace Application.Tests.UseCases.Products.Commands;
 
 public class CreateProductCommandTests : TestBase
 {
-    private CreateProductCommand.Handler _sut;
+    private readonly CreateProductCommand.Handler _sut;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public CreateProductCommandTests()
     {
-        _sut = new CreateProductCommand.Handler(Context);
+        _publishEndpoint = Substitute.For<IPublishEndpoint>();
+        _sut = new CreateProductCommand.Handler(Context, _publishEndpoint);
     }
 
     [Fact]
@@ -19,7 +24,8 @@ public class CreateProductCommandTests : TestBase
         {
             Name = "Apple"
         });
-
+        
+        await _publishEndpoint.Received().Publish(Arg.Any<ProductCreatedEvent>());
         act.Name.Should().Be("Apple");
     }
 }

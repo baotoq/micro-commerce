@@ -16,6 +16,16 @@
     ports:
       - "6371:6379"
   
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5670:5672
+      - 15670:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+  
   cart-service:
     container_name: "cart-service"
     image: cart-service
