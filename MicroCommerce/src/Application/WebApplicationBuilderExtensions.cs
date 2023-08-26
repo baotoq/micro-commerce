@@ -1,3 +1,5 @@
+using System.Reflection;
+using Application.Common.AutoMapper;
 using Application.Ping;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
@@ -13,9 +15,10 @@ public static class WebApplicationBuilderExtensions
     public static void AddRequiredServices(this WebApplicationBuilder builder)
     {
         builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+        builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
         
         builder.Services.AddMediatR(cfg =>
-            cfg.RegisterServicesFromAssembly(typeof(PingCommand).Assembly));
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         builder.Services.AddDbContext<ApplicationDbContext>(options => {
