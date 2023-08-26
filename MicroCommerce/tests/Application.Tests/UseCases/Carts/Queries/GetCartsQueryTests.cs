@@ -1,37 +1,29 @@
 using Application.Common.AutoMapper;
-using Application.UseCase.Carts.Queries;
+using Application.UseCases.Carts.Queries;
 using AutoMapper;
 using Domain.Entities;
 using FluentAssertions;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Tests.Carts.Queries;
+namespace Application.Tests.UseCases.Carts.Queries;
 
-public class GetCartsQueryTests
+public class GetCartsQueryTests : TestBase
 {
-    private readonly GetCartsQueryHandler _sut;
-    private readonly ApplicationDbContext _context;
+    private readonly GetCartsQuery.Handler _sut;
 
     public GetCartsQueryTests()
     {
-        var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
-        
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
-        
-        _context = new ApplicationDbContext(options);
-        _sut = new GetCartsQueryHandler(_context, config.CreateMapper());
+        _sut = new GetCartsQuery.Handler(Context, Mapper);
     }
     
     [Fact]
     public async Task GetCarts()
     {
-        _context.Carts.Add(new Cart());
-        await _context.SaveChangesAsync();
+        Context.Carts.Add(new Cart());
+        await Context.SaveChangesAsync();
 
-        var act = await _sut.Handle(new GetCartsQuery(), default);
+        var act = await _sut.Handle(new GetCartsQuery());
 
         act.Data.Should().HaveCount(1);
     }

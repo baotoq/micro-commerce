@@ -1,5 +1,7 @@
 using Application;
 using Application.UseCases.Products;
+using Application.UseCases.Products.Commands;
+using Application.UseCases.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +18,14 @@ public class ProductsController : ApiController
     }
 
     [HttpGet]
-    public async Task<GetProductsQueryResponse> GetProducts(CancellationToken cancellationToken)
+    public Task<GetProductsQuery.Response> GetAll(CancellationToken cancellationToken)
     {
-        var result = await Mediator.Send(new GetProductsQuery(), cancellationToken);
-        return result;
+        return Mediator.Send(new GetProductsQuery(), cancellationToken);
+    }
+
+    [HttpPost]
+    public Task<CreateProductCommand.Response> Create(CreateProductCommand command, CancellationToken cancellationToken)
+    {
+        return Mediator.Send(command, cancellationToken);
     }
 }

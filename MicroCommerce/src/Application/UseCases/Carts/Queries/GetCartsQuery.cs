@@ -5,7 +5,7 @@ using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.UseCase.Carts.Queries;
+namespace Application.UseCases.Carts.Queries;
 
 public class GetCartsQuery : IRequest<GetCartsQuery.Response>
 {
@@ -18,26 +18,24 @@ public class GetCartsQuery : IRequest<GetCartsQuery.Response>
             public string Id { get; set; } = "";
         }
     }
-}
-
-public class GetCartsQueryHandler : IRequestHandler<GetCartsQuery, GetCartsQuery.Response>
-{
-    private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetCartsQueryHandler(ApplicationDbContext context, IMapper mapper)
+    
+    public class Handler : RequestHandlerBase<GetCartsQuery, GetCartsQuery.Response>
     {
-        _context = context;
-        _mapper = mapper;
-    }
+        private readonly IMapper _mapper;
 
-    public async Task<GetCartsQuery.Response> Handle(GetCartsQuery request, CancellationToken cancellationToken)
-    {
-        var carts = await _context.Carts.ToListAsync(cancellationToken);
-
-        return new GetCartsQuery.Response
+        public Handler(ApplicationDbContext context, IMapper mapper) : base(context)
         {
-            Data = _mapper.Map<IEnumerable<GetCartsQuery.Response.CartDto>>(carts)
-        };
+            _mapper = mapper;
+        }
+
+        public override async Task<GetCartsQuery.Response> Handle(GetCartsQuery request, CancellationToken cancellationToken = default)
+        {
+            var carts = await Context.Carts.ToListAsync(cancellationToken);
+
+            return new Response
+            {
+                Data = _mapper.Map<IEnumerable<GetCartsQuery.Response.CartDto>>(carts)
+            };
+        }
     }
 }
