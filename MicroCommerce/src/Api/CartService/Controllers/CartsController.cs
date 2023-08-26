@@ -16,9 +16,9 @@ public class CartsController : Controller
     }
 
     [HttpGet(Name = "Get Carts")]
-    public IActionResult GetAll(CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
     {
-        var result = _mediator.Send(new GetCartsQuery(), cancellationToken);
+        var result = await _mediator.Send(new GetCartsQuery(), cancellationToken);
         return Ok(result);
     }
 }
