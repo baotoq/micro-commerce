@@ -2,7 +2,7 @@ using Application.UseCases.Carts.Queries;
 using Domain.Entities;
 using FluentAssertions;
 
-namespace Application.Tests.UseCases.Carts.Queries;
+namespace Application.UnitTests.UseCases.Carts.Queries;
 
 public class GetCartsQueryTests : TestBase
 {
