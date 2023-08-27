@@ -6,29 +6,6 @@ using Xunit;
 
 namespace Infrastructure.UnitTests.Persistence.Interceptors;
 
-internal record TestEntityCreatedDomainEvent : DomainEventBase
-{
-}
-
-internal record TestEntityUpdatedDomainEvent : DomainEventBase
-{
-}
-
-internal class TestEntity : EntityBase
-{
-    public string Id { get; set; } = "";
-    public string Name { get; set; } = "";
-}
-
-internal class TestDbContext : DbContext
-{
-    public TestDbContext(DbContextOptions<TestDbContext> options): base(options)
-    {
-    }
-    
-    public DbSet<TestEntity> TestEntities { get; set; } = null!;
-}
-
 public class DispatchDomainEventsInterceptorTests
 {
     private readonly IDomainEventDispatcher _domainEventDispatcher;

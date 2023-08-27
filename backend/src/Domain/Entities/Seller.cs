@@ -9,5 +9,5 @@ public class Seller : IDateEntity
     public Shop? Shop { get; set; }
     public ICollection<Product> Products { get; set; } = null!;
     public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
 }

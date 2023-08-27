@@ -10,5 +10,5 @@ public class Cart : IDateEntity
     public string PromotionId { get; set; } = string.Empty;
     public Promotion? Promotion { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
 }
