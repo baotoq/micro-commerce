@@ -16,13 +16,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Applicat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5E6474BB-3A84-4E61-9059-65C4397453DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Tests", "tests\Application.Tests\Application.Tests.csproj", "{179B09ED-4850-4DE6-8F01-22CA7D0524CE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5DD5AFF7-CE42-4254-A913-AD2E9D6B6452}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.UnitTests", "tests\Infrastructure.UnitTests\Infrastructure.UnitTests.csproj", "{A1834BA6-1B8A-4A74-B387-38977329F1BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.UnitTests", "tests\Application.UnitTests\Application.UnitTests.csproj", "{FBFEEE52-2A99-4A34-AACA-AE54B0AD4E3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,7 +38,8 @@ Global
 		{2636DA83-C22D-4D29-8842-27BD45E6B4F0} = {F7A0BAE5-86F9-44A1-B342-96BDD989BC21}
 		{E4C9A28A-CE08-4985-9DA3-913929454089} = {F7A0BAE5-86F9-44A1-B342-96BDD989BC21}
 		{48461430-5D50-4007-BFDE-F341A9DF9281} = {F7A0BAE5-86F9-44A1-B342-96BDD989BC21}
-		{179B09ED-4850-4DE6-8F01-22CA7D0524CE} = {5E6474BB-3A84-4E61-9059-65C4397453DD}
+		{A1834BA6-1B8A-4A74-B387-38977329F1BE} = {5E6474BB-3A84-4E61-9059-65C4397453DD}
+		{FBFEEE52-2A99-4A34-AACA-AE54B0AD4E3A} = {5E6474BB-3A84-4E61-9059-65C4397453DD}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{362446C1-2F14-478C-8E9B-876BF2E0A917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -59,9 +62,13 @@ Global
 		{48461430-5D50-4007-BFDE-F341A9DF9281}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48461430-5D50-4007-BFDE-F341A9DF9281}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48461430-5D50-4007-BFDE-F341A9DF9281}.Release|Any CPU.Build.0 = Release|Any CPU
-		{179B09ED-4850-4DE6-8F01-22CA7D0524CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{179B09ED-4850-4DE6-8F01-22CA7D0524CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{179B09ED-4850-4DE6-8F01-22CA7D0524CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{179B09ED-4850-4DE6-8F01-22CA7D0524CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1834BA6-1B8A-4A74-B387-38977329F1BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1834BA6-1B8A-4A74-B387-38977329F1BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1834BA6-1B8A-4A74-B387-38977329F1BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1834BA6-1B8A-4A74-B387-38977329F1BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBFEEE52-2A99-4A34-AACA-AE54B0AD4E3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBFEEE52-2A99-4A34-AACA-AE54B0AD4E3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBFEEE52-2A99-4A34-AACA-AE54B0AD4E3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBFEEE52-2A99-4A34-AACA-AE54B0AD4E3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
