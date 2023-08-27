@@ -20,7 +20,7 @@ public class SoftDeleteInterceptorTests
     }
 
     [Fact]
-    public async Task Test()
+    public async Task ShouldNotPermanentDeleteEntity()
     {
         var entity = new TestEntity()
         {
