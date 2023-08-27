@@ -11,16 +11,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="7.0.0" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2"/>
-        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.10" />
-        <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
         <PackageReference Include="MediatR" Version="12.1.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.10" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     </ItemGroup>
+
 
 
 </Project>

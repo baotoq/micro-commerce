@@ -1,4 +1,4 @@
-namespace Application.Common.Options;
+namespace Infrastructure.Common.Options;
 
 public class MessageBrokerOptions
 {

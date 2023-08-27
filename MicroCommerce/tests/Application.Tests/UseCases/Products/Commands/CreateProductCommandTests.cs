@@ -1,5 +1,5 @@
 using Application.UseCases.Products.Commands;
-using Application.UseCases.Products.Events;
+using Application.UseCases.Products.DomainEvents;
 using FluentAssertions;
 using MassTransit;
 using NSubstitute;
@@ -25,7 +25,7 @@ public class CreateProductCommandTests : TestBase
             Name = "Apple"
         });
         
-        await _publishEndpoint.Received().Publish(Arg.Any<ProductCreatedEvent>());
+        await _publishEndpoint.Received().Publish(Arg.Any<ProductCreatedDomainEvent>());
         act.Name.Should().Be("Apple");
     }
 }

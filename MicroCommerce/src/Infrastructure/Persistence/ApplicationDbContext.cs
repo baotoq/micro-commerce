@@ -16,7 +16,7 @@ public class ApplicationDbContext : DbContext
     
     public DbSet<Seller> Sellers { get; set; } = null!;
     public DbSet<Buyer> Buyers { get; set; } = null!;
-
+    public DbSet<Shop> Shops { get; set; } = null!;
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
