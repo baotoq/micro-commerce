@@ -1,4 +1,5 @@
 using Domain;
+using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.UnitTests.Persistence.Interceptors;
@@ -11,12 +12,13 @@ internal record TestEntityUpdatedDomainEvent : DomainEventBase
 {
 }
 
-internal class TestEntity : EntityBase, IDateEntity
+internal class TestEntity : EntityBase, IDateEntity, ISoftDeleteEntity
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }
 
 internal class TestDbContext : DbContext

@@ -52,6 +52,17 @@ public class DispatchDomainEventsInterceptorTests
     }
     
     [Fact]
+    public async Task When_Added_ShouldNotDispatchDomainEvent()
+    {
+        var entity = new TestEntity();
+        await _context.TestEntities.AddAsync(entity);
+
+        await _context.SaveChangesAsync();
+
+        await _domainEventDispatcher.DidNotReceive().DispatchAsync(Arg.Any<IEnumerable<IDomainEvent>>());
+    }
+    
+    [Fact]
     public async Task When_Updated_ShouldDispatchDomainEvent()
     {
         var entity = new TestEntity

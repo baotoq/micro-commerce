@@ -24,6 +24,7 @@ public static class DependencyInjection
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         
         builder.Services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
+        builder.Services.AddScoped<ISaveChangesInterceptor, SoftDeleteInterceptor>();
         builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
         builder.Services.AddDbContext<ApplicationDbContext>((sp, options) => {
             options.UseNpgsql(connectionString);

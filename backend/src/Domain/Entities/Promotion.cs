@@ -1,3 +1,5 @@
+using Domain.Interfaces;
+
 namespace Domain.Entities;
 
 public enum PromotionType
@@ -6,7 +8,7 @@ public enum PromotionType
     PercentageDiscount = 1
 }
 
-public class Promotion : IDateEntity
+public class Promotion : IDateEntity, ISoftDeleteEntity
 {
     public string Id { get; set; } = string.Empty;
     public string Code { get; set; } = string.Empty;
@@ -17,4 +19,5 @@ public class Promotion : IDateEntity
     public Shop Shop { get; set; } = null!;
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }
