@@ -1,9 +1,11 @@
 using System.Reflection;
 using Infrastructure.Common.Options;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.Interceptors;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -20,10 +22,16 @@ public static class DependencyInjection
             .AddDbContextCheck<ApplicationDbContext>();
         
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        builder.Services.AddDbContext<ApplicationDbContext>(options => {
+        
+        builder.Services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
+        builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        builder.Services.AddDbContext<ApplicationDbContext>((sp, options) => {
             options.UseNpgsql(connectionString);
+            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
         });
 
+        builder.Services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
+        
         builder.Services.AddMassTransit(s =>
         {
             var messageBroker = builder.Configuration.GetSection(MessageBrokerOptions.Key).Get<MessageBrokerOptions>()!;

@@ -1,7 +1,9 @@
 using Application.Common.AutoMapper;
 using AutoMapper;
+using Infrastructure;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 
 namespace Application.Tests;
 

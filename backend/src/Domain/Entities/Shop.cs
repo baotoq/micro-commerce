@@ -1,8 +1,9 @@
 namespace Domain.Entities;
 
-public class Shop : DateEntity
+public class Shop : IDateEntity
 {
-    public string Id { get; set; } = string.Empty;
-    public string SellerId { get; set; } = string.Empty;
-    public Seller Seller { get; set; } = null!;
+    public string Id { get; set; } = "";
+
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
 }
