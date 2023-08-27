@@ -16,5 +16,5 @@ public class Promotion : IDateEntity
     public string ShopId { get; set; } = string.Empty;
     public Shop Shop { get; set; } = null!;
     public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
 }
