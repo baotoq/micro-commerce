@@ -18,28 +18,27 @@ public class CreateProductCommand : IRequest<CreateProductCommand.Response>
     
     public class Handler : RequestHandlerBase<CreateProductCommand, Response>
     {
-        private readonly IPublishEndpoint _publishEndpoint;
-        
-        public Handler(ApplicationDbContext context, IPublishEndpoint publishEndpoint) : base(context)
+        public Handler(ApplicationDbContext context) : base(context)
         {
-            _publishEndpoint = publishEndpoint;
         }
 
         public override async Task<Response> Handle(CreateProductCommand request, CancellationToken cancellationToken = default)
         {
-            var added = await Context.Products.AddAsync(new Product
+            var product = new Product
             {
                 Name = request.Name
-            }, cancellationToken);
+            };
             
-            await Context.SaveChangesAsync(cancellationToken);
-
-            await _publishEndpoint.Publish(new ProductCreatedDomainEvent
+            var added = await Context.Products.AddAsync(product, cancellationToken);
+            
+            product.AddDomainEvent(new ProductCreatedDomainEvent
             {
                 Id = added.Entity.Id,
                 Name = added.Entity.Name
-            }, CancellationToken.None);
+            });
             
+            await Context.SaveChangesAsync(cancellationToken);
+
             return new Response
             {
                 Name = added.Entity.Name

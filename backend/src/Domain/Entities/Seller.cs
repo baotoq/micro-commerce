@@ -1,11 +1,13 @@
 namespace Domain.Entities;
 
-public class Seller : DateEntity
+public class Seller : IDateEntity
 {
-    public string Id { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
 
-    public string ShopId { get; set; } = string.Empty;
+    public string ShopId { get; set; } = "";
     public Shop? Shop { get; set; }
     public ICollection<Product> Products { get; set; } = null!;
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
 }

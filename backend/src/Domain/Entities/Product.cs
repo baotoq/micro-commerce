@@ -1,6 +1,6 @@
 namespace Domain.Entities;
 
-public class Product : DateEntity
+public class Product : EntityBase
 {
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

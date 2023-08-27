@@ -6,7 +6,7 @@ public enum PromotionType
     PercentageDiscount = 1
 }
 
-public class Promotion : DateEntity
+public class Promotion : IDateEntity
 {
     public string Id { get; set; } = string.Empty;
     public string Code { get; set; } = string.Empty;
@@ -15,4 +15,6 @@ public class Promotion : DateEntity
     
     public string ShopId { get; set; } = string.Empty;
     public Shop Shop { get; set; } = null!;
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
 }

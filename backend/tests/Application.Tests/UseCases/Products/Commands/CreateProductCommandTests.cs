@@ -9,12 +9,10 @@ namespace Application.Tests.UseCases.Products.Commands;
 public class CreateProductCommandTests : TestBase
 {
     private readonly CreateProductCommand.Handler _sut;
-    private readonly IPublishEndpoint _publishEndpoint;
 
     public CreateProductCommandTests()
     {
-        _publishEndpoint = Substitute.For<IPublishEndpoint>();
-        _sut = new CreateProductCommand.Handler(Context, _publishEndpoint);
+        _sut = new CreateProductCommand.Handler(Context);
     }
 
     [Fact]
@@ -25,7 +23,6 @@ public class CreateProductCommandTests : TestBase
             Name = "Apple"
         });
         
-        await _publishEndpoint.Received().Publish(Arg.Any<ProductCreatedDomainEvent>());
         act.Name.Should().Be("Apple");
     }
 }

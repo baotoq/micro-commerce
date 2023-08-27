@@ -1,6 +1,6 @@
 namespace Domain;
 
-public abstract class DateEntity
+public interface IDateEntity
 {
     public DateTimeOffset CreatedAt { get; set; }
 

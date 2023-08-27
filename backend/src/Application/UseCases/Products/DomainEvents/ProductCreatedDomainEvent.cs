@@ -1,9 +1,10 @@
+using Domain;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases.Products.DomainEvents;
 
-public record ProductCreatedDomainEvent
+public record ProductCreatedDomainEvent : DomainEventBase
 {
     public string Id { get; init; } = "";
     public string Name { get; init; } = "";
