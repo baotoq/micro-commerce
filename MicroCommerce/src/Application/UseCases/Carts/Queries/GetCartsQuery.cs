@@ -16,7 +16,7 @@ public class GetCartsQuery : IRequest<GetCartsQuery.Response>
     
         public class CartDto : IMapFrom<Cart>
         {
-            public string Id { get; set; } = "";
+            public string Id { get; set; } = string.Empty;
         }
     }
     
@@ -29,13 +29,13 @@ public class GetCartsQuery : IRequest<GetCartsQuery.Response>
             _mapper = mapper;
         }
 
-        public override async Task<GetCartsQuery.Response> Handle(GetCartsQuery request, CancellationToken cancellationToken = default)
+        public override async Task<Response> Handle(GetCartsQuery request, CancellationToken cancellationToken = default)
         {
             var carts = await Context.Carts.ToListAsync(cancellationToken);
 
             return new Response
             {
-                Data = _mapper.Map<IEnumerable<GetCartsQuery.Response.CartDto>>(carts)
+                Data = _mapper.Map<IEnumerable<Response.CartDto>>(carts)
             };
         }
     }
