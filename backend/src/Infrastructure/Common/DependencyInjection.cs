@@ -49,6 +49,14 @@ public static class DependencyInjection
 
                 cfg.PrefetchCount = 1;
                 cfg.AutoDelete = true;
+                
+                cfg.UseMessageRetry(r => r.Intervals(100, 500, 1000, 1000, 1000, 1000, 1000));
+            });
+            
+            s.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
+            {
+                o.UsePostgres();
+                o.UseBusOutbox();
             });
         });
     }
