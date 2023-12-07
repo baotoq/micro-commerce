@@ -1,3 +1,5 @@
+using Api;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -14,6 +16,9 @@ builder.Host.UseSerilog();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<ApplicationDbContext>(
+    options => options.UseNpgsql("name=ConnectionStrings:DefaultConnection"));
 
 var app = builder.Build();
 
