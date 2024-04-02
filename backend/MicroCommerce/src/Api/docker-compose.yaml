@@ -1,0 +1,27 @@
+services:
+  
+  db:
+    container_name: "db"
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5431:5432"
+  
+  redis:
+    container_name: "redis"
+    image: "redis:latest"
+    ports:
+      - "6371:6379"
+  
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5670:5672
+      - 15670:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
