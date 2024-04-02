@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.UseCases.Carts;
 
-public class GetCartQuery : IRequest<GetCartResponse>
+public record GetCartQuery(string CartId) : IRequest<GetCartResponse>
 {
-    public string CartId { get; set; } = "";
-    
     public class Handler(ApplicationDbContext context) : IRequestHandler<GetCartQuery, GetCartResponse>
     {
         public async Task<GetCartResponse> Handle(GetCartQuery request, CancellationToken cancellationToken)

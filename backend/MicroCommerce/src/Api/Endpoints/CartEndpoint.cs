@@ -11,6 +11,7 @@ public static class CartEndpoint
         var group = builder.MapGroup("api/carts")
             .WithTags("carts");
         
-        group.MapGet("/", (IMediator mediator) => mediator.Send(new GetCartQuery())).RequireAuthorization();
+        group.MapGet("/{id}", (IMediator mediator, string id) => mediator.Send(new GetCartQuery(id)));
+        group.MapPost("/products", (IMediator mediator, AddProductToCartCommand request) => mediator.Send(request));
     }
 }
