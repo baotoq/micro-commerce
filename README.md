@@ -1,3 +1,3 @@
 # Micro Commerce
 
-migrating to .net 7
+migrating to .net 8
