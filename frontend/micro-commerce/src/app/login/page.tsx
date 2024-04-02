@@ -1,65 +1,99 @@
 "use client";
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Link as MuiLink,
+} from "@mui/material";
+import Link from "next/link";
 
-const Login = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+const LoginPage: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // Basic form validation
+  const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.email.trim()) {
+
+    if (!email.trim()) {
       newErrors.email = "Email is required";
     }
-    if (!formData.password.trim()) {
+
+    if (!password.trim()) {
       newErrors.password = "Password is required";
     }
+
     setErrors(newErrors);
 
-    // Submit form if there are no errors
-    if (Object.keys(newErrors).length === 0) {
-      // Add your authentication logic here
-      console.log("Form submitted:", formData);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleLogin = () => {
+    const isValid = validateForm();
+
+    if (isValid) {
+      // Proceed with login logic
+      console.log("Logging in...");
     }
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Emafffil:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <div style={{ color: "red" }}>{errors.email}</div>}
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && (
-            <div style={{ color: "red" }}>{errors.password}</div>
-          )}
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <Container component="main" maxWidth="sm">
+      <div className="mt-8">
+        <Typography variant="h4" align="center" gutterBottom>
+          Login
+        </Typography>
+        <form>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Email"
+                variant="outlined"
+                fullWidth
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handleLogin}
+              >
+                Login
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="body2" align="center">
+                Don't have an account?{" "}
+                <MuiLink component={Link} href="/register">
+                  Register
+                </MuiLink>
+              </Typography>
+            </Grid>
+          </Grid>
+        </form>
+      </div>
+    </Container>
   );
 };
 
-export default Login;
+export default LoginPage;

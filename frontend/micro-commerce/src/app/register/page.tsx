@@ -1,87 +1,112 @@
 "use client";
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Link as MuiLink,
+} from "@mui/material";
+import Link from "next/link";
 
-const Register = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+const RegisterPage: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // Basic form validation
+  const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.email.trim()) {
+
+    if (!email.trim()) {
       newErrors.email = "Email is required";
     }
-    if (!formData.password.trim()) {
+
+    if (!password.trim()) {
       newErrors.password = "Password is required";
     }
-    if (!formData.confirmPassword.trim()) {
+
+    if (!confirmPassword.trim()) {
       newErrors.confirmPassword = "Confirm Password is required";
     }
-    if (formData.password.trim() !== formData.confirmPassword.trim()) {
+
+    if (password.trim() !== confirmPassword.trim()) {
       newErrors.confirmPassword = "Passwords do not match";
     }
+
     setErrors(newErrors);
 
-    // Submit form if there are no errors
-    if (Object.keys(newErrors).length === 0) {
-      // Add your registration logic here
-      console.log("Form submitted:", formData);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleRegister = () => {
+    const isValid = validateForm();
+
+    if (isValid) {
+      // Proceed with registration logic
+      console.log("Registering...");
     }
   };
 
   return (
-    <div>
-      <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <div style={{ color: "red" }}>{errors.email}</div>}
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && (
-            <div style={{ color: "red" }}>{errors.password}</div>
-          )}
-        </div>
-        <div>
-          <label>Confirm Password:</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-          {errors.confirmPassword && (
-            <div style={{ color: "red" }}>{errors.confirmPassword}</div>
-          )}
-        </div>
-        <button type="submit">Register</button>
-      </form>
-    </div>
+    <Container component="main" maxWidth="sm">
+      <div className="mt-8">
+        <Typography variant="h4" align="center" gutterBottom>
+          Register
+        </Typography>
+        <form>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Email"
+                variant="outlined"
+                fullWidth
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Confirm Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={!!errors.confirmPassword}
+                helperText={errors.confirmPassword}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handleRegister}
+              >
+                Register
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </div>
+    </Container>
   );
 };
 
-export default Register;
+export default RegisterPage;
