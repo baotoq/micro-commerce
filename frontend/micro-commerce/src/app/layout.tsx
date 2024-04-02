@@ -1,15 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-import {
-  DeploymentUnitOutlined,
-  HeartTwoTone,
-  PieChartOutlined,
-  SlidersOutlined,
-  TeamOutlined,
-  UnorderedListOutlined,
-} from "@ant-design/icons";
-
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
+import Button from "@mui/material/Button";
 
 import "./globals.css";
 import NavLink from "@/components/nav-link";
@@ -29,7 +22,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div>{children}</div>
+        <Button variant="text">Text</Button>
+        <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
       </body>
     </html>
   );
