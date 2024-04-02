@@ -41,14 +41,16 @@ public record DecreaseProductQuantityCommand : IRequest<DecreaseProductQuantityR
 
             if (cartProductMap != null)
             {
-                cartProductMap.ProductQuantity += request.ProductQuantity;
+                cartProductMap.ProductQuantity -= request.ProductQuantity;
 
                 if (cartProductMap.ProductQuantity == 0)
                 {
                     context.CartProductMaps.Remove(cartProductMap);
                 }
+                
+                product.RemainingStock += request.ProductQuantity;
             }
-
+            
             await context.SaveChangesAsync(cancellationToken);
             await trans.CommitAsync(cancellationToken);
             
