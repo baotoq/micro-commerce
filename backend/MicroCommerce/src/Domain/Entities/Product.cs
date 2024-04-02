@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using Domain.Common;
 
-namespace Domain;
+namespace Domain.Entities;
 
-public class Product : DateEntity
+public class Product : EntityBase
 {
-    [MaxLength(100)]
-    public string Id { get; set; } = "";
     [MaxLength(500)]
     public string Name { get; set; } = "";
     public decimal Price { get; set; }

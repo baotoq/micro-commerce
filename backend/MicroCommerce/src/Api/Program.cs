@@ -1,5 +1,6 @@
 using Api;
 using Api.Endpoints;
+using Domain.Entities;
 using Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
