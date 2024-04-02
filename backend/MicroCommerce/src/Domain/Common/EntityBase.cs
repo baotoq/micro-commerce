@@ -7,7 +7,8 @@ namespace Domain.Common;
 public abstract class EntityBase : DateEntity
 {
     [MaxLength(Constant.KeyLength)]
-    public string Id { get; set; } = "";
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public string Id { get; set; } = null!;
     
     private readonly ConcurrentQueue<IDomainEvent> _eventStore = new();
 

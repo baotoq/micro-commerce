@@ -1,9 +1,9 @@
-using Api.Carts;
+using Api.UseCases.Carts;
 using MediatR;
 
 namespace Api.Endpoints;
 
-public static class CartsEndpoint
+public static class CartEndpoint
 {
     public static void MapCarts(
         this IEndpointRouteBuilder builder)

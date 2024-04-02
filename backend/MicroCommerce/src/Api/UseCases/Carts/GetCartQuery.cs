@@ -2,15 +2,15 @@ using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Carts;
+namespace Api.UseCases.Carts;
 
-public class GetCartQuery : IRequest<GetCartQuery.Response>
+public class GetCartQuery : IRequest<GetCartResponse>
 {
     public string CartId { get; set; } = "";
     
-    public class Handler(ApplicationDbContext context) : IRequestHandler<GetCartQuery, Response>
+    public class Handler(ApplicationDbContext context) : IRequestHandler<GetCartQuery, GetCartResponse>
     {
-        public async Task<Response> Handle(GetCartQuery request, CancellationToken cancellationToken)
+        public async Task<GetCartResponse> Handle(GetCartQuery request, CancellationToken cancellationToken)
         {
             var cart = await context.Carts
                 .Where(s => s.Id == request.CartId)
@@ -21,9 +21,9 @@ public class GetCartQuery : IRequest<GetCartQuery.Response>
                 throw new Exception("Cart not found");
             }
             
-            return new Response(cart.Id);
+            return new GetCartResponse(cart.Id);
         }
     }
-
-    public record Response(string CartId);
 }
+
+public record GetCartResponse(string CartId);

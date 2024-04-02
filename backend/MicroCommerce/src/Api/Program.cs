@@ -41,5 +41,6 @@ app.UseAuthorization();
 app.MapIdentityApi<User>();
 app.MapGet("/", () => "Hello World!");
 app.MapCarts();
+app.MapProducts();
 
 app.Run();
