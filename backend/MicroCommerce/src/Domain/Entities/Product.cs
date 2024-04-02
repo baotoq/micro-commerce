@@ -10,7 +10,7 @@ public class Product : EntityBase
     public decimal Price { get; set; }
     public int RemainingStock { get; set; }
     public int TotalStock { get; set; }
-    public int ProductSold { get; set; }
+    public int SoldQuantity { get; set; }
     
     public ICollection<CartProductMap> CartProductMaps { get; set; } = new List<CartProductMap>();
 }
