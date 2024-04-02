@@ -1,6 +1,6 @@
 namespace Domain;
 
-public abstract class DateTimeEntity
+public abstract class DateEntity
 {
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }

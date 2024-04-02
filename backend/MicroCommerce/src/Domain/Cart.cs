@@ -2,7 +2,7 @@
 
 namespace Domain;
 
-public class Cart : DateTimeEntity
+public class Cart : DateEntity
 {
     [MaxLength(100)]
     public string Id { get; set; } = "";

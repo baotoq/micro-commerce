@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain;
 
-public class Product : DateTimeEntity
+public class Product : DateEntity
 {
     [MaxLength(100)]
     public string Id { get; set; } = "";

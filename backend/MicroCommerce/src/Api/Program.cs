@@ -22,24 +22,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 
-builder.Services.AddDbContext<ApplicationDbContext>(
-    options => options.UseNpgsql("name=ConnectionStrings:DefaultConnection"));
-
-builder.Services.AddIdentityCore<User>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddApiEndpoints();;
-
-builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
-builder.Services.AddAuthorizationBuilder();
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-        });
-});
+builder.Services.AddInfrastructure();
 
 var app = builder.Build();
 

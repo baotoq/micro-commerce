@@ -1,5 +1,13 @@
 GET {{baseUrl}}
 ###
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "bao2703@gmail.com",
+  "password": "Bao@2703"
+}
+###
 GET {{baseUrl}}/api/carts
 Authorization: Bearer {{token}}
 ###
