@@ -6,19 +6,23 @@ namespace Api.UseCases.Products;
 
 public record CreateProductCommand(string Name) : IRequest<CreateProductResponse>
 {
-    public class Handler(ApplicationDbContext context) : IRequestHandler<CreateProductCommand, CreateProductResponse>
-    {
-        public async Task<CreateProductResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
-        {
-            var entity = await context.Products.AddAsync(new Product
-            {
-                Name = request.Name
-            }, cancellationToken);
+    public static Func<IMediator, CreateProductCommand, Task<CreateProductResponse>> EndpointHandler => (mediator, request) => mediator.Send(request);
+}
 
-            await context.SaveChangesAsync(cancellationToken);
+public class CreateProductCommandHandler(ApplicationDbContext context, ILogger<CreateProductCommandHandler> logger) : IRequestHandler<CreateProductCommand, CreateProductResponse>
+{
+    public async Task<CreateProductResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    {
+        var entity = await context.Products.AddAsync(new Product
+        {
+            Name = request.Name
+        }, cancellationToken);
+
+        await context.SaveChangesAsync(cancellationToken);
             
-            return new CreateProductResponse(entity.Entity.Id);
-        }
+        logger.LogInformation("Create product successfully");
+            
+        return new CreateProductResponse(entity.Entity.Id);
     }
 }
 

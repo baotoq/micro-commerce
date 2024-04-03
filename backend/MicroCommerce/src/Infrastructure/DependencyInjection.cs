@@ -2,6 +2,9 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using RedLockNet.SERedis;
+using RedLockNet.SERedis.Configuration;
+using StackExchange.Redis;
 
 namespace Infrastructure;
 
@@ -9,6 +12,12 @@ public static class DependencyInjection
 {
     public static void AddInfrastructure(this IServiceCollection services)
     {
+        services.AddSingleton(sp =>
+            RedLockFactory.Create(new List<RedLockMultiplexer>
+            {
+                ConnectionMultiplexer.Connect("localhost:6371")
+            }, sp.GetRequiredService<ILoggerFactory>()));
+        
         services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
         services.AddDbContext<ApplicationDbContext>((sp, options) => {
             options.UseNpgsql("name=ConnectionStrings:DefaultConnection");

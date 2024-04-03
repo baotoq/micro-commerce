@@ -5,13 +5,12 @@ namespace Api.Endpoints;
 
 public static class ProductEndpoint
 {
-    public static void MapProducts(
-        this IEndpointRouteBuilder builder)
+    public static void MapProducts(this IEndpointRouteBuilder builder)
     {
         var group = builder.MapGroup("api/products")
             .WithTags("products");
         
-        group.MapGet("/{id}", (IMediator mediator, string id) => mediator.Send(new GetProductQuery(id)));
-        group.MapPost("/", (IMediator mediator, CreateProductCommand request) => mediator.Send(request));
+        group.MapGet("/{id}", GetProductQuery.EndpointHandler);
+        group.MapPost("/", CreateProductCommand.EndpointHandler);
     }
 }

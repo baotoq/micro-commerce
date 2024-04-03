@@ -35,12 +35,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
+app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapIdentityApi<User>();
 app.MapGet("/", () => "Hello World!");
 app.MapCarts();
+app.MapCategories();
 app.MapProducts();
+app.MapSeed();
 
 app.Run();
