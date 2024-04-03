@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -18,6 +19,8 @@ const LoginPage: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const router = useRouter();
+
+  const { data: session, status } = useSession();
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -40,21 +43,7 @@ const LoginPage: React.FC = () => {
     const isValid = validateForm();
 
     if (isValid) {
-      try {
-        const response = await axios.post("http://localhost:5010/login", {
-          email,
-          password,
-        });
-
-        if (response.status === 200) {
-          router.push("/");
-        } else {
-          // Login failed, handle error
-          console.error("Login failed");
-        }
-      } catch (error) {
-        console.error("An error occurred:", error);
-      }
+      await signIn();
     }
   };
 
@@ -62,7 +51,7 @@ const LoginPage: React.FC = () => {
     <Container component="main" maxWidth="sm">
       <div className="mt-8">
         <Typography variant="h4" align="center" gutterBottom>
-          Login
+          Login {status}
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>

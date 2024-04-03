@@ -7,13 +7,9 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
+
+import NextAuthProvider from "../components/auth-provider";
+import Navbar from "../components/navbar";
 
 export const metadata: Metadata = {
   title: "Micro Commerce",
@@ -28,31 +24,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static">
-            <Toolbar>
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                sx={{ mr: 2 }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                <Link href="/">My Commerce</Link>
-              </Typography>
-              <Button component={Link} color="inherit" href="/login">
-                Login
-              </Button>
-              <Button component={Link} color="inherit" href="/register">
-                Register
-              </Button>
-            </Toolbar>
-          </AppBar>
-        </Box>
-        <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+        <NextAuthProvider>
+          <Navbar />
+          <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );
