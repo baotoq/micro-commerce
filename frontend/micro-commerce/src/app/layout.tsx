@@ -40,13 +40,8 @@ export default function RootLayout({
               >
                 <MenuIcon />
               </IconButton>
-              <Typography
-                variant="h6"
-                component={Link}
-                href="/"
-                sx={{ flexGrow: 1 }}
-              >
-                My Commerce
+              <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                <Link href="/">My Commerce</Link>
               </Typography>
               <Button component={Link} color="inherit" href="/login">
                 Login
