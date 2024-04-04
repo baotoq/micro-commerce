@@ -52,7 +52,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapIdentityApi<User>();
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => Results.Redirect("/healthz"));
+app.MapHealthChecks("/healthz");
 app.MapCarts();
 app.MapCategories();
 app.MapProducts();

@@ -16,6 +16,8 @@ public static class DependencyInjection
 {
     public static void AddInfrastructure(this IServiceCollection services)
     {
+        services.AddHealthChecks();
+        
         services.AddSingleton(sp =>
             RedLockFactory.Create(new List<RedLockMultiplexer>
             {
