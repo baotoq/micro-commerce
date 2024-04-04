@@ -1,5 +1,7 @@
 using System.Reflection;
+using Api;
 using Api.Endpoints;
+using Api.Exceptions;
 using Domain.Entities;
 using FluentValidation;
 using Infrastructure;
@@ -22,6 +24,8 @@ builder.Host.UseSerilog();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
@@ -41,6 +45,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler(_ => {});
 app.UseCors();
 app.UseSerilogRequestLogging();
 app.UseAuthentication();
@@ -52,5 +57,6 @@ app.MapCarts();
 app.MapCategories();
 app.MapProducts();
 app.MapSeed();
+
 
 app.Run();
