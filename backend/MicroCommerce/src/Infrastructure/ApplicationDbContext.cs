@@ -17,8 +17,9 @@ public class ApplicationDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
         modelBuilder.Entity<CartItem>()
-            .HasKey(bc => new { bc.CartId, bc.ProductId });  
+            .HasKey(bc => new { bc.CartId, bc.ProductId });
     }
     
     public DbSet<Buyer> Buyers { get; set; } = null!;

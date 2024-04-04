@@ -53,8 +53,6 @@ public record IncreaseProductQuantityCommand : IRequest<IncreaseProductQuantityR
                 cartItem.ProductQuantity += request.ProductQuantity;
             }
             
-            product.UseRemainingStock(request.ProductQuantity);
-
             await context.SaveChangesAsync(cancellationToken);
             await trans.CommitAsync(cancellationToken);
             

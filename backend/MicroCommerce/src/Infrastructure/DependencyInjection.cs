@@ -2,7 +2,9 @@ using System.Reflection;
 using Domain.Entities;
 using FluentValidation;
 using Infrastructure.Behaviour;
+using Infrastructure.Common.Options;
 using Infrastructure.Interceptors;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,11 +28,14 @@ public static class DependencyInjection
             }, sp.GetRequiredService<ILoggerFactory>()));
         
         services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
+        services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
         services.AddDbContext<ApplicationDbContext>((sp, options) => {
             options.UseNpgsql("name=ConnectionStrings:DefaultConnection");
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
         });
         
+        services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
+
         services.AddIdentityCore<User>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddApiEndpoints();
@@ -45,6 +50,33 @@ public static class DependencyInjection
                 {
                     policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
+        });
+        
+        services.AddMassTransit(s =>
+        {
+            var messageBroker = new MessageBrokerOptions();
+            
+            s.SetKebabCaseEndpointNameFormatter();
+            s.AddConsumers(Assembly.GetExecutingAssembly());
+            s.UsingRabbitMq((context,cfg) =>
+            {
+                cfg.Host(messageBroker.Host, messageBroker.Port, "/", h => {
+                    h.Username(messageBroker.User);
+                    h.Password(messageBroker.Password);
+                });
+                cfg.ConfigureEndpoints(context);
+
+                cfg.PrefetchCount = 1;
+                cfg.AutoDelete = true;
+                
+                cfg.UseMessageRetry(r => r.Intervals(100, 500, 1000, 1000, 1000, 1000, 1000));
+            });
+            
+            // s.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
+            // {
+            //     o.UsePostgres();
+            //     o.UseBusOutbox();
+            // });
         });
     }
 }

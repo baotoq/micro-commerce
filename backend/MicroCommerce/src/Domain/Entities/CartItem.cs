@@ -1,6 +1,8 @@
+using Domain.Common;
+
 namespace Domain.Entities;
 
-public class CartItem
+public class CartItem : DateEntity
 {
     public string CartId { get; set; } = "";
     public Cart Cart { get; set; } = null!;
@@ -9,4 +11,6 @@ public class CartItem
     public Product Product { get; set; } = null!;
     
     public int ProductQuantity { get; set; }
+    
+    public decimal ProductPriceAtCheckoutTime { get; set; }
 }

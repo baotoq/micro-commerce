@@ -17,5 +17,16 @@ public class Cart : EntityBase
     
     public CartStatus Status { get; set; }
     
+    public decimal SubTotal { get; set; }
+    public decimal TotalPromotionDiscountAmount { get; set; }
+    public decimal TotalCheckoutAmount { get; set; }
+    
+    [MaxLength(Constant.KeyLength)]
+    public string DeliveryOptionId { get; set; } = "";
+    public DeliveryOption DeliveryOption { get; set; } = null!;
+    
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+    public string PromotionId { get; set; } = "";
+    public Promotion Promotion { get; set; } = null!;
 }
