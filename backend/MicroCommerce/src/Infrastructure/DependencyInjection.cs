@@ -1,4 +1,8 @@
+using System.Reflection;
 using Domain.Entities;
+using FluentValidation;
+using Infrastructure.Behaviour;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

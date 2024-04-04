@@ -12,5 +12,5 @@ public class Product : EntityBase
     public int TotalStock { get; set; }
     public int SoldQuantity { get; set; }
     
-    public ICollection<CartProductMap> CartProductMaps { get; set; } = new List<CartProductMap>();
+    public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 }

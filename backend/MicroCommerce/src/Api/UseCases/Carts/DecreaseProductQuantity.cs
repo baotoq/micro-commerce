@@ -35,17 +35,22 @@ public record DecreaseProductQuantityCommand : IRequest<DecreaseProductQuantityR
                 throw new Exception("Product not found");
             }
             
-            var cartProductMap = await context.CartProductMaps
+            var cartItem = await context.CartItems
                 .Where(s => s.CartId == request.CartId && s.ProductId == request.ProductId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (cartProductMap != null)
+            if (cartItem != null)
             {
-                cartProductMap.ProductQuantity -= request.ProductQuantity;
-
-                if (cartProductMap.ProductQuantity == 0)
+                if (cartItem.ProductQuantity - request.ProductQuantity < 0)
                 {
-                    context.CartProductMaps.Remove(cartProductMap);
+                    throw new Exception("Cannot be negative quantity");
+                }
+                
+                cartItem.ProductQuantity -= request.ProductQuantity;
+
+                if (cartItem.ProductQuantity == 0)
+                {
+                    context.CartItems.Remove(cartItem);
                 }
                 
                 product.RemainingStock += request.ProductQuantity;

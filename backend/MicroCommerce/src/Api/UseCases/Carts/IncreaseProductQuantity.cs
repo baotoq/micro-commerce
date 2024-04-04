@@ -35,13 +35,13 @@ public record IncreaseProductQuantityCommand : IRequest<IncreaseProductQuantityR
                 throw new Exception("Product not found");
             }
             
-            var cartProductMap = await context.CartProductMaps
+            var cartItem = await context.CartItems
                 .Where(s => s.CartId == request.CartId && s.ProductId == request.ProductId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (cartProductMap == null)
+            if (cartItem == null)
             {
-                cart.CartProductMaps.Add(new CartProductMap
+                cart.CartItems.Add(new CartItem
                 {
                     ProductId = product.Id,
                     CartId = cart.Id,
@@ -50,7 +50,7 @@ public record IncreaseProductQuantityCommand : IRequest<IncreaseProductQuantityR
             }
             else
             {
-                cartProductMap.ProductQuantity += request.ProductQuantity;
+                cartItem.ProductQuantity += request.ProductQuantity;
             }
             
             product.RemainingStock -= request.ProductQuantity;

@@ -1,4 +1,5 @@
 using Domain.Entities;
+using FluentValidation;
 using Infrastructure;
 using MediatR;
 
@@ -23,6 +24,14 @@ public class CreateProductCommandHandler(ApplicationDbContext context, ILogger<C
         logger.LogInformation("Create product successfully");
             
         return new CreateProductResponse(entity.Entity.Id);
+    }
+}
+
+public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+{
+    public CreateProductCommandValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty();
     }
 }
 

@@ -1,6 +1,6 @@
 namespace Domain.Entities;
 
-public class CartProductMap
+public class CartItem
 {
     public string CartId { get; set; } = "";
     public Cart Cart { get; set; } = null!;

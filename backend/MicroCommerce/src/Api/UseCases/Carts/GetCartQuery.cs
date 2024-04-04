@@ -13,12 +13,12 @@ public record GetCartQuery(string CartId) : IRequest<GetCartResponse>
             var cart = await context.Carts
                 .Where(s => s.Id == request.CartId)
                 .FirstOrDefaultAsync(cancellationToken);
-
+ 
             if (cart == null)
             {
                 throw new Exception("Cart not found");
             }
-            
+
             return new GetCartResponse(cart.Id);
         }
     }
