@@ -2,7 +2,7 @@ using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Infrastructure;
+namespace Infrastructure.Interceptors;
 
 public class DateEntityInterceptor : SaveChangesInterceptor
 {

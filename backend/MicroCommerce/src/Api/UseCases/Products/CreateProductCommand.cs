@@ -5,9 +5,13 @@ using MediatR;
 
 namespace Api.UseCases.Products;
 
-public record CreateProductCommand(string Name) : IRequest<CreateProductResponse>
+public record CreateProductCommand : IRequest<CreateProductResponse>
 {
     public static Func<IMediator, CreateProductCommand, Task<CreateProductResponse>> EndpointHandler => (mediator, request) => mediator.Send(request);
+    
+    public string Name { get; init; } = "";
+    public decimal Price { get; set; }
+    public int RemainingStock { get; set; }
 }
 
 public class CreateProductCommandHandler(ApplicationDbContext context, ILogger<CreateProductCommandHandler> logger) : IRequestHandler<CreateProductCommand, CreateProductResponse>
@@ -16,7 +20,10 @@ public class CreateProductCommandHandler(ApplicationDbContext context, ILogger<C
     {
         var entity = await context.Products.AddAsync(new Product
         {
-            Name = request.Name
+            Name = request.Name,
+            Price = request.Price,
+            RemainingStock = request.RemainingStock,
+            TotalStock = request.RemainingStock,
         }, cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);
@@ -32,6 +39,8 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
     public CreateProductCommandValidator()
     {
         RuleFor(x => x.Name).NotEmpty();
+        RuleFor(x => x.Price).GreaterThan(0);
+        RuleFor(x => x.RemainingStock).GreaterThan(0);
     }
 }
 

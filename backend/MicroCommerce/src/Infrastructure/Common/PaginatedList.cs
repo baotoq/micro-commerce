@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure;
+namespace Infrastructure.Common;
 
 public class PaginatedList<T>
 {

@@ -13,4 +13,21 @@ public class Product : EntityBase
     public int SoldQuantity { get; set; }
     
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+    
+    public void UseRemainingStock(int quantity)
+    {
+        if (RemainingStock < quantity)
+        {
+            throw new ArgumentException("Not enough stock");
+        }
+
+        RemainingStock -= quantity;
+        TotalStock -= quantity;
+    }
+    
+    public void RefundRemainingStock(int quantity)
+    {
+        RemainingStock += quantity;
+        TotalStock += quantity;
+    }
 }

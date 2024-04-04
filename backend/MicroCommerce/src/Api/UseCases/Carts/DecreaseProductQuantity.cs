@@ -53,7 +53,7 @@ public record DecreaseProductQuantityCommand : IRequest<DecreaseProductQuantityR
                     context.CartItems.Remove(cartItem);
                 }
                 
-                product.RemainingStock += request.ProductQuantity;
+                product.RefundRemainingStock(request.ProductQuantity);
             }
             
             await context.SaveChangesAsync(cancellationToken);

@@ -1,16 +1,20 @@
 using Api.UseCases.Products;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Api.UnitTests;
+namespace Api.UnitTests.CreateProductCommandTests;
 
-public class CreateProductCommandTests : TestBase
+public class CreateProductCommandHandlerTests : TestBase
 {
     [Fact]
     public async Task CreateProduct()
     {
         // Arrange
-        var request = new CreateProductCommand("Apple");
+        var request = new CreateProductCommand
+        {
+            Name = "Apple",
+            Price = 1,
+            RemainingStock = 2
+        };
         var handler = new CreateProductCommandHandler(Context, NullLogger<CreateProductCommandHandler>.Instance);
 
         // Act
