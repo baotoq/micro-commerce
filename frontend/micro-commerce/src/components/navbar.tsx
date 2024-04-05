@@ -32,7 +32,9 @@ export default function Navbar() {
             </Typography>
             {status === "authenticated" ? (
               <>
-                <Button color="inherit">{session.user?.email}</Button>
+                <Button color="inherit" component={Link} href="/profile">
+                  {session.user?.email}
+                </Button>
                 <Button color="inherit" onClick={() => signOut()}>
                   Logout
                 </Button>
