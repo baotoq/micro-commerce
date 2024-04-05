@@ -45,6 +45,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.Use(async (context, next) =>
+{
+    await Task.Delay(TimeSpan.FromSeconds(2));
+    await next.Invoke();
+});
+
 app.UseExceptionHandler(_ => {});
 app.UseCors();
 app.UseSerilogRequestLogging();
