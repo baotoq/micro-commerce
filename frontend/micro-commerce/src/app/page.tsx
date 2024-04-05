@@ -1,22 +1,11 @@
-"use client";
-import { Key } from "react";
-import useSWR from "swr";
-
 interface Category {
   id: string;
   name: string;
 }
 
-export default function Home() {
-  const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
-
-  const { data, error, isLoading } = useSWR<Category[]>(
-    "http://localhost:5010/api/categories",
-    fetcher
-  );
-
-  if (error) return <div>failed to load</div>;
-  if (isLoading) return <div>loading...</div>;
+export default async function Home() {
+  const res = await fetch(`http://localhost:5010/api/categories`);
+  const data = await res.json().then((data) => data as Category[]);
 
   return (
     <div>
@@ -26,3 +15,4 @@ export default function Home() {
     </div>
   );
 }
+

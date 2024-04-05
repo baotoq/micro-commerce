@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -8,10 +7,10 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
 
-const navbar = () => {
-  const { data: session, status } = useSession();
+export default async function Navbar() {
+  const session = await getServerSession();
 
   return (
     <div>
@@ -30,10 +29,11 @@ const navbar = () => {
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
               <Link href="/">My Commerce</Link>
             </Typography>
-            {status == "authenticated" ? (
-              <Button color="inherit" onClick={() => signOut()}>
-                Logout
-              </Button>
+            {session ? (
+              <>
+                <Button color="inherit">{session.user?.email}</Button>
+                <Button color="inherit">Logout</Button>
+              </>
             ) : (
               <>
                 <Button component={Link} color="inherit" href="/login">
@@ -49,6 +49,4 @@ const navbar = () => {
       </Box>
     </div>
   );
-};
-
-export default navbar;
+}

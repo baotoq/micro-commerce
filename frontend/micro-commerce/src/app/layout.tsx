@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import "./globals.css";
 
@@ -8,8 +7,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 
-import NextAuthProvider from "../components/auth-provider";
-import Navbar from "../components/navbar";
+import SessionProvider from "@/components/session-provider";
+import Navbar from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: "Micro Commerce",
@@ -24,10 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextAuthProvider>
+        <SessionProvider>
           <Navbar />
           <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
-        </NextAuthProvider>
+        </SessionProvider>
       </body>
     </html>
   );

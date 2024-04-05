@@ -2,7 +2,7 @@ import axios from "axios";
 import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const authOptions: AuthOptions = {
+export const authOptions: AuthOptions = {
   // Configure one or more authentication providers
   providers: [
     CredentialsProvider({
@@ -17,20 +17,33 @@ const authOptions: AuthOptions = {
             email: credentials.username,
             password: credentials.password,
           });
-
+          const config = {
+            headers: {
+              Authorization: "Bearer " + res.data.accessToken,
+            },
+          };
           // If no error and we have user data, return it
           if (res.data && res.status === 200) {
-            return res.data;
-          }
+            const res = await axios.get(
+              "http://localhost:5010/manage/info",
+              config
+            );
 
-          console.log("Login successfully");
+            console.log("Login successfully", res.data);
+
+            return {
+              id: res.data.email,
+              email: res.data.email,
+              name: res.data.email,
+            };
+          }
         }
 
         // Return null if user data could not be retrieved
         return null;
       },
     }),
-  ],
+  ]
 };
 
 const handler = NextAuth(authOptions);
