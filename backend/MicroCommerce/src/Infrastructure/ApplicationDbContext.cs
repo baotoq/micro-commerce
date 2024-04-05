@@ -26,6 +26,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public DbSet<Cart> Carts { get; set; } = null!;
     public DbSet<CartItem> CartItems { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<DeliveryAddress> DeliveryAddresses { get; set; } = null!;
     public DbSet<DeliveryOption> DeliveryOptions { get; set; } = null!;
     public DbSet<Product> Products { get; set; } = null!;
     public DbSet<Promotion> Promotions { get; set; } = null!;

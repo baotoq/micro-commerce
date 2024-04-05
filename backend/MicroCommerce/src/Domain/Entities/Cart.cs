@@ -24,9 +24,14 @@ public class Cart : EntityBase
     [MaxLength(Constant.KeyLength)]
     public string DeliveryOptionId { get; set; } = "";
     public DeliveryOption DeliveryOption { get; set; } = null!;
+
+    public decimal DeliveryFee { get; set; }
     
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
     public string PromotionId { get; set; } = "";
     public Promotion Promotion { get; set; } = null!;
+    
+    public string DeliveryAddressId { get; set; } = "";
+    public DeliveryAddress DeliveryAddress { get; set; } = null!;
 }
