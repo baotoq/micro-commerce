@@ -8,6 +8,8 @@ import {
   Grid,
   Link as MuiLink,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
@@ -16,6 +18,7 @@ const SignInPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
@@ -42,13 +45,20 @@ const SignInPage: React.FC = () => {
     const isValid = validateForm();
 
     if (isValid) {
-      await signIn("credentials", {
-        redirect: false,
-        username: email,
-        password,
-      });
+      try {
+        setLoading(true);
+        const result = await signIn("credentials", {
+          redirect: false,
+          username: email,
+          password,
+        });
 
-      router.push("/");
+        if (result?.ok) {
+          router.push("/");
+        }
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -84,14 +94,15 @@ const SignInPage: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button
+              <LoadingButton
                 variant="contained"
                 color="primary"
                 fullWidth
                 type="submit"
+                loading={loading}
               >
                 Login
-              </Button>
+              </LoadingButton>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="body2" align="center">
