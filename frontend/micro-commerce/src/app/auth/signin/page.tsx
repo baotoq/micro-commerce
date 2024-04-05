@@ -9,11 +9,10 @@ import {
   Link as MuiLink,
 } from "@mui/material";
 import Link from "next/link";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 
-const LoginPage: React.FC = () => {
+const SignInPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -43,7 +42,13 @@ const LoginPage: React.FC = () => {
     const isValid = validateForm();
 
     if (isValid) {
-      await signIn();
+      await signIn("credentials", {
+        redirect: false,
+        username: email,
+        password,
+      });
+
+      router.push("/");
     }
   };
 
@@ -103,4 +108,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default SignInPage;
