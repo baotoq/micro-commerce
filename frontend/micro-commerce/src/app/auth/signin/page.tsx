@@ -106,7 +106,7 @@ const SignInPage: React.FC = () => {
             </Grid>
             <Grid item xs={12}>
               <Typography variant="body2" align="center">
-                Don't have an account?{" "}
+                Dont have an account?{" "}
                 <MuiLink component={Link} href="/register">
                   Register
                 </MuiLink>
