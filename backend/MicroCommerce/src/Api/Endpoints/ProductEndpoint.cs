@@ -10,6 +10,7 @@ public static class ProductEndpoint
         var group = builder.MapGroup("api/products")
             .WithTags("products");
         
+        group.MapGet("/", GetProductsQuery.EndpointHandler);
         group.MapGet("/{id}", GetProductQuery.EndpointHandler);
         group.MapPost("/", CreateProductCommand.EndpointHandler);
     }
