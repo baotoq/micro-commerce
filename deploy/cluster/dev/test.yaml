@@ -21,3 +21,4 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: bitnami
+        namespace: flux-system
