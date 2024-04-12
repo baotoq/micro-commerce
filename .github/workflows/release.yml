@@ -15,9 +15,6 @@ jobs:
     env:
       IMAGE: bao2703/micro-commerce-backend
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend/MicroCommerce/src/Api
     steps:
       - uses: actions/checkout@v4
       - name: Prepare Env
@@ -47,10 +44,20 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Build docker images
-        run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p ContainerImageTags='"${{ steps.prep.outputs.BUILD_ID }};${{ steps.prep.outputs.LATEST_ID }}"' -p ContainerRepository='"${{ env.IMAGE }}"'
-
-      - name: Push docker images
+      - name: Build and push Backend
+        working-directory: ./backend/MicroCommerce/src/Api
         run: |
+          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p ContainerImageTags='"${{ steps.prep.outputs.BUILD_ID }};${{ steps.prep.outputs.LATEST_ID }}"' -p ContainerRepository='"${{ env.IMAGE }}"'
           docker push ${{ env.IMAGE }}:${{ steps.prep.outputs.BUILD_ID }}
           docker push ${{ env.IMAGE }}:${{ steps.prep.outputs.LATEST_ID }}
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v2
+        with:
+          working-directory: ./frontend/micro-commerce
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.prep.outputs.BUILD_ID }}
+            ${{ env.IMAGE }}:${{ steps.prep.outputs.LATEST_ID }}
