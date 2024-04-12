@@ -4,6 +4,7 @@
 name: .NET Unit Tests
 
 on:
+  workflow_call:
   workflow_dispatch:
   push:
     branches: [ "master" ]
