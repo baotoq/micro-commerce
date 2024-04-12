@@ -10,7 +10,7 @@ jobs:
   tests:
     uses: ./.github/workflows/dotnet-test.yml
 
-  release:
+  release-docker-images:
     needs: [tests]
     env:
       IMAGE: bao2703/micro-commerce-backend
