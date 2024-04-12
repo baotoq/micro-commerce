@@ -40,23 +40,23 @@ spec:
 #       persistence:
 #         size: 4Gi
 #       replicaCount: 0
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta2
-kind: HelmRelease
-metadata:
-  name: rabbitmq
-  namespace: dev
-spec:
-  interval: 5m
-  chart:
-    spec:
-      chart: rabbitmq
-      sourceRef:
-        kind: HelmRepository
-        name: bitnami
-        namespace: flux-system
-  values:
-    replicaCount: 1
-    auth:
-      username: guest
-      password: guest
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta2
+# kind: HelmRelease
+# metadata:
+#   name: rabbitmq
+#   namespace: dev
+# spec:
+#   interval: 5m
+#   chart:
+#     spec:
+#       chart: rabbitmq
+#       sourceRef:
+#         kind: HelmRepository
+#         name: bitnami
+#         namespace: flux-system
+#   values:
+#     replicaCount: 1
+#     auth:
+#       username: guest
+#       password: guest
