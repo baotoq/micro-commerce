@@ -13,7 +13,8 @@ jobs:
   release-docker-images:
     needs: [tests]
     env:
-      IMAGE: bao2703/micro-commerce-backend
+      BACKEND_IMAGE_NAME: bao2703/micro-commerce-backend
+      FRONTEND_IMAGE_NAME: bao2703/micro-commerce-frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,6 +40,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -47,17 +53,16 @@ jobs:
       - name: Build and push Backend
         working-directory: ./backend/MicroCommerce/src/Api
         run: |
-          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p ContainerImageTags='"${{ steps.prep.outputs.BUILD_ID }};${{ steps.prep.outputs.LATEST_ID }}"' -p ContainerRepository='"${{ env.IMAGE }}"'
-          docker push ${{ env.IMAGE }}:${{ steps.prep.outputs.BUILD_ID }}
-          docker push ${{ env.IMAGE }}:${{ steps.prep.outputs.LATEST_ID }}
+          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p ContainerImageTags='"${{ steps.prep.outputs.BUILD_ID }};${{ steps.prep.outputs.LATEST_ID }}"' -p ContainerRepository='"${{ env.BACKEND_IMAGE_NAME }}"'
+          docker push ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.prep.outputs.BUILD_ID }}
+          docker push ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.prep.outputs.LATEST_ID }}
 
       - name: Build and push Frontend
         uses: docker/build-push-action@v2
         with:
-          working-directory: ./frontend/micro-commerce
-          context: .
+          context: ./frontend/micro-commerce
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.IMAGE }}:${{ steps.prep.outputs.BUILD_ID }}
-            ${{ env.IMAGE }}:${{ steps.prep.outputs.LATEST_ID }}
+            ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.prep.outputs.BUILD_ID }}
+            ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.prep.outputs.LATEST_ID }}
