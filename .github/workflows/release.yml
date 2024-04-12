@@ -7,11 +7,11 @@ on:
       - "v*.*.*"
 
 jobs:
-  run-unit-tests:
+  tests:
     uses: ./.github/workflows/dotnet-test.yml
 
   release:
-    needs: [run-unit-tests]
+    needs: [tests]
     env:
       IMAGE: bao2703/micro-commerce-backend
     runs-on: ubuntu-latest
