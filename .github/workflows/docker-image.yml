@@ -23,7 +23,7 @@ jobs:
           BRANCH=${GITHUB_REF##*/}
           TS=$(date +%s)
           REVISION=${GITHUB_SHA::8}
-          BUILD_ID="${BRANCH}-${REVISION}-${TS}"
+          BUILD_ID="${REVISION}-${TS}"
           LATEST_ID=canary
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             BUILD_ID=${GITHUB_REF/refs\/tags\//}
@@ -49,5 +49,5 @@ jobs:
 
       - name: Push docker images
         run: |
-          docker push ${{ env.IMAGE }}:${{ needs.prepare.outputs.BUILD_ID }}
+          docker push ${{ env.IMAGE }}:${{ steps.prep.outputs.BUILD_ID }}
           docker push ${{ env.IMAGE }}:${{ steps.prep.outputs.LATEST_ID }}
