@@ -16,7 +16,8 @@ jobs:
       IMAGE: bao2703/micro-commerce-backend
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare
+      - uses: actions/checkout@v4
+      - name: Prepare Env
         id: prep
         run: |
           BRANCH=${GITHUB_REF##*/}
