@@ -11,7 +11,7 @@ defaults:
     working-directory: ./backend/MicroCommerce/src/Api
 
 jobs:
-  docker:
+  release:
     env:
       IMAGE: bao2703/micro-commerce-backend
     runs-on: ubuntu-latest
