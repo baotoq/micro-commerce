@@ -23,7 +23,7 @@ jobs:
           BRANCH=${GITHUB_REF##*/}
           TS=$(date +%s)
           REVISION=${GITHUB_SHA::8}
-          BUILD_ID="${REVISION}-${TS}"
+          BUILD_ID="${BRANCH}-${REVISION}-${TS}"
           LATEST_ID=canary
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             BUILD_ID=${GITHUB_REF/refs\/tags\//}
