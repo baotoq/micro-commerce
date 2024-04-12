@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using Infrastructure;
 using MediatR;
@@ -14,7 +15,7 @@ public record CreateProductCommand : IRequest<CreateProductResponse>
     public int RemainingStock { get; set; }
 }
 
-public class CreateProductCommandHandler(ApplicationDbContext context, ILogger<CreateProductCommandHandler> logger) : IRequestHandler<CreateProductCommand, CreateProductResponse>
+public class CreateProductCommandHandler(ApplicationDbContext context, ILogger<CreateProductCommandHandler> logger, ElasticsearchClient esClient) : IRequestHandler<CreateProductCommand, CreateProductResponse>
 {
     public async Task<CreateProductResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
@@ -27,6 +28,15 @@ public class CreateProductCommandHandler(ApplicationDbContext context, ILogger<C
         }, cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);
+        
+        var doc = new ProductDocument
+        {
+            Id = entity.Entity.Id,
+            Name = entity.Entity.Name,
+            Price = entity.Entity.Price,
+        };
+
+        var response = await esClient.IndexAsync(doc, ElasticSearchIndexKey.Product, cancellationToken);
             
         logger.LogInformation("Create product successfully");
             

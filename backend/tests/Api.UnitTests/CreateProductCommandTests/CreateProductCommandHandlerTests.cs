@@ -15,7 +15,7 @@ public class CreateProductCommandHandlerTests : TestBase
             Price = 1,
             RemainingStock = 2
         };
-        var handler = new CreateProductCommandHandler(Context, NullLogger<CreateProductCommandHandler>.Instance);
+        var handler = new CreateProductCommandHandler(Context, NullLogger<CreateProductCommandHandler>.Instance, null);
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);

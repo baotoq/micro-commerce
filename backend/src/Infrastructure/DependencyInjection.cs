@@ -1,5 +1,8 @@
 using System.Reflection;
+using Api;
 using Domain.Entities;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Transport;
 using FluentValidation;
 using Infrastructure.Behaviour;
 using Infrastructure.Common.Options;
@@ -19,6 +22,15 @@ public static class DependencyInjection
 {
     public static void AddInfrastructure(this IServiceCollection services)
     {
+        var settings= new ElasticsearchClientSettings(new Uri("https://localhost:9200"))
+            .DefaultMappingFor<ProductDocument>(i => i
+                .IndexName(ElasticSearchIndexKey.Product)
+                .IdProperty(p => p.Id)
+            )
+            .EnableDebugMode()
+            .PrettyJson();
+        services.AddSingleton(new ElasticsearchClient(settings));
+        
         services.AddHealthChecks();
         
         services.AddSingleton(sp =>
