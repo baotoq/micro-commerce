@@ -61,7 +61,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./frontend/micro-commerce
-          file: ./Dockerfile
           push: true
           tags: |
             ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.prep.outputs.BUILD_ID }}
