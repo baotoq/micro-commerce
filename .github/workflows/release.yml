@@ -6,15 +6,17 @@ on:
     tags:
       - "v*.*.*"
 
-defaults:
-  run:
-    working-directory: ./backend/MicroCommerce/src/Api
-
 jobs:
+  run-unit-tests:
+    uses: ./.github/workflows/dotnet-test.yml
+
   release:
     env:
       IMAGE: bao2703/micro-commerce-backend
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend/MicroCommerce/src/Api
     steps:
       - uses: actions/checkout@v4
       - name: Prepare Env
