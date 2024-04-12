@@ -51,7 +51,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Build and push Backend
-        working-directory: ./backend/MicroCommerce/src/Api
+        working-directory: ./backend/src/Api
         run: |
           dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p ContainerImageTags='"${{ steps.prep.outputs.BUILD_ID }};${{ steps.prep.outputs.LATEST_ID }}"' -p ContainerRepository='"${{ env.BACKEND_IMAGE_NAME }}"'
           docker push ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.prep.outputs.BUILD_ID }}
@@ -60,7 +60,7 @@ jobs:
       - name: Build and push Frontend
         uses: docker/build-push-action@v2
         with:
-          context: ./frontend/micro-commerce
+          context: ./frontend
           push: true
           tags: |
             ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.prep.outputs.BUILD_ID }}

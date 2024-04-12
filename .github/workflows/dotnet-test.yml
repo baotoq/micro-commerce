@@ -13,7 +13,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./backend/MicroCommerce
+    working-directory: ./backend
 
 jobs:
   unit-tests:
