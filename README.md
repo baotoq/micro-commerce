@@ -12,8 +12,8 @@ Micro Commerce is my pet project dedicated to showcasing the power of microservi
 
 ### Infrastructure
 
-- **[`Docker for desktop (Kubernetes enabled)`](https://www.docker.com/products/docker-desktop)** - The easiest tool to run Docker, Docker Swarm and Kubernetes on Mac and Windows
-- **[`Kubernetes`](https://kubernetes.io)** - The app is designed to run on Kubernetes (both locally on "Docker for Desktop" as well as on the cloud)
+- **[`Docker`](https://www.docker.com/)**
+- **[`Kubernetes`](https://kubernetes.io)** - The app is designed to run on Kubernetes (both locally as well as on the cloud)
 - **[`Helm`](https://helm.sh)** - Best package manager to find, share, and use software built for Kubernetes
 - **[`ELK`](https://www.elastic.co/elastic-stack)** - The ELK Stack (Elasticsearch, Logstash, Kibana) is a streamlined solution for log management, offering scalable search, data processing, and visualization capabilities in one package.
 
@@ -28,9 +28,9 @@ Micro Commerce is my pet project dedicated to showcasing the power of microservi
 - **[`EF Core 8`](https://github.com/dotnet/efcore)** - Modern object-database mapper for .NET. It supports LINQ queries, change tracking, updates, and schema migrations
 - **[`FluentValidation`](https://github.com/FluentValidation/FluentValidation)** - Popular .NET validation library for building strongly-typed validation rules
 - **[`MediatR`](https://github.com/jbogard/MediatR)** - Simple, unambitious mediator implementation in .NET
-- **[`Serilog`](https://github.com/serilog/serilog)** - Simple .NET logging with fully-structured events
 
 ### CI & CD
 
 - **[`GitHub Actions`](https://github.com/features/actions)**
+- **[`Flux CD`](https://fluxcd.io/)** - Flux CD automates Kubernetes deployment from Git, ensuring continuous delivery seamlessly.
 - **[`SonarCloud`](https://sonarcloud.io/)**
