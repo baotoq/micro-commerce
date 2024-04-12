@@ -11,6 +11,7 @@ jobs:
     uses: ./.github/workflows/dotnet-test.yml
 
   release:
+    needs: [run-unit-tests]
     env:
       IMAGE: bao2703/micro-commerce-backend
     runs-on: ubuntu-latest
