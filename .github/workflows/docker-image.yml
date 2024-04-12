@@ -37,15 +37,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-          
-      - name: Restore dependencies
-        run: dotnet restore
-        
-      - name: Build
-        run: dotnet build --no-restore
-        
+
       - name: Publish
-        run: ContainerImageTags='${{ steps.prep.outputs.BUILD_ID }};${{ steps.prep.outputs.LATEST_ID }}' dotnet publish --os linux --arch x64 /t:PublishContainer --no-build -c Release
+        run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p ContainerImageTags='"${{ steps.prep.outputs.BUILD_ID }};${{ steps.prep.outputs.LATEST_ID }}"'
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
