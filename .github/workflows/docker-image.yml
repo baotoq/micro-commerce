@@ -33,24 +33,21 @@ jobs:
           echo BUILD_ID=${BUILD_ID} >> $GITHUB_OUTPUT
           echo LATEST_ID=${LATEST_ID} >> $GITHUB_OUTPUT          
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-
-      - name: Publish
-        run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p ContainerImageTags='"${{ steps.prep.outputs.BUILD_ID }};${{ steps.prep.outputs.LATEST_ID }}"'
-
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build
-        uses: docker/build-push-action@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          push: true
-          tags: |
-            ${{ env.IMAGE }}:${{ steps.prep.outputs.BUILD_ID }}
-            ${{ env.IMAGE }}:${{ steps.prep.outputs.LATEST_ID }}            
+          dotnet-version: 8.0.x
+
+      - name: Build docker images
+        run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p ContainerImageTags='"${{ steps.prep.outputs.BUILD_ID }};${{ steps.prep.outputs.LATEST_ID }}"' -p ContainerRepository='"${{ env.IMAGE }}"'
+
+      - name: Push docker images
+        run: |
+          docker push ${{ env.IMAGE }}:${{ needs.prepare.outputs.BUILD_ID }}
+          docker push ${{ env.IMAGE }}:${{ steps.prep.outputs.LATEST_ID }}
