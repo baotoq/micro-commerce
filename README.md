@@ -4,7 +4,7 @@ migrating to .net 8.........
 
 | Project|Tests|Sonar|
 |-|-|-|
-|Backend|![Test Result](https://github.com/baotoq/micro-commerce/actions/workflows/dotnet-test.yml/badge.svg)|[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=catalog-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=catalog-api)|
+|Backend|![Test Result](https://github.com/baotoq/micro-commerce/actions/workflows/dotnet-test.yml/badge.svg)|[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=baotoq_micro-commerce&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=baotoq_micro-commerce) [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=baotoq_micro-commerce&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=baotoq_micro-commerce)|
 
 Micro Commerce is my pet project dedicated to showcasing the power of microservices in e-commerce. Through this project, we're building a sample e-commerce platform that adheres to microservice principles, enabling scalability, flexibility, and resilience.
 
