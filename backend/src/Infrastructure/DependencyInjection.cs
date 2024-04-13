@@ -1,5 +1,4 @@
 using System.Reflection;
-using Api;
 using Domain.Entities;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;

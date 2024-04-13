@@ -1,30 +1,32 @@
+using System.Text.Json;
 using Domain.Entities;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.UseCases.Products;
 
 public record SearchProductsFromEsQuery : IRequest<IEnumerable<SearchProductFromEsItemResponse>>
 {
-    public string SearchTerm { get; init; }
+    public string SearchTerm { get; init; } = "";
     
     public static Func<IMediator, Task<IEnumerable<SearchProductFromEsItemResponse>>> EndpointHandler => (mediator) => mediator.Send(new SearchProductsFromEsQuery());
 }
 
-public class GetProductFromEsQueryHandler(ApplicationDbContext context, ElasticsearchClient esClient) : IRequestHandler<SearchProductsFromEsQuery, IEnumerable<SearchProductFromEsItemResponse>>
+public class GetProductFromEsQueryHandler(ILogger<GetProductFromEsQueryHandler> logger, ApplicationDbContext context, ElasticsearchClient esClient) : IRequestHandler<SearchProductsFromEsQuery, IEnumerable<SearchProductFromEsItemResponse>>
 {
     public async Task<IEnumerable<SearchProductFromEsItemResponse>> Handle(SearchProductsFromEsQuery request, CancellationToken cancellationToken)
     {
-        var esRequest = new SearchRequest
+        var esRequest = new SearchRequest(ElasticSearchIndexKey.Product)
         {
             From = 0,
             Size = 10,
-            Query = new TermQuery("name") { Value = request.SearchTerm }
         };
         
+        logger.LogInformation("Query ES with request {Request}", JsonSerializer.Serialize(esRequest));
         var response = await esClient.SearchAsync<ProductDocument>(esRequest, cancellationToken);
         
         if (!response.IsValidResponse)
