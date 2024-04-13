@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useProductItemsCountSelector } from "@/lib/store";
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -29,10 +30,10 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 }));
 
 export default function Navbar() {
+  const productItemsCount = useProductItemsCountSelector(); 
+
   const { data: session, status } = useSession();
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
-  );
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -45,17 +46,11 @@ export default function Navbar() {
   const id = open ? "simple-popover" : undefined;
 
   return (
-    <div >
+    <div>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-            >
+            <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -64,11 +59,7 @@ export default function Navbar() {
             {status === "authenticated" ? (
               <>
                 <Button color="inherit" onClick={handleClick}>
-                  <Avatar
-                    className="mr-2"
-                    src="/broken-image.jpg"
-                    sx={{ width: 32, height: 32 }}
-                  />
+                  <Avatar className="mr-2" src="/broken-image.jpg" sx={{ width: 32, height: 32 }} />
                   {session.user?.email}
                 </Button>
 
@@ -97,7 +88,7 @@ export default function Navbar() {
                   </Typography>
                 </Popover>
                 <IconButton className="text-white">
-                  <StyledBadge badgeContent={4} color="success">
+                  <StyledBadge badgeContent={productItemsCount} color="success">
                     <ShoppingCartIcon />
                   </StyledBadge>
                 </IconButton>
