@@ -2,13 +2,20 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
+interface IProductItem {
+  id: string;
+  name: string;
+  productQuantity: number;
+}
+
 type State = {
-  products: any[];
+  products: IProductItem[];
 };
 
 type StateAction = {
   actions: {
     addProductToCart: (_: any) => void;
+    removeProductFromCart: (_: any) => void;
   };
 };
 
@@ -21,19 +28,39 @@ const useShoppingCartStore = create<State & StateAction>()(
     devtools((set) => ({
       ...initialState,
       actions: {
-        addProductToCart: (product: any) =>
+        addProductToCart: (productToAdd: any) =>
           set(
             (state) => {
-              state.products.push(product);
+              const product = state.products.find((p) => p.id === productToAdd.id);
+              if (product) {
+                product.productQuantity += 1;
+              } else {
+                state.products.push({ ...productToAdd, productQuantity: 1 });
+              }
             },
             false,
-            { type: "addProductToCart", product }
+            { type: "addProductToCart", productToAdd }
+          ),
+        removeProductFromCart: (productToRemove: any) =>
+          set(
+            (state) => {
+              const product = state.products.find((p) => p.id === productToRemove.id);
+              if (product) {
+                product.productQuantity -= 1;
+                if (product.productQuantity <= 0) {
+                  state.products = state.products.filter((p) => p.id !== productToRemove.id);
+                }
+              }
+            },
+            false,
+            { type: "removeProductFromCart", productToRemove }
           ),
       },
     }))
   )
 );
 
-export const useProductItemsCountSelector = () => useShoppingCartStore((state) => state.products.length);
+export const useProductItemsCountSelector = () =>
+  useShoppingCartStore((state) => state.products.reduce((acc, p) => acc + p.productQuantity, 0));
 
 export const useShoppingCartActions = () => useShoppingCartStore((state) => state.actions);
