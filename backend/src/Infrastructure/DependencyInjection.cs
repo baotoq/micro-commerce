@@ -7,7 +7,6 @@ using FluentValidation;
 using Infrastructure.Behaviour;
 using Infrastructure.Common.Options;
 using Infrastructure.Interceptors;
-using Infrastructure.Options;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -28,21 +27,26 @@ public static class DependencyInjection
         services.AddEfCore();
         
         services.AddHealthChecks();
-        services.AddRedLock();
+        services.AddRedLock(configuration);
         
         services.AddAuthorization();
-        services.AddMassTransit();
+        services.AddMassTransit(configuration);
         
         services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
     }
 
-    private static void AddRedLock(this IServiceCollection services)
+    private static void AddRedLock(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.Key));
+
         services.AddSingleton(sp =>
-            RedLockFactory.Create(new List<RedLockMultiplexer>
+        {
+            var option = sp.GetRequiredService<IOptions<RedisOptions>>().Value;
+            return RedLockFactory.Create(new List<RedLockMultiplexer>
             {
-                ConnectionMultiplexer.Connect("localhost:6371")
-            }, sp.GetRequiredService<ILoggerFactory>()));
+                ConnectionMultiplexer.Connect(option.ConnectionString)
+            }, sp.GetRequiredService<ILoggerFactory>());
+        });
     }
 
     private static void AddAuthorization(this IServiceCollection services)
@@ -64,19 +68,19 @@ public static class DependencyInjection
         });
     }
 
-    private static void AddMassTransit(this IServiceCollection services)
+    private static void AddMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<MessageBrokerOptions>(configuration.GetSection(MessageBrokerOptions.Key));
+        
         services.AddMassTransit(s =>
         {
-            var messageBroker = new MessageBrokerOptions();
-            
-            s.SetKebabCaseEndpointNameFormatter();
             s.AddConsumers(Assembly.GetExecutingAssembly());
-            s.UsingRabbitMq((context,cfg) =>
+            s.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host(messageBroker.Host, messageBroker.Port, "/", h => {
-                    h.Username(messageBroker.User);
-                    h.Password(messageBroker.Password);
+                var option = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
+                cfg.Host(option.Host, option.Port, "/", h => {
+                    h.Username(option.User);
+                    h.Password(option.Password);
                 });
                 cfg.ConfigureEndpoints(context);
 
@@ -108,10 +112,11 @@ public static class DependencyInjection
     {
         services.Configure<ElasticsearchOptions>(configuration.GetSection(ElasticsearchOptions.Key));
         
-        services.AddSingleton(s =>
+        services.AddSingleton(sp =>
         {
-            var option = s.GetRequiredService<IOptions<ElasticsearchOptions>>().Value;
+            var option = sp.GetRequiredService<IOptions<ElasticsearchOptions>>().Value;
             var settings= new ElasticsearchClientSettings(new Uri(option.Url))
+                .Authentication(new BasicAuthentication("", ""))
                 .DefaultMappingFor<ProductDocument>(i => i
                     .IndexName(ElasticSearchIndexKey.Product)
                     .IdProperty(p => p.Id)

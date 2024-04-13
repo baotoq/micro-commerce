@@ -36,7 +36,7 @@ public class CreateProductCommandHandler(ApplicationDbContext context, ILogger<C
             Price = entity.Entity.Price,
         };
 
-        var response = await esClient.IndexAsync(doc, ElasticSearchIndexKey.Product, cancellationToken);
+        var response = await esClient.IndexAsync(doc, cancellationToken);
             
         logger.LogInformation("Create product successfully");
             

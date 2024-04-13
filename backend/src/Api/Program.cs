@@ -52,7 +52,7 @@ app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapIdentityApi<User>();
+app.MapIdentityApi<User>().WithTags("identity");
 app.MapGet("/", () => Results.Redirect("/healthz"));
 app.MapHealthChecks("/healthz");
 app.MapCarts();

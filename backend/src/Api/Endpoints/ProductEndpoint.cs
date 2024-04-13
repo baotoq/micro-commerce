@@ -11,6 +11,7 @@ public static class ProductEndpoint
             .WithTags("products");
         
         group.MapGet("/", GetProductsQuery.EndpointHandler);
+        group.MapGet("/es", SearchProductsFromEsQuery.EndpointHandler);
         group.MapGet("/{id}", GetProductQuery.EndpointHandler);
         group.MapPost("/", CreateProductCommand.EndpointHandler);
     }

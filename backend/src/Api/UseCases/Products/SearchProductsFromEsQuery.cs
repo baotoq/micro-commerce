@@ -7,16 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.UseCases.Products;
 
-public record SearchProductsFromEsQuery : IRequest<GetProductFromEsResponse>
+public record SearchProductsFromEsQuery : IRequest<IEnumerable<SearchProductFromEsItemResponse>>
 {
     public string SearchTerm { get; init; }
     
-    public static Func<IMediator, Task<GetProductFromEsResponse>> EndpointHandler => (mediator) => mediator.Send(new SearchProductsFromEsQuery());
+    public static Func<IMediator, Task<IEnumerable<SearchProductFromEsItemResponse>>> EndpointHandler => (mediator) => mediator.Send(new SearchProductsFromEsQuery());
 }
 
-public class GetProductFromEsQueryHandler(ApplicationDbContext context, ElasticsearchClient esClient) : IRequestHandler<SearchProductsFromEsQuery, GetProductFromEsResponse>
+public class GetProductFromEsQueryHandler(ApplicationDbContext context, ElasticsearchClient esClient) : IRequestHandler<SearchProductsFromEsQuery, IEnumerable<SearchProductFromEsItemResponse>>
 {
-    public async Task<GetProductFromEsResponse> Handle(SearchProductsFromEsQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<SearchProductFromEsItemResponse>> Handle(SearchProductsFromEsQuery request, CancellationToken cancellationToken)
     {
         var esRequest = new SearchRequest
         {
@@ -31,16 +31,28 @@ public class GetProductFromEsQueryHandler(ApplicationDbContext context, Elastics
         {
             throw new Exception("Error");
         }
-        
-        var doc = response.Hits.FirstOrDefault().Source;
-        
-        if (doc == null)
+
+        if (!response.Documents.Any())
         {
-            throw new Exception("Not found");
+            return new List<SearchProductFromEsItemResponse>();
         }
-            
-        return new GetProductFromEsResponse(doc.Id, doc.Name);
+
+        var ids = response.Documents.Select(s => s.Id).ToList();
+
+        var products = await context.Products
+            .Where(s => ids.Contains(s.Id))
+            .ToListAsync(cancellationToken);
+
+        return products.ConvertAll(s => new SearchProductFromEsItemResponse
+        {
+            Id = s.Id,
+            Name = s.Name
+        });
     }
 }
 
-public record GetProductFromEsResponse(string Id, string Name);
+public record SearchProductFromEsItemResponse
+{
+    public string Id { get; init; } = "";
+    public string Name { get; init; } = "";
+}

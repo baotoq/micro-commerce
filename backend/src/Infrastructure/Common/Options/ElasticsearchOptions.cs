@@ -1,4 +1,4 @@
-namespace Infrastructure.Options;
+namespace Infrastructure.Common.Options;
 
 public class ElasticsearchOptions
 {
