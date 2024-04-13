@@ -23,7 +23,7 @@ public class GetProductFromEsQueryHandler(ILogger<GetProductFromEsQueryHandler> 
         var esRequest = new SearchRequest(ElasticSearchIndexKey.Product)
         {
             From = 0,
-            Size = 10,
+            Size = 1000,
         };
         
         logger.LogInformation("Query ES with request {Request}", JsonSerializer.Serialize(esRequest));

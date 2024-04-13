@@ -29,15 +29,6 @@ public class CreateProductCommandHandler(ApplicationDbContext context, ILogger<C
 
         await context.SaveChangesAsync(cancellationToken);
         
-        var doc = new ProductDocument
-        {
-            Id = entity.Entity.Id,
-            Name = entity.Entity.Name,
-            Price = entity.Entity.Price,
-        };
-
-        var response = await esClient.IndexAsync(doc, cancellationToken);
-            
         logger.LogInformation("Create product successfully");
             
         return new CreateProductResponse(entity.Entity.Id);

@@ -2,11 +2,16 @@ using System.Reflection;
 using Api;
 using Api.Endpoints;
 using Api.Exceptions;
+using Api.UseCases.Products.DomainEvents;
 using Domain.Entities;
 using FluentValidation;
 using Infrastructure;
 using Infrastructure.Behaviour;
+using Infrastructure.Common.Options;
+using Infrastructure.Interceptors;
+using MassTransit;
 using MediatR;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +34,7 @@ builder.Services.AddMediatR(cfg =>
     cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
 });
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+AddMassTransit(builder.Services, builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
@@ -62,3 +68,33 @@ app.MapSeed();
 
 
 app.Run();
+
+void AddMassTransit(IServiceCollection services, IConfiguration configuration)
+{
+    services.Configure<MessageBrokerOptions>(configuration.GetSection(MessageBrokerOptions.Key));
+        
+    services.AddMassTransit(s =>
+    {
+        s.AddConsumer<IndexProductDomainEventConsumer>();
+        s.UsingRabbitMq((context, cfg) =>
+        {
+            var option = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
+            cfg.Host(option.Host, option.Port, "/", h => {
+                h.Username(option.User);
+                h.Password(option.Password);
+            });
+            cfg.ConfigureEndpoints(context);
+
+            cfg.PrefetchCount = 1;
+            cfg.AutoDelete = true;
+                
+            cfg.UseMessageRetry(r => r.Intervals(100, 500, 1000, 1000, 1000, 1000, 1000));
+        });
+            
+        // s.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
+        // {
+        //     o.UsePostgres();
+        //     o.UseBusOutbox();
+        // });
+    });
+}
