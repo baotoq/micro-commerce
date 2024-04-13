@@ -7,11 +7,13 @@ using FluentValidation;
 using Infrastructure.Behaviour;
 using Infrastructure.Common.Options;
 using Infrastructure.Interceptors;
+using Infrastructure.Options;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Options;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
@@ -20,34 +22,31 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static void AddInfrastructure(this IServiceCollection services)
+    public static void AddInfrastructure(this IServiceCollection services, IConfigurationManager configuration)
     {
-        var settings= new ElasticsearchClientSettings(new Uri("https://localhost:9200"))
-            .DefaultMappingFor<ProductDocument>(i => i
-                .IndexName(ElasticSearchIndexKey.Product)
-                .IdProperty(p => p.Id)
-            )
-            .EnableDebugMode()
-            .PrettyJson();
-        services.AddSingleton(new ElasticsearchClient(settings));
+        services.AddElasticsearch(configuration);
+        services.AddEfCore();
         
         services.AddHealthChecks();
+        services.AddRedLock();
         
+        services.AddAuthorization();
+        services.AddMassTransit();
+        
+        services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
+    }
+
+    private static void AddRedLock(this IServiceCollection services)
+    {
         services.AddSingleton(sp =>
             RedLockFactory.Create(new List<RedLockMultiplexer>
             {
                 ConnectionMultiplexer.Connect("localhost:6371")
             }, sp.GetRequiredService<ILoggerFactory>()));
-        
-        services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
-        services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
-        services.AddDbContext<ApplicationDbContext>((sp, options) => {
-            options.UseNpgsql("name=ConnectionStrings:DefaultConnection");
-            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-        });
-        
-        services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
+    }
 
+    private static void AddAuthorization(this IServiceCollection services)
+    {
         services.AddIdentityCore<User>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddApiEndpoints();
@@ -63,7 +62,10 @@ public static class DependencyInjection
                     policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
         });
-        
+    }
+
+    private static void AddMassTransit(this IServiceCollection services)
+    {
         services.AddMassTransit(s =>
         {
             var messageBroker = new MessageBrokerOptions();
@@ -89,6 +91,34 @@ public static class DependencyInjection
             //     o.UsePostgres();
             //     o.UseBusOutbox();
             // });
+        });
+    }
+    
+    private static void AddEfCore(this IServiceCollection services)
+    {
+        services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
+        services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        services.AddDbContext<ApplicationDbContext>((sp, options) => {
+            options.UseNpgsql("name=ConnectionStrings:DefaultConnection");
+            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+        });
+    }
+    
+    private static void AddElasticsearch(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<ElasticsearchOptions>(configuration.GetSection(ElasticsearchOptions.Key));
+        
+        services.AddSingleton(s =>
+        {
+            var option = s.GetRequiredService<IOptions<ElasticsearchOptions>>().Value;
+            var settings= new ElasticsearchClientSettings(new Uri(option.Url))
+                .DefaultMappingFor<ProductDocument>(i => i
+                    .IndexName(ElasticSearchIndexKey.Product)
+                    .IdProperty(p => p.Id)
+                )
+                .EnableDebugMode()
+                .PrettyJson();
+            return new ElasticsearchClient(settings);
         });
     }
 }
