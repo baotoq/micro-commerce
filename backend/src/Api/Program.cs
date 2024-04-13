@@ -75,7 +75,7 @@ void AddMassTransit(IServiceCollection services, IConfiguration configuration)
         
     services.AddMassTransit(s =>
     {
-        s.AddConsumer<IndexProductDomainEventConsumer>();
+        s.AddConsumers(Assembly.GetExecutingAssembly());
         s.UsingRabbitMq((context, cfg) =>
         {
             var option = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;

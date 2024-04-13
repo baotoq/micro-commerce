@@ -20,7 +20,7 @@ public class GetProductFromEsQueryHandler(ILogger<GetProductFromEsQueryHandler> 
 {
     public async Task<IEnumerable<SearchProductFromEsItemResponse>> Handle(SearchProductsFromEsQuery request, CancellationToken cancellationToken)
     {
-        var esRequest = new SearchRequest(ElasticSearchIndexKey.Product)
+        var esRequest = new SearchRequest(ElasticSearchIndexKey.Product.Alias)
         {
             From = 0,
             Size = 1000,
@@ -31,10 +31,10 @@ public class GetProductFromEsQueryHandler(ILogger<GetProductFromEsQueryHandler> 
         
         if (!response.IsValidResponse)
         {
-            throw new Exception("Error");
+            throw new Exception("Error: " + response.ElasticsearchServerError);
         }
 
-        if (!response.Documents.Any())
+        if (response.Documents.Count == 0)
         {
             return new List<SearchProductFromEsItemResponse>();
         }

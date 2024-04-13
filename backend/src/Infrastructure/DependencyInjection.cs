@@ -87,12 +87,15 @@ public static class DependencyInjection
             var settings= new ElasticsearchClientSettings(new Uri(option.Url))
                 .Authentication(new BasicAuthentication("", ""))
                 .DefaultMappingFor<ProductDocument>(i => i
-                    .IndexName(ElasticSearchIndexKey.Product)
+                    .IndexName(ElasticSearchIndexKey.Product.Key)
                     .IdProperty(p => p.Id)
                 )
                 .EnableDebugMode()
                 .PrettyJson();
-            return new ElasticsearchClient(settings);
+
+            var client = new ElasticsearchClient(settings);
+            
+            return client;
         });
     }
 }

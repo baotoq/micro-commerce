@@ -9,5 +9,9 @@ public class ProductDocument
 
 public static class ElasticSearchIndexKey
 {
-    public const string Product = "product";
+    public class Product
+    {
+        public const string Key = "product";
+        public const string Alias = "product*";
+    }
 }
