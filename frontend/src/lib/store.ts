@@ -1,18 +1,38 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 
-type ShoppingCartStore = {
+type State = {
   products: any[];
+};
+
+type StateAction = {
   actions: {
     addProductToCart: (_: any) => void;
   };
 };
 
-const useShoppingCartStore = create<ShoppingCartStore>()((set) => ({
+const initialState: State = {
   products: [],
-  actions: {
-    addProductToCart: (product: any) => set((state) => ({ products: [...state.products, product] })),
-  },
-}));
+};
+
+const useShoppingCartStore = create<State & StateAction>()(
+  immer(
+    devtools((set) => ({
+      ...initialState,
+      actions: {
+        addProductToCart: (product: any) =>
+          set(
+            (state) => {
+              state.products.push(product);
+            },
+            false,
+            { type: "addProductToCart", product }
+          ),
+      },
+    }))
+  )
+);
 
 export const useProductItemsCountSelector = () => useShoppingCartStore((state) => state.products.length);
 
