@@ -2,15 +2,19 @@ using Microsoft.Extensions.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var cache = builder.AddRedis("cache");
+var db = builder.AddPostgres("db").AddDatabase("micro-commerce");
+var cache = builder.AddRedis("redis");
+var messaging = builder.AddRabbitMQ("rabbitmq");
 
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
-    .WithReference(cache);
+    .WithReference(db)
+    .WithReference(cache)
+    .WithReference(messaging);
 
 var frontend = builder.AddNpmApp("nextjsweb", "../MicroCommerce.NextjsWeb", "dev")
     .WithReference(apiService)
     .WithReference(cache)
-    .WithHttpEndpoint(targetPort: 3000, env: "PORT")
+    .WithHttpEndpoint(port: 3000, env: "PORT")
     .PublishAsDockerFile();
 
 if (builder.Environment.IsDevelopment() && builder.Configuration["DOTNET_LAUNCH_PROFILE"] == "https")
