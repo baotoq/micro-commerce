@@ -9,11 +9,12 @@ on:
   push:
     branches: [ "master" ]
     paths:
-      - 'backend/**'
+      - 'code/**'
+      - '!code/src/MicroCommerce.NextjsWeb/**'
 
 defaults:
   run:
-    working-directory: ./backend
+    working-directory: ./code
 
 jobs:
   unit-tests:
