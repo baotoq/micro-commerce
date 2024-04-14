@@ -11,10 +11,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj"/>
-    <ProjectReference Include="..\MicroCommerce.Web\MicroCommerce.Web.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.NodeJs" Version="8.0.0-preview.5.24201.12" />
     <PackageReference Include="Aspire.Hosting.AppHost" Version="8.0.0-preview.5.24201.12"/>
     <PackageReference Include="Aspire.Hosting.Redis" Version="8.0.0-preview.5.24201.12"/>
   </ItemGroup>

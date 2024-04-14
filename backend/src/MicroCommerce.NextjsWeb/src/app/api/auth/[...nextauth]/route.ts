@@ -15,7 +15,9 @@ const authOptions: AuthOptions = {
       },
       async authorize(credentials, req) {
         if (credentials) {
-          const res = await axios.post("http://localhost:5010/login", {
+          const api = process.env.services__apiservice__http__0;
+
+          const res = await axios.post(`${api}/login`, {
             email: credentials.username,
             password: credentials.password,
           });
@@ -26,10 +28,7 @@ const authOptions: AuthOptions = {
           };
           // If no error and we have user data, return it
           if (res.data && res.status === 200) {
-            const res = await axios.get(
-              "http://localhost:5010/manage/info",
-              config
-            );
+            const res = await axios.get(`${api}/manage/info`, config);
 
             console.log("Login successfully", res.data);
 

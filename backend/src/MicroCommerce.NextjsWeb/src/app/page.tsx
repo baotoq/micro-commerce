@@ -13,9 +13,11 @@ interface IProduct {
 }
 
 export default async function Home() {
-  const res = await fetch(`http://localhost:5010/api/categories`);
+  const api = process.env.services__apiservice__http__0;
+
+  const res = await fetch(`${api}/api/categories`);
   const data = await res.json().then((data) => data as ICategory[]);
-  const res2 = await fetch(`http://localhost:5010/api/products/es`);
+  const res2 = await fetch(`${api}/api/products/es`);
   const data2 = await res2.json().then((data) => data as IProduct[]);
 
   return (

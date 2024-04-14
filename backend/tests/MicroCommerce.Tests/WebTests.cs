@@ -19,4 +19,20 @@ public class WebTests
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+    
+    [Fact]
+    public async Task GetWebResourceRootReturnsOkStatusCode2()
+    {
+        // Arrange
+        var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.MicroCommerce_AppHost>();
+        await using var app = await appHost.BuildAsync();
+        await app.StartAsync();
+
+        // Act
+        var httpClient = app.CreateHttpClient("nextjsweb");
+        var response = await httpClient.GetAsync("/");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
 }
