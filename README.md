@@ -12,6 +12,7 @@ Micro Commerce is my pet project dedicated to showcasing the power of microservi
 
 ### Infrastructure
 
+- **[`.NET Aspire`](https://learn.microsoft.com/en-us/dotnet/aspire/get-started/aspire-overview)** - .NET Aspire is an opinionated, cloud ready stack for building observable, production ready, distributed applications.
 - **[`Docker`](https://www.docker.com/)**
 - **[`Kubernetes`](https://kubernetes.io)** - The app is designed to run on Kubernetes (both locally as well as on the cloud)
 - **[`Helm`](https://helm.sh)** - Best package manager to find, share, and use software built for Kubernetes
