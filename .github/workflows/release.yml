@@ -50,6 +50,11 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Setup Aspire
+        run: |
+          dotnet workload update
+          dotnet workload install aspire
+
       - name: Build and push Backend
         working-directory: ./code/src/MicroCommerce.ApiService
         run: |
