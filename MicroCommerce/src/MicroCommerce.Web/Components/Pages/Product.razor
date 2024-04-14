@@ -1,0 +1,48 @@
+﻿@page "/products"
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+@inject ProductApiClient ProductApi
+
+<PageTitle>Products</PageTitle>
+
+<h1>Products</h1>
+
+<p>This component demonstrates showing data loaded from a backend API service.</p>
+
+@if (Products == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Product Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var product in Products)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.Name</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Web.Product[]? Products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Products = await ProductApi.GetProductsAsync();
+    }
+
+}
