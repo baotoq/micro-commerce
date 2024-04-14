@@ -17,8 +17,6 @@ public static class DependencyInjection
 {
     public static void AddInfrastructure(this IServiceCollection services, IConfigurationManager configuration)
     {
-        var connectionString = configuration.GetConnectionString("db");
-
         services.AddElasticsearch(configuration);
         services.AddEfCore();
         
@@ -70,7 +68,7 @@ public static class DependencyInjection
         services.AddScoped<ISaveChangesInterceptor, IndexProductInterceptor>();
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
-            options.UseNpgsql(sp.GetRequiredService<IConfiguration>().GetConnectionString("db"));
+            options.UseNpgsql("name=ConnectionStrings:microcommerce");
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
         });
     }

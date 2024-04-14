@@ -80,9 +80,8 @@ void AddMassTransit(IServiceCollection services, IConfiguration configuration)
         s.UsingRabbitMq((context, cfg) =>
         {
             var option = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
-            cfg.Host(option.Host, option.Port, "/", h => {
-                h.Username(option.User);
-                h.Password(option.Password);
+            var connectionString = configuration.GetConnectionString("rabbitmq");
+            cfg.Host(new Uri(connectionString!), "/", h => {
             });
             cfg.ConfigureEndpoints(context);
 

@@ -2,12 +2,12 @@ using Microsoft.Extensions.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var db = builder.AddPostgres("db").AddDatabase("micro-commerce");
+var postgres = builder.AddPostgres("postgres").AddDatabase("microcommerce");
 var cache = builder.AddRedis("redis");
 var messaging = builder.AddRabbitMQ("rabbitmq");
 
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
-    .WithReference(db)
+    .WithReference(postgres)
     .WithReference(cache)
     .WithReference(messaging);
 

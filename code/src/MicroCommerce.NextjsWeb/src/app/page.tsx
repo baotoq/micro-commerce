@@ -18,7 +18,10 @@ export default async function Home() {
   const res = await fetch(`${api}/api/categories`);
   const data = await res.json().then((data) => data as ICategory[]);
   const res2 = await fetch(`${api}/api/products/es`);
-  const data2 = await res2.json().then((data) => data as IProduct[]);
+  let data2: IProduct[] = [];
+  if (res2.ok) {
+    data2 = await res2.json().then((data) => data as IProduct[]);
+  }
 
   return (
     <div>
