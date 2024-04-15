@@ -25,7 +25,9 @@ var postgres = builder
     .AddDatabase(AspireConstants.Database);
 
 var cache = builder.AddRedis(AspireConstants.Redis);
-var messaging = builder.AddRabbitMQ(AspireConstants.Messaging);
+var messaging = builder.AddRabbitMQ(AspireConstants.Messaging, password: builder.CreateStablePassword(AspireConstants.Messaging+"password"))
+    .WithDataVolume()
+    .WithManagementPlugin();
 
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>(AspireConstants.ApiService)
     .WithReference(postgres)

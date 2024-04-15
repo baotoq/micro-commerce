@@ -5,6 +5,9 @@ const nextConfig = {
       fullUrl: false,
     },
   },
+  experimental: {
+    instrumentationHook: true,
+  },
   output: "standalone",
 };
 
