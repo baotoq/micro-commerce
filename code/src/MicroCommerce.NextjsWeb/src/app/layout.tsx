@@ -9,7 +9,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 
 import SessionProvider from "@/components/session-provider";
 import Navbar from "@/components/navbar";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/lib/next-auth";
 
 export const metadata: Metadata = {
   title: "Micro Commerce",
@@ -22,7 +22,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession();
-
+  
   return (
     <html lang="en">
       <body className={inter.className}>

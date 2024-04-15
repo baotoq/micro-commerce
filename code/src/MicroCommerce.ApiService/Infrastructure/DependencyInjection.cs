@@ -44,11 +44,9 @@ public static class DependencyInjection
 
     private static void AddAuthorization(this IServiceCollection services)
     {
-        services.AddIdentityCore<User>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddApiEndpoints();
+        services.AddIdentityApiEndpoints<User>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
         
-        services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
         services.AddAuthorizationBuilder();
 
         services.AddCors(options =>

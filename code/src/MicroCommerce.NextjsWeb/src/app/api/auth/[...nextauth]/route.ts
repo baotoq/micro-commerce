@@ -1,51 +1,5 @@
-import axios from "axios";
-import NextAuth, { AuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-
-const authOptions: AuthOptions = {
-  pages: {
-    signIn: "/auth/signin",
-  },
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials, req) {
-        if (credentials) {
-          const api = process.env.services__apiservice__http__0;
-
-          const res = await axios.post(`${api}/login`, {
-            email: credentials.username,
-            password: credentials.password,
-          });
-          const config = {
-            headers: {
-              Authorization: "Bearer " + res.data.accessToken,
-            },
-          };
-          // If no error and we have user data, return it
-          if (res.data && res.status === 200) {
-            const res = await axios.get(`${api}/manage/info`, config);
-
-            console.log("Login successfully", res.data);
-
-            return {
-              id: res.data.email,
-              email: res.data.email,
-              name: res.data.email,
-            };
-          }
-        }
-
-        // Return null if user data could not be retrieved
-        return null;
-      },
-    }),
-  ],
-};
+import { authOptions } from "@/lib/next-auth";
+import NextAuth from "next-auth";
 
 const handler = NextAuth(authOptions);
 

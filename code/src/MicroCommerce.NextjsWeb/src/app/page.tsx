@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, CardActionArea, CardActions, Container } from "@mui/material";
 import Product from "@/components/product";
+import { getServerSession } from "@/lib/next-auth";
 
 interface ICategory {
   id: string;
@@ -13,6 +14,10 @@ interface IProduct {
 }
 
 export default async function Home() {
+  const session = await getServerSession();
+
+  console.log("session from home page", session);
+
   const api = process.env.services__apiservice__http__0;
 
   const res = await fetch(`${api}/api/categories`);
