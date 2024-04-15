@@ -13,29 +13,36 @@ interface IProduct {
   name: string;
 }
 
+const api = process.env.services__apiservice__http__0;
+
+async function getCategories() {
+  const res = await fetch(`${api}/api/categories`);
+  return res.json().then((data) => data as ICategory[]);
+}
+
+async function getProducts() {
+  const res = await fetch(`${api}/api/products`);
+  return res.json().then((data) => data as IProduct[]);
+}
+
 export default async function Home() {
   const session = await getServerSession();
 
   console.log("session from home page", session);
 
-  const api = process.env.services__apiservice__http__0;
+  const categoriesData = getCategories();
+  const productData = getProducts();
 
-  const res = await fetch(`${api}/api/categories`);
-  const data = await res.json().then((data) => data as ICategory[]);
-  const res2 = await fetch(`${api}/api/products/es`);
-  let data2: IProduct[] = [];
-  if (res2.ok) {
-    data2 = await res2.json().then((data) => data as IProduct[]);
-  }
+  const [categories, products] = await Promise.all([categoriesData, productData]);
 
   return (
     <div>
       <Container component="main" maxWidth="xl">
-        {data?.map((c) => (
+        {categories?.map((c) => (
           <div key={c.id}>{c.name}</div>
         ))}
         <div className="grid grid-cols-4 gap-4">
-          {data2?.map((product) => (
+          {products?.map((product) => (
             <Product product={product} key={product.id} />
           ))}
         </div>

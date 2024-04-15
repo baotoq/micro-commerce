@@ -9,6 +9,7 @@ using MicroCommerce.ApiService.Exceptions;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ApiService.Infrastructure.Behaviour;
 using MicroCommerce.ApiService.Infrastructure.Common.Options;
+using MicroCommerce.ApiService.UseCases.Database;
 using MicroCommerce.ServiceDefaults;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -51,13 +52,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     
     using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     try
     {
-        context.Database.EnsureCreated();
+        await mediator.Send(new MigrateDatabaseCommand());
+        await mediator.Send(new SeedDataCommand());
     }
     catch (Exception e)
     {
+        logger.LogError(e, "An error occurred while migrating the database or seeding data. {Message}", e.Message);
     }
 }
 

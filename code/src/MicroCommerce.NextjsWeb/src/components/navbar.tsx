@@ -95,7 +95,7 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Button color="inherit" component={Link} href="/auth/signin">
+                <Button color="inherit" onClick={() => signIn()}>
                   Login
                 </Button>
                 <Button component={Link} color="inherit" href="/register">

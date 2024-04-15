@@ -29,6 +29,29 @@ public class SeedDataCommandHandler(ApplicationDbContext context) : IRequestHand
                 }, cancellationToken);
             }
         }
+        
+        if (!await context.Products.AnyAsync(cancellationToken))
+        {
+            var products = new List<Product>()
+            {
+                new()
+                {
+                    Name = "Apple",
+                    Price = 20
+                },
+                new()
+                {
+                    Name = "Iphone",
+                    Price = 30
+                },
+                new()
+                {
+                    Name = "Macbook",
+                    Price = 200
+                }
+            };
+            await context.Products.AddRangeAsync(products, cancellationToken);
+        }
             
         await context.SaveChangesAsync(cancellationToken);
             
