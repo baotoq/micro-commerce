@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Tests", "test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ApiService.UnitTests", "tests\MicroCommerce.ApiService.UnitTests\MicroCommerce.ApiService.UnitTests.csproj", "{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Shared", "src\MicroCommerce.Shared\MicroCommerce.Shared.csproj", "{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EEE6E0A1-2214-41B4-BE19-774D23BB3FB7} = {82B1F9D7-BB97-4EEF-9A2A-C4C6AA38AF6F}
@@ -47,5 +53,6 @@ Global
 		{376D00FC-DF3C-4ABE-82DE-277F87C137E9} = {82B1F9D7-BB97-4EEF-9A2A-C4C6AA38AF6F}
 		{B82FC1B1-C9AC-4087-8FF2-1EFC612F1430} = {4089AA88-918D-4CC9-967F-0E39DCA2A3A0}
 		{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982} = {4089AA88-918D-4CC9-967F-0E39DCA2A3A0}
+		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5} = {82B1F9D7-BB97-4EEF-9A2A-C4C6AA38AF6F}
 	EndGlobalSection
 EndGlobal

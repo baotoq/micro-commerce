@@ -8,7 +8,6 @@ using MicroCommerce.ApiService.Endpoints;
 using MicroCommerce.ApiService.Exceptions;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ApiService.Infrastructure.Behaviour;
-using MicroCommerce.ApiService.Infrastructure.Common.Options;
 using MicroCommerce.ApiService.UseCases.Database;
 using MicroCommerce.ServiceDefaults;
 using Microsoft.Extensions.Options;
@@ -21,17 +20,8 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfigura
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
+builder.AddRedisDistributedCache(AspireConstants.Redis);
 
-// Add services to the container.
-builder.Services.AddProblemDetails();
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
@@ -40,7 +30,6 @@ builder.Services.AddMediatR(cfg =>
     cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
 });
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-AddMassTransit(builder.Services, builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
@@ -83,31 +72,3 @@ app.MapProducts();
 app.MapSeed();
 
 app.Run();
-
-void AddMassTransit(IServiceCollection services, IConfiguration configuration)
-{
-    services.Configure<MessageBrokerOptions>(configuration.GetSection(MessageBrokerOptions.Key));
-    services.AddMassTransit(s =>
-    {
-        s.AddConsumers(Assembly.GetExecutingAssembly());
-        s.UsingRabbitMq((context, cfg) =>
-        {
-            var option = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
-            var connectionString = configuration.GetConnectionString("rabbitmq") ?? option.ConnectionString;
-            cfg.Host(new Uri(connectionString!), "/", h => {
-            });
-            cfg.ConfigureEndpoints(context);
-
-            cfg.PrefetchCount = 1;
-            cfg.AutoDelete = true;
-                
-            cfg.UseMessageRetry(r => r.Intervals(100, 500, 1000, 1000, 1000, 1000, 1000));
-        });
-            
-        // s.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
-        // {
-        //     o.UsePostgres();
-        //     o.UseBusOutbox();
-        // });
-    });
-}

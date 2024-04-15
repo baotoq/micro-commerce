@@ -1,6 +1,8 @@
 using MediatR;
 using MicroCommerce.ApiService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using RedLockNet.SERedis;
 
 namespace MicroCommerce.ApiService.UseCases.Products;
 
