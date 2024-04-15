@@ -14,7 +14,7 @@ public class WebTests
 
         // Act
         var httpClient = app.CreateHttpClient("apiservice");
-        var response = await httpClient.GetAsync("/api/products");
+        var response = await httpClient.GetAsync("/api/categories");
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
