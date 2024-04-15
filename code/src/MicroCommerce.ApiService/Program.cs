@@ -83,14 +83,13 @@ app.Run();
 void AddMassTransit(IServiceCollection services, IConfiguration configuration)
 {
     services.Configure<MessageBrokerOptions>(configuration.GetSection(MessageBrokerOptions.Key));
-    var connectionString = configuration.GetConnectionString("rabbitmq") ?? "amqp://guest:guest@localhost";
     services.AddMassTransit(s =>
     {
         s.AddConsumers(Assembly.GetExecutingAssembly());
         s.UsingRabbitMq((context, cfg) =>
         {
             var option = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
-           
+            var connectionString = configuration.GetConnectionString("rabbitmq") ?? option.ConnectionString;
             cfg.Host(new Uri(connectionString!), "/", h => {
             });
             cfg.ConfigureEndpoints(context);
