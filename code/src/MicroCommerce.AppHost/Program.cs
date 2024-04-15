@@ -1,8 +1,13 @@
+using MicroCommerce.AppHost;
 using Microsoft.Extensions.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgres = builder.AddPostgres("postgres").AddDatabase("microcommerce");
+var postgres = builder
+    .AddPostgres("postgres", password: builder.CreateStablePassword("postgrespassword"))
+    .WithDataVolume()
+    .AddDatabase("microcommerce");
+
 var cache = builder.AddRedis("redis");
 var messaging = builder.AddRabbitMQ("rabbitmq");
 
