@@ -1,4 +1,5 @@
 using MicroCommerce.AppHost;
+using MicroCommerce.ServiceDefaults;
 using Microsoft.Extensions.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -21,17 +22,17 @@ var builder = DistributedApplication.CreateBuilder(args);
 var postgres = builder
     .AddPostgres("postgres", password: builder.CreateStablePassword("postgrespassword"))
     .WithDataVolume()
-    .AddDatabase("microcommerce");
+    .AddDatabase(AspireConstants.Database);
 
-var cache = builder.AddRedis("redis");
-var messaging = builder.AddRabbitMQ("messeaging");
+var cache = builder.AddRedis(AspireConstants.Redis);
+var messaging = builder.AddRabbitMQ(AspireConstants.Messaging);
 
-var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
+var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>(AspireConstants.ApiService)
     .WithReference(postgres)
     .WithReference(cache)
     .WithReference(messaging);
 
-var frontend = builder.AddNpmApp("nextjsweb", "../MicroCommerce.NextjsWeb", "dev")
+var frontend = builder.AddNpmApp(AspireConstants.NextjsWeb, "../MicroCommerce.NextjsWeb", "dev")
     .WithReference(apiService)
     .WithReference(cache)
     .WithHttpEndpoint(port: 3000, env: "PORT")

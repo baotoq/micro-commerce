@@ -1,9 +1,12 @@
 using System.Reflection;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
+using FluentValidation;
 using MassTransit;
+using MediatR;
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Exceptions;
+using MicroCommerce.ApiService.Infrastructure.Behaviour;
 using MicroCommerce.ApiService.Infrastructure.Interceptors;
 using MicroCommerce.ServiceDefaults;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +33,15 @@ public static class DependencyInjection
         services.AddSwaggerGen();
         
         services.AddHttpContextAccessor();
+
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+        });
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         
         services.AddElasticsearch(configuration);
         services.AddMassTransit(configuration);
@@ -45,14 +57,13 @@ public static class DependencyInjection
 
     private static void AddRedLock(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton(sp =>
+        var connectionString = configuration.GetConnectionString(AspireConstants.Redis);
+        ArgumentNullException.ThrowIfNull(connectionString, "Redis connection string is required.");
+        
+        services.AddSingleton(sp => RedLockFactory.Create(new List<RedLockMultiplexer>
         {
-            var connectionString = configuration.GetConnectionString(AspireConstants.Redis) ?? "localhost:6379";
-            return RedLockFactory.Create(new List<RedLockMultiplexer>
-            {
-                ConnectionMultiplexer.Connect(connectionString)
-            }, sp.GetRequiredService<ILoggerFactory>());
-        });
+            ConnectionMultiplexer.Connect(connectionString)
+        }, sp.GetRequiredService<ILoggerFactory>()));
     }
 
     private static void AddAuthorization(this IServiceCollection services)
@@ -74,13 +85,14 @@ public static class DependencyInjection
     
     private static void AddEfCore(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString(AspireConstants.Database);
+        ArgumentNullException.ThrowIfNull(connectionString, "Database connection string is required.");
+        
         services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, IndexProductInterceptor>();
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
-            var connectionString = configuration.GetConnectionString(AspireConstants.Database);
-            ArgumentNullException.ThrowIfNull(connectionString, "Database connection string is required.");
             options.UseNpgsql(connectionString);
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
         });
@@ -88,12 +100,12 @@ public static class DependencyInjection
     
     private static void AddElasticsearch(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString(AspireConstants.Elasticsearch);
+        ArgumentNullException.ThrowIfNull(connectionString, "Elasticsearch connection string is required.");
+        
         services.AddSingleton(sp =>
         {
-            var connectionString = configuration.GetConnectionString(AspireConstants.Elasticsearch);
-            ArgumentNullException.ThrowIfNull(connectionString, "Elasticsearch connection string is required.");
             var settings= new ElasticsearchClientSettings(new Uri(connectionString))
-                .Authentication(new BasicAuthentication("", ""))
                 .DefaultMappingFor<ProductDocument>(i => i
                     .IndexName(ElasticSearchIndexKey.Product.Key)
                     .IdProperty(p => p.Id)
@@ -109,12 +121,14 @@ public static class DependencyInjection
     
     private static void AddMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString(AspireConstants.Messaging);
+        ArgumentNullException.ThrowIfNull(connectionString, "Messaging connection string is required.");
+        
         services.AddMassTransit(s =>
         {
             s.AddConsumers(Assembly.GetExecutingAssembly());
             s.UsingRabbitMq((context, cfg) =>
             {
-                var connectionString = configuration.GetConnectionString(AspireConstants.Messaging) ?? "amqp://guest:guest@localhost:5672";
                 cfg.Host(new Uri(connectionString!), "/");
                 cfg.ConfigureEndpoints(context);
 

@@ -22,14 +22,6 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfigura
 builder.AddServiceDefaults();
 builder.AddRedisDistributedCache(AspireConstants.Redis);
 
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
-    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
-});
-builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
