@@ -13,7 +13,7 @@ public class MigrateDatabaseCommandHandler(ApplicationDbContext context) : IRequ
 {
     public async Task<MigrateDataResponse> Handle(MigrateDatabaseCommand request, CancellationToken cancellationToken)
     {
-        await context.Database.EnsureCreatedAsync(cancellationToken);
+        await context.Database.MigrateAsync(cancellationToken);
             
         return new MigrateDataResponse();
     }

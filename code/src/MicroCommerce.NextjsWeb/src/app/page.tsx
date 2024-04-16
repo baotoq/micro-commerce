@@ -11,6 +11,8 @@ interface ICategory {
 interface IProduct {
   id: string;
   name: string;
+  price: number;
+  imageUrl: string;
 }
 
 const api = process.env.services__apiservice__http__0;
@@ -34,6 +36,8 @@ export default async function Home() {
   const productData = getProducts();
 
   const [categories, products] = await Promise.all([categoriesData, productData]);
+
+  console.log("product", products);
 
   return (
     <div>

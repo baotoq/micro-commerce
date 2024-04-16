@@ -45,7 +45,9 @@ public class GetProductFromEsQueryHandler(ILogger<GetProductFromEsQueryHandler> 
         return products.ConvertAll(s => new SearchProductFromEsItemResponse
         {
             Id = s.Id,
-            Name = s.Name
+            Name = s.Name,
+            ImageUrl = s.ImageUrl,
+            Price = s.Price,
         });
     }
 }
@@ -54,4 +56,6 @@ public record SearchProductFromEsItemResponse
 {
     public string Id { get; init; } = "";
     public string Name { get; init; } = "";
+    public string ImageUrl { get; init; } = "";
+    public decimal Price { get; init; }
 }

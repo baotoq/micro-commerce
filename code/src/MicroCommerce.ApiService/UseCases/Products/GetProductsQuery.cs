@@ -18,8 +18,8 @@ public class GetProductsQueryHandler(ApplicationDbContext context) : IRequestHan
         var products = await context.Products
             .ToListAsync(cancellationToken);
 
-        return products.ConvertAll(s => new GetProductsItemResponse(s.Id, s.Name));
+        return products.ConvertAll(s => new GetProductsItemResponse(s.Id, s.Name, s.ImageUrl, s.Price));
     }
 }
 
-public record GetProductsItemResponse(string Id, string Name);
+public record GetProductsItemResponse(string Id, string Name, string ImageUrl, decimal Price);

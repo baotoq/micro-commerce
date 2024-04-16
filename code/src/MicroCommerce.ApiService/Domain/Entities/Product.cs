@@ -11,6 +11,7 @@ public class Product : EntityBase
     public int RemainingStock { get; set; }
     public int TotalStock { get; set; }
     public int SoldQuantity { get; set; }
+    public string ImageUrl { get; set; } = "";
     
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     

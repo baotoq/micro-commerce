@@ -2,7 +2,8 @@ using MediatR;
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-
+using Bogus;
+    
 namespace MicroCommerce.ApiService.UseCases.Database;
 
 public record SeedDataCommand : IRequest<SeedDataResponse>
@@ -29,27 +30,21 @@ public class SeedDataCommandHandler(ApplicationDbContext context) : IRequestHand
                 }, cancellationToken);
             }
         }
-        
+
+        context.Products.RemoveRange(await context.Products.ToListAsync());
+        context.SaveChanges();
         if (!await context.Products.AnyAsync(cancellationToken))
         {
-            var products = new List<Product>()
-            {
-                new()
-                {
-                    Name = "Apple",
-                    Price = 20
-                },
-                new()
-                {
-                    Name = "Iphone",
-                    Price = 30
-                },
-                new()
-                {
-                    Name = "Macbook",
-                    Price = 200
-                }
-            };
+            var faker = new Faker<Product>()
+                .RuleFor(p => p.Name, f => f.Commerce.ProductName())
+                .RuleFor(p => p.Price, f => decimal.Parse(f.Commerce.Price()))
+                .RuleFor(p => p.RemainingStock, f => f.Random.Number(0, 100))
+                .RuleFor(p => p.TotalStock, f => f.Random.Number(100, 1000))
+                .RuleFor(p => p.SoldQuantity, f => f.Random.Number(0, 100))
+                .RuleFor(p => p.ImageUrl, f => f.Image.PicsumUrl());
+
+            var products = faker.Generate(10);
+            
             await context.Products.AddRangeAsync(products, cancellationToken);
         }
             
