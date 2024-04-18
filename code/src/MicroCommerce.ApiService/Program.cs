@@ -10,6 +10,7 @@ using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ApiService.Infrastructure.Behaviour;
 using MicroCommerce.ApiService.UseCases.Database;
 using MicroCommerce.ServiceDefaults;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Serilog;
 
@@ -23,6 +24,7 @@ builder.AddServiceDefaults();
 builder.AddRedisDistributedCache(AspireConstants.Redis);
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.EnrichNpgsqlDbContext<ApplicationDbContext>();
 
 var app = builder.Build();
 
