@@ -23,6 +23,7 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfigura
 builder.AddServiceDefaults();
 
 builder.AddInfrastructure();
+builder.AddApplication();
 
 var app = builder.Build();
 

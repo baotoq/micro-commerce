@@ -26,14 +26,14 @@ public static class DependencyInjection
         // Add services to the container.
         builder.Services.AddProblemDetails();
         builder.Services.AddExceptionHandler<CustomExceptionHandler>();
-
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddHealthChecks();
+        
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         
-        builder.Services.AddHttpContextAccessor();
-
         builder.Services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
@@ -49,10 +49,12 @@ public static class DependencyInjection
         builder.AddRedisDistributedCache(AspireConstants.Redis);
         builder.AddRedLock();
         builder.AddAuthorization();
-        
-        builder.Services.AddHealthChecks();
-        
+    }
+    
+    public static void AddApplication(this IHostApplicationBuilder builder)
+    {
         builder.Services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
+        builder.Services.AddTransient<ICacheService, CacheService>();
     }
 
     private static void AddRedLock(this IHostApplicationBuilder builder)
