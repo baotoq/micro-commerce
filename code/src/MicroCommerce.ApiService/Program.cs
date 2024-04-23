@@ -21,10 +21,8 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfigura
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
-builder.AddRedisDistributedCache(AspireConstants.Redis);
 
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.EnrichNpgsqlDbContext<ApplicationDbContext>();
+builder.AddInfrastructure();
 
 var app = builder.Build();
 

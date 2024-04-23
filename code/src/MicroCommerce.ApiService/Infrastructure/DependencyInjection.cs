@@ -21,89 +21,86 @@ namespace MicroCommerce.ApiService.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static void AddInfrastructure(this IServiceCollection services, IConfigurationManager configuration)
+    public static void AddInfrastructure(this IHostApplicationBuilder builder)
     {
         // Add services to the container.
-        services.AddProblemDetails();
-        services.AddExceptionHandler<CustomExceptionHandler>();
+        builder.Services.AddProblemDetails();
+        builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
         
-        services.AddHttpContextAccessor();
+        builder.Services.AddHttpContextAccessor();
 
-        services.AddMediatR(cfg =>
+        builder.Services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
         });
-        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
         
-        services.AddElasticsearch(configuration);
-        services.AddMassTransit(configuration);
-        services.AddEfCore(configuration);
+        builder.AddElasticsearch();
+        builder.AddMassTransit();
+        builder.AddEfCore();
+        builder.AddRedisDistributedCache(AspireConstants.Redis);
+        builder.AddRedLock();
+        builder.AddAuthorization();
         
-        services.AddHealthChecks();
-        services.AddRedLock(configuration);
+        builder.Services.AddHealthChecks();
         
-        services.AddAuthorization();
-        
-        services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
+        builder.Services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
     }
 
-    private static void AddRedLock(this IServiceCollection services, IConfiguration configuration)
+    private static void AddRedLock(this IHostApplicationBuilder builder)
     {
-        var connectionString = configuration.GetConnectionString(AspireConstants.Redis);
+        var connectionString = builder.Configuration.GetConnectionString(AspireConstants.Redis);
         ArgumentNullException.ThrowIfNull(connectionString, "Redis connection string is required.");
         
-        services.AddSingleton(sp => RedLockFactory.Create(new List<RedLockMultiplexer>
+        builder.Services.AddSingleton(sp => RedLockFactory.Create(new List<RedLockMultiplexer>
         {
             ConnectionMultiplexer.Connect(connectionString)
         }, sp.GetRequiredService<ILoggerFactory>()));
     }
 
-    private static void AddAuthorization(this IServiceCollection services)
+    private static void AddAuthorization(this IHostApplicationBuilder builder)
     {
-        services.AddIdentityApiEndpoints<User>()
+        builder.Services.AddIdentityApiEndpoints<User>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
         
-        services.AddAuthorizationBuilder();
+        builder.Services.AddAuthorizationBuilder();
 
-        services.AddCors(options =>
+        builder.Services.AddCors(options =>
         {
-            options.AddDefaultPolicy(
-                policy =>
-                {
-                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-                });
+            options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
         });
     }
     
-    private static void AddEfCore(this IServiceCollection services, IConfiguration configuration)
+    private static void AddEfCore(this IHostApplicationBuilder builder)
     {
-        var connectionString = configuration.GetConnectionString(AspireConstants.Database);
+        var connectionString = builder.Configuration.GetConnectionString(AspireConstants.Database);
         ArgumentNullException.ThrowIfNull(connectionString, "Database connection string is required.");
         
-        services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
-        services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
-        services.AddScoped<ISaveChangesInterceptor, IndexProductInterceptor>();
-        services.AddDbContext<ApplicationDbContext>((sp, options) =>
+        builder.Services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
+        builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        builder.Services.AddScoped<ISaveChangesInterceptor, IndexProductInterceptor>();
+        builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             options.UseNpgsql(connectionString);
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
         });
+        builder.EnrichNpgsqlDbContext<ApplicationDbContext>();
     }
     
-    private static void AddElasticsearch(this IServiceCollection services, IConfiguration configuration)
+    private static void AddElasticsearch(this IHostApplicationBuilder builder)
     {
-        var connectionString = configuration.GetConnectionString(AspireConstants.Elasticsearch);
+        var connectionString = builder.Configuration.GetConnectionString(AspireConstants.Elasticsearch);
         ArgumentNullException.ThrowIfNull(connectionString, "Elasticsearch connection string is required.");
         
-        services.AddSingleton(sp =>
+        builder.Services.AddSingleton(sp =>
         {
             var settings= new ElasticsearchClientSettings(new Uri(connectionString))
                 .DefaultMappingFor<ProductDocument>(i => i
@@ -119,23 +116,23 @@ public static class DependencyInjection
         });
     }
     
-    private static void AddMassTransit(this IServiceCollection services, IConfiguration configuration)
+    private static void AddMassTransit(this IHostApplicationBuilder builder)
     {
-        var connectionString = configuration.GetConnectionString(AspireConstants.Messaging);
+        var connectionString = builder.Configuration.GetConnectionString(AspireConstants.Messaging);
         ArgumentNullException.ThrowIfNull(connectionString, "Messaging connection string is required.");
         
-        services.AddMassTransit(s =>
+        builder.Services.AddMassTransit(s =>
         {
-            s.AddConsumers(Assembly.GetExecutingAssembly());
+            s.AddConsumers(typeof(Program).Assembly);
             s.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host(new Uri(connectionString!), "/");
+                cfg.Host(new Uri(connectionString));
                 cfg.ConfigureEndpoints(context);
 
                 cfg.PrefetchCount = 1;
                 cfg.AutoDelete = true;
                 
-                cfg.UseMessageRetry(r => r.Intervals(100, 500, 1000, 1000, 1000, 1000, 1000));
+                cfg.UseMessageRetry(r => r.Intervals(100, 500, 1000, 2000, 5000));
             });
             
             // s.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
