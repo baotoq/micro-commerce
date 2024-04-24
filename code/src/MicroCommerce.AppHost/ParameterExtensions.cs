@@ -54,7 +54,7 @@ internal static class ParameterExtensions
             ?? throw new DistributedApplicationException($"Parameter resource could not be used because configuration key '{configurationKey}' is missing and the Parameter has no default value."); ;
     }
 
-    class UserSecretsParameterDefault(string applicationName, string parameterName, ParameterDefault parameterDefault) : ParameterDefault
+    private class UserSecretsParameterDefault(string applicationName, string parameterName, ParameterDefault parameterDefault) : ParameterDefault
     {
         public override string GetDefaultValue()
         {
@@ -71,7 +71,7 @@ internal static class ParameterExtensions
             if (!string.IsNullOrEmpty(applicationName))
             {
                 var appAssembly = Assembly.Load(new AssemblyName(applicationName));
-                if (appAssembly is not null && appAssembly.GetCustomAttribute<UserSecretsIdAttribute>()?.UserSecretsId is { } userSecretsId)
+                if (appAssembly.GetCustomAttribute<UserSecretsIdAttribute>()?.UserSecretsId is { } userSecretsId)
                 {
                     // Save the value to the secret store
                     try
@@ -95,7 +95,7 @@ internal static class ParameterExtensions
         }
     }
 
-    class ResourceBuilder
+    private class ResourceBuilder
     {
         public static IResourceBuilder<T> Create<T>(T resource, IDistributedApplicationBuilder distributedApplicationBuilder) where T : IResource
         {
@@ -103,7 +103,7 @@ internal static class ParameterExtensions
         }
     }
 
-    class ResourceBuilder<T>(T resource, IDistributedApplicationBuilder distributedApplicationBuilder) : IResourceBuilder<T> where T : IResource
+    private class ResourceBuilder<T>(T resource, IDistributedApplicationBuilder distributedApplicationBuilder) : IResourceBuilder<T> where T : IResource
     {
         public IDistributedApplicationBuilder ApplicationBuilder { get; } = distributedApplicationBuilder;
 
