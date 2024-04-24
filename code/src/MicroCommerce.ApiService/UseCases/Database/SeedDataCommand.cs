@@ -31,8 +31,8 @@ public class SeedDataCommandHandler(ApplicationDbContext context) : IRequestHand
             }
         }
 
-        context.Products.RemoveRange(await context.Products.ToListAsync());
-        context.SaveChanges();
+        // context.Products.RemoveRange(await context.Products.ToListAsync());
+        // context.SaveChanges();
         if (!await context.Products.AnyAsync(cancellationToken))
         {
             var faker = new Faker<Product>()

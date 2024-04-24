@@ -42,7 +42,10 @@ public class IndexProductDomainEventConsumer : IConsumer<IndexProductDomainEvent
         {
             _logger.LogError("Index product [{Id}] failed", product.Id);
         }
-        
-        _logger.LogInformation("Index product [{Id}] successfully", product.Id);
+        else
+        {
+            _logger.LogInformation("Index product [{Id}] successfully", product.Id);
+
+        }
     }
 }

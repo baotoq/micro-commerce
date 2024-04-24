@@ -15,9 +15,9 @@ using Microsoft.Extensions.Options;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
-    .ReadFrom.Configuration(hostingContext.Configuration));
+//
+// builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
+//     .ReadFrom.Configuration(hostingContext.Configuration));
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
@@ -51,7 +51,7 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 
 app.UseCors();
-app.UseSerilogRequestLogging();
+//app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 

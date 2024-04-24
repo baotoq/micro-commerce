@@ -1,4 +1,5 @@
 using System.Reflection;
+using Ardalis.GuardClauses;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 using FluentValidation;
@@ -27,7 +28,6 @@ public static class DependencyInjection
         builder.Services.AddProblemDetails();
         builder.Services.AddExceptionHandler<CustomExceptionHandler>();
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddHealthChecks();
         
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -60,8 +60,8 @@ public static class DependencyInjection
     private static void AddRedLock(this IHostApplicationBuilder builder)
     {
         var connectionString = builder.Configuration.GetConnectionString(AspireConstants.Redis);
-        ArgumentNullException.ThrowIfNull(connectionString, "Redis connection string is required.");
-        
+        Guard.Against.NullOrEmpty(connectionString, message: "Redis connection string is required.");
+
         builder.Services.AddSingleton(sp => RedLockFactory.Create(new List<RedLockMultiplexer>
         {
             ConnectionMultiplexer.Connect(connectionString)
@@ -84,7 +84,7 @@ public static class DependencyInjection
     private static void AddEfCore(this IHostApplicationBuilder builder)
     {
         var connectionString = builder.Configuration.GetConnectionString(AspireConstants.Database);
-        ArgumentNullException.ThrowIfNull(connectionString, "Database connection string is required.");
+        Guard.Against.NullOrEmpty(connectionString, message: "Database connection string is required.");
         
         builder.Services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
         builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
@@ -100,7 +100,7 @@ public static class DependencyInjection
     private static void AddElasticsearch(this IHostApplicationBuilder builder)
     {
         var connectionString = builder.Configuration.GetConnectionString(AspireConstants.Elasticsearch);
-        ArgumentNullException.ThrowIfNull(connectionString, "Elasticsearch connection string is required.");
+        Guard.Against.NullOrEmpty(connectionString, message: "Elasticsearch connection string is required.");
         
         builder.Services.AddSingleton(sp =>
         {
