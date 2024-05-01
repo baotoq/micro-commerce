@@ -1,0 +1,21 @@
+resources:
+- deployment.yml
+- service.yml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: apiservice-env
+  literals:
+    - OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES=true
+    - OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES=true
+    - OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY=in_memory
+    - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+    - ConnectionStrings__database=Host=postgres;Port=5432;Username=postgres;Password=vC8V3vG!P5y8ZgfnSW1ts7;Database=database
+    - ConnectionStrings__redis=redis:6379
+    - ConnectionStrings__messaging=amqp://guest:im9cN0gGDfbUBvFPt3A1HP@messaging:5672
+    - ASPNETCORE_URLS=http://+:8080;
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:4317
+
+

@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "name": "C#: MicroCommerce.AppHost [Default Configuration]",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/code/src/MicroCommerce.AppHost/MicroCommerce.AppHost.csproj"
+    }
+  ]
+}

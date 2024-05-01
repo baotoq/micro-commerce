@@ -1,0 +1,20 @@
+resources:
+- deployment.yml
+- service.yml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: nextjsweb-env
+  literals:
+    - NODE_ENV=development
+    - BROWSER=none
+    - NEXT_APP_API_HTTP=http://apiservice:8080
+    - PORT=8000
+    - services__apiservice__http__0=http://apiservice:8080
+    - ConnectionStrings__redis=redis:6379
+    - NODE_TLS_REJECT_UNAUTHORIZED=0
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:4317
+
+

@@ -1,0 +1,15 @@
+resources:
+- statefulset.yml
+- service.yml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: messaging-env
+  literals:
+    - RABBITMQ_DEFAULT_USER=guest
+    - RABBITMQ_DEFAULT_PASS=im9cN0gGDfbUBvFPt3A1HP
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:4317
+
+

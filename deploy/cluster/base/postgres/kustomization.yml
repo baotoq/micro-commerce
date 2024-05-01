@@ -1,0 +1,17 @@
+resources:
+- statefulset.yml
+- service.yml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: postgres-env
+  literals:
+    - POSTGRES_HOST_AUTH_METHOD=scram-sha-256
+    - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 --auth-local=scram-sha-256
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=vC8V3vG!P5y8ZgfnSW1ts7
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:4317
+
+
