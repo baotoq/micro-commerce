@@ -1,2 +1,8 @@
 resources:
   - ../../base
+
+configMapGenerator:
+- name: redis-env
+  behavior: replace
+  literals:
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:4317
