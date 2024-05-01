@@ -7,7 +7,7 @@ spec:
   interval: 10m0s
   sourceRef:
     kind: GitRepository
-    name: dev
+    name: flux-system
   path: ./deploy/apps/overlays/dev
   prune: true
   wait: true
