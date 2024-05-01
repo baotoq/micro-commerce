@@ -9,7 +9,7 @@ configMapGenerator:
 - name: messaging-env
   literals:
     - RABBITMQ_DEFAULT_USER=guest
-    - RABBITMQ_DEFAULT_PASS=im9cN0gGDfbUBvFPt3A1HP
+    - RABBITMQ_DEFAULT_PASS=BdXV6LehYxyVICdleGA6Vx
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:4317
 
 
