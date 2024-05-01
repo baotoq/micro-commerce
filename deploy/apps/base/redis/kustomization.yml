@@ -9,5 +9,5 @@ configMapGenerator:
 - name: redis-env
   literals:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:4317
-
+    - OTEL_SERVICE_NAME=redis
 

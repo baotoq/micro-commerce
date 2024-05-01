@@ -11,5 +11,6 @@ configMapGenerator:
     - RABBITMQ_DEFAULT_USER=guest
     - RABBITMQ_DEFAULT_PASS=BdXV6LehYxyVICdleGA6Vx
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:4317
+    - OTEL_SERVICE_NAME=messaging
 
 
