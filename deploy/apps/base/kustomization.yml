@@ -1,5 +1,11 @@
 resources:
+- postgres
 - redis
+- messaging
+- apiservice
+- nextjsweb
+- dashboard.yml
 
 generatorOptions:
   disableNameSuffixHash: true
+
