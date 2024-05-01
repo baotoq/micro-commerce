@@ -35,3 +35,15 @@ Inspired by **[`Microsoft eShop`](https://github.com/dotnet/eShop)** my pet proj
 - **[`GitHub Actions`](https://github.com/features/actions)**
 - **[`Flux CD`](https://fluxcd.io/)** - Flux CD automates Kubernetes deployment from Git, ensuring continuous delivery seamlessly.
 - **[`SonarCloud`](https://sonarcloud.io/)**
+
+### Bootstrap FluxCD
+
+```shell
+flux bootstrap github \
+  --token-auth \
+  --owner=baotoq \
+  --repository=micro-commerce \
+  --branch=master \
+  --path=deploy/cluster \
+  --personal
+```
