@@ -15,4 +15,5 @@ spec:
       chart: kubeapps
       sourceRef:
         kind: HelmRepository
-        name: flux-system
+        name: bitnami
+        namespace: flux-system
