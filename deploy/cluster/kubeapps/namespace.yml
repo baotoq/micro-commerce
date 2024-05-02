@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubeapps
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmChart
+metadata:
+  name: kubeapps
+  namespace: kubeapps
+spec:
+  interval: 5m0s
+  chart: kubeapps
+  reconcileStrategy: ChartVersion
+  sourceRef:
+    kind: HelmRepository
+    name: bitnami
+    namespace: flux-system
