@@ -17,3 +17,5 @@ spec:
         kind: HelmRepository
         name: bitnami
         namespace: flux-system
+  values:
+    nameOverride: "kubeapps"

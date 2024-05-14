@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Button, CardActionArea, CardActions, Container } from "@mui/material";
 import Product from "@/components/product";
 import { getServerSession } from "@/lib/next-auth";
+import { loadStripe } from "@stripe/stripe-js";
+
 
 interface ICategory {
   id: string;
@@ -27,6 +29,12 @@ async function getProducts() {
   return res.json().then((data) => data as IProduct[]);
 }
 
+async function getStripePublicKey() {
+  const res = await fetch(`${api}/api/payments/config`);
+  return res.json().then((data) => data as { publishableKey: string });
+}
+
+
 export default async function Home() {
   const session = await getServerSession();
 
@@ -34,10 +42,11 @@ export default async function Home() {
 
   const categoriesData = getCategories();
   const productData = getProducts();
+  const stripeData = getStripePublicKey();
 
-  const [categories, products] = await Promise.all([categoriesData, productData]);
+  const [categories, products, stripe] = await Promise.all([categoriesData, productData, stripeData]);
 
-  console.log("product", products);
+  loadStripe(stripe.publishableKey);
 
   return (
     <div>
