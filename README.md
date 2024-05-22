@@ -18,7 +18,7 @@ Inspired by **[`Microsoft eShop`](https://github.com/dotnet/eShop)** my pet proj
 
 ### Front-end
 
-- **[`TypeScript`](https://www.typescriptlang.org)** - A typed superset of JavaScript that compiles to plain JavaScript
+- **[`Refine`](https://refine.dev)** - Refine is a React meta-framework for CRUD-heavy web applications. It addresses a wide range of enterprise use cases including internal tools, admin panels, dashboards and B2B apps.
 - **[`Next.js`](https://nextjs.org)** - A modern server side rendering for React application
   
 ### Back-end
