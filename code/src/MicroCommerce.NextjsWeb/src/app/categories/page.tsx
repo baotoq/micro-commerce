@@ -13,8 +13,6 @@ import { Space, Table } from "antd";
 export default function CategoryList() {
   const { tableProps } = useTable({
     syncWithLocation: true,
-    dataProviderName: "categories",
-    resource: "categories",
   });
 
   return (

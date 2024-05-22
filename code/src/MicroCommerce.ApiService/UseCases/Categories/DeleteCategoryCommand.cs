@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.UseCases.Categories;
 
-public record GetCategoryQuery : IRequest<CategoryViewModel>
+public record DeleteCategoryCommand : IRequest<string>
 {
-    public GetCategoryQuery(string id)
+    public DeleteCategoryCommand(string id)
     {
         Id = id;
     }
     
     public string Id { get; } = "";
     
-    public class Handler(ApplicationDbContext context) : IRequestHandler<GetCategoryQuery, CategoryViewModel>
+    public class Handler(ApplicationDbContext context) : IRequestHandler<DeleteCategoryCommand, string>
     {
-        public async Task<CategoryViewModel> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
+        public async Task<string> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = await context.Categories.FindAsync([request.Id], cancellationToken);
             
@@ -24,7 +24,11 @@ public record GetCategoryQuery : IRequest<CategoryViewModel>
                 throw new Exception("Category not found");
             }
             
-            return new CategoryViewModel(category);
+            context.Categories.Remove(category);
+            
+            await context.SaveChangesAsync(cancellationToken);
+            
+            return category.Id;
         }
     }
 }
