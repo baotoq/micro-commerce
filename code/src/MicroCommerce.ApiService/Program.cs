@@ -58,7 +58,6 @@ app.UseAuthorization();
 app.MapDefaultEndpoints();
 
 app.MapIdentityApi<User>().WithTags("identity");
-app.MapGet("/", () => Results.Redirect("/alive"));
 app.MapCarts();
 app.MapPayments();
 app.MapCategories();
