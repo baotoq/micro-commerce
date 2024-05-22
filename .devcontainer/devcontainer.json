@@ -19,11 +19,11 @@
       "extensions": [
         "ms-dotnettools.csdevkit",
         "ms-dotnettools.vscodeintellicode-csharp",
-        "esbenp.prettier-vscode",
-        "EditorConfig.EditorConfig",
         "ms-dotnettools.csharp",
         "ms-dotnettools.vscode-dotnet-runtime",
-        "streetsidesoftware.code-spell-checker"
+        "streetsidesoftware.code-spell-checker",
+        "esbenp.prettier-vscode",
+        "EditorConfig.EditorConfig"
       ]
     }
   },
@@ -31,10 +31,10 @@
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [17290, 17290],
   "portsAttributes": {
-  		"5001": {
-        "label": "apiservice"
-  			//"protocol": "https"
-  		}
+    "5001": {
+      "label": "apiservice"
+      //"protocol": "https"
+    }
   },
 
   // 1. Export it locally using this command:
@@ -61,11 +61,11 @@
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "cd code && dotnet restore"
+  "postCreateCommand": "dotnet workload update && dotnet workload install aspire",
 
   // Configure tool-specific properties.
   // "customizations": {},
 
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  // "remoteUser": "root"
+  "remoteUser": "root"
 }
