@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextjsweb
+  labels:
+    app: nextjsweb
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextjsweb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nextjsweb
+    spec:
+      containers:
+      - name: nextjsweb
+        image: nextjsweb:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: nextjsweb-env
+      terminationGracePeriodSeconds: 180
