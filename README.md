@@ -30,6 +30,12 @@ Inspired by **[`Microsoft eShop`](https://github.com/dotnet/eShop)** my pet proj
 - **[`FluentValidation`](https://github.com/FluentValidation/FluentValidation)** - Popular .NET validation library for building strongly-typed validation rules
 - **[`MediatR`](https://github.com/jbogard/MediatR)** - Simple, unambitious mediator implementation in .NET
 
+### Testing
+
+- **[`TestContainer`](https://testcontainers.com/guides/getting-started-with-testcontainers-for-dotnet)** - Testcontainers is a testing library that provides easy and lightweight APIs for bootstrapping integration tests with real services wrapped in Docker containers
+
+
+
 ### CI & CD
 
 - **[`GitHub Actions`](https://github.com/features/actions)**
