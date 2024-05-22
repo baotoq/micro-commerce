@@ -7,7 +7,10 @@ import { Typography } from "antd";
 const { Title } = Typography;
 
 export default function CategoryShow() {
-  const { queryResult } = useShow({});
+  const { queryResult } = useShow({
+    dataProviderName: "categories",
+    resource: "categories",
+  });
   const { data, isLoading } = queryResult;
 
   const record = data?.data;
@@ -17,7 +20,7 @@ export default function CategoryShow() {
       <Title level={5}>{"ID"}</Title>
       <NumberField value={record?.id ?? ""} />
       <Title level={5}>{"Title"}</Title>
-      <TextField value={record?.title} />
+      <TextField value={record?.name} />
     </Show>
   );
 }

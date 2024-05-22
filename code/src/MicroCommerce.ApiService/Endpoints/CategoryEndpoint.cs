@@ -10,5 +10,6 @@ public static class CartEndCategoryEndpoint
             .WithTags("categories");
         
         group.MapGet("/", GetCategoriesQuery.EndpointHandler);
+        group.MapGet("/{id}", GetCategoryQuery.EndpointHandler);
     }
 }

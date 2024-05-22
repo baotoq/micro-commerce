@@ -13,13 +13,15 @@ import { Space, Table } from "antd";
 export default function CategoryList() {
   const { tableProps } = useTable({
     syncWithLocation: true,
+    dataProviderName: "categories",
+    resource: "categories",
   });
 
   return (
     <List>
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
-        <Table.Column dataIndex="title" title={"title"} />
+        <Table.Column dataIndex="name" title={"title"} />
         <Table.Column
           title={"Actions"}
           dataIndex="actions"
