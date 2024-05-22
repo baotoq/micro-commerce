@@ -1,4 +1,5 @@
 using MediatR;
+using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,8 +17,19 @@ public class GetProductQueryHandler(ApplicationDbContext context) : IRequestHand
         var categories = await context.Categories
             .ToListAsync(cancellationToken);
 
-        return categories.ConvertAll(s => new CategoryViewModel(s.Id, s.Name));
+        return categories.ConvertAll(s => new CategoryViewModel(s));
     }
 }
 
-public record CategoryViewModel(string Id, string Name);
+public record CategoryViewModel
+{
+    public CategoryViewModel(Category domain)
+    {
+        Id = domain.Id;
+        Name = domain.Name;
+    }
+    
+    public string Id { get; set; }
+
+    public string Name { get; set; }
+};
