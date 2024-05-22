@@ -1,14 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  logging: {
-    fetches: {
-      fullUrl: false,
-    },
-  },
-  experimental: {
-    instrumentationHook: true,
-  },
-  output: "standalone",
+  transpilePackages: ["@refinedev/antd"],
 };
 
 export default nextConfig;
