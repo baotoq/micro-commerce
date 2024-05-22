@@ -10,7 +10,10 @@ import React, { Suspense } from "react";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ColorModeContextProvider } from "@contexts/color-mode";
 import { authProvider } from "@providers/auth-provider";
-import { dataProvider, categoryDataProvider } from "@providers/data-provider";
+import {
+  sampleDataProvider,
+  defaultDataProvider,
+} from "@providers/data-provider";
 import "@refinedev/antd/dist/reset.css";
 
 export const metadata: Metadata = {
@@ -42,8 +45,8 @@ export default function RootLayout({
                   <Refine
                     routerProvider={routerProvider}
                     dataProvider={{
-                      default: dataProvider,
-                      categories: categoryDataProvider,
+                      default: defaultDataProvider,
+                      sample: sampleDataProvider,
                     }}
                     notificationProvider={useNotificationProvider}
                     authProvider={authProvider}
@@ -55,6 +58,7 @@ export default function RootLayout({
                         edit: "/blog-posts/edit/:id",
                         show: "/blog-posts/show/:id",
                         meta: {
+                          dataProviderName: "sample",
                           canDelete: true,
                         },
                       },

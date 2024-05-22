@@ -15,7 +15,21 @@ public class SeedDataCommandHandler(ApplicationDbContext context) : IRequestHand
 {
     private readonly IList<string> _categories = new List<string>()
     {
-        "Phone", "Cloth", "Shoes", "Watches", "Laptop"
+        "Laptops & Desktops",
+        "Smartphones & Tablets",
+        "Audio & Video",
+        "Gaming",
+        "Home & Kitchen",
+        "Office & Supplies",
+        "Books & Magazines",
+        "Music & Instruments",
+        "Health & Fitness",
+        "Clothing & Accessories",
+        "Travel & Outdoor",
+        "Toys & Games",
+        "Beauty & Personal Care",
+        "Sports",
+        "Automotive & Industrial"
     };
         
     public async Task<SeedDataResponse> Handle(SeedDataCommand request, CancellationToken cancellationToken)
