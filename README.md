@@ -13,9 +13,7 @@ Inspired by **[`Microsoft eShop`](https://github.com/dotnet/eShop)** my pet proj
 ### Infrastructure
 
 - **[`.NET Aspire`](https://learn.microsoft.com/en-us/dotnet/aspire/get-started/aspire-overview)** - .NET Aspire is an opinionated, cloud ready stack for building observable, production ready, distributed applications.
-- **[`Docker`](https://www.docker.com/)**
 - **[`Kubernetes`](https://kubernetes.io)** - The app is designed to run on Kubernetes (both locally as well as on the cloud)
-- **[`Helm`](https://helm.sh)** - Best package manager to find, share, and use software built for Kubernetes
 - **[`ELK`](https://www.elastic.co/elastic-stack)** - The ELK Stack (Elasticsearch, Logstash, Kibana) is a streamlined solution for log management, offering scalable search, data processing, and visualization capabilities in one package.
 
 ### Front-end
@@ -27,7 +25,6 @@ Inspired by **[`Microsoft eShop`](https://github.com/dotnet/eShop)** my pet proj
 
 - **[`.NET Core 8`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
 - **[`EF Core 8`](https://github.com/dotnet/efcore)** - Modern object-database mapper for .NET. It supports LINQ queries, change tracking, updates, and schema migrations
-- **[`FluentValidation`](https://github.com/FluentValidation/FluentValidation)** - Popular .NET validation library for building strongly-typed validation rules
 - **[`MediatR`](https://github.com/jbogard/MediatR)** - Simple, unambitious mediator implementation in .NET
 
 ### Testing
