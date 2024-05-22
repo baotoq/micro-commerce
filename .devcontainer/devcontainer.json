@@ -4,25 +4,15 @@
   "name": "C# (.NET)",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   "image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0-bookworm",
+
+  // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
     "ghcr.io/elanhasson/devcontainer-features/dotnet-aspire-daily:1": {},
-    "ghcr.io/devcontainers/features/dotnet:2": {
-      "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/common-utils:2": {
-      "installZsh": "true",
-      "username": "vscode",
-      "userUid": "1000",
-      "userGid": "1000",
-      "upgradePackages": "true"
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "none"
-    },
-    "ghcr.io/devcontainers/features/git:1": {
-      "version": "latest",
-      "ppa": "false"
-    }
+    "ghcr.io/devcontainers/features/dotnet:2": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
   "customizations": {
     "vscode": {
@@ -38,16 +28,14 @@
     }
   },
 
-  // Features to add to the dev container. More info: https://containers.dev/features.
-  // "features": {},
-
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [5000, 5001],
-  // "portsAttributes": {
-  //		"5001": {
-  //			"protocol": "https"
-  //		}
-  // }
+  "forwardPorts": [17290, 17290],
+  "portsAttributes": {
+  		"5001": {
+        "label": "apiservice"
+  			//"protocol": "https"
+  		}
+  },
 
   // 1. Export it locally using this command:
   //    * Windows PowerShell:
@@ -73,7 +61,7 @@
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "dotnet restore ./src"
+  "postCreateCommand": "cd code && dotnet restore"
 
   // Configure tool-specific properties.
   // "customizations": {},
