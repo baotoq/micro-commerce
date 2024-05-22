@@ -3,7 +3,6 @@ resources:
 - redis
 - messaging
 - apiservice
-- nextjsweb
 - dashboard.yml
 
 generatorOptions:
