@@ -1,4 +1,5 @@
 using System.Net;
+using Aspire.Hosting.Testing;
 
 namespace MicroCommerce.Tests;
 
