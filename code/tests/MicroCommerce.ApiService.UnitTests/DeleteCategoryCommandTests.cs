@@ -9,12 +9,13 @@ namespace MicroCommerce.ApiService.UnitTests;
 
 public class DeleteCategoryCommandTests : TestBase
 {
+    private readonly Fixture _categoryFixture = new();
+    
     [Fact]
     public async Task DeleteCategory()
     {
         // Arrange
-        var fixture = new Fixture();
-        var category = fixture.Build<Category>()
+        var category = _categoryFixture.Build<Category>()
             .Without(s => s.CreatedAt)
             .Without(s => s.UpdatedAt)
             .Create();
