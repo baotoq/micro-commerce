@@ -1,11 +1,8 @@
 using AutoFixture;
-using Bogus;
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.UseCases.Categories;
-using MicroCommerce.ApiService.UseCases.Products;
-using Microsoft.Extensions.Logging.Abstractions;
 
-namespace MicroCommerce.ApiService.UnitTests;
+namespace MicroCommerce.ApiService.UnitTests.UseCases;
 
 public class DeleteCategoryCommandTests : TestBase
 {
