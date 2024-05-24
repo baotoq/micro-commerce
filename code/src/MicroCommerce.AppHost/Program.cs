@@ -38,24 +38,24 @@ var apiServiceHttp = apiService.GetEndpoint("http");
 var apiServiceHttps = apiService.GetEndpoint("https");
 
 
-var frontend = builder.AddNpmApp(AspireConstants.NextjsWeb, "../MicroCommerce.NextjsWeb", "dev")
-    .WithEnvironment("BROWSER", "none") // Disable opening browser on start
-    .WithEnvironment("NEXT_APP_API_HTTP", apiServiceHttp)
-    .WithHttpEndpoint(port: 3000, env: "PORT")
-    .WithExternalHttpEndpoints()
-    .WithReference(apiService)
-    .WithReference(cache)
-    .PublishAsDockerFile();
-
-if (apiServiceHttps.Exists)
-{
-    frontend.WithEnvironment("NEXT_APP_API_HTTPS", apiServiceHttps);
-}
-
-if (builder.Environment.IsDevelopment() && builder.Configuration["DOTNET_LAUNCH_PROFILE"] == "https")
-{
-    // Disable TLS certificate validation in development, see https://github.com/dotnet/aspire/issues/3324 for more details.
-    frontend.WithEnvironment("NODE_TLS_REJECT_UNAUTHORIZED", "0");
-}
+// var frontend = builder.AddNpmApp(AspireConstants.NextjsWeb, "../MicroCommerce.NextjsWeb", "dev")
+//     .WithEnvironment("BROWSER", "none") // Disable opening browser on start
+//     .WithEnvironment("NEXT_APP_API_HTTP", apiServiceHttp)
+//     .WithHttpEndpoint(port: 3000, env: "PORT")
+//     .WithExternalHttpEndpoints()
+//     .WithReference(apiService)
+//     .WithReference(cache)
+//     .PublishAsDockerFile();
+//
+// if (apiServiceHttps.Exists)
+// {
+//     frontend.WithEnvironment("NEXT_APP_API_HTTPS", apiServiceHttps);
+// }
+//
+// if (builder.Environment.IsDevelopment() && builder.Configuration["DOTNET_LAUNCH_PROFILE"] == "https")
+// {
+//     // Disable TLS certificate validation in development, see https://github.com/dotnet/aspire/issues/3324 for more details.
+//     frontend.WithEnvironment("NODE_TLS_REJECT_UNAUTHORIZED", "0");
+// }
 
 builder.Build().Run();

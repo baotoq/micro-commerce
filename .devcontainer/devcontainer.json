@@ -61,10 +61,7 @@
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "dotnet workload update && dotnet workload install aspire",
-
-  // Configure tool-specific properties.
-  // "customizations": {},
+  "postCreateCommand": "",
 
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   "remoteUser": "root"
