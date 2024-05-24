@@ -1,7 +1,7 @@
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.UseCases.Products;
 
-namespace MicroCommerce.ApiService.UnitTests;
+namespace MicroCommerce.ApiService.UnitTests.UseCases;
 
 public class GetProductQueryTests : TestBase
 {
@@ -22,7 +22,7 @@ public class GetProductQueryTests : TestBase
         var handler = new GetProductQueryHandler(Context);
 
         // Act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(request, default);
 
         // Assert
         result.Name.Should().Be("Apple");
@@ -36,7 +36,7 @@ public class GetProductQueryTests : TestBase
         var handler = new GetProductQueryHandler(Context);
 
         // Act
-        var result = async () => await handler.Handle(request, CancellationToken.None);
+        var result = async () => await handler.Handle(request, default);
 
         // Assert
         await result.Should().ThrowAsync<Exception>();

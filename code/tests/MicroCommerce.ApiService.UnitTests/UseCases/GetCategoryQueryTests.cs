@@ -1,22 +1,21 @@
 using MicroCommerce.ApiService.Domain.Entities;
-using MicroCommerce.ApiService.UnitTests;
 using MicroCommerce.ApiService.UseCases.Categories;
 
-namespace MicroCommerce.ApiService.UnitTests;
+namespace MicroCommerce.ApiService.UnitTests.UseCases;
 public class GetCategoryQueryTests : TestBase
 {
     [Fact]
-    public async Task ValidCategoryIdReturnsViewModelUsingInMemoryDb()
+    public async Task Valid_Category_Id_Returns_ViewModel()
     {
         // Arrange
-        Context.Categories.Add(new Category { Id = "1", Name = "Electronics" });
-        Context.SaveChanges();
+        await Context.Categories.AddAsync(new Category { Id = "1", Name = "Electronics" });
+        await Context.SaveChangesAsync();
 
         var handler = new GetCategoryQuery.Handler(Context);
         var query = new GetCategoryQuery("1");
 
         // Act
-        var result = await handler.Handle(query, new CancellationToken());
+        var result = await handler.Handle(query, default);
 
         // Assert
         result.Should().NotBeNull();

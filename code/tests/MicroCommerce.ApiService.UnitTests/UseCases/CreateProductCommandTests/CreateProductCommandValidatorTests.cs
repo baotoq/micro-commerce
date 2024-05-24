@@ -1,6 +1,6 @@
 using MicroCommerce.ApiService.UseCases.Products;
 
-namespace MicroCommerce.ApiService.UnitTests.CreateProductCommandTests;
+namespace MicroCommerce.ApiService.UnitTests.UseCases.CreateProductCommandTests;
 
 public class CreateProductCommandValidatorTests
 {

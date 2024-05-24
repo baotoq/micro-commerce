@@ -10,6 +10,10 @@ public record CategoryViewModel
         Name = domain.Name;
     }
     
+    public CategoryViewModel()
+    {
+    }
+    
     public string Id { get; set; }
     
     public string Name { get; set; }

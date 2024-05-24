@@ -1,7 +1,7 @@
 using MicroCommerce.ApiService.UseCases.Products;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace MicroCommerce.ApiService.UnitTests.CreateProductCommandTests;
+namespace MicroCommerce.ApiService.UnitTests.UseCases.CreateProductCommandTests;
 
 public class CreateProductCommandHandlerTests : TestBase
 {
