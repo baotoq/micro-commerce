@@ -1,3 +1,0 @@
-resources:
-- apps/argocd.yaml
-- apps/micro-commerce.yaml

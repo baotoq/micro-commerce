@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: apps
+  name: app-of-apps
   namespace: argocd
 spec:
   project: default
@@ -11,7 +11,7 @@ spec:
     targetRevision: master
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: argocd-dev
+    namespace: argocd
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
