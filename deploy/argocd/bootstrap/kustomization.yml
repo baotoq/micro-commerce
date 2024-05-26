@@ -1,0 +1,3 @@
+resources:
+- argocd
+- app-of-apps.yaml

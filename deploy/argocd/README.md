@@ -5,5 +5,5 @@
 ## Bootstrap ArgoCD
 
 ```shell
-kubectl apply -k . 
+kubectl apply -k bootstrap
 ```
