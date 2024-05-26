@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: micro-commerce
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/baotoq/micro-commerce"
+    path: deploy/apps/overlays/dev
+    targetRevision: master
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: argocd-dev
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/baotoq/micro-commerce"
+    path: deploy/argocd/argocd
+    targetRevision: master
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: argocd
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
