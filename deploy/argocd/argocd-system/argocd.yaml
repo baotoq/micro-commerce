@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: "https://github.com/baotoq/micro-commerce"
-    path: deploy/argocd/argocd
+    path: deploy/argocd/argocd-system
     targetRevision: master
   destination:
     server: "https://kubernetes.default.svc"
