@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: micro-commerce
+  name: micro-commerce-dev
   namespace: argocd
 spec:
   project: default

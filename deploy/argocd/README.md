@@ -5,6 +5,6 @@
 ## Bootstrap ArgoCD
 
 ```shell
-kubectl apply -k bootstrap
+kubectl apply -k argocd-system
 kubectl apply -k apps
 ```
