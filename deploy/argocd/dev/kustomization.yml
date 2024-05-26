@@ -1,0 +1,8 @@
+bases:
+  - "../base"
+
+resources:
+  - app-of-apps.yaml
+  - argocd.yaml
+  - micro-commerce.yaml
+

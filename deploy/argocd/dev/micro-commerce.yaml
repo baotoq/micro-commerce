@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: "https://github.com/baotoq/micro-commerce"
-    path: deploy/apps/overlays/dev
+    path: deploy/apps/dev
     targetRevision: master
   destination:
     server: "https://kubernetes.default.svc"
