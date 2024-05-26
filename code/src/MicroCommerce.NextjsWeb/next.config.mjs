@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   transpilePackages: ["@refinedev/antd"],
   logging: {
-    fetches: {
+    fetches: { 
       fullUrl: true,
     },
   },
