@@ -6,5 +6,5 @@
 
 ```shell
 kubectl apply -k argocd-system
-kubectl apply -k apps
+kubectl apply -f .
 ```
