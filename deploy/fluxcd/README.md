@@ -10,6 +10,6 @@ flux bootstrap github \
   --owner=baotoq \
   --repository=micro-commerce \
   --branch=master \
-  --path=deploy/cluster \
+  --path=deploy/fluxcd/clusters \
   --personal
 ```
