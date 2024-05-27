@@ -1,3 +1,4 @@
+using MediatR;
 using MicroCommerce.ApiService.UseCases.Products;
 
 namespace MicroCommerce.ApiService.Endpoints;
@@ -13,5 +14,6 @@ public static class ProductEndpoint
         group.MapGet("/es", SearchProductsFromEsQuery.EndpointHandler);
         group.MapGet("/{id}", GetProductQuery.EndpointHandler);
         group.MapPost("/", CreateProductCommand.EndpointHandler);
+        group.MapDelete("/{id}", (IMediator mediator, string id) => mediator.Send(new DeleteProductCommand(id)));
     }
 }

@@ -7,6 +7,8 @@ import { Metadata } from "next";
 import { cookies } from "next/headers";
 import React, { Suspense } from "react";
 
+import "./global.css";
+
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ColorModeContextProvider } from "@contexts/color-mode";
 import { authProvider } from "@providers/auth-provider";
@@ -68,6 +70,16 @@ export default function RootLayout({
                         create: "/categories/create",
                         edit: "/categories/edit/:id",
                         show: "/categories/show/:id",
+                        meta: {
+                          canDelete: true,
+                        },
+                      },
+                      {
+                        name: "products",
+                        list: "/products",
+                        create: "/products/create",
+                        edit: "/products/edit/:id",
+                        show: "/products/show/:id",
                         meta: {
                           canDelete: true,
                         },

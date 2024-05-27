@@ -21,8 +21,8 @@ public class GetProductQueryHandler(ApplicationDbContext context) : IRequestHand
             throw new Exception("Not found");
         }
             
-        return new GetProductResponse(product.Id, product.Name);
+        return new GetProductResponse(product.Id, product.Name, product.ImageUrl);
     }
 }
 
-public record GetProductResponse(string Id, string Name);
+public record GetProductResponse(string Id, string Name, string ImageUrl);
