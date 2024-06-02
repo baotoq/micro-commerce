@@ -59,7 +59,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`77.37.47.187`) && PathPrefix(`/argocd`)
+      match: Host(`77.37.47.187`)
       services:
         - name: argocd-server
           port: http
