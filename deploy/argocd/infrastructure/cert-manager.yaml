@@ -17,5 +17,9 @@ spec:
     server: https://kubernetes.default.svc
     namespace: cert-manager
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
+      - PruneLast=true
       - CreateNamespace=true
