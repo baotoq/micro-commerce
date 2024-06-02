@@ -39,16 +39,15 @@ spec:
       - http01:
           ingress:
             class: traefik
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: redirect-https
-  namespace: kube-system
-spec:
-  redirectScheme:
-    scheme: https
-    permanent: true
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: Middleware
+# metadata:
+#   name: redirect-https
+#   namespace: kube-system
+# spec:
+#   redirectScheme:
+#     scheme: https
+#     permanent: true
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -57,7 +56,7 @@ metadata:
   namespace: argocd
 spec:
   entryPoints:
-    - websecure
+    - web
   routes:
     - kind: Rule
       match: Host(`77.37.47.187`)
@@ -68,27 +67,27 @@ spec:
   tls:
     certResolver: default
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
-  name: whoami-ingress
+  name: whoami-ingress-route
+  namespace: argocd
 spec:
-  rules:
-    - http:
-        paths:
-          - path: /whoami
-            pathType: Prefix
-            backend:
-              service:
-                name: whoami
-                port:
-                  name: web
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: Host(`77.37.47.187`) && PathPrefix(`/whoami2`)
+      services:
+        - name: whoami
+          port: http
+  tls:
+    certResolver: default
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: whoami
-
 spec:
   ports:
     - name: web
@@ -104,7 +103,6 @@ metadata:
   name: whoami
   labels:
     app: whoami
-
 spec:
   replicas: 1
   selector:
