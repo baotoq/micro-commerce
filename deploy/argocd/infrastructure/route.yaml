@@ -56,6 +56,6 @@ spec:
   issuerRef:
     name: my-cluster-issuer
     kind: ClusterIssuer
-  commonName: "*.micro-commerce.store"
+  commonName: "micro-commerce.store"
   dnsNames:
-    - "*.micro-commerce.store"
+    - "micro-commerce.store"
