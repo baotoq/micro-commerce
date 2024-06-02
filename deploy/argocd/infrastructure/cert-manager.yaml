@@ -79,7 +79,7 @@ spec:
       match: Host(`77.37.47.187`) && PathPrefix(`/whoami2`)
       services:
         - name: whoami
-          port: http
+          port: web
   tls:
     certResolver: default
 ---
