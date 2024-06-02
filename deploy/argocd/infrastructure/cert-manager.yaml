@@ -63,8 +63,6 @@ spec:
       services:
         - name: argocd-server
           port: http
-  tls:
-    certResolver: default
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -80,8 +78,6 @@ spec:
       services:
         - name: whoami
           port: web
-  tls:
-    certResolver: default
 ---
 apiVersion: v1
 kind: Service
