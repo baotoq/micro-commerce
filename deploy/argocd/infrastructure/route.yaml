@@ -8,7 +8,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`argocd.local`)
+      match: Host(`micro-commerce.store`)
       services:
         - name: argocd-server
           port: http
@@ -16,14 +16,14 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: argocd-server-2
+  name: argocd-server2
   namespace: argocd
 spec:
   entryPoints:
-    - web
+    - websecure
   routes:
     - kind: Rule
-      match: Host(`micro-commerce.store`)
+      match: Host(`argocd.micro-commerce.store`)
       services:
         - name: argocd-server
           port: http
@@ -31,7 +31,7 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-dev
+  name: my-cluster-issuer
   namespace: kube-system
 spec:
   acme:
@@ -43,3 +43,19 @@ spec:
       - http01:
           ingress:
             class: traefik
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: my-cert
+  namespace: kube-system
+spec:
+  secretName: my-cert
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  issuerRef:
+    name: my-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "*.micro-commerce.store"
+  dnsNames:
+    - "*.micro-commerce.store"
