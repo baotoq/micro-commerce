@@ -7,7 +7,7 @@ spec:
   entryPoints:
     - websecure
   tls:
-    secretName: my-cert
+    secretName: micro-commerce-certificate
   routes:
     - kind: Rule
       match: Host(`micro-commerce.store`)
@@ -15,32 +15,17 @@ spec:
         - name: argocd-server
           port: http
 ---
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: argocd-server2
-  namespace: argocd
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: Host(`argocd.micro-commerce.store`)
-      services:
-        - name: argocd-server
-          port: http
----
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: my-cluster-issuer
+  name: letsencrypt-prod
   namespace: kube-system
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
     email: bao2703@gmail.com
     privateKeySecretRef:
-      name: my-cluster-issuer-ref
+      name: letsencrypt-prod
     solvers:
       - http01:
           ingress:
@@ -49,15 +34,15 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: my-cert
+  name: micro-commerce-certificate
   namespace: kube-system
 spec:
-  secretName: my-cert
+  secretName: micro-commerce-certificate
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   issuerRef:
-    name: my-cluster-issuer
+    name: letsencrypt-prod
     kind: ClusterIssuer
-  commonName: "micro-commerce.store"
+  commonName: micro-commerce.store
   dnsNames:
-    - "micro-commerce.store"
+    - micro-commerce.store
