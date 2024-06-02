@@ -1,17 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: micro-commerce-prod
+  name: apps
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: "https://github.com/baotoq/micro-commerce"
-    path: deploy/apps/prod
+    path: deploy/argocd/apps
     targetRevision: master
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: argocd-prod
+    namespace: argocd
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
+      - PruneLast=true
       - CreateNamespace=true
