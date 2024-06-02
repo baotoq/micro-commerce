@@ -56,11 +56,10 @@ metadata:
   namespace: argocd
 spec:
   entryPoints:
-    - web
+    - websecure
   routes:
     - kind: Rule
-      match: Host(`77.37.47.187`)
-      priority: 10
+      match: Host(`77.37.47.187`) && PathPrefix(`/argocd`)
       services:
         - name: argocd-server
           port: http
@@ -74,7 +73,7 @@ metadata:
   namespace: argocd
 spec:
   entryPoints:
-    - web
+    - websecure
   routes:
     - kind: Rule
       match: Host(`77.37.47.187`) && PathPrefix(`/whoami2`)
