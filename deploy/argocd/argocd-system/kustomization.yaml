@@ -5,4 +5,4 @@ resources:
 - https://raw.githubusercontent.com/argoproj/argo-cd/v2.7.2/manifests/install.yaml
 
 patches:
-- path: overlays/production/argocd-cmd-params-cm.yaml
+- path: argocd-cmd-params-cm.yaml
