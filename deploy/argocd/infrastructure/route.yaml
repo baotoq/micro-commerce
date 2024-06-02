@@ -6,6 +6,8 @@ metadata:
 spec:
   entryPoints:
     - websecure
+  tls:
+    secretName: my-cert
   routes:
     - kind: Rule
       match: Host(`micro-commerce.store`)
@@ -38,7 +40,7 @@ spec:
     server: https://acme-v02.api.letsencrypt.org/directory
     email: bao2703@gmail.com
     privateKeySecretRef:
-      name: letsencrypt-dev
+      name: my-cluster-issuer-ref
     solvers:
       - http01:
           ingress:
