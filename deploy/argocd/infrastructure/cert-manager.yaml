@@ -59,7 +59,7 @@ spec:
     - web
   routes:
     - kind: Rule
-      match: Host(`77.37.47.187`)
+      match: Host(`argocd.local`)
       services:
         - name: argocd-server
           port: http
