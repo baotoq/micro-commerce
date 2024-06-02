@@ -70,7 +70,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: whoami-ingress-route
-  namespace: argocd
+  namespace: default
 spec:
   entryPoints:
     - websecure
