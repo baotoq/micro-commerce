@@ -39,3 +39,14 @@ Inspired by **[`Microsoft eShop`](https://github.com/dotnet/eShop)** my pet proj
 - **[`Flux CD`](https://fluxcd.io/)** - Flux CD automates Kubernetes deployment from Git, ensuring continuous delivery seamlessly.
 - **[`Argo CD`](https://argoproj.github.io/cd/)** - Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes.
 - **[`SonarCloud`](https://sonarcloud.io/)**
+
+
+## Star History
+
+<a href="https://star-history.com/#baotoq/micro-commerce&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=baotoq/micro-commerce&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=baotoq/micro-commerce&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=baotoq/micro-commerce&type=Date" />
+ </picture>
+</a>
