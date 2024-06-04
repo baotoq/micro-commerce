@@ -6,6 +6,8 @@ metadata:
 spec:
   entryPoints:
     - websecure
+  tls:
+    secretName: micro-commerce-cert
   routes:
     - kind: Rule
       match: Host(`micro-commerce.store`)
