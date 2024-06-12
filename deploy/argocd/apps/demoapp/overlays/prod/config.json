@@ -1,0 +1,11 @@
+{
+  "appName": "demoapp",
+  "userGivenName": "demoapp",
+  "destNamespace": "default",
+  "destServer": "https://kubernetes.default.svc",
+  "srcPath": "deploy/argocd/apps/demoapp/overlays/prod",
+  "srcRepoURL": "https://github.com/baotoq/micro-commerce.git",
+  "srcTargetRevision": "",
+  "labels": null,
+  "annotations": null
+}
