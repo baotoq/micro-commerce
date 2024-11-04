@@ -10,4 +10,10 @@
     <ProjectReference Include="..\MicroCommerce.ServiceDefaults\MicroCommerce.ServiceDefaults.csproj"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="9.0.0-preview.4.24511.1" />
+  </ItemGroup>
+
+
+
 </Project>
