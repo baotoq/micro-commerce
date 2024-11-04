@@ -5,7 +5,7 @@ var postgres = builder.AddPostgres("postgres")
     .WithPgAdmin()
     .WithLifetime(ContainerLifetime.Persistent);
 
-var catalogDb = postgres.AddDatabase("catalogdb");
+var catalogDb = postgres.AddDatabase("db");
 
 var elasticsearch = builder.AddElasticsearch("elasticsearch")
     .WithDataVolume()
@@ -19,8 +19,11 @@ var kibana = builder.AddContainer("kibana", "kibana", "8.13.0")
     .WithHttpEndpoint(targetPort: 5601)
     .WithLifetime(ContainerLifetime.Persistent);
 
+var cache = builder.AddRedis("redis");
+
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
     .WithReference(elasticsearch)
+    .WithReference(cache)
     .WithReference(catalogDb);
 
 builder.AddProject<Projects.MicroCommerce_Web>("webfrontend")
