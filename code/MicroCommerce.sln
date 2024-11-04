@@ -1,58 +1,42 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{82B1F9D7-BB97-4EEF-9A2A-C4C6AA38AF6F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F955BD9E-EC8B-4706-858E-85EE0BA93179}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ApiService", "src\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj", "{EEE6E0A1-2214-41B4-BE19-774D23BB3FB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Web", "src\MicroCommerce.Web\MicroCommerce.Web.csproj", "{4CD3F9FB-58F9-401A-B9A8-2DD1CE9D02EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.AppHost", "src\MicroCommerce.AppHost\MicroCommerce.AppHost.csproj", "{C9535B83-2371-4C9C-A575-436F67563F27}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ServiceDefaults", "src\MicroCommerce.ServiceDefaults\MicroCommerce.ServiceDefaults.csproj", "{151508AA-BA6E-4491-808F-9135AC792625}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ServiceDefaults", "src\MicroCommerce.ServiceDefaults\MicroCommerce.ServiceDefaults.csproj", "{376D00FC-DF3C-4ABE-82DE-277F87C137E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.AppHost", "src\MicroCommerce.AppHost\MicroCommerce.AppHost.csproj", "{20D951FE-0AFD-48AF-8F44-0EA4C1591E44}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4089AA88-918D-4CC9-967F-0E39DCA2A3A0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Tests", "tests\MicroCommerce.Tests\MicroCommerce.Tests.csproj", "{B82FC1B1-C9AC-4087-8FF2-1EFC612F1430}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ApiService.UnitTests", "tests\MicroCommerce.ApiService.UnitTests\MicroCommerce.ApiService.UnitTests.csproj", "{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Shared", "src\MicroCommerce.Shared\MicroCommerce.Shared.csproj", "{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ApiService", "src\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj", "{D409C349-06FC-4B6B-98A4-DA77B4D9D597}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EEE6E0A1-2214-41B4-BE19-774D23BB3FB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEE6E0A1-2214-41B4-BE19-774D23BB3FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEE6E0A1-2214-41B4-BE19-774D23BB3FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEE6E0A1-2214-41B4-BE19-774D23BB3FB7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9535B83-2371-4C9C-A575-436F67563F27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9535B83-2371-4C9C-A575-436F67563F27}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9535B83-2371-4C9C-A575-436F67563F27}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9535B83-2371-4C9C-A575-436F67563F27}.Release|Any CPU.Build.0 = Release|Any CPU
-		{376D00FC-DF3C-4ABE-82DE-277F87C137E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{376D00FC-DF3C-4ABE-82DE-277F87C137E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{376D00FC-DF3C-4ABE-82DE-277F87C137E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{376D00FC-DF3C-4ABE-82DE-277F87C137E9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B82FC1B1-C9AC-4087-8FF2-1EFC612F1430}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B82FC1B1-C9AC-4087-8FF2-1EFC612F1430}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B82FC1B1-C9AC-4087-8FF2-1EFC612F1430}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B82FC1B1-C9AC-4087-8FF2-1EFC612F1430}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{EEE6E0A1-2214-41B4-BE19-774D23BB3FB7} = {82B1F9D7-BB97-4EEF-9A2A-C4C6AA38AF6F}
-		{C9535B83-2371-4C9C-A575-436F67563F27} = {82B1F9D7-BB97-4EEF-9A2A-C4C6AA38AF6F}
-		{376D00FC-DF3C-4ABE-82DE-277F87C137E9} = {82B1F9D7-BB97-4EEF-9A2A-C4C6AA38AF6F}
-		{B82FC1B1-C9AC-4087-8FF2-1EFC612F1430} = {4089AA88-918D-4CC9-967F-0E39DCA2A3A0}
-		{DB9A7818-8B3B-45F7-9DCF-7A1FD67DA982} = {4089AA88-918D-4CC9-967F-0E39DCA2A3A0}
-		{AB33DF1C-0408-49A3-BBC0-2AB69E904BF5} = {82B1F9D7-BB97-4EEF-9A2A-C4C6AA38AF6F}
+		{4CD3F9FB-58F9-401A-B9A8-2DD1CE9D02EF} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
+		{151508AA-BA6E-4491-808F-9135AC792625} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
+		{20D951FE-0AFD-48AF-8F44-0EA4C1591E44} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
+		{D409C349-06FC-4B6B-98A4-DA77B4D9D597} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4CD3F9FB-58F9-401A-B9A8-2DD1CE9D02EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CD3F9FB-58F9-401A-B9A8-2DD1CE9D02EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CD3F9FB-58F9-401A-B9A8-2DD1CE9D02EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CD3F9FB-58F9-401A-B9A8-2DD1CE9D02EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{151508AA-BA6E-4491-808F-9135AC792625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{151508AA-BA6E-4491-808F-9135AC792625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{151508AA-BA6E-4491-808F-9135AC792625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{151508AA-BA6E-4491-808F-9135AC792625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20D951FE-0AFD-48AF-8F44-0EA4C1591E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20D951FE-0AFD-48AF-8F44-0EA4C1591E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20D951FE-0AFD-48AF-8F44-0EA4C1591E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20D951FE-0AFD-48AF-8F44-0EA4C1591E44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D409C349-06FC-4B6B-98A4-DA77B4D9D597}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D409C349-06FC-4B6B-98A4-DA77B4D9D597}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D409C349-06FC-4B6B-98A4-DA77B4D9D597}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D409C349-06FC-4B6B-98A4-DA77B4D9D597}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
