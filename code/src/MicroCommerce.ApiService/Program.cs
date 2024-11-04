@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 // Add services to the container.
-builder.Services.AddProblemDetails();
+builder.AddInfrastructure();
+builder.AddApplication();
 
 builder.AddElasticsearchClient("elasticsearch");
 
