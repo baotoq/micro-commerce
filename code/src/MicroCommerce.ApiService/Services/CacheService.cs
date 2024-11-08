@@ -31,20 +31,14 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
 
         var value = await factory();
 
-        await distributedCache.SetStringAsync(key, JsonSerializer.Serialize(value), new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = ttl
-        });
+        await distributedCache.SetStringAsync(key, JsonSerializer.Serialize(value), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttl });
 
         return value;
     }
 
     public async Task SetAsync<T>(string key, T value, TimeSpan ttl) where T : class
     {
-        await distributedCache.SetStringAsync(key, JsonSerializer.Serialize(value), new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = ttl
-        });
+        await distributedCache.SetStringAsync(key, JsonSerializer.Serialize(value), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttl });
     }
 
     public async Task RemoveAsync(string key)

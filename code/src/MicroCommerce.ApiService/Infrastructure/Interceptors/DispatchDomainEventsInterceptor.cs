@@ -45,7 +45,7 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
         {
             await _domainEventDispatcher.DispatchAsync(domainEvents);
         }
-        
+
         entities.ForEach(e => e.ClearEventStore());
     }
 }

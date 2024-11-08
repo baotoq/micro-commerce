@@ -11,10 +11,7 @@ public class CustomExceptionHandler : IExceptionHandler
     public CustomExceptionHandler()
     {
         // Register known exception types and handlers.
-        _exceptionHandlers = new Dictionary<Type, Func<HttpContext, Exception, Task>>
-        {
-            { typeof(ValidationException), HandleValidationException },
-        };
+        _exceptionHandlers = new Dictionary<Type, Func<HttpContext, Exception, Task>> { { typeof(ValidationException), HandleValidationException }, };
     }
 
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -36,10 +33,6 @@ public class CustomExceptionHandler : IExceptionHandler
 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-        await httpContext.Response.WriteAsJsonAsync(new ValidationProblemDetails(exception.Errors)
-        {
-            Status = StatusCodes.Status400BadRequest,
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
-        });
+        await httpContext.Response.WriteAsJsonAsync(new ValidationProblemDetails(exception.Errors) { Status = StatusCodes.Status400BadRequest, Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1" });
     }
 }

@@ -4,5 +4,4 @@ namespace MicroCommerce.ApiService.Domain.Entities;
 
 public class User : IdentityUser
 {
-    
 }

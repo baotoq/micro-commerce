@@ -5,8 +5,7 @@ namespace MicroCommerce.ApiService.Domain.Entities;
 
 public class DeliveryOption : EntityBase
 {
-    [MaxLength(500)]
-    public string Name { get; set; } = "";
+    [MaxLength(500)] public string Name { get; set; } = "";
     public decimal MinimumSpending { get; set; }
     public decimal Fee { get; set; }
 

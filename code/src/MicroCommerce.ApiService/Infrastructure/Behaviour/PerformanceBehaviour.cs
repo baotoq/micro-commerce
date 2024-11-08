@@ -22,7 +22,7 @@ public class PerformanceBehaviour<TRequest, TResponse>(ILoggerFactory logger) : 
         {
             return response;
         }
-        
+
         var requestName = typeof(TRequest).Name;
 
         _logger.LogWarning("Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}",

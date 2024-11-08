@@ -33,6 +33,7 @@ public class DateEntityInterceptor : SaveChangesInterceptor
                     {
                         entry.Entity.CreatedAt = DateTimeOffset.UtcNow;
                     }
+
                     break;
                 case EntityState.Modified:
                     entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;

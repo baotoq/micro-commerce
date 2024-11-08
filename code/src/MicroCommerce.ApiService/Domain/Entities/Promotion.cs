@@ -5,8 +5,7 @@ namespace MicroCommerce.ApiService.Domain.Entities;
 
 public class Promotion : EntityBase
 {
-    [MaxLength(500)]
-    public string Name { get; set; } = "";
+    [MaxLength(500)] public string Name { get; set; } = "";
 
     public decimal FixedDiscount { get; set; }
 

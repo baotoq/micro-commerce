@@ -9,8 +9,8 @@ public class CartItem : DateEntity
 
     public string ProductId { get; set; } = "";
     public Product Product { get; set; } = null!;
-    
+
     public int ProductQuantity { get; set; }
-    
+
     public decimal ProductPriceAtCheckoutTime { get; set; }
 }

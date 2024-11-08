@@ -12,6 +12,7 @@ public class WeatherApiClient(HttpClient httpClient)
             {
                 break;
             }
+
             if (forecast is not null)
             {
                 forecasts ??= [];
