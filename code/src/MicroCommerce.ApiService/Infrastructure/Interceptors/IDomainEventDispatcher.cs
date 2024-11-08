@@ -1,4 +1,5 @@
 using MicroCommerce.ApiService.Domain.Common;
+using MicroCommerce.ApiService.Domain.Events;
 
 namespace MicroCommerce.ApiService.Infrastructure.Interceptors;
 

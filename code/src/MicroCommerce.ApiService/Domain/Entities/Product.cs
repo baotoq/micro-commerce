@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using MicroCommerce.ApiService.Domain.Common;
+using MicroCommerce.ApiService.Exceptions;
 
 namespace MicroCommerce.ApiService.Domain.Entities;
 
@@ -18,7 +19,7 @@ public class Product : EntityBase
     {
         if (RemainingStock < quantity)
         {
-            throw new ArgumentException("Not enough stock");
+            throw CoreException.InvalidArgument("Not enough stock");
         }
 
         RemainingStock -= quantity;
