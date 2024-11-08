@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MicroCommerce.ApiService.Exceptions;
 
-public class ExceptionHandler : IExceptionHandler
+public class InvalidValidationExceptionHandler : IExceptionHandler
 {
     private readonly IProblemDetailsService _problemDetailsService;
 
-    public ExceptionHandler(IProblemDetailsService problemDetailsService)
+    public InvalidValidationExceptionHandler(IProblemDetailsService problemDetailsService)
     {
         _problemDetailsService = problemDetailsService;
     }
@@ -30,7 +30,8 @@ public class ExceptionHandler : IExceptionHandler
         await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = httpContext,
-            ProblemDetails = problemDetails
+            ProblemDetails = problemDetails,
+            Exception = validationException,
         });
 
         return true;
