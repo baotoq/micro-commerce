@@ -11,6 +11,7 @@ using MicroCommerce.ApiService.Infrastructure.Behaviour;
 using MicroCommerce.ApiService.Infrastructure.Interceptors;
 using MicroCommerce.ApiService.Services;
 using MicroCommerce.ServiceDefaults;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -26,8 +27,18 @@ public static class DependencyInjection
     public static void AddInfrastructure(this IHostApplicationBuilder builder)
     {
         // Add services to the container.
-        builder.Services.AddProblemDetails();
-        builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+        builder.Services.AddProblemDetails(options =>
+        {
+            options.CustomizeProblemDetails = context =>
+            {
+                context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+                context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+
+                var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+                context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
+            };
+        });
+        builder.Services.AddExceptionHandler<ExceptionHandler>();
         builder.Services.AddHttpContextAccessor();
 
         // Add services to the container.

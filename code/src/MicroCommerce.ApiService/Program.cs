@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.Exceptions;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ServiceDefaults;
 
@@ -18,5 +19,17 @@ var app = builder.Build();
 app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();
+
+app.MapGet("/", (context) =>
+{
+    throw new InvalidValidationException("hello");
+    return context.Response.WriteAsync("Hello World!");
+});
+
+app.MapGet("/a", (context) =>
+{
+    throw new NullReferenceException("hello");
+    return context.Response.WriteAsync("Hello World!");
+});
 
 app.Run();
