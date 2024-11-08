@@ -1,17 +1,16 @@
 using FluentValidation.Results;
 
-namespace MicroCommerce.ApiService.Infrastructure.Behaviour;
+namespace MicroCommerce.ApiService.Exceptions;
 
-public class ValidationException : Exception
+[Serializable]
+public class InvalidValidationException : Exception
 {
-    public ValidationException()
-        : base("One or more validation failures have occurred.")
+    public InvalidValidationException(string message = "One or more validation failures have occurred.") : base(message)
     {
         Errors = new Dictionary<string, string[]>();
     }
 
-    public ValidationException(IEnumerable<ValidationFailure> failures)
-        : this()
+    public InvalidValidationException(IEnumerable<ValidationFailure> failures, string message = "") : this()
     {
         Errors = failures
             .GroupBy(e => e.PropertyName, e => e.ErrorMessage)

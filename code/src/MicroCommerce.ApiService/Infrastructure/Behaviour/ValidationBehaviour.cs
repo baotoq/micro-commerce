@@ -1,5 +1,6 @@
 using FluentValidation;
 using MediatR;
+using MicroCommerce.ApiService.Exceptions;
 
 namespace MicroCommerce.ApiService.Infrastructure.Behaviour;
 
@@ -21,7 +22,9 @@ public class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRe
                 .ToList();
 
             if (failures.Any())
-                throw new ValidationException(failures);
+            {
+                throw new InvalidValidationException(failures);
+            }
         }
 
         return await next();
