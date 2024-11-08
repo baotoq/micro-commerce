@@ -106,11 +106,10 @@ public static class DependencyInjection
         {
             var settings= new ElasticsearchClientSettings(new Uri(connectionString))
                 .DefaultMappingFor<ProductDocument>(i => i
-                    .IndexName(ElasticSearchIndexKey.Product.Key)
+                    .IndexName(ProductDocument.IndexPattern)
                     .IdProperty(p => p.Id)
                 )
-                .EnableDebugMode()
-                .PrettyJson();
+                .EnableDebugMode();
 
             var client = new ElasticsearchClient(settings);
 
@@ -120,16 +119,17 @@ public static class DependencyInjection
 
     private static void AddMassTransit(this IHostApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("messaging") ?? "rabbitmq://localhost";
-        //ArgumentNullException.ThrowIfNull(connectionString, "Messaging connection string is required.");
-
         builder.Services.AddMassTransit(s =>
         {
             s.AddConsumers(typeof(Program).Assembly);
             s.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host(new Uri(connectionString));
+                var configuration = context.GetRequiredService<IConfiguration>();
+                var host = configuration.GetConnectionString("messaging");
+
+                cfg.Host(host);
                 cfg.ConfigureEndpoints(context);
+                cfg.UseInMemoryOutbox(context);
 
                 cfg.PrefetchCount = 1;
                 cfg.AutoDelete = true;
