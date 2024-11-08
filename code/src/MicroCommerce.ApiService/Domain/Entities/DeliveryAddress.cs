@@ -10,6 +10,6 @@ public class DeliveryAddress : EntityBase
 
     [MaxLength(500)] public string RecipientName { get; set; } = "";
     [MaxLength(500)] public string RecipientPhoneNumber { get; set; } = "";
-    
+
     [MaxLength(500)] public string DeliveryInstruction { get; set; } = "";
 }

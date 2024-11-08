@@ -16,7 +16,7 @@ public class MassTransitDomainEventDispatcher : IDomainEventDispatcher
     {
         return Task.WhenAll(domainEvents.Select(e => _publishEndpoint.Publish(e)));
     }
-    
+
     public Task DispatchAsync<T>(IDomainEvent domainEvent) where T : IDomainEvent
     {
         return _publishEndpoint.Publish(domainEvent);

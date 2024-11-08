@@ -62,10 +62,7 @@ public static class DependencyInjection
         var connectionString = builder.Configuration.GetConnectionString("redis");
         Guard.Against.NullOrEmpty(connectionString, message: "Redis connection string is required.");
 
-        builder.Services.AddSingleton(sp => RedLockFactory.Create(new List<RedLockMultiplexer>
-        {
-            ConnectionMultiplexer.Connect(connectionString)
-        }, sp.GetRequiredService<ILoggerFactory>()));
+        builder.Services.AddSingleton(sp => RedLockFactory.Create(new List<RedLockMultiplexer> { ConnectionMultiplexer.Connect(connectionString) }, sp.GetRequiredService<ILoggerFactory>()));
     }
 
     private static void AddAuthorization(this IHostApplicationBuilder builder)
@@ -75,10 +72,7 @@ public static class DependencyInjection
 
         builder.Services.AddAuthorizationBuilder();
 
-        builder.Services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-        });
+        builder.Services.AddCors(options => { options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()); });
     }
 
     private static void AddEfCore(this IHostApplicationBuilder builder)
@@ -104,7 +98,7 @@ public static class DependencyInjection
 
         builder.Services.AddSingleton(sp =>
         {
-            var settings= new ElasticsearchClientSettings(new Uri(connectionString))
+            var settings = new ElasticsearchClientSettings(new Uri(connectionString))
                 .DefaultMappingFor<ProductDocument>(i => i
                     .IndexName(ProductDocument.IndexPattern)
                     .IdProperty(p => p.Id)

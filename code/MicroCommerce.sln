@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.AppHost", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ApiService", "src\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj", "{D409C349-06FC-4B6B-98A4-DA77B4D9D597}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4C429E7E-FF98-4EE7-A82E-DB7D56330931}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Tests", "tests\MicroCommerce.Tests\MicroCommerce.Tests.csproj", "{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +24,7 @@ Global
 		{151508AA-BA6E-4491-808F-9135AC792625} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
 		{20D951FE-0AFD-48AF-8F44-0EA4C1591E44} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
 		{D409C349-06FC-4B6B-98A4-DA77B4D9D597} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
+		{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF} = {4C429E7E-FF98-4EE7-A82E-DB7D56330931}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4CD3F9FB-58F9-401A-B9A8-2DD1CE9D02EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -38,5 +43,9 @@ Global
 		{D409C349-06FC-4B6B-98A4-DA77B4D9D597}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D409C349-06FC-4B6B-98A4-DA77B4D9D597}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D409C349-06FC-4B6B-98A4-DA77B4D9D597}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
