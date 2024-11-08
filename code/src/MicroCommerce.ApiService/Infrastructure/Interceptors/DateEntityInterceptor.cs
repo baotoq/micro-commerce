@@ -33,10 +33,17 @@ public class DateEntityInterceptor : SaveChangesInterceptor
                     {
                         entry.Entity.CreatedAt = DateTimeOffset.UtcNow;
                     }
-
                     break;
                 case EntityState.Modified:
                     entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
+                    break;
+                case EntityState.Detached:
+                    break;
+                case EntityState.Unchanged:
+                    break;
+                case EntityState.Deleted:
+                    break;
+                default:
                     break;
             }
         }

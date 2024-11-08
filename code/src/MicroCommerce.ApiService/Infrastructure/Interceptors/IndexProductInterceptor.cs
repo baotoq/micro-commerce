@@ -1,4 +1,6 @@
 using MicroCommerce.ApiService.Domain.Entities;
+using MicroCommerce.ApiService.Features;
+using MicroCommerce.ApiService.Features.DomainEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -16,18 +18,14 @@ public class IndexProductInterceptor : SaveChangesInterceptor
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
         var r = base.SavingChanges(eventData, result);
-
         DispatchEvents(eventData.Context).GetAwaiter().GetResult();
-
         return r;
     }
 
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
         var r = await base.SavingChangesAsync(eventData, result, cancellationToken);
-
         await DispatchEvents(eventData.Context);
-
         return r;
     }
 

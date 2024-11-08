@@ -1,4 +1,4 @@
-namespace MicroCommerce.Tests.Tests;
+namespace MicroCommerce.Tests;
 
 public class IntegrationTest1
 {
