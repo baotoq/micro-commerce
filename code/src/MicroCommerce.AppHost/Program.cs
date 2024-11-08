@@ -20,10 +20,14 @@ var kibana = builder.AddContainer("kibana", "kibana", "8.13.0")
     .WithLifetime(ContainerLifetime.Persistent);
 
 var cache = builder.AddRedis("redis");
+var rabbitmq = builder.AddRabbitMQ("messaging")
+    .WithDataVolume()
+    .WithManagementPlugin();
 
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
     .WithReference(elasticsearch)
     .WithReference(cache)
+    .WithReference(rabbitmq)
     .WithReference(catalogDb);
 
 builder.AddProject<Projects.MicroCommerce_Web>("webfrontend")
