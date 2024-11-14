@@ -22,7 +22,6 @@ app.MapDefaultEndpoints();
 
 app.MapGet("/", (context) =>
 {
-    throw new InvalidValidationException("hello");
     return context.Response.WriteAsync("Hello World!");
 });
 

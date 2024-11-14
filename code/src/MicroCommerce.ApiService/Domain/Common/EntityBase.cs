@@ -8,9 +8,10 @@ namespace MicroCommerce.ApiService.Domain.Common;
 
 public abstract class EntityBase : DateEntity
 {
+    [Key]
     [MaxLength(Constant.KeyLength)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; } = Guid.CreateVersion7();
+    public Guid Id { get; set; } = Guid.CreateVersion7();
 
     private readonly ConcurrentQueue<IDomainEvent> _eventStore = new();
 
