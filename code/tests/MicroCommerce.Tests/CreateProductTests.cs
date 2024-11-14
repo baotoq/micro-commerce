@@ -5,14 +5,14 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MicroCommerce.Tests;
 
-public class CreateProductCommandHandlerTests : TestBase
+public class CreateProductTests : TestBase
 {
     [Fact]
-    public async Task Success()
+    public async Task CreateProduct_Success()
     {
-        var sut = new CreateProductCommandHandler(Context, NullLogger<CreateProductCommandHandler>.Instance, null);
+        var sut = new CreateProduct.Handler(Context, NullLogger<CreateProduct.Handler>.Instance);
 
-        var act = await sut.Handle(new CreateProductCommand
+        var act = await sut.Handle(new CreateProduct.Request
         {
             Name = "Product 1",
             Price = 100,
