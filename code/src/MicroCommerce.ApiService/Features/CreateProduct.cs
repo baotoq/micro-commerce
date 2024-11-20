@@ -4,16 +4,26 @@ using MediatR;
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Features.DomainEvents;
 using MicroCommerce.ApiService.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MicroCommerce.ApiService.Features;
 
-public static class CreateProduct
+public class CreateProduct : IEndpoint
 {
+    public void MapEndpoint(IEndpointRouteBuilder builder)
+    {
+        builder.MapPost("/api/products", async ([FromBody] Command request, IMediator mediator) =>
+        {
+            var response = await mediator.Send(request);
+            return Results.CreatedAtRoute();
+        });
+    }
+
     public record Command : IRequest<Response>
     {
-        public string Name { get; init; } = "";
-        public decimal Price { get; set; }
-        public int RemainingStock { get; set; }
+        public required string Name { get; set; }
+        public required decimal Price { get; set; }
+        public required int RemainingStock { get; set; }
     }
 
     public record Response(Guid Id);

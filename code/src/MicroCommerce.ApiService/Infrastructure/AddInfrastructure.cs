@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
@@ -23,7 +24,7 @@ using StackExchange.Redis;
 
 namespace MicroCommerce.ApiService.Infrastructure;
 
-public static class DependencyInjection
+public static class AddInfrastructureDependencyInjection
 {
     public static void AddInfrastructure(this IHostApplicationBuilder builder)
     {
@@ -57,12 +58,6 @@ public static class DependencyInjection
         builder.AddAuthorization();
 
         builder.AddElasticsearchClient("elasticsearch");
-    }
-
-    public static void AddApplication(this IHostApplicationBuilder builder)
-    {
-        builder.Services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
-        builder.Services.AddTransient<ICacheService, CacheService>();
     }
 
     private static void AddRedLock(this IHostApplicationBuilder builder)
