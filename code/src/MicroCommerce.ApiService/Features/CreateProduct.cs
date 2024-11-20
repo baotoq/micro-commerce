@@ -9,7 +9,7 @@ namespace MicroCommerce.ApiService.Features;
 
 public static class CreateProduct
 {
-    public record Request : IRequest<Response>
+    public record Command : IRequest<Response>
     {
         public string Name { get; init; } = "";
         public decimal Price { get; set; }
@@ -18,9 +18,9 @@ public static class CreateProduct
 
     public record Response(Guid Id);
 
-    public class Handler(ApplicationDbContext context, ILogger<Handler> logger) : IRequestHandler<Request, Response>
+    public class Handler(ApplicationDbContext context, ILogger<Handler> logger) : IRequestHandler<Command, Response>
     {
-        public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
+        public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {
             var product = new Product
             {
@@ -40,7 +40,7 @@ public static class CreateProduct
         }
     }
 
-    public class Validator : AbstractValidator<Request>
+    public class Validator : AbstractValidator<Command>
     {
         public Validator()
         {

@@ -11,7 +11,7 @@ public class CreateProductValidatorTests
     public async Task AllError()
     {
         // Arrange
-        var request = new CreateProduct.Request
+        var request = new CreateProduct.Command
         {
             Name = ""
         };

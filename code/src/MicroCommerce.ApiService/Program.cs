@@ -1,8 +1,13 @@
+using MediatR;
 using MicroCommerce.ApiService.Exceptions;
+using MicroCommerce.ApiService.Features;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ServiceDefaults;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOpenApi();
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
@@ -11,8 +16,6 @@ builder.AddServiceDefaults();
 builder.AddInfrastructure();
 builder.AddApplication();
 
-builder.AddElasticsearchClient("elasticsearch");
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -20,15 +23,17 @@ app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();
 
-app.MapGet("/", (context) =>
+if (app.Environment.IsDevelopment())
 {
-    return context.Response.WriteAsync("Hello World!");
-});
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
 
-app.MapGet("/a", (context) =>
-{
-    throw new NullReferenceException("hello");
-    return context.Response.WriteAsync("Hello World!");
-});
+var api = app.MapGroup("api");
+
+var products = api.MapGroup("products");
+
+products.MapGet("/{id:guid}", async (Guid id, IMediator mediator) => await mediator.Send(new GetProduct.Query { Id = id }));
+products.MapPost("/", async (CreateProduct.Command request, IMediator mediator) => await mediator.Send(request));
 
 app.Run();

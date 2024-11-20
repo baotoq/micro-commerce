@@ -12,7 +12,7 @@ public class CreateProductTests : TestBase
     {
         var sut = new CreateProduct.Handler(Context, NullLogger<CreateProduct.Handler>.Instance);
 
-        var act = await sut.Handle(new CreateProduct.Request
+        var act = await sut.Handle(new CreateProduct.Command
         {
             Name = "Product 1",
             Price = 100,

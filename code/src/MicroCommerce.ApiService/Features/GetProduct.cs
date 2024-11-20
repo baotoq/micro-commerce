@@ -7,9 +7,9 @@ namespace MicroCommerce.ApiService.Features;
 
 public static class GetProduct
 {
-    public class Request : IRequest<Response>
+    public class Query : IRequest<Response>
     {
-        public Guid Id { get; set; }
+        public required Guid Id { get; set; }
     }
 
     public record Response
@@ -17,7 +17,7 @@ public static class GetProduct
         public Guid Id { get; init; }
         public string Name { get; init; } = "";
     }
-    public class Handler : IRequestHandler<Request, Response>
+    public class Handler : IRequestHandler<Query, Response>
     {
         private readonly ApplicationDbContext _context;
 
@@ -26,7 +26,7 @@ public static class GetProduct
             _context = context;
         }
 
-        public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
+        public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
             var product = await _context.Products.FindAsync(request.Id);
 

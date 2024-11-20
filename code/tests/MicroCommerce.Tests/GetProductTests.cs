@@ -23,7 +23,7 @@ public class GetProductTests : TestBase
         var sut = new GetProduct.Handler(Context);
 
         // Act
-        var act = await sut.Handle(new GetProduct.Request { Id = product.Id }, default);
+        var act = await sut.Handle(new GetProduct.Query { Id = product.Id }, default);
 
         // Assert
         await Verify(act, VerifySettings);
@@ -37,6 +37,6 @@ public class GetProductTests : TestBase
 
         // Act
         // Assert
-        await ThrowsTask(() => sut.Handle(new GetProduct.Request { Id = Guid.NewGuid() }, default), VerifySettings);
+        await ThrowsTask(() => sut.Handle(new GetProduct.Query { Id = Guid.NewGuid() }, default), VerifySettings);
     }
 }

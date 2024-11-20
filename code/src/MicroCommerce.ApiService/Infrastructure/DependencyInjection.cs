@@ -59,6 +59,8 @@ public static class DependencyInjection
         builder.AddRedisDistributedCache("redis");
         builder.AddRedLock();
         builder.AddAuthorization();
+
+        builder.AddElasticsearchClient("elasticsearch");
     }
 
     public static void AddApplication(this IHostApplicationBuilder builder)
