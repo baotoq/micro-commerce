@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4C429E7E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Tests", "tests\MicroCommerce.Tests\MicroCommerce.Tests.csproj", "{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.MigrationService", "src\MicroCommerce.MigrationService\MicroCommerce.MigrationService.csproj", "{B8B19FBB-E749-4138-8649-5AA8F1621A28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,7 @@ Global
 		{20D951FE-0AFD-48AF-8F44-0EA4C1591E44} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
 		{D409C349-06FC-4B6B-98A4-DA77B4D9D597} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
 		{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF} = {4C429E7E-FF98-4EE7-A82E-DB7D56330931}
+		{B8B19FBB-E749-4138-8649-5AA8F1621A28} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4CD3F9FB-58F9-401A-B9A8-2DD1CE9D02EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -47,5 +50,9 @@ Global
 		{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E3B8C14-3A53-46FF-8BDE-81A44DEAD7AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8B19FBB-E749-4138-8649-5AA8F1621A28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8B19FBB-E749-4138-8649-5AA8F1621A28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8B19FBB-E749-4138-8649-5AA8F1621A28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8B19FBB-E749-4138-8649-5AA8F1621A28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

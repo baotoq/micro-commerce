@@ -5,7 +5,7 @@ var postgres = builder.AddPostgres("postgres")
     .WithPgAdmin()
     .WithLifetime(ContainerLifetime.Persistent);
 
-var catalogDb = postgres.AddDatabase("db");
+var db = postgres.AddDatabase("db");
 
 var elasticsearch = builder.AddElasticsearch("elasticsearch")
     .WithDataVolume()
@@ -29,12 +29,18 @@ var rabbitmq = builder.AddRabbitMQ("messaging")
     .WithManagementPlugin()
     .WithLifetime(ContainerLifetime.Persistent);
 
+var migrationService = builder.AddProject<Projects.MicroCommerce_MigrationService>("migrationservice")
+    .WithReference(db)
+    .WaitFor(db)
+    .WithHttpHealthCheck("/health");
+    //.WithHttpsCommand("/reset", "Reset Database", iconName: "DatabaseLightning");
+
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
     .WithReference(elasticsearch)
     .WithReference(cache)
     .WithReference(rabbitmq)
-    .WithReference(catalogDb)
-    .WaitFor(catalogDb);
+    .WithReference(db).WaitFor(db)
+    .WithReference(migrationService).WaitFor(migrationService);
 
 builder.AddProject<Projects.MicroCommerce_Web>("webfrontend")
     .WithExternalHttpEndpoints()

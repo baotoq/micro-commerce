@@ -21,12 +21,9 @@
 
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.0" />
 
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
+
     <PackageReference Include="RedLock.net" Version="2.3.2" />
     <PackageReference Include="MediatR" Version="12.4.1" />
   </ItemGroup>
