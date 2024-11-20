@@ -13,7 +13,9 @@ public class CreateProductValidatorTests
         // Arrange
         var request = new CreateProduct.Command
         {
-            Name = ""
+            Name = "",
+            Price = 0,
+            RemainingStock = 0
         };
 
         // Act

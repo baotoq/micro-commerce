@@ -1,5 +1,4 @@
 ﻿{
   Type: NotFoundException,
-  Message: Queried object Product not found was not found, Key: Guid_1,
-  StackTrace: at MicroCommerce.ApiService.Features.GetProduct.Handler.Handle(Request request, CancellationToken cancellationToken)
+  Message: Queried object Product not found was not found, Key: Guid_1
 }

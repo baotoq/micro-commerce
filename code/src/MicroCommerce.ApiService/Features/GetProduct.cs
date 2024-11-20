@@ -2,11 +2,17 @@ using Ardalis.GuardClauses;
 using MassTransit;
 using MediatR;
 using MicroCommerce.ApiService.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MicroCommerce.ApiService.Features;
 
-public static class GetProduct
+public class GetProduct : IEndpoint
 {
+    public void MapEndpoint(IEndpointRouteBuilder builder)
+    {
+        builder.MapGet("/api/products/{id:guid}", async (Guid id, IMediator mediator) => await mediator.Send(new Query { Id = id }));
+    }
+
     public class Query : IRequest<Response>
     {
         public required Guid Id { get; set; }
@@ -17,6 +23,7 @@ public static class GetProduct
         public Guid Id { get; init; }
         public string Name { get; init; } = "";
     }
+
     public class Handler : IRequestHandler<Query, Response>
     {
         private readonly ApplicationDbContext _context;
