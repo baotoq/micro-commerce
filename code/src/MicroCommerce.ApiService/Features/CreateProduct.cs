@@ -16,7 +16,7 @@ public class CreateProduct : IEndpoint
         {
             var response = await mediator.Send(request);
             return Results.CreatedAtRoute();
-        });
+        }).Produces(StatusCodes.Status201Created);
     }
 
     public record Command : IRequest<Response>

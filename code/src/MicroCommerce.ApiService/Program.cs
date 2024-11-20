@@ -19,9 +19,15 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
 
-app
-    .MapDefaultEndpoints()
-    .UseOpenApi()
-    .MapEndpoints();
+app.UseRequestTimeouts();
+app.UseOutputCache();
+
+app.MapDefaultEndpoints();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseOpenApi();
+app.MapEndpoints();
 
 app.Run();

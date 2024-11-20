@@ -20,6 +20,7 @@ var elasticsearch = builder.AddElasticsearch("elasticsearch")
 //     .WithLifetime(ContainerLifetime.Persistent);
 
 var cache = builder.AddRedis("redis")
+    .WithRedisInsight()
     .WithDataVolume()
     .WithLifetime(ContainerLifetime.Persistent);
 
