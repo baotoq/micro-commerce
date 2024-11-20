@@ -120,7 +120,10 @@ public static class Extensions
             .WithRequestTimeout("HealthChecks");
 
         // All health checks must pass for app to be considered ready to accept traffic after starting
-        healthChecks.MapHealthChecks("/health");
+        healthChecks.MapHealthChecks("/health", new HealthCheckOptions
+        {
+            ResponseWriter = HealthCheckExtensions.WriteResponse
+        });
 
         // Only health checks tagged with the "live" tag must pass for app to be considered alive
         healthChecks.MapHealthChecks("/alive", new HealthCheckOptions
