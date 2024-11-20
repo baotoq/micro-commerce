@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using Scalar.AspNetCore;
 
 namespace MicroCommerce.ServiceDefaults;
 
@@ -110,6 +111,24 @@ public static class Extensions
 
             // Only health checks tagged with the "live" tag must pass for app to be considered alive
             app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") });
+        }
+
+        return app;
+    }
+
+    public static WebApplication UseOpenApi(this WebApplication app)
+    {
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapOpenApi();
+            app.MapScalarApiReference(options =>
+            {
+                options
+                    .WithTitle("MicroCommerce API Reference")
+                    .WithCdnUrl("https://cdn.jsdelivr.net/npm/@scalar/api-reference")
+                    .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.Curl)
+                    .WithDarkMode(true);
+            });
         }
 
         return app;
