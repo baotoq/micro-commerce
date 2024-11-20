@@ -97,7 +97,7 @@ public static class Extensions
     {
         builder.Services.AddRequestTimeouts(
             configure: static timeouts =>
-                timeouts.AddPolicy("HealthChecks", TimeSpan.FromSeconds(3)));
+                timeouts.AddPolicy("HealthChecks", TimeSpan.FromSeconds(5)));
 
         builder.Services.AddOutputCache(
             configureOptions: static caching =>
@@ -128,7 +128,8 @@ public static class Extensions
         // Only health checks tagged with the "live" tag must pass for app to be considered alive
         healthChecks.MapHealthChecks("/alive", new HealthCheckOptions
         {
-            Predicate = static r => r.Tags.Contains("live")
+            Predicate = static r => r.Tags.Contains("live"),
+            ResponseWriter = HealthCheckExtensions.WriteResponse
         });
 
         return app;
