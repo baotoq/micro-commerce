@@ -8,38 +8,27 @@ namespace MicroCommerce.ServiceDefaults;
 
 public static class HealthCheckExtensions
 {
+    private static readonly Lazy<JsonSerializerOptions> s_options = new(CreateJsonOptions);
+
     public static Task WriteResponse(HttpContext context, HealthReport report)
     {
-        var jsonSerializerOptions = new JsonSerializerOptions
+        string json = JsonSerializer.Serialize(report, s_options.Value);
+
+        context.Response.ContentType = MediaTypeNames.Application.Json;
+        return context.Response.WriteAsync(json);
+    }
+
+    private static JsonSerializerOptions CreateJsonOptions()
+    {
+        var options = new JsonSerializerOptions
         {
-            WriteIndented = false,
+            AllowTrailingCommas = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        string json = JsonSerializer.Serialize(
-            new
-            {
-                Status = report.Status.ToString(),
-                Duration = report.TotalDuration,
-                Info = report.Entries
-                    .Select(e =>
-                        new
-                        {
-                            Key = e.Key,
-                            Description = e.Value.Description,
-                            Duration = e.Value.Duration,
-                            Status = Enum.GetName(
-                                typeof(HealthStatus),
-                                e.Value.Status),
-                            Error = e.Value.Exception?.Message,
-                            Data = e.Value.Data
-                        })
-                    .ToList()
-            },
-            jsonSerializerOptions);
+        options.Converters.Add(new JsonStringEnumConverter());
 
-        context.Response.ContentType = MediaTypeNames.Application.Json;
-        return context.Response.WriteAsync(json);
+        return options;
     }
 }
