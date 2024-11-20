@@ -1,4 +1,5 @@
 using MediatR;
+using MicroCommerce.ApiService.Exceptions;
 
 namespace MicroCommerce.ApiService.Infrastructure.Behaviour;
 
@@ -12,7 +13,7 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse>(ILoggerFactory log
         {
             return await next();
         }
-        catch (Exception ex)
+        catch (Exception ex) when(ex is not InvalidValidationException)
         {
             var requestName = typeof(TRequest).Name;
 

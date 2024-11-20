@@ -1,9 +1,8 @@
 using MediatR;
-using MicroCommerce.ApiService.Exceptions;
 using MicroCommerce.ApiService.Features;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ServiceDefaults;
-using Scalar.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,19 +20,15 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
 
-app.MapDefaultEndpoints();
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
+app
+    .MapDefaultEndpoints()
+    .UseOpenApi();
 
 var api = app.MapGroup("api");
 
 var products = api.MapGroup("products");
 
 products.MapGet("/{id:guid}", async (Guid id, IMediator mediator) => await mediator.Send(new GetProduct.Query { Id = id }));
-products.MapPost("/", async (CreateProduct.Command request, IMediator mediator) => await mediator.Send(request));
+products.MapPost("/", async ([FromBody] CreateProduct.Command request, IMediator mediator) => await mediator.Send(request));
 
 app.Run();
