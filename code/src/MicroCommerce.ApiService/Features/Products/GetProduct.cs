@@ -1,10 +1,9 @@
 using Ardalis.GuardClauses;
-using MassTransit;
 using MediatR;
 using MicroCommerce.ApiService.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace MicroCommerce.ApiService.Features;
+namespace MicroCommerce.ApiService.Features.Products;
 
 public class GetProduct : IEndpoint
 {
@@ -35,7 +34,8 @@ public class GetProduct : IEndpoint
 
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FindAsync(request.Id);
+            var product = await _context.Products
+                .FirstOrDefaultAsync(s => s.Id == request.Id && !s.DeletedAt.HasValue, cancellationToken);
 
             if (product is null)
             {

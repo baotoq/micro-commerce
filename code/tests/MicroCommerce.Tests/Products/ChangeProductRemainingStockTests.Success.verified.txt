@@ -1,0 +1,4 @@
+﻿{
+  ProductId: Guid_1,
+  RemainingStock: 100
+}

@@ -3,6 +3,7 @@ using MassTransit;
 using MicroCommerce.ApiService.Domain.Events;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ApiService.Services;
+using MicroCommerce.ApiService.Services.Elasticsearch;
 
 namespace MicroCommerce.ApiService.Features.DomainEvents;
 

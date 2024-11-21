@@ -1,9 +1,10 @@
 using FluentValidation.TestHelper;
 using MicroCommerce.ApiService.Features;
+using MicroCommerce.ApiService.Features.Products;
 
-namespace MicroCommerce.Tests;
+namespace MicroCommerce.Tests.Products;
 
-public class CreateProductValidatorTests
+public class CreateProductValidatorTests : TestBase
 {
     private readonly CreateProduct.Validator _validator = new();
 
@@ -22,6 +23,6 @@ public class CreateProductValidatorTests
         var act = await _validator.TestValidateAsync(request);
 
         // Assert
-        await Verify(act);
+        await Verify(act, VerifySettings);
     }
 }

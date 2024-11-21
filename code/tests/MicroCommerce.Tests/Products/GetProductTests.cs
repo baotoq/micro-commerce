@@ -1,11 +1,12 @@
 using Ardalis.GuardClauses;
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Features;
+using MicroCommerce.ApiService.Features.Products;
 using MicroCommerce.ApiService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace MicroCommerce.Tests;
+namespace MicroCommerce.Tests.Products;
 
 public class GetProductTests : TestBase
 {

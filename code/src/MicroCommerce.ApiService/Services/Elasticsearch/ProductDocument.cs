@@ -1,6 +1,6 @@
 using MicroCommerce.ApiService.Domain.Entities;
 
-namespace MicroCommerce.ApiService.Services;
+namespace MicroCommerce.ApiService.Services.Elasticsearch;
 
 public record ProductDocument
 {

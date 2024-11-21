@@ -1,12 +1,10 @@
-using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using MediatR;
 using MicroCommerce.ApiService.Domain.Entities;
-using MicroCommerce.ApiService.Features.DomainEvents;
 using MicroCommerce.ApiService.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MicroCommerce.ApiService.Features;
+namespace MicroCommerce.ApiService.Features.Products;
 
 public class CreateProduct : IEndpoint
 {
