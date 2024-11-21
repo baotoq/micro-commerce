@@ -11,6 +11,7 @@ using MicroCommerce.ApiService.Exceptions;
 using MicroCommerce.ApiService.Infrastructure.Behaviour;
 using MicroCommerce.ApiService.Infrastructure.Interceptors;
 using MicroCommerce.ApiService.Services;
+using MicroCommerce.ApiService.Services.Elasticsearch;
 using MicroCommerce.ServiceDefaults;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;

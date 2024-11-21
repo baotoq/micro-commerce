@@ -1,9 +1,10 @@
 using MicroCommerce.ApiService.Features;
+using MicroCommerce.ApiService.Features.Products;
 using MicroCommerce.ApiService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace MicroCommerce.Tests;
+namespace MicroCommerce.Tests.Products;
 
 public class CreateProductTests : TestBase
 {
@@ -19,6 +20,6 @@ public class CreateProductTests : TestBase
             RemainingStock = 101
         }, default);
 
-        await Verify(act);
+        await Verify(act, VerifySettings);
     }
 }
