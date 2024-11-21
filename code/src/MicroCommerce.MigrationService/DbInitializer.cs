@@ -10,7 +10,7 @@ namespace MicroCommerce.MigrationService;
 
 public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializer> logger) : BackgroundService
 {
-    private const string ActivitySourceName = "Migrations";
+    public const string ActivitySourceName = "Migrations";
     private static readonly ActivitySource s_activitySource = new(ActivitySourceName);
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -20,9 +20,9 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
         try
         {
             using var scope = serviceProvider.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            await InitializeDatabaseAsync(dbContext, cancellationToken);
+            await InitializeDatabaseAsync(context, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -31,14 +31,14 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
         }
     }
 
-    public async Task InitializeDatabaseAsync(ApplicationDbContext dbContext, CancellationToken cancellationToken = default)
+    public async Task InitializeDatabaseAsync(ApplicationDbContext context, CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
 
-        var strategy = dbContext.Database.CreateExecutionStrategy();
-        await strategy.ExecuteAsync(dbContext.Database.MigrateAsync, cancellationToken);
+        var strategy = context.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(context.Database.MigrateAsync, cancellationToken);
 
-        await SeedDataAsync(dbContext, cancellationToken);
+        await SeedDataAsync(context, cancellationToken);
 
         logger.LogInformation("Database initialization completed after {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }

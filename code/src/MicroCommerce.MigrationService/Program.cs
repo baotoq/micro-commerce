@@ -10,7 +10,7 @@ builder.Services.AddOpenApi();
 builder.AddServiceDefaults();
 
 builder.Services.AddOpenTelemetry()
-    .WithTracing(tracing => tracing.AddSource("MicroCommerce.MigrationService"));
+    .WithTracing(tracing => tracing.AddSource(DbInitializer.ActivitySourceName));
 
 builder.AddNpgsqlDbContext<ApplicationDbContext>("db", settings =>
     {
@@ -21,7 +21,8 @@ builder.AddNpgsqlDbContext<ApplicationDbContext>("db", settings =>
         options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly));
     });
 
-builder.Services.AddHostedService<DbInitializer>();
+builder.Services.AddSingleton<DbInitializer>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 builder.Services.AddHealthChecks()
     .AddCheck<DbInitializerHealthCheck>("DbInitializer");
 
@@ -42,3 +43,5 @@ app.MapDefaultEndpoints();
 app.UseOpenApi();
 
 app.Run();
+
+// dotnet ef migrations add Init -s src/MicroCommerce.MigrationService -p src/MicroCommerce.MigrationService --context ApplicationDbContext
