@@ -56,16 +56,21 @@ public static class AddInfrastructureDependencyInjection
         builder.AddRedisDistributedCache("redis");
         builder.AddRedLock();
         builder.AddAuthorization();
-
-        builder.AddElasticsearchClient("elasticsearch");
     }
 
     private static void AddRedLock(this IHostApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("redis");
-        Guard.Against.NullOrEmpty(connectionString, message: "Redis connection string is required.");
+        builder.Services.AddSingleton(sp =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            var connectionString = configuration.GetConnectionString("redis");
+            Guard.Against.NullOrEmpty(connectionString, message: "Redis connection string is required.");
 
-        builder.Services.AddSingleton(sp => RedLockFactory.Create(new List<RedLockMultiplexer> { ConnectionMultiplexer.Connect(connectionString) }, sp.GetRequiredService<ILoggerFactory>()));
+            return RedLockFactory.Create(new List<RedLockMultiplexer>
+            {
+                ConnectionMultiplexer.Connect(connectionString)
+            }, sp.GetRequiredService<ILoggerFactory>());
+        });
     }
 
     private static void AddAuthorization(this IHostApplicationBuilder builder)
@@ -80,14 +85,13 @@ public static class AddInfrastructureDependencyInjection
 
     private static void AddEfCore(this IHostApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("db");
-        Guard.Against.NullOrEmpty(connectionString, message: "Database connection string is required.");
-
         builder.Services.AddScoped<ISaveChangesInterceptor, DateEntityInterceptor>();
         builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
         builder.Services.AddScoped<ISaveChangesInterceptor, IndexProductInterceptor>();
         builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            var connectionString = configuration.GetConnectionString("db");
             options.UseNpgsql(connectionString);
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
         });
@@ -96,21 +100,13 @@ public static class AddInfrastructureDependencyInjection
 
     private static void AddElasticsearch(this IHostApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("elasticsearch");
-        Guard.Against.NullOrEmpty(connectionString, message: "Elasticsearch connection string is required.");
-
-        builder.Services.AddSingleton(sp =>
+        builder.AddElasticsearchClient("elasticsearch", null, client =>
         {
-            var settings = new ElasticsearchClientSettings(new Uri(connectionString))
-                .DefaultMappingFor<ProductDocument>(i => i
-                    .IndexName(ProductDocument.IndexPattern)
-                    .IdProperty(p => p.Id)
-                )
-                .EnableDebugMode();
-
-            var client = new ElasticsearchClient(settings);
-
-            return client;
+            client.DefaultMappingFor<ProductDocument>(i => i
+                .IndexName(ProductDocument.IndexPattern)
+                .IdProperty(p => p.Id)
+            )
+            .EnableDebugMode();
         });
     }
 

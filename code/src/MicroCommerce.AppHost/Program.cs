@@ -33,14 +33,14 @@ var migrationService = builder.AddProject<Projects.MicroCommerce_MigrationServic
     .WithReference(db)
     .WaitFor(db)
     .WithHttpHealthCheck("/health");
-    //.WithHttpsCommand("/reset", "Reset Database", iconName: "DatabaseLightning");
 
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
     .WithReference(elasticsearch)
     .WithReference(cache)
     .WithReference(rabbitmq)
     .WithReference(db).WaitFor(db)
-    .WithReference(migrationService).WaitFor(migrationService);
+    .WithReference(migrationService)
+    .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.MicroCommerce_Web>("webfrontend")
     .WithExternalHttpEndpoints()

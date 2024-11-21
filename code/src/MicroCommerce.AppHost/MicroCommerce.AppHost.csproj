@@ -18,11 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0-rc.1.24511.1"/>
-    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.0.0-rc.1.24511.1" />
-    <PackageReference Include="Aspire.Hosting.Elasticsearch" Version="9.0.0-preview.4.24511.1" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="9.0.0-preview.4.24511.1" />
-    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.0.0-preview.4.24511.1" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0-*"/>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.0.0-*" />
+    <PackageReference Include="Aspire.Hosting.Elasticsearch" Version="9.0.0-*" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="9.0.0-*" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.0.0-*" />
   </ItemGroup>
 
 </Project>
