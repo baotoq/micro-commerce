@@ -111,7 +111,7 @@ public static class AddInfrastructureDependencyInjection
         });
     }
 
-    private static void AddMassTransit(this IHostApplicationBuilder builder)
+    public static void AddMassTransit(this IHostApplicationBuilder builder)
     {
         builder.Services.AddMassTransit(s =>
         {

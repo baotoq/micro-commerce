@@ -10,7 +10,7 @@ public class GetProductsFromElasticsearch : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapGet("/api/products", async (IMediator mediator) => await mediator.Send(new Query()));
+        builder.MapGet("/api/products", async (IMediator mediator) => TypedResults.Ok(await mediator.Send(new Query())));
     }
 
     public record Query : IRequest<Response>
@@ -55,8 +55,7 @@ public class GetProductsFromElasticsearch : IEndpoint
             var response = await _elasticsearchClient.SearchAsync<ProductDocument>(
                 q => q
                     .Size(100)
-                    .From(0)
-                    .Sort(s => s.Field(f => f.Name)), cancellationToken);
+                    .From(0), cancellationToken);
 
             if (!response.IsSuccess())
             {

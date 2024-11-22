@@ -6,6 +6,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options => options.AddDefaultPolicy(
+    policy => policy
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+    )
+);
+
+
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
 
@@ -16,16 +25,16 @@ builder.Services.AddEndpoints();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 app.UseExceptionHandler();
+app.UseCors();
 
 app.UseRequestTimeouts();
-app.UseOutputCache();
-
-app.MapDefaultEndpoints();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseOutputCache();
+app.MapDefaultEndpoints();
 
 app.UseOpenApi();
 app.MapEndpoints();

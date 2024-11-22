@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using FluentValidation;
 using MediatR;
 using MicroCommerce.ApiService.Domain.Entities;
@@ -13,8 +14,8 @@ public class CreateProduct : IEndpoint
         builder.MapPost("/api/products", async ([FromBody] Command request, IMediator mediator) =>
         {
             var response = await mediator.Send(request);
-            return Results.CreatedAtRoute();
-        }).Produces(StatusCodes.Status201Created);
+            return TypedResults.CreatedAtRoute(response, nameof(GetProduct), new { id = response.Id });
+        }).ProducesValidationProblem();
     }
 
     public record Command : IRequest<Response>

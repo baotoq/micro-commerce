@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using MediatR.Pipeline;
 
 namespace MicroCommerce.ApiService.Infrastructure.Behaviour;
 
+[DebuggerStepThrough]
 public class LoggingBehaviour<TRequest>(ILoggerFactory logger) : IRequestPreProcessor<TRequest>
     where TRequest : notnull
 {

@@ -19,6 +19,8 @@ public class InvalidValidationExceptionHandler : IExceptionHandler
             return false;
         }
 
+        httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+
         var problemDetails = new ValidationProblemDetails
         {
             Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",

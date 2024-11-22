@@ -1,3 +1,5 @@
+using MassTransit;
+using MassTransit.Transports;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.MigrationService;
 using MicroCommerce.ServiceDefaults;
@@ -30,11 +32,11 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapPost("/reset", async (ApplicationDbContext dbContext, DbInitializer dbInitializer, CancellationToken cancellationToken) =>
+    app.MapPost("/reset", async (ApplicationDbContext dbContext, IPublishEndpoint publishEndpoint, DbInitializer dbInitializer, CancellationToken cancellationToken) =>
     {
         // Delete and recreate the database. This is useful for development scenarios to reset the database to its initial state.
         await dbContext.Database.EnsureDeletedAsync(cancellationToken);
-        await dbInitializer.InitializeDatabaseAsync(dbContext, cancellationToken);
+        await dbInitializer.InitializeDatabaseAsync(dbContext, publishEndpoint, cancellationToken);
     });
 }
 

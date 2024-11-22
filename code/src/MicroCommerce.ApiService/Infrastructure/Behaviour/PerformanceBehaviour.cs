@@ -3,6 +3,7 @@ using MediatR;
 
 namespace MicroCommerce.ApiService.Infrastructure.Behaviour;
 
+[DebuggerStepThrough]
 public class PerformanceBehaviour<TRequest, TResponse>(ILoggerFactory logger) : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     private readonly Stopwatch _timer = new();
