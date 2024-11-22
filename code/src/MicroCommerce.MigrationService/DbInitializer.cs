@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using MassTransit;
 using MicroCommerce.ApiService.Domain.Entities;
+using MicroCommerce.ApiService.Features.DomainEvents;
 using MicroCommerce.ApiService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -22,7 +24,7 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            await InitializeDatabaseAsync(context, cancellationToken);
+            await InitializeDatabaseAsync(context, null, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -31,7 +33,7 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
         }
     }
 
-    public async Task InitializeDatabaseAsync(ApplicationDbContext context, CancellationToken cancellationToken = default)
+    public async Task InitializeDatabaseAsync(ApplicationDbContext context, IPublishEndpoint publishEndpoint, CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
 
@@ -39,6 +41,7 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
         await strategy.ExecuteAsync(context.Database.MigrateAsync, cancellationToken);
 
         await SeedDataAsync(context, cancellationToken);
+        await IndexData(context, publishEndpoint, cancellationToken);
 
         logger.LogInformation("Database initialization completed after {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }
@@ -51,5 +54,20 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
         }
 
         await context.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task IndexData(ApplicationDbContext context, IPublishEndpoint publishEndpoint, CancellationToken cancellationToken)
+    {
+        return;
+        var tasks = new List<Task>();
+        foreach (var product in context.Products)
+        {
+            tasks.Add(publishEndpoint.Publish(new IndexProductDomainEvent
+            {
+                ProductId = product.Id
+            }, cancellationToken));
+        }
+
+        await Task.WhenAll(tasks);
     }
 }

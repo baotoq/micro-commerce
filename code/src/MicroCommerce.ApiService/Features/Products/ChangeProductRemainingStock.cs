@@ -11,7 +11,8 @@ public class ChangeProductRemainingStock : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapPost("/api/products/stock", async ([FromBody] Command request, IMediator mediator) => await mediator.Send(request));
+        builder.MapPost("/api/products/stock", async ([FromBody] Command request, IMediator mediator) => TypedResults.Ok(await mediator.Send(request)))
+            .ProducesValidationProblem();
     }
 
     public record Command : IRequest<Response>

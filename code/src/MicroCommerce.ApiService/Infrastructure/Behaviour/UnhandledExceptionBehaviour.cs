@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using MediatR;
 using MicroCommerce.ApiService.Exceptions;
 
 namespace MicroCommerce.ApiService.Infrastructure.Behaviour;
 
+[DebuggerStepThrough]
 public class UnhandledExceptionBehaviour<TRequest, TResponse>(ILoggerFactory logger) : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     private readonly ILogger<TRequest> _logger = logger.CreateLogger<TRequest>();

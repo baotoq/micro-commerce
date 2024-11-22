@@ -9,7 +9,8 @@ public class GetProduct : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapGet("/api/products/{id:guid}", async (Guid id, IMediator mediator) => await mediator.Send(new Query { Id = id }));
+        builder.MapGet("/api/products/{id:guid}", async (Guid id, IMediator mediator) =>
+            TypedResults.Ok(await mediator.Send(new Query { Id = id }))).WithName(nameof(GetProduct));
     }
 
     public class Query : IRequest<Response>

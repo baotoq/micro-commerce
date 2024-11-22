@@ -39,7 +39,7 @@ public class IndexProductConsumer : IConsumer<IndexProductDomainEvent>
             return;
         }
 
-        var result = await _elasticsearchClient.IndexAsync(ProductDocument.FromDomain(product));
+        var result = await _elasticsearchClient.IndexAsync(ProductDocument.FromDomain(product), index: ProductDocument.IndexKey);
 
         if (!result.IsSuccess())
         {

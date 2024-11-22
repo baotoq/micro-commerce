@@ -4,7 +4,8 @@ namespace MicroCommerce.ApiService.Services.Elasticsearch;
 
 public record ProductDocument
 {
-    public const string IndexPattern = "*product*";
+    public const string IndexPattern = "products*";
+    public const string IndexKey = "products";
 
     public required Guid Id { get; set; }
     public required string Name { get; set; }
