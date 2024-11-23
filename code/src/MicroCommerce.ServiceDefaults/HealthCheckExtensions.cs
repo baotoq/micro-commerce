@@ -12,7 +12,20 @@ public static class HealthCheckExtensions
 
     public static Task WriteResponse(HttpContext context, HealthReport report)
     {
-        string json = JsonSerializer.Serialize(report, s_options.Value);
+        string json = JsonSerializer.Serialize(new
+        {
+            report.Status,
+            Entries = report.Entries.Select(s => new
+            {
+                s.Key,
+                s.Value.Status,
+                s.Value.Duration,
+                s.Value.Description,
+                s.Value.Data,
+                s.Value.Exception?.Message
+            }),
+            report.TotalDuration,
+        }, s_options.Value);
 
         context.Response.ContentType = MediaTypeNames.Application.Json;
         return context.Response.WriteAsync(json);
