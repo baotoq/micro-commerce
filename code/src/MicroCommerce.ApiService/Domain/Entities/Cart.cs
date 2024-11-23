@@ -11,8 +11,8 @@ public enum CartStatus
 
 public class Cart : EntityBase
 {
-    [MaxLength(Constant.KeyLength)] public Guid BuyerId { get; set; }
-    public Buyer Buyer { get; set; } = null!;
+    [MaxLength(Constant.KeyLength)] public Guid? BuyerId { get; set; }
+    public Buyer? Buyer { get; set; }
 
     public CartStatus Status { get; set; }
 
@@ -20,16 +20,16 @@ public class Cart : EntityBase
     public decimal TotalPromotionDiscountAmount { get; set; }
     public decimal TotalCheckoutAmount { get; set; }
 
-    [MaxLength(Constant.KeyLength)] public Guid DeliveryOptionId { get; set; }
-    public DeliveryOption DeliveryOption { get; set; } = null!;
+    [MaxLength(Constant.KeyLength)]public Guid? DeliveryOptionId { get; set; }
+    public DeliveryOption? DeliveryOption { get; set; }
 
     public decimal DeliveryFee { get; set; }
 
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
-    public Guid PromotionId { get; set; }
-    public Promotion Promotion { get; set; } = null!;
+    public Guid? PromotionId { get; set; }
+    public Promotion? Promotion { get; set; }
 
-    public Guid DeliveryAddressId { get; set; }
-    public DeliveryAddress DeliveryAddress { get; set; } = null!;
+    public Guid? DeliveryAddressId { get; set; }
+    public DeliveryAddress? DeliveryAddress { get; set; }
 }
