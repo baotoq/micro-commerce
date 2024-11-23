@@ -30,8 +30,7 @@ var rabbitmq = builder.AddRabbitMQ("messaging")
     .WithLifetime(ContainerLifetime.Persistent);
 
 var migrationService = builder.AddProject<Projects.MicroCommerce_MigrationService>("migrationservice")
-    .WithReference(db)
-    .WaitFor(db)
+    .WithReference(db).WaitFor(db)
     .WithHttpHealthCheck("/health");
 
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
@@ -39,7 +38,6 @@ var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservi
     .WithReference(cache)
     .WithReference(rabbitmq)
     .WithReference(db).WaitFor(db)
-    .WithReference(migrationService)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.MicroCommerce_Web>("webfrontend")
