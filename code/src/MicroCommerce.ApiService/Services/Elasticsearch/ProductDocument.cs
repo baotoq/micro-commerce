@@ -10,6 +10,7 @@ public record ProductDocument
     public required Guid Id { get; set; }
     public required string Name { get; set; }
     public required decimal Price { get; set; }
+    public required long RemainingStock { get; set; }
 
     public static ProductDocument FromDomain(Product product)
     {
@@ -17,7 +18,8 @@ public record ProductDocument
         {
             Id = product.Id,
             Name = product.Name,
-            Price = product.Price
+            Price = product.Price,
+            RemainingStock = product.RemainingStock
         };
     }
 }

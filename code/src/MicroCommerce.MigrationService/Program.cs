@@ -23,6 +23,23 @@ builder.AddNpgsqlDbContext<ApplicationDbContext>("db", settings =>
         options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly));
     });
 
+builder.Services.AddMassTransit(s =>
+{
+    s.AddConsumers(typeof(Program).Assembly);
+    s.UsingRabbitMq((context, cfg) =>
+    {
+        var configuration = context.GetRequiredService<IConfiguration>();
+        var host = configuration.GetConnectionString("messaging");
+
+        cfg.Host(host);
+        cfg.ConfigureEndpoints(context);
+        cfg.UseInMemoryOutbox(context);
+
+        cfg.PrefetchCount = 1;
+        cfg.AutoDelete = true;
+    });
+});
+
 builder.Services.AddSingleton<DbInitializer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 builder.Services.AddHealthChecks()

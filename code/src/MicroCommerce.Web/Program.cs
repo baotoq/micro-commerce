@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
+builder.Services.AddHttpForwarderWithServiceDiscovery();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -38,6 +39,8 @@ app.UseOutputCache();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapForwarder("/images/{url}", "https+http://apiservice", "/api/products/images/{url}");
 
 app.MapDefaultEndpoints();
 
