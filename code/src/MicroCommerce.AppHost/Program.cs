@@ -31,12 +31,13 @@ var rabbitmq = builder.AddRabbitMQ("messaging")
 
 var migrationService = builder.AddProject<Projects.MicroCommerce_MigrationService>("migrationservice")
     .WithReference(db).WaitFor(db)
+    .WithReference(rabbitmq).WaitFor(rabbitmq)
     .WithHttpHealthCheck("/health");
 
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
     .WithReference(elasticsearch)
     .WithReference(cache)
-    .WithReference(rabbitmq)
+    .WithReference(rabbitmq).WaitFor(rabbitmq)
     .WithReference(db).WaitFor(db)
     .WithHttpHealthCheck("/health");
 

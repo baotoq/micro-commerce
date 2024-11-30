@@ -1,7 +1,45 @@
 ﻿@page "/"
+@using System.Globalization
+@inject ProductApiClient ProductApiClient
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container">
+    @if (_products is null)
+    {
+        <p class="catalog-loading">Loading product catalog…</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in _products)
+            {
+                <div class="col-4" data-id="@item.Id">
+                    <div class="grid-item-content">
+                        <img src="images/@item.ImageUrl" alt="@item.Name" class="catalog-item-image"/>
+                        <div class="quick-view-overlay">
+                            <i class="fa fa-search-plus" aria-hidden="true"></i>
+                        </div>
+                        <div class="grid-item-text">
+                            <h4 class="pointer-events-none">@item.Name</h4>
+                            <p class="item-description pointer-events-none">@item.Name</p>
+                            <div class="d-flex justify-space-evenly align-items-center">
+                                <p class="item-price pointer-events-none">@item.Price.ToString("C", new CultureInfo("en-US"))</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
-Welcome to your new app.
+@code {
+
+    GetProductsResponse.Product[]? _products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _products = await ProductApiClient.GetProductsAsync();
+    }
+}
