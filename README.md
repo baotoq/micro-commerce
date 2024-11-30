@@ -1,6 +1,6 @@
 # Micro Commerce
 
-migrating to .net 8..............
+migrating to .net 9 with aspire..............
 
 | Project|Tests|Sonar|
 |-|-|-|
