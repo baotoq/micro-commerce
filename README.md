@@ -8,7 +8,7 @@ migrating to .net 8..............
 
 Inspired by **[`Microsoft eShop`](https://github.com/dotnet/eShop)** my pet project aims to showcase the latest .NET stack. Through this project, we're building a sample e-commerce platform that adheres to microservice principles, enabling scalability, flexibility, and resilience.
 
-![homepage screenshot](img/homepage-screenshot.png)
+![homepage screenshot](img/homepage-screenshot.jpg)
 
 ## Technical stack
 
