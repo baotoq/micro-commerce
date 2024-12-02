@@ -10,7 +10,7 @@ public class CartItem : DateEntity
     public Guid ProductId { get; set; }
     public Product Product { get; set; } = null!;
 
-    public int ProductQuantity { get; set; }
+    public long ProductQuantity { get; set; }
 
     public decimal ProductPriceAtCheckoutTime { get; set; }
 }
