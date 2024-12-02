@@ -96,7 +96,26 @@ public class RemoveProductToCart : IEndpoint
                 };
             }
 
-            _context.CartItems.Remove(cartItem);
+            var rowAffected = await _context.CartItems
+                .Where(s => s.CartId == request.CartId && s.ProductId == request.ProductId)
+                .Where(s => s.ProductQuantity - request.Quantity >= 0)
+                .ExecuteUpdateAsync(setters =>
+                    setters.SetProperty(p => p.ProductQuantity, p => p.ProductQuantity - request.Quantity), cancellationToken);
+
+            if (rowAffected == 0)
+            {
+                throw new InvalidValidationException("Update cart item failed!");
+            }
+
+            rowAffected = await _context.CartItems
+                .Where(s => s.CartId == request.CartId && s.ProductId == request.ProductId)
+                .Where(s => s.ProductQuantity - request.Quantity <= 0)
+                .ExecuteDeleteAsync(cancellationToken);
+
+            if (rowAffected == 0)
+            {
+                throw new InvalidValidationException("Update cart item failed!");
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
             await trans.CommitAsync(cancellationToken);

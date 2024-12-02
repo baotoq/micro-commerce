@@ -93,12 +93,30 @@ public class AddProductToCart : IEndpoint
                 throw new NotFoundException(request.ProductId.ToString(), "Product not found");
             }
 
-            await _context.CartItems.AddAsync(new CartItem
+            var cartItem = await _context.CartItems
+                .FirstOrDefaultAsync(s => s.CartId == request.CartId && s.ProductId == request.ProductId, cancellationToken);
+
+            if (cartItem is null)
             {
-                CartId = request.CartId,
-                ProductId = request.ProductId,
-                ProductQuantity = request.Quantity,
-            }, cancellationToken);
+                await _context.CartItems.AddAsync(new CartItem
+                {
+                    CartId = request.CartId,
+                    ProductId = request.ProductId,
+                    ProductQuantity = request.Quantity,
+                }, cancellationToken);
+            }
+            else
+            {
+                var rowAffected = await _context.CartItems
+                    .Where(s => s.CartId == request.CartId && s.ProductId == request.ProductId)
+                    .ExecuteUpdateAsync(setters =>
+                        setters.SetProperty(p => p.ProductQuantity, p => p.ProductQuantity + request.Quantity), cancellationToken);
+
+                if (rowAffected == 0)
+                {
+                    throw new InvalidValidationException("Update cart item failed!");
+                }
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
             await trans.CommitAsync(cancellationToken);
