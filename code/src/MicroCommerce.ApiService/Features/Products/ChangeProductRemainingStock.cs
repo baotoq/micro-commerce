@@ -2,6 +2,7 @@ using Ardalis.GuardClauses;
 using FluentValidation;
 using MediatR;
 using MicroCommerce.ApiService.Infrastructure;
+using MicroCommerce.ApiService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,14 +58,7 @@ public class ChangeProductRemainingStock : IEndpoint
                 throw new NotFoundException(request.ProductId.ToString(), "Product not found");
             }
 
-            var rowEffected = await _context.Products
-                .Where(s => s.Id == request.ProductId)
-                .Where(s => s.RemainingStock + request.ChangeQuantity >= 0)
-                .ExecuteUpdateAsync(setters =>
-                    setters
-                        .SetProperty(p => p.RemainingStock, p => p.RemainingStock + request.ChangeQuantity)
-                        .SetProperty(p => p.TotalStock, p => p.TotalStock + request.ChangeQuantity), cancellationToken);
-
+            var rowEffected = await _context.Products.ChangeProductStockAsync(request.ProductId, request.ChangeQuantity, cancellationToken);
             if (rowEffected == 0)
             {
                 throw new Exception("Update remaining stock failed!");

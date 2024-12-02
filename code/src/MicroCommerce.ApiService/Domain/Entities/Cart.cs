@@ -32,4 +32,6 @@ public class Cart : EntityBase
 
     public Guid? DeliveryAddressId { get; set; }
     public DeliveryAddress? DeliveryAddress { get; set; }
+
+    public DateTimeOffset? CheckoutAt { get; set; }
 }
