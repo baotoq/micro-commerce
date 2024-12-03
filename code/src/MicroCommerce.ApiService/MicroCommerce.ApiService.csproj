@@ -19,6 +19,8 @@
 
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
 
+    <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.3.2" />
+
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.0" />
 
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">

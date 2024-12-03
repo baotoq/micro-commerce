@@ -52,8 +52,8 @@ public static class AddInfrastructureDependencyInjection
         builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
         builder.AddElasticsearch();
-        builder.AddMassTransit();
         builder.AddEfCore();
+        builder.AddMassTransit();
         builder.AddRedisDistributedCache("redis");
         builder.AddRedLock();
         builder.AddAuthorization();
@@ -94,7 +94,9 @@ public static class AddInfrastructureDependencyInjection
             var configuration = sp.GetRequiredService<IConfiguration>();
             var connectionString = configuration.GetConnectionString("db");
             options.UseNpgsql(connectionString);
-            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+            options.AddInterceptors(sp.GetServices<DateEntityInterceptor>());
+            options.AddInterceptors(sp.GetServices<DispatchDomainEventsInterceptor>());
+            options.AddInterceptors(sp.GetServices<IndexProductInterceptor>());
         });
         builder.EnrichNpgsqlDbContext<ApplicationDbContext>();
     }
@@ -123,17 +125,16 @@ public static class AddInfrastructureDependencyInjection
 
                 cfg.Host(host);
                 cfg.ConfigureEndpoints(context);
-                cfg.UseInMemoryOutbox(context);
 
                 cfg.PrefetchCount = 1;
                 cfg.AutoDelete = true;
             });
 
-            // s.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
-            // {
-            //     o.UsePostgres();
-            //     o.UseBusOutbox();
-            // });
+            s.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
+            {
+                o.UsePostgres();
+                o.UseBusOutbox();
+            });
         });
     }
 }

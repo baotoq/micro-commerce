@@ -1,3 +1,4 @@
+using MassTransit;
 using MicroCommerce.ApiService.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
 
         modelBuilder.Entity<CartItem>()
             .HasKey(bc => new { bc.CartId, bc.ProductId });
+
+        modelBuilder.AddTransactionalOutboxEntities();
     }
 
     public DbSet<Buyer> Buyers { get; set; } = null!;

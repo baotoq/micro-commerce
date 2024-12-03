@@ -33,10 +33,16 @@ builder.Services.AddMassTransit(s =>
 
         cfg.Host(host);
         cfg.ConfigureEndpoints(context);
-        cfg.UseInMemoryOutbox(context);
 
         cfg.PrefetchCount = 1;
         cfg.AutoDelete = true;
+    });
+
+    s.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox(c => c.DisableDeliveryService());
+        o.DisableInboxCleanupService();
     });
 });
 
