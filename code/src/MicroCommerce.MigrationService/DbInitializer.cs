@@ -87,5 +87,7 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
         }
 
         await Task.WhenAll(tasks);
+
+        await context.SaveChangesAsync(cancellationToken);
     }
 }
