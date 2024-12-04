@@ -13,10 +13,10 @@ public class GetCartTests : TestBase
         {
             Status = CartStatus.Pending
         };
-        Context.Carts.Add(cart);
-        await Context.SaveChangesAsync();
+        SeedContext.Carts.Add(cart);
+        await SeedContext.SaveChangesAsync();
 
-        var sut = new GetCart.Handler(Context);
+        var sut = new GetCart.Handler(SeedContext);
 
         // Act
         var act = await sut.Handle(new GetCart.Query { Id = cart.Id }, default);
@@ -29,7 +29,7 @@ public class GetCartTests : TestBase
     public async Task NotFound()
     {
         // Arrange
-        var sut = new GetCart.Handler(Context);
+        var sut = new GetCart.Handler(SeedContext);
 
         // Act
         // Assert

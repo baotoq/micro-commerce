@@ -7,6 +7,7 @@ using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ApiService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RedLockNet;
 using RedLockNet.SERedis;
 
 namespace MicroCommerce.ApiService.Features.Carts;
@@ -47,20 +48,20 @@ public class CheckoutCart: IEndpoint
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<Handler> _logger;
-        private readonly RedLockFactory _redLockFactory;
+        private readonly IDistributedLockFactory _distributedLockFactory;
 
-        public Handler(ApplicationDbContext context, ILogger<Handler> logger, RedLockFactory redLockFactory)
+        public Handler(ApplicationDbContext context, ILogger<Handler> logger, IDistributedLockFactory distributedLockFactory)
         {
             _context = context;
             _logger = logger;
-            _redLockFactory = redLockFactory;
+            _distributedLockFactory = distributedLockFactory;
         }
 
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {
-            await using var redLock = await _redLockFactory.CreateLockAsync(LockKeys.Cart(request.CartId), TimeSpan.FromMinutes(1));
+            await using var distributedLock = await _distributedLockFactory.CreateLockAsync(LockKeys.Cart(request.CartId), TimeSpan.FromMinutes(1));
 
-            if (!redLock.IsAcquired)
+            if (!distributedLock.IsAcquired)
             {
                 throw new InvalidValidationException("Cart is being processed by another process. Please try again later.");
             }

@@ -1,5 +1,6 @@
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Features.Products;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MicroCommerce.Tests.Products;
@@ -18,10 +19,10 @@ public class ChangeProductRemainingStockTests : TestBase
             TotalStock = 100
         };
 
-        await Context.Products.AddAsync(product);
-        await Context.SaveChangesAsync();
+        await SeedContext.Products.AddAsync(product);
+        await SeedContext.SaveChangesAsync();
 
-        var sut = new ChangeProductRemainingStock.Handler(Context, NullLogger<ChangeProductRemainingStock.Handler>.Instance);
+        var sut = new ChangeProductRemainingStock.Handler(SeedContext, NullLogger<ChangeProductRemainingStock.Handler>.Instance);
 
         var act = await sut.Handle(new ChangeProductRemainingStock.Command
         {
@@ -29,6 +30,10 @@ public class ChangeProductRemainingStockTests : TestBase
             ChangeQuantity = 100
         }, default);
 
-        await Verify(act, VerifySettings);
+        var updatedProduct = await VerifyContext.Products
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == act.ProductId);
+
+        await Verify(updatedProduct, VerifySettings);
     }
 }

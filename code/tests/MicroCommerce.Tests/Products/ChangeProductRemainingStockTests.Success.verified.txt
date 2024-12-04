@@ -1,4 +1,9 @@
 ﻿{
-  ProductId: Guid_1,
-  RemainingStock: 100
+  Name: Product 1,
+  Price: 100.0,
+  RemainingStock: 200,
+  TotalStock: 200,
+  ImageUrl: ,
+  Id: Guid_1,
+  CreatedAt: DateTimeOffset_1
 }

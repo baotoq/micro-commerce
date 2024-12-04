@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using RedLockNet;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
@@ -61,7 +62,7 @@ public static class AddInfrastructureDependencyInjection
 
     private static void AddRedLock(this IHostApplicationBuilder builder)
     {
-        builder.Services.AddSingleton(sp =>
+        builder.Services.AddSingleton<IDistributedLockFactory>(sp =>
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
             var connectionString = configuration.GetConnectionString("redis");

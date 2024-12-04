@@ -11,7 +11,7 @@ public class CreateProductTests : TestBase
     [Fact]
     public async Task CreateProduct_Success()
     {
-        var sut = new CreateProduct.Handler(Context, NullLogger<CreateProduct.Handler>.Instance);
+        var sut = new CreateProduct.Handler(SeedContext, NullLogger<CreateProduct.Handler>.Instance);
 
         var act = await sut.Handle(new CreateProduct.Command
         {
