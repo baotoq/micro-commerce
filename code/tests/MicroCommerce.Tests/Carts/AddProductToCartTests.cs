@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MicroCommerce.Tests.Carts;
 
-public class RemoveProductToCartTests : TestBase
+public class AddProductToCartTests : TestBase
 {
     [Fact]
     public async Task Success()
@@ -27,17 +27,6 @@ public class RemoveProductToCartTests : TestBase
                 {
                     ProductId = product.Id,
                     ProductQuantity = 1
-                },
-                new()
-                {
-                    Product = new Product
-                    {
-                        Name = "Product 2",
-                        Price = 100,
-                        RemainingStock = 10,
-                        TotalStock = 10
-                    },
-                    ProductQuantity = 5
                 }
             }
         };
@@ -48,10 +37,10 @@ public class RemoveProductToCartTests : TestBase
 
         var distributedLockFactory = TestHelper.CreateAcquiredLock();
 
-        var sut = new RemoveProductToCart.Handler(SeedContext, NullLogger<RemoveProductToCart.Handler>.Instance, distributedLockFactory);
+        var sut = new AddProductToCart.Handler(SeedContext, NullLogger<AddProductToCart.Handler>.Instance, distributedLockFactory);
 
         // Act
-        var act = await sut.Handle(new RemoveProductToCart.Command
+        var act = await sut.Handle(new AddProductToCart.Command
         {
             ProductId = product.Id,
             Quantity = 1,
@@ -64,6 +53,6 @@ public class RemoveProductToCartTests : TestBase
             .FirstOrDefaultAsync(s => s.Id == act.CartId);
 
         // Assert
-        await Verify(cart, VerifySettings);
+        await Verify(cart);
     }
 }

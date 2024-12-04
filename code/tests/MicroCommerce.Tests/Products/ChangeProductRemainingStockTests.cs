@@ -34,6 +34,6 @@ public class ChangeProductRemainingStockTests : TestBase
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == act.ProductId);
 
-        await Verify(updatedProduct, VerifySettings);
+        await Verify(updatedProduct);
     }
 }
