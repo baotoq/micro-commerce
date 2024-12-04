@@ -23,6 +23,6 @@ public class CreateProductValidatorTests : TestBase
         var act = await _validator.TestValidateAsync(request);
 
         // Assert
-        await Verify(act, VerifySettings);
+        await Verify(act);
     }
 }

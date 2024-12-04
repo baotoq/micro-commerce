@@ -5,5 +5,5 @@
   TotalStock: 200,
   ImageUrl: ,
   Id: Guid_1,
-  CreatedAt: DateTimeOffset_1
+  CreatedAt: {Scrubbed}
 }

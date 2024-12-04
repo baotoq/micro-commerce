@@ -22,7 +22,7 @@ public class GetCartTests : TestBase
         var act = await sut.Handle(new GetCart.Query { Id = cart.Id }, default);
 
         // Assert
-        await Verify(act, VerifySettings);
+        await Verify(act);
     }
 
     [Fact]
@@ -33,6 +33,6 @@ public class GetCartTests : TestBase
 
         // Act
         // Assert
-        await ThrowsTask(() => sut.Handle(new GetCart.Query { Id = Guid.NewGuid() }, default), VerifySettings);
+        await ThrowsTask(() => sut.Handle(new GetCart.Query { Id = Guid.NewGuid() }, default));
     }
 }

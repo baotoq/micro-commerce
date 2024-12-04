@@ -20,6 +20,6 @@ public class CreateProductTests : TestBase
             RemainingStock = 101
         }, default);
 
-        await Verify(act, VerifySettings);
+        await Verify(act);
     }
 }
