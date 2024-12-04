@@ -9,7 +9,8 @@ namespace MicroCommerce.Tests;
 public abstract class TestBase : IAsyncLifetime
 {
     protected VerifySettings VerifySettings { get; } = new();
-    protected ApplicationDbContext Context { get; private set; } = null!;
+    protected ApplicationDbContext SeedContext { get; private set; } = null!;
+    protected ApplicationDbContext VerifyContext { get; private set; } = null!;
 
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder().Build();
 
@@ -25,12 +26,15 @@ public abstract class TestBase : IAsyncLifetime
 
         var contextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseNpgsql(_postgres.GetConnectionString())
+            //.LogTo(Console.WriteLine)
             .ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
 
-        Context = new ApplicationDbContext(contextOptions);
+        SeedContext = new ApplicationDbContext(contextOptions);
+        await SeedContext.Database.EnsureCreatedAsync();
 
-        await Context.Database.EnsureCreatedAsync();
+        VerifyContext = new ApplicationDbContext(contextOptions);
+        VerifyContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
     public Task DisposeAsync()

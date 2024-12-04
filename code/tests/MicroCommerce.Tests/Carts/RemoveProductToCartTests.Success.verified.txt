@@ -1,0 +1,12 @@
+﻿{
+  CartItems: [
+    {
+      CartId: Guid_1,
+      ProductId: Guid_2,
+      ProductQuantity: 5,
+      CreatedAt: DateTimeOffset_1
+    }
+  ],
+  Id: Guid_1,
+  CreatedAt: DateTimeOffset_2
+}

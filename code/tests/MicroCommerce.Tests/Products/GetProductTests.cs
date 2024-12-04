@@ -18,10 +18,10 @@ public class GetProductTests : TestBase
         {
             Name = "Test Product"
         };
-        Context.Products.Add(product);
-        await Context.SaveChangesAsync();
+        SeedContext.Products.Add(product);
+        await SeedContext.SaveChangesAsync();
 
-        var sut = new GetProduct.Handler(Context);
+        var sut = new GetProduct.Handler(SeedContext);
 
         // Act
         var act = await sut.Handle(new GetProduct.Query { Id = product.Id }, default);
@@ -34,7 +34,7 @@ public class GetProductTests : TestBase
     public async Task GetProduct_NotFound()
     {
         // Arrange
-        var sut = new GetProduct.Handler(Context);
+        var sut = new GetProduct.Handler(SeedContext);
 
         // Act
         // Assert
