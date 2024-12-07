@@ -26,6 +26,27 @@ public static class ProductExtensions
         return rowAffected > 0;
     }
 
+    public static async Task<bool> DecreaseProductQuantityInCartAsync(this DbSet<CartItem> cartItems, CartItem cartItem, long quantity, CancellationToken cancellationToken)
+    {
+        var rowAffected = await cartItems
+            .Where(s => s.CartId == cartItem.CartId && s.ProductId == cartItem.ProductId)
+            .Where(s => s.ProductQuantity - quantity >= 0)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(p => p.ProductQuantity, p => p.ProductQuantity - quantity), cancellationToken);
+
+        return rowAffected > 0;
+    }
+
+    public static async Task<bool> IncreaseProductQuantityInCartAsync(this DbSet<CartItem> cartItems, CartItem cartItem, long quantity, CancellationToken cancellationToken)
+    {
+        var rowAffected = await cartItems
+            .Where(s => s.CartId == cartItem.CartId && s.ProductId == cartItem.ProductId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(p => p.ProductQuantity, p => p.ProductQuantity + quantity), cancellationToken);
+
+        return rowAffected > 0;
+    }
+
     public static async Task<int> ChangeProductStockAsync(this DbSet<Product> products, Guid productId, long changeQuantity, CancellationToken cancellationToken)
     {
         var rowAffected = await products
