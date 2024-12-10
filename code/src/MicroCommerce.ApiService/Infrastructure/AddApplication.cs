@@ -9,5 +9,6 @@ public static class AddApplicationDependencyInjection
     {
         builder.Services.AddTransient<IDomainEventDispatcher, MassTransitDomainEventDispatcher>();
         builder.Services.AddTransient<ICacheService, CacheService>();
+        builder.Services.AddTransient<IFileService, FileService>();
     }
 }

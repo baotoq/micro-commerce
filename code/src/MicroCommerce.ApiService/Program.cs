@@ -1,6 +1,8 @@
 using System.Reflection;
+using Azure.Storage.Blobs;
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Infrastructure;
+using MicroCommerce.ApiService.Services;
 using MicroCommerce.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +27,13 @@ builder.AddApplication();
 builder.Services.AddEndpoints();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    // In development, create the blob container and queue if they don't exist.
+    var fileService = app.Services.GetRequiredService<IFileService>();
+    await fileService.CreateContainerIfNotExistsAsync();
+}
 
 app.UseExceptionHandler();
 app.UseCors();
