@@ -20,7 +20,7 @@ builder.AddNpgsqlDbContext<ApplicationDbContext>("db", settings =>
     },
     options =>
     {
-        options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly));
+        options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly)).UseSnakeCaseNamingConvention();
     });
 
 builder.Services.AddMassTransit(s =>

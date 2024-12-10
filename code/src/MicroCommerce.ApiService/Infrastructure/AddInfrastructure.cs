@@ -94,7 +94,8 @@ public static class AddInfrastructureDependencyInjection
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
             var connectionString = configuration.GetConnectionString("db");
-            options.UseNpgsql(connectionString);
+            options.UseNpgsql(connectionString)
+                .UseSnakeCaseNamingConvention();
             options.AddInterceptors(sp.GetServices<DateEntityInterceptor>());
             options.AddInterceptors(sp.GetServices<DispatchDomainEventsInterceptor>());
             options.AddInterceptors(sp.GetServices<IndexProductInterceptor>());
