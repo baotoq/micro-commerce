@@ -13,7 +13,7 @@ public class GetProductImage : IEndpoint
     {
         builder.MapGet("/api/products/images/{url}", async (string url, IFileService fileService) =>
         {
-            var stream = await fileService.DownloadFileAsync(url);
+            await using var stream = await fileService.DownloadFileAsync(url);
 
             return TypedResults.File(stream, MediaTypeNames.Image.Jpeg);
         }).Produces<Stream>(contentType: MediaTypeNames.Image.Jpeg);
