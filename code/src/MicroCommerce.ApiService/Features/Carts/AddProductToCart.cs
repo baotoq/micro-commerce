@@ -1,5 +1,4 @@
 using Ardalis.GuardClauses;
-using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using MediatR;
 using MicroCommerce.ApiService.Domain.Entities;
@@ -9,7 +8,6 @@ using MicroCommerce.ApiService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RedLockNet;
-using RedLockNet.SERedis;
 
 namespace MicroCommerce.ApiService.Features.Carts;
 
@@ -52,8 +50,8 @@ public class AddProductToCart : IEndpoint
     public class Handler : IRequestHandler<Command, Response>
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<Handler> _logger;
         private readonly IDistributedLockFactory _distributedLockFactory;
+        private readonly ILogger<Handler> _logger;
 
         public Handler(ApplicationDbContext context, ILogger<Handler> logger, IDistributedLockFactory distributedLockFactory)
         {
@@ -108,12 +106,9 @@ public class AddProductToCart : IEndpoint
             }
             else
             {
-                var rowAffected = await _context.CartItems
-                    .Where(s => s.CartId == request.CartId && s.ProductId == request.ProductId)
-                    .ExecuteUpdateAsync(setters =>
-                        setters.SetProperty(p => p.ProductQuantity, p => p.ProductQuantity + request.Quantity), cancellationToken);
+                var ok = await _context.CartItems.IncreaseProductQuantityInCartAsync(cartItem, request.Quantity, cancellationToken);
 
-                if (rowAffected == 0)
+                if (!ok)
                 {
                     throw new InvalidValidationException("Update cart item failed!");
                 }

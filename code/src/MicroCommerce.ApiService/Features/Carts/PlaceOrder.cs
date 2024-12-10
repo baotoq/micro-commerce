@@ -3,20 +3,20 @@ using FluentValidation;
 using MediatR;
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Exceptions;
+using MicroCommerce.ApiService.Features.DomainEvents;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ApiService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RedLockNet;
-using RedLockNet.SERedis;
 
 namespace MicroCommerce.ApiService.Features.Carts;
 
-public class CheckoutCart: IEndpoint
+public class PlaceOrder : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapPost("/api/carts/{id:guid}/checkout", async (Guid id, [FromBody] Command request, IMediator mediator)
+        builder.MapPost("/api/carts/{id:guid}/place-order", async (Guid id, [FromBody] Command request, IMediator mediator)
                 =>
             {
                 request.CartId = id;
@@ -47,8 +47,8 @@ public class CheckoutCart: IEndpoint
     public class Handler : IRequestHandler<Command, Response>
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<Handler> _logger;
         private readonly IDistributedLockFactory _distributedLockFactory;
+        private readonly ILogger<Handler> _logger;
 
         public Handler(ApplicationDbContext context, ILogger<Handler> logger, IDistributedLockFactory distributedLockFactory)
         {
@@ -96,6 +96,8 @@ public class CheckoutCart: IEndpoint
                 }
             }
 
+            cart.AddDomainEvent(new OrderCreatedDomainEvent(cart.Id));
+
             await _context.SaveChangesAsync(cancellationToken);
             await trans.CommitAsync(cancellationToken);
 
@@ -106,4 +108,3 @@ public class CheckoutCart: IEndpoint
         }
     }
 }
-

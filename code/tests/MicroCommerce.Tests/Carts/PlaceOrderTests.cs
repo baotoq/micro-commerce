@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MicroCommerce.Tests.Carts;
 
-public class CheckoutCartTests : TestBase
+public class PlaceOrderTests : TestBase
 {
     [Fact]
     public async Task Success()
@@ -37,13 +37,10 @@ public class CheckoutCartTests : TestBase
 
         var distributedLockFactory = TestHelper.CreateAcquiredLock();
 
-        var sut = new CheckoutCart.Handler(SeedContext, NullLogger<CheckoutCart.Handler>.Instance, distributedLockFactory);
+        var sut = new PlaceOrder.Handler(SeedContext, NullLogger<PlaceOrder.Handler>.Instance, distributedLockFactory);
 
         // Act
-        var act = await sut.Handle(new CheckoutCart.Command
-        {
-            CartId = cart.Id
-        }, default);
+        var act = await sut.Handle(new PlaceOrder.Command { CartId = cart.Id }, default);
 
         cart = await VerifyContext.Carts
             .Include(s => s.CartItems)
