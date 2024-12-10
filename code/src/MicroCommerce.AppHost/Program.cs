@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Hosting;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var postgres = builder.AddPostgres("postgres")
@@ -6,6 +8,16 @@ var postgres = builder.AddPostgres("postgres")
     .WithLifetime(ContainerLifetime.Persistent);
 
 var db = postgres.AddDatabase("db");
+
+
+var storage = builder.AddAzureStorage("storage");
+
+if (builder.Environment.IsDevelopment())
+{
+    storage.RunAsEmulator(s => s.WithLifetime(ContainerLifetime.Persistent).WithHttpEndpoint(10000, 10000));
+}
+
+var blobs = storage.AddBlobs("blobs");
 
 var elasticsearch = builder.AddElasticsearch("elasticsearch")
     .WithDataVolume()
@@ -39,6 +51,7 @@ var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservi
     .WithReference(cache)
     .WithReference(rabbitmq).WaitFor(rabbitmq)
     .WithReference(db).WaitFor(db)
+    .WithReference(blobs)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.MicroCommerce_Web>("webfrontend")

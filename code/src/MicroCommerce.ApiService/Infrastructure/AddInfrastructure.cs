@@ -58,6 +58,8 @@ public static class AddInfrastructureDependencyInjection
         builder.AddRedisDistributedCache("redis");
         builder.AddRedLock();
         builder.AddAuthorization();
+
+        builder.AddAzureBlobClient("blobs");
     }
 
     private static void AddRedLock(this IHostApplicationBuilder builder)
