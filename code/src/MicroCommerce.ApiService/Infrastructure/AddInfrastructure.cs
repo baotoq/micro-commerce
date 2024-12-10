@@ -81,8 +81,6 @@ public static class AddInfrastructureDependencyInjection
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         builder.Services.AddAuthorizationBuilder();
-
-        builder.Services.AddCors(options => { options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()); });
     }
 
     private static void AddEfCore(this IHostApplicationBuilder builder)

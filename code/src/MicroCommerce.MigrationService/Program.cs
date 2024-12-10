@@ -65,7 +65,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapDefaultEndpoints();
 
-app.UseOpenApi();
+app.MapOpenApiEndpoints();
 
 app.Run();
 

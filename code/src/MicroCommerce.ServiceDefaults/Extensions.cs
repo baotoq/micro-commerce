@@ -142,7 +142,7 @@ public static class Extensions
         return app;
     }
 
-    public static WebApplication UseOpenApi(this WebApplication app)
+    public static WebApplication MapOpenApiEndpoints(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
         {
