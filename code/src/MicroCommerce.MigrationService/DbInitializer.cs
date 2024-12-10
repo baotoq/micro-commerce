@@ -3,6 +3,7 @@ using MassTransit;
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Features.DomainEvents;
 using MicroCommerce.ApiService.Infrastructure;
+using MicroCommerce.ApiService.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -24,8 +25,10 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+            var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
+            var environment = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
 
-            await InitializeDatabaseAsync(context, publishEndpoint, cancellationToken);
+            await InitializeDatabaseAsync(context, publishEndpoint, fileService, environment, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -34,20 +37,20 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
         }
     }
 
-    public async Task InitializeDatabaseAsync(ApplicationDbContext context, IPublishEndpoint publishEndpoint, CancellationToken cancellationToken = default)
+    public async Task InitializeDatabaseAsync(ApplicationDbContext context, IPublishEndpoint publishEndpoint, IFileService fileService, IHostEnvironment environment, CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
 
         var strategy = context.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(context.Database.MigrateAsync, cancellationToken);
 
-        await SeedDataAsync(context, cancellationToken);
+        await SeedDataAsync(context, fileService, environment, cancellationToken);
         await IndexData(context, publishEndpoint, cancellationToken);
 
         logger.LogInformation("Database initialization completed after {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }
 
-    private static async Task SeedDataAsync(ApplicationDbContext context, CancellationToken cancellationToken)
+    private static async Task SeedDataAsync(ApplicationDbContext context, IFileService fileService, IHostEnvironment environment, CancellationToken cancellationToken)
     {
         if (!context.Products.Any())
         {
@@ -69,7 +72,29 @@ public class DbInitializer(IServiceProvider serviceProvider, ILogger<DbInitializ
             ];
         }
 
-            await context.Products.AddRangeAsync(GetPreconfiguredItems(), cancellationToken);
+            var products = GetPreconfiguredItems();
+
+            var tasks = new List<Task>();
+            foreach (var product in products)
+            {
+                var filePath = Path.Combine(environment.ContentRootPath, "Resources/Images", product.ImageUrl);
+                if (!File.Exists(filePath))
+                {
+                    continue;
+                }
+
+                var uploadTask = Task.Run(async () =>
+                {
+                    await using var stream = File.OpenRead(filePath);
+                    await fileService.UploadFileAsync(product.ImageUrl, stream, cancellationToken);
+                }, cancellationToken);
+
+                tasks.Add(uploadTask);
+            }
+
+            await Task.WhenAll(tasks);
+
+            await context.Products.AddRangeAsync(products, cancellationToken);
         }
 
         await context.SaveChangesAsync(cancellationToken);

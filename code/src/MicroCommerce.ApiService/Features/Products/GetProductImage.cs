@@ -1,6 +1,8 @@
+using System.Net.Mime;
 using Ardalis.GuardClauses;
 using MediatR;
 using MicroCommerce.ApiService.Infrastructure;
+using MicroCommerce.ApiService.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Products;
@@ -9,16 +11,11 @@ public class GetProductImage : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapGet("/api/products/images/{url}", async (string url, IMediator mediator, IWebHostEnvironment environment) =>
+        builder.MapGet("/api/products/images/{url}", async (string url, IFileService fileService) =>
         {
-            var path = Path.Combine(environment.ContentRootPath, "Resources/Images", url);
+            var stream = await fileService.DownloadFileAsync(url);
 
-            if (!File.Exists(path))
-            {
-                return Results.NotFound();
-            }
-
-            return Results.File(path, "image/jpeg");
-        });
+            return TypedResults.File(stream, MediaTypeNames.Image.Jpeg);
+        }).Produces<Stream>(contentType: MediaTypeNames.Image.Jpeg);
     }
 }
