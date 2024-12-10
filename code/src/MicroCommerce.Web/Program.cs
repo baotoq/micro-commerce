@@ -21,6 +21,8 @@ builder.Services.AddHttpClient<ProductApiClient>(client =>
     client.BaseAddress = new("https+http://apiservice");
 });
 
+builder.Services.AddScoped<CartService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

@@ -23,4 +23,3 @@ public record GetProductsResponse
         public string ImageUrl { get; set; } = "";
     }
 }
-

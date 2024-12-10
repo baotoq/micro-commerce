@@ -1,0 +1,22 @@
+﻿@page "/cart"
+@inject CartService CartService
+
+<h1 class="text-center my-4">Shopping Cart</h1>
+<div class="container">
+    <ul class="list-group">
+        @if (CartService.CartItems.Count > 0)
+        {
+            @foreach (var item in CartService.CartItems)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @item.Name
+                    <span class="badge bg-primary rounded-pill">$@item.Price</span>
+                </li>
+            }
+        }
+        else
+        {
+            <p>Your cart is empty.</p>
+        }
+    </ul>
+</div>
