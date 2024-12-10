@@ -1,4 +1,5 @@
 using System.Reflection;
+using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ServiceDefaults;
 
@@ -34,9 +35,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseOutputCache();
-app.MapDefaultEndpoints();
 
-app.UseOpenApi();
+app.MapDefaultEndpoints();
+app.MapOpenApiEndpoints();
+
+app.MapIdentityApi<User>().WithTags("Identity");
 app.MapEndpoints();
 
 app.Run();

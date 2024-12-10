@@ -14,6 +14,7 @@
     <PackageReference Include="Ardalis.GuardClauses" Version="4.5.0" />
 
     <PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="9.0.0-*" />
+
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
     <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.0.0" />
 
