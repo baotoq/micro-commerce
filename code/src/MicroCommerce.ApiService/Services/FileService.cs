@@ -1,4 +1,5 @@
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace MicroCommerce.ApiService.Services;
 
@@ -42,17 +43,15 @@ public class FileService : IFileService
         var containerClient = _blobServiceClient.GetBlobContainerClient(ContainerName);
         var blobClient = containerClient.GetBlobClient(fileName);
 
-        var memoryStream = new MemoryStream();
-        var response = await blobClient.DownloadToAsync(memoryStream, cancellationToken);
+        var response = await blobClient.DownloadStreamingAsync(null, cancellationToken);
 
-        if (response.IsError)
+        if (response.GetRawResponse().IsError)
         {
             _logger.LogError("Failed to download file {FileName} from blob storage {Info}", fileName, response.ToString());
             throw new Exception($"Failed to download file {fileName}");
         }
 
-        memoryStream.Position = 0;
-        return memoryStream;
+        return response.Value.Content;
     }
 
     public async Task CreateContainerIfNotExistsAsync(CancellationToken cancellationToken = default)

@@ -5,7 +5,7 @@
     <img src="images/@Product.ImageUrl" class="card-img-top" alt="@Product.Name">
     <div class="card-body">
         <h5 class="card-title">@Product.Name</h5>
-        <p class="card-text">$@Product.Price.ToString("C", new CultureInfo("en-US"))</p>
+        <p class="card-text">@Product.Price.ToString("C", new CultureInfo("en-US"))</p>
         <button class="btn btn-primary" @onclick="() => AddToCart(Product)">
             <i class="fas fa-cart-plus"></i> Add to Cart
         </button>
