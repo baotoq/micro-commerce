@@ -44,6 +44,7 @@ var rabbitmq = builder.AddRabbitMQ("messaging")
 var migrationService = builder.AddProject<Projects.MicroCommerce_MigrationService>("migrationservice")
     .WithReference(db).WaitFor(db)
     .WithReference(rabbitmq).WaitFor(rabbitmq)
+    .WithReference(blobs)
     .WithHttpHealthCheck("/health");
 
 var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")

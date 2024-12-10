@@ -1,6 +1,7 @@
 using MassTransit;
 using MassTransit.Transports;
 using MicroCommerce.ApiService.Infrastructure;
+using MicroCommerce.ApiService.Services;
 using MicroCommerce.MigrationService;
 using MicroCommerce.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,8 @@ builder.Services.AddMassTransit(s =>
     });
 });
 
+builder.AddAzureBlobClient("blobs");
+builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddSingleton<DbInitializer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 builder.Services.AddHealthChecks()
@@ -55,11 +58,16 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapPost("/reset", async (ApplicationDbContext dbContext, IPublishEndpoint publishEndpoint, DbInitializer dbInitializer, CancellationToken cancellationToken) =>
+    app.MapGet("/reset", async (ApplicationDbContext dbContext, IPublishEndpoint publishEndpoint,
+        DbInitializer dbInitializer,
+        IFileService fileService,
+        IHostEnvironment environment, CancellationToken cancellationToken) =>
     {
         // Delete and recreate the database. This is useful for development scenarios to reset the database to its initial state.
         await dbContext.Database.EnsureDeletedAsync(cancellationToken);
-        await dbInitializer.InitializeDatabaseAsync(dbContext, publishEndpoint, cancellationToken);
+        await dbInitializer.InitializeDatabaseAsync(dbContext, publishEndpoint, fileService, environment, cancellationToken);
+
+        return Results.Ok("ok");
     });
 }
 
