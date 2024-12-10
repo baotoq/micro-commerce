@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using MicroCommerce.ApiService.Domain.Common;
-using MicroCommerce.ApiService.Exceptions;
 
 namespace MicroCommerce.ApiService.Domain.Entities;
 

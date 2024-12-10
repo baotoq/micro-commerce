@@ -23,6 +23,16 @@ public class GetCart : IEndpoint
     {
         public Guid Id { get; init; }
         public CartStatus Status { get; init; }
+
+        public IList<CartItemViewModel> CartItems { get; init; } = new List<CartItemViewModel>();
+    }
+
+    public record CartItemViewModel
+    {
+        public Guid Id { get; init; }
+        public string Name { get; init; } = "";
+        public decimal Price { get; init; }
+        public string ImageUrl { get; set; } = "";
     }
 
     public class Handler : IRequestHandler<Query, Response>
@@ -37,6 +47,8 @@ public class GetCart : IEndpoint
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
             var cart = await _context.Carts
+                .Include(cart => cart.CartItems)
+                    .ThenInclude(cartItem => cartItem.Product)
                 .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
             if (cart is null)
@@ -47,7 +59,14 @@ public class GetCart : IEndpoint
             return new Response
             {
                 Id = cart.Id,
-                Status = cart.Status
+                Status = cart.Status,
+                CartItems = cart.CartItems.Select(s => new CartItemViewModel
+                {
+                    Id = s.Product.Id,
+                    Name = s.Product.Name,
+                    Price = s.Product.Price,
+                    ImageUrl = s.Product.ImageUrl
+                }).ToList()
             };
         }
     }

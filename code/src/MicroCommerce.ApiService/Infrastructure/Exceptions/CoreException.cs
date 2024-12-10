@@ -1,4 +1,4 @@
-namespace MicroCommerce.ApiService.Exceptions;
+namespace MicroCommerce.ApiService.Infrastructure.Exceptions;
 
 public class CoreException : Exception
 {

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using MediatR;
-using MicroCommerce.ApiService.Exceptions;
+using MicroCommerce.ApiService.Infrastructure.Exceptions;
 
 namespace MicroCommerce.ApiService.Infrastructure.Behaviour;
 

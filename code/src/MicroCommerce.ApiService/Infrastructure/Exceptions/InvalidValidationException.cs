@@ -1,6 +1,6 @@
 using FluentValidation.Results;
 
-namespace MicroCommerce.ApiService.Exceptions;
+namespace MicroCommerce.ApiService.Infrastructure.Exceptions;
 
 [Serializable]
 public class InvalidValidationException : Exception

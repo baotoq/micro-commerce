@@ -7,8 +7,8 @@ using FluentValidation;
 using MassTransit;
 using MediatR;
 using MicroCommerce.ApiService.Domain.Entities;
-using MicroCommerce.ApiService.Exceptions;
 using MicroCommerce.ApiService.Infrastructure.Behaviour;
+using MicroCommerce.ApiService.Infrastructure.Exceptions;
 using MicroCommerce.ApiService.Infrastructure.Interceptors;
 using MicroCommerce.ApiService.Services;
 using MicroCommerce.ApiService.Services.Elasticsearch;
@@ -99,7 +99,10 @@ public static class AddInfrastructureDependencyInjection
             options.AddInterceptors(sp.GetServices<DispatchDomainEventsInterceptor>());
             options.AddInterceptors(sp.GetServices<IndexProductInterceptor>());
         });
-        builder.EnrichNpgsqlDbContext<ApplicationDbContext>();
+        builder.EnrichNpgsqlDbContext<ApplicationDbContext>(s =>
+        {
+            s.DisableRetry = true;
+        });
     }
 
     private static void AddElasticsearch(this IHostApplicationBuilder builder)

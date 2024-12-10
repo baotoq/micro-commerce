@@ -13,6 +13,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj" />
     <ProjectReference Include="..\MicroCommerce.ServiceDefaults\MicroCommerce.ServiceDefaults.csproj" />
   </ItemGroup>
 
