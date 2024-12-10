@@ -1,12 +1,18 @@
 ﻿@page "/cart"
-@inject CartService CartService
+@using MicroCommerce.ApiService.Features.Carts
+@using MicroCommerce.ApiService.Features.Products
+@inject CartApiClient CartApiClient
 
 <h1 class="text-center my-4">Shopping Cart</h1>
 <div class="container">
     <ul class="list-group">
-        @if (CartService.CartItems.Count > 0)
+        @if (_cart is null)
         {
-            @foreach (var item in CartService.CartItems)
+            <p>Loading cart…</p>
+        }
+        else if (_cart.CartItems.Count > 0)
+        {
+            @foreach (var item in _cart.CartItems)
             {
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     @item.Name
@@ -20,3 +26,13 @@
         }
     </ul>
 </div>
+
+@code {
+
+    GetCart.Response? _cart;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cart = await CartApiClient.GetCartById(Guid.NewGuid());
+    }
+}

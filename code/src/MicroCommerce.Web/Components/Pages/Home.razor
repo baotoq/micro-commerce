@@ -1,6 +1,10 @@
 ﻿@page "/"
-@using System.Globalization
+@using MicroCommerce.ApiService.Features.Carts
+@using MicroCommerce.ApiService.Features.Products
+@rendermode InteractiveServer
+
 @inject ProductApiClient ProductApiClient
+@inject CartApiClient CartApiClient
 
 <PageTitle>Home</PageTitle>
 
@@ -17,7 +21,7 @@
             @foreach (var product in _products)
             {
                 <div class="col-md-4">
-                    <ProductCard Product="product" AddToCart="p => { }"></ProductCard>
+                    <ProductCard Product="product" AddToCart="AddToCart"></ProductCard>
                 </div>
 
             }
@@ -27,10 +31,20 @@
 
 @code {
 
-    GetProductsResponse.Product[]? _products;
+    GetProductsFromElasticsearch.ProductViewModel[]? _products;
 
     protected override async Task OnInitializedAsync()
     {
         _products = await ProductApiClient.GetProductsAsync();
+    }
+
+    private async Task AddToCart(GetProductsFromElasticsearch.ProductViewModel product)
+    {
+        await CartApiClient.AddProductToCart(new AddProductToCart.Command
+        {
+            ProductId = product.Id,
+            Quantity = 1,
+            CartId = Guid.NewGuid()
+        });
     }
 }
