@@ -24,6 +24,7 @@ public static class Extensions
 
         builder.Services.AddRequestTimeouts();
         builder.Services.AddOutputCache();
+        builder.Services.AddResponseCaching();
         builder.AddDefaultHealthChecks();
 
         builder.Services.AddServiceDiscovery();

@@ -40,10 +40,11 @@ app.UseCors();
 
 app.UseRequestTimeouts();
 
+app.UseOutputCache();
+app.UseResponseCaching();
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseOutputCache();
 
 app.MapDefaultEndpoints();
 app.MapOpenApiEndpoints();

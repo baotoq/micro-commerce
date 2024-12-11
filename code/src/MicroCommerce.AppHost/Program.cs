@@ -14,7 +14,10 @@ var storage = builder.AddAzureStorage("storage");
 
 if (builder.Environment.IsDevelopment())
 {
-    storage.RunAsEmulator(s => s.WithLifetime(ContainerLifetime.Persistent).WithHttpEndpoint(10000, 10000));
+    storage.RunAsEmulator(s => s
+        .WithLifetime(ContainerLifetime.Persistent)
+        .WithDataVolume()
+        .WithHttpEndpoint(10000, 10000));
 }
 
 var blobs = storage.AddBlobs("blobs");
