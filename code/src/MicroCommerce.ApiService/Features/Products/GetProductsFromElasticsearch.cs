@@ -4,6 +4,7 @@ using MediatR;
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ApiService.Services.Elasticsearch;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace MicroCommerce.ApiService.Features.Products;
 
@@ -11,7 +12,9 @@ public class GetProductsFromElasticsearch : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapGet("/api/products", async (IMediator mediator) => TypedResults.Ok(await mediator.Send(new Query())));
+        builder.MapGet("/api/products",
+            [OutputCache(Duration = 15)]
+            async (IMediator mediator) => TypedResults.Ok(await mediator.Send(new Query())));
     }
 
     public record Query : IRequest<Response>

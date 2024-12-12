@@ -35,7 +35,7 @@ public static class AddInfrastructureDependencyInjection
         {
             options.CustomizeProblemDetails = context =>
             {
-                context.ProblemDetails.Instance = $"{Environment.MachineName} {context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+                context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
                 context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
                 context.ProblemDetails.Extensions.TryAdd("traceId", Activity.Current?.Id);
             };
@@ -55,8 +55,11 @@ public static class AddInfrastructureDependencyInjection
         builder.AddElasticsearch();
         builder.AddEfCore();
         builder.AddMassTransit();
+
         builder.AddRedisDistributedCache("redis");
+        builder.AddRedisOutputCache("redis");
         builder.AddRedLock();
+
         builder.AddAuthorization();
 
         builder.AddAzureBlobClient("blobs");
