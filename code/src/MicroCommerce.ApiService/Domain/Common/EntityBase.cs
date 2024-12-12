@@ -10,8 +10,12 @@ public abstract class EntityBase : DateEntity
 {
     [Key]
     [MaxLength(Constant.KeyLength)]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; set; } = Guid.CreateVersion7();
+    public Guid Id { get; init; }
+
+    protected EntityBase()
+    {
+        Id = Guid.CreateVersion7(CreatedAt);
+    }
 
     private readonly ConcurrentQueue<IDomainEvent> _eventStore = new();
 

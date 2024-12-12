@@ -24,7 +24,7 @@ public class DateEntityInterceptor : SaveChangesInterceptor
     {
         if (context is null) return;
 
-        foreach (var entry in context.ChangeTracker.Entries<DateEntity>())
+        foreach (var entry in context.ChangeTracker.Entries<IDateEntity>())
         {
             switch (entry.State)
             {
@@ -38,11 +38,8 @@ public class DateEntityInterceptor : SaveChangesInterceptor
                     entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
                     break;
                 case EntityState.Detached:
-                    break;
                 case EntityState.Unchanged:
-                    break;
                 case EntityState.Deleted:
-                    break;
                 default:
                     break;
             }
