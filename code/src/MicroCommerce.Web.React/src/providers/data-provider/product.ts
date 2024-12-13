@@ -14,11 +14,35 @@ export const productDataProvider: DataProvider = {
     };
   },
 
-  create: async () => {
-    throw new Error("Not implemented");
+  create: async ({ resource, variables }) => {
+    console.log(variables, JSON.stringify(variables));
+    const response = await fetch(`${API_URL}/${resource}`, {
+      method: "POST",
+      body: JSON.stringify(variables),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    return {
+      data,
+    };
   },
-  update: async () => {
-    throw new Error("Not implemented");
+  update: async ({ resource, id, variables }) => {
+    console.log(variables, JSON.stringify(variables));
+    const response = await fetch(`${API_URL}/${resource}/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(variables),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    return {
+      data,
+    };
   },
   deleteOne: async () => {
     throw new Error("Not implemented");
