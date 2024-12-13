@@ -11,6 +11,7 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ColorModeContextProvider } from "@contexts/color-mode";
 import { authProvider } from "@providers/auth-provider";
 import { dataProvider } from "@providers/data-provider";
+import { productDataProvider } from "@providers/data-provider/product";
 import "@refinedev/antd/dist/reset.css";
 
 export const metadata: Metadata = {
@@ -34,33 +35,26 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Suspense>
-          <GitHubBanner />
           <RefineKbarProvider>
             <AntdRegistry>
               <ColorModeContextProvider defaultMode={defaultMode}>
                 <DevtoolsProvider>
                   <Refine
                     routerProvider={routerProvider}
-                    dataProvider={dataProvider}
+                    dataProvider={{
+                      default: dataProvider,
+                      products: productDataProvider,
+                    }}
                     notificationProvider={useNotificationProvider}
                     authProvider={authProvider}
                     resources={[
+                      
                       {
-                        name: "blog_posts",
-                        list: "/blog-posts",
-                        create: "/blog-posts/create",
-                        edit: "/blog-posts/edit/:id",
-                        show: "/blog-posts/show/:id",
-                        meta: {
-                          canDelete: true,
-                        },
-                      },
-                      {
-                        name: "categories",
-                        list: "/categories",
-                        create: "/categories/create",
-                        edit: "/categories/edit/:id",
-                        show: "/categories/show/:id",
+                        name: "products",
+                        list: "/products",
+                        create: "/products/create",
+                        edit: "/products/edit/:id",
+                        show: "/products/show/:id",
                         meta: {
                           canDelete: true,
                         },

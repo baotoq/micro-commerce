@@ -6,18 +6,20 @@ import { Typography } from "antd";
 
 const { Title } = Typography;
 
-export default function CategoryShow() {
-  const { queryResult } = useShow({});
-  const { data, isLoading } = queryResult;
+export default function ProductShow() {
+  const { query } = useShow({
+    dataProviderName: "products",
+  });
+  const { data, isLoading } = query;
 
   const record = data?.data;
 
   return (
     <Show isLoading={isLoading}>
-      <Title level={5}>{"ID"}</Title>
+      <Title level={5}>{"Id"}</Title>
       <TextField value={record?.id} />
-      <Title level={5}>{"Title"}</Title>
-      <TextField value={record?.title} />
+      <Title level={5}>{"Name"}</Title>
+      <TextField value={record?.name} />
     </Show>
   );
 }
