@@ -11,7 +11,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(
     policy => policy
-        .WithOrigins("*://localhost:*")
+        .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader()
     )

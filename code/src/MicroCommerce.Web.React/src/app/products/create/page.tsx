@@ -3,15 +3,17 @@
 import { Create, useForm } from "@refinedev/antd";
 import { Form, Input } from "antd";
 
-export default function CategoryCreate() {
-  const { formProps, saveButtonProps } = useForm({});
+export default function ProductCreate() {
+  const { formProps, saveButtonProps } = useForm({
+    dataProviderName: "products",
+  });
 
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label={"Title"}
-          name={["title"]}
+          label={"Name"}
+          name={["name"]}
           rules={[
             {
               required: true,
