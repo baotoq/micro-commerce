@@ -1,7 +1,7 @@
 "use client";
 
 import { Create, useForm } from "@refinedev/antd";
-import { Form, Input } from "antd";
+import { Form, Input, InputNumber } from "antd";
 
 export default function ProductCreate() {
   const { formProps, saveButtonProps } = useForm({
@@ -21,6 +21,28 @@ export default function ProductCreate() {
           ]}
         >
           <Input />
+        </Form.Item>
+        <Form.Item
+          label={"Price"}
+          name={["price"]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <InputNumber />
+        </Form.Item>
+        <Form.Item
+          label={"Remaining Stock"}
+          name={["remainingStock"]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <InputNumber />
         </Form.Item>
       </Form>
     </Create>
