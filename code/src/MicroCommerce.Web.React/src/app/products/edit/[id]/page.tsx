@@ -5,7 +5,6 @@ import { Form, Input } from "antd";
 
 export default function ProductEdit() {
   const { formProps, saveButtonProps } = useForm({
-    dataProviderName: "products",
   });
 
   return (

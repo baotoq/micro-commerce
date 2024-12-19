@@ -13,8 +13,7 @@ import { Space, Table } from "antd";
 
 export default function ProductList() {
   const { tableProps } = useTable({
-    syncWithLocation: true,
-    dataProviderName: "products",
+    syncWithLocation: true
   });
 
   return (

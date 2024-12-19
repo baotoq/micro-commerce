@@ -4,9 +4,7 @@ import { Create, useForm } from "@refinedev/antd";
 import { Form, Input, InputNumber } from "antd";
 
 export default function ProductCreate() {
-  const { formProps, saveButtonProps } = useForm({
-    dataProviderName: "products",
-  });
+  const { formProps, saveButtonProps } = useForm({});
 
   return (
     <Create saveButtonProps={saveButtonProps}>
