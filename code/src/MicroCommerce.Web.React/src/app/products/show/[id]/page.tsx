@@ -8,7 +8,6 @@ const { Title } = Typography;
 
 export default function ProductShow() {
   const { query } = useShow({
-    dataProviderName: "products",
   });
   const { data, isLoading } = query;
 

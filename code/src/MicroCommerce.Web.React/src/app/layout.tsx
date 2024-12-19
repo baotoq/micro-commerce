@@ -1,6 +1,6 @@
 import { DevtoolsProvider } from "@providers/devtools";
 import { useNotificationProvider } from "@refinedev/antd";
-import { GitHubBanner, Refine } from "@refinedev/core";
+import { Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import routerProvider from "@refinedev/nextjs-router";
 import { Metadata } from "next";
@@ -9,9 +9,10 @@ import React, { Suspense } from "react";
 
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ColorModeContextProvider } from "@contexts/color-mode";
+
 import { authProvider } from "@providers/auth-provider";
-import { dataProvider } from "@providers/data-provider";
-import { productDataProvider } from "@providers/data-provider/product";
+import { productDataProvider } from "@providers/data-provider";
+
 import "@refinedev/antd/dist/reset.css";
 
 export const metadata: Metadata = {
@@ -42,13 +43,12 @@ export default function RootLayout({
                   <Refine
                     routerProvider={routerProvider}
                     dataProvider={{
-                      default: dataProvider,
+                      default: productDataProvider,
                       products: productDataProvider,
                     }}
                     notificationProvider={useNotificationProvider}
                     authProvider={authProvider}
                     resources={[
-                      
                       {
                         name: "products",
                         list: "/products",
@@ -57,6 +57,7 @@ export default function RootLayout({
                         show: "/products/show/:id",
                         meta: {
                           canDelete: true,
+                          dataProviderName: "products"
                         },
                       },
                     ]}
