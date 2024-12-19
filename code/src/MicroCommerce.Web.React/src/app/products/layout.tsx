@@ -1,24 +1,17 @@
+"use client";
+
 import { Header } from "@components/header";
-import { authProviderServer } from "@providers/auth-provider";
 import { ThemedLayoutV2 } from "@refinedev/antd";
+import { useIsAuthenticated } from "@refinedev/core";
 import { redirect } from "next/navigation";
 import React from "react";
 
-export default async function Layout({ children }: React.PropsWithChildren) {
-  const data = await getData();
+export default function Layout({ children }: React.PropsWithChildren) {
+  const { data } = useIsAuthenticated();
 
-  if (!data.authenticated) {
+  if (!data?.authenticated) {
     return redirect(data?.redirectTo || "/login");
   }
 
   return <ThemedLayoutV2 Header={Header}>{children}</ThemedLayoutV2>;
-}
-
-async function getData() {
-  const { authenticated, redirectTo } = await authProviderServer.check();
-
-  return {
-    authenticated,
-    redirectTo,
-  };
 }
