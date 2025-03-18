@@ -1,7 +1,7 @@
 using MicroCommerce.ApiService.Domain.Entities;
 using MicroCommerce.ApiService.Features.Carts;
 
-namespace MicroCommerce.Tests.Carts;
+namespace MicroCommerce.Tests.Features.Carts;
 
 public class GetCartTests : TestBase
 {

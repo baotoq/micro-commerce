@@ -3,9 +3,9 @@ using MicroCommerce.ApiService.Features.Carts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace MicroCommerce.Tests.Carts;
+namespace MicroCommerce.Tests.Features.Carts;
 
-public class RemoveProductToCartTests : TestBase
+public class PlaceOrderTests : TestBase
 {
     [Fact]
     public async Task Success()
@@ -27,17 +27,6 @@ public class RemoveProductToCartTests : TestBase
                 {
                     ProductId = product.Id,
                     ProductQuantity = 1
-                },
-                new()
-                {
-                    Product = new Product
-                    {
-                        Name = "Product 2",
-                        Price = 100,
-                        RemainingStock = 10,
-                        TotalStock = 10
-                    },
-                    ProductQuantity = 5
                 }
             }
         };
@@ -48,15 +37,10 @@ public class RemoveProductToCartTests : TestBase
 
         var distributedLockFactory = TestHelper.CreateAcquiredLock();
 
-        var sut = new RemoveProductToCart.Handler(SeedContext, NullLogger<RemoveProductToCart.Handler>.Instance, distributedLockFactory);
+        var sut = new PlaceOrder.Handler(SeedContext, NullLogger<PlaceOrder.Handler>.Instance, distributedLockFactory);
 
         // Act
-        var act = await sut.Handle(new RemoveProductToCart.Command
-        {
-            ProductId = product.Id,
-            Quantity = 1,
-            CartId = cart.Id
-        }, default);
+        var act = await sut.Handle(new PlaceOrder.Command { CartId = cart.Id }, default);
 
         cart = await VerifyContext.Carts
             .Include(s => s.CartItems)

@@ -2,7 +2,7 @@ using FluentValidation.TestHelper;
 using MicroCommerce.ApiService.Features;
 using MicroCommerce.ApiService.Features.Products;
 
-namespace MicroCommerce.Tests.Products;
+namespace MicroCommerce.Tests.Features.Products;
 
 public class CreateProductValidatorTests : TestBase
 {

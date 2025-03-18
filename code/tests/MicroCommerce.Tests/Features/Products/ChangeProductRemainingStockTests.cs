@@ -3,7 +3,7 @@ using MicroCommerce.ApiService.Features.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace MicroCommerce.Tests.Products;
+namespace MicroCommerce.Tests.Features.Products;
 
 public class ChangeProductRemainingStockTests : TestBase
 {

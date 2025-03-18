@@ -3,7 +3,7 @@ using MicroCommerce.ApiService.Features.Carts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace MicroCommerce.Tests.Carts;
+namespace MicroCommerce.Tests.Features.Carts;
 
 public class AddProductToCartTests : TestBase
 {

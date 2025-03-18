@@ -4,7 +4,7 @@ using MicroCommerce.ApiService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace MicroCommerce.Tests.Products;
+namespace MicroCommerce.Tests.Features.Products;
 
 public class CreateProductTests : TestBase
 {
