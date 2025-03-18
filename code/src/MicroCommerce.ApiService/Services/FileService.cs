@@ -10,17 +10,11 @@ public interface IFileService
     Task<Stream> DownloadFileAsync(string fileName, CancellationToken cancellationToken = default);
 }
 
-public class FileService : IFileService
+public class FileService(BlobServiceClient blobServiceClient, ILogger<FileService> logger) : IFileService
 {
-    private readonly ILogger<FileService> _logger;
-    private readonly BlobServiceClient _blobServiceClient;
+    private readonly ILogger<FileService> _logger = logger;
+    private readonly BlobServiceClient _blobServiceClient = blobServiceClient;
     private const string ContainerName = "fileuploads";
-
-    public FileService(BlobServiceClient blobServiceClient, ILogger<FileService> logger)
-    {
-        _blobServiceClient = blobServiceClient;
-        _logger = logger;
-    }
 
     public async Task<string> UploadFileAsync(string fileName, Stream stream, CancellationToken cancellationToken = default)
     {

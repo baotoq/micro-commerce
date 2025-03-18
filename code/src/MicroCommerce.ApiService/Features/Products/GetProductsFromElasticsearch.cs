@@ -35,18 +35,11 @@ public class GetProductsFromElasticsearch : IEndpoint
         public string ImageUrl { get; set; } = "";
     }
 
-    public class Handler : IRequestHandler<Query, Response>
+    public class Handler(ApplicationDbContext context, ElasticsearchClient elasticsearchClient, ILogger<GetProductsFromElasticsearch.Handler> logger) : IRequestHandler<Query, Response>
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ElasticsearchClient _elasticsearchClient;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(ApplicationDbContext context, ElasticsearchClient elasticsearchClient, ILogger<Handler> logger)
-        {
-            _context = context;
-            _elasticsearchClient = elasticsearchClient;
-            _logger = logger;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
+        private readonly ILogger<Handler> _logger = logger;
 
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {

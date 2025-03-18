@@ -37,16 +37,10 @@ public class ChangeProductRemainingStock : IEndpoint
         public long RemainingStock { get; init; }
     }
 
-    public class Handler : IRequestHandler<Command, Response>
+    public class Handler(ApplicationDbContext context, ILogger<ChangeProductRemainingStock.Handler> logger) : IRequestHandler<Command, Response>
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(ApplicationDbContext context, ILogger<Handler> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly ILogger<Handler> _logger = logger;
 
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {

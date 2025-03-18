@@ -4,26 +4,15 @@ using RedLockNet;
 
 namespace MicroCommerce.ApiService.Features.DomainEvents;
 
-public class OrderCreatedDomainEvent : IDomainEvent
+public class OrderCreatedDomainEvent(Guid cartId) : IDomainEvent
 {
-    public OrderCreatedDomainEvent(Guid cartId)
-    {
-        CartId = cartId;
-    }
-
-    public Guid CartId { get; }
+    public Guid CartId { get; } = cartId;
 }
 
-public class OrderCreatedDomainEventConsumer : IConsumer<OrderCreatedDomainEvent>
+public class OrderCreatedDomainEventConsumer(ILogger<OrderCreatedDomainEventConsumer> logger, IDistributedLockFactory distributedLockFactory) : IConsumer<OrderCreatedDomainEvent>
 {
-    private readonly IDistributedLockFactory _distributedLockFactory;
-    private readonly ILogger<OrderCreatedDomainEventConsumer> _logger;
-
-    public OrderCreatedDomainEventConsumer(ILogger<OrderCreatedDomainEventConsumer> logger, IDistributedLockFactory distributedLockFactory)
-    {
-        _logger = logger;
-        _distributedLockFactory = distributedLockFactory;
-    }
+    private readonly IDistributedLockFactory _distributedLockFactory = distributedLockFactory;
+    private readonly ILogger<OrderCreatedDomainEventConsumer> _logger = logger;
 
     public async Task Consume(ConsumeContext<OrderCreatedDomainEvent> context)
     {

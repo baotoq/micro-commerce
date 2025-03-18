@@ -47,18 +47,11 @@ public class RemoveProductToCart : IEndpoint
         public Guid CartId { get; init; }
     }
 
-    public class Handler : IRequestHandler<Command, Response>
+    public class Handler(ApplicationDbContext context, ILogger<RemoveProductToCart.Handler> logger, IDistributedLockFactory distributedLockFactory) : IRequestHandler<Command, Response>
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IDistributedLockFactory _distributedLockFactory;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(ApplicationDbContext context, ILogger<Handler> logger, IDistributedLockFactory distributedLockFactory)
-        {
-            _context = context;
-            _logger = logger;
-            _distributedLockFactory = distributedLockFactory;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly IDistributedLockFactory _distributedLockFactory = distributedLockFactory;
+        private readonly ILogger<Handler> _logger = logger;
 
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {

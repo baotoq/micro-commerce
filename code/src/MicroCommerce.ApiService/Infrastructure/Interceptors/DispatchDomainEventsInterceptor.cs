@@ -4,14 +4,9 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace MicroCommerce.ApiService.Infrastructure.Interceptors;
 
-public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
+public class DispatchDomainEventsInterceptor(IDomainEventDispatcher domainEventDispatcher) : SaveChangesInterceptor
 {
-    private readonly IDomainEventDispatcher _domainEventDispatcher;
-
-    public DispatchDomainEventsInterceptor(IDomainEventDispatcher domainEventDispatcher)
-    {
-        _domainEventDispatcher = domainEventDispatcher;
-    }
+    private readonly IDomainEventDispatcher _domainEventDispatcher = domainEventDispatcher;
 
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {

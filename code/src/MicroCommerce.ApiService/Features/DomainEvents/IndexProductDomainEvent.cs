@@ -12,18 +12,11 @@ public record IndexProductDomainEvent : DomainEventBase
     public required Guid ProductId { get; init; }
 }
 
-public class IndexProductConsumer : IConsumer<IndexProductDomainEvent>
+public class IndexProductConsumer(ILogger<IndexProductConsumer> logger, ElasticsearchClient elasticsearchClient, ApplicationDbContext context) : IConsumer<IndexProductDomainEvent>
 {
-    private readonly ILogger<IndexProductConsumer> _logger;
-    private readonly ElasticsearchClient _elasticsearchClient;
-    private readonly ApplicationDbContext _context;
-
-    public IndexProductConsumer(ILogger<IndexProductConsumer> logger, ElasticsearchClient elasticsearchClient, ApplicationDbContext context)
-    {
-        _logger = logger;
-        _elasticsearchClient = elasticsearchClient;
-        _context = context;
-    }
+    private readonly ILogger<IndexProductConsumer> _logger = logger;
+    private readonly ElasticsearchClient _elasticsearchClient = elasticsearchClient;
+    private readonly ApplicationDbContext _context = context;
 
     public async Task Consume(ConsumeContext<IndexProductDomainEvent> context)
     {

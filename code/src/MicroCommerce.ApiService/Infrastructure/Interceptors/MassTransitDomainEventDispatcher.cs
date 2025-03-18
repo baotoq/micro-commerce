@@ -4,14 +4,9 @@ using MicroCommerce.ApiService.Domain.Events;
 
 namespace MicroCommerce.ApiService.Infrastructure.Interceptors;
 
-public class MassTransitDomainEventDispatcher : IDomainEventDispatcher
+public class MassTransitDomainEventDispatcher(IPublishEndpoint publishEndpoint) : IDomainEventDispatcher
 {
-    private readonly IPublishEndpoint _publishEndpoint;
-
-    public MassTransitDomainEventDispatcher(IPublishEndpoint publishEndpoint)
-    {
-        _publishEndpoint = publishEndpoint;
-    }
+    private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
 
     public Task DispatchAsync<T>(IEnumerable<T> domainEvents) where T : IDomainEvent
     {

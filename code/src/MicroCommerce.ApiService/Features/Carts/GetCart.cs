@@ -35,14 +35,9 @@ public class GetCart : IEndpoint
         public string ImageUrl { get; set; } = "";
     }
 
-    public class Handler : IRequestHandler<Query, Response>
+    public class Handler(ApplicationDbContext context) : IRequestHandler<Query, Response>
     {
-        private readonly ApplicationDbContext _context;
-
-        public Handler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
