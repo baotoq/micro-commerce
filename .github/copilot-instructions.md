@@ -2,8 +2,7 @@
 
 - Always use Tactical DDD. Entities, Aggregates, ValueObjects, Domain Services, Application Services
 
-- Always use FluentAssertions over Assert
-
-- Always use `Arrange`, `Act`, `Assert` comments in tests.
+- Always use `Arrange`, `Act`, `Assert` comments in tests
 - Always write tests
+- Always use "Verify.Xunit" over Assert
 - Always cover functionality with tests
