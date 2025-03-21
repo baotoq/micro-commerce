@@ -1,4 +1,5 @@
 using MicroCommerce.BuildingBlocks.Common;
+using MicroCommerce.CartService.Domain.Entities;
 using MicroCommerce.CartService.Domain.ValueObjects;
 
 namespace MicroCommerce.CartService.Domain.DomainEvents;

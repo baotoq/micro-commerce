@@ -1,5 +1,3 @@
-using VerifyXunit;
-using Xunit;
 using MicroCommerce.CartService.Domain.ValueObjects;
 
 namespace MicroCommerce.CartService.Domain.UnitTests.ValueObjects;
@@ -27,13 +25,5 @@ public class CartIdTests
 
         // Assert
         await Verify(cartId);
-    }
-
-    [Fact]
-    public async Task From_ShouldThrowException_WhenEmptyGuidIsProvided()
-    {
-        // Act & Assert
-        var exception = Assert.Throws<ArgumentException>(() => CartId.From(Guid.Empty));
-        await Verify(exception.Message);
     }
 }

@@ -4,19 +4,11 @@ using MicroCommerce.CartService.Domain.ValueObjects;
 
 namespace MicroCommerce.CartService.Domain.Entities;
 
-public class Cart : BaseEntity
+public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
 {
-    private readonly List<CartItem> _items = new();
+    private readonly List<CartItem> _items = [];
 
-    public CartId Id { get; private set; }
     public IReadOnlyCollection<CartItem> Items => _items.AsReadOnly();
-
-    private Cart() { }
-
-    public Cart(CartId id)
-    {
-        Id = id ?? throw new ArgumentNullException(nameof(id));
-    }
 
     public void AddItem(Guid productId, int quantity, decimal price)
     {
@@ -34,6 +26,5 @@ public class Cart : BaseEntity
         }
 
         AddDomainEvent(new ProductAddedToCartDomainEvent(Id, productId, quantity));
-        SetUpdated();
     }
 }

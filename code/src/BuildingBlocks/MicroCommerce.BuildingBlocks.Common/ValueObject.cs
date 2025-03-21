@@ -2,9 +2,6 @@ namespace MicroCommerce.BuildingBlocks.Common;
 
 public abstract class ValueObject
 {
-    /// <summary>
-    /// Determines equality by comparing components of the Value Object.
-    /// </summary>
     protected abstract IEnumerable<object> GetEqualityComponents();
 
     public override bool Equals(object? obj)
@@ -18,7 +15,7 @@ public abstract class ValueObject
     public override int GetHashCode()
     {
         return GetEqualityComponents()
-            .Aggregate(0, (hash, component) => HashCode.Combine(hash, component));
+            .Aggregate(0, HashCode.Combine);
     }
 
     public static bool operator ==(ValueObject? left, ValueObject? right)
