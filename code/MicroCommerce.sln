@@ -30,6 +30,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.BuildingBlocks.Common", "src\BuildingBlocks\MicroCommerce.BuildingBlocks.Common\MicroCommerce.BuildingBlocks.Common.csproj", "{A9EE1478-B996-4248-8F07-937AF1E66B71}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5F45414D-C051-487F-ACA1-32D0E2343332}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.CartService.Domain.UnitTests", "src\CartService\tests\MicroCommerce.CartService.Domain.UnitTests\MicroCommerce.CartService.Domain.UnitTests.csproj", "{E1D40BF4-FBB1-4AC6-A9AF-2B26B8B38042}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,8 @@ Global
 		{164E3563-9349-4456-B284-60705EA1EF35} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
 		{151508AA-BA6E-4491-808F-9135AC792625} = {164E3563-9349-4456-B284-60705EA1EF35}
 		{A9EE1478-B996-4248-8F07-937AF1E66B71} = {164E3563-9349-4456-B284-60705EA1EF35}
+		{5F45414D-C051-487F-ACA1-32D0E2343332} = {816182F1-7957-4B9A-B1E5-76E8DF634CF0}
+		{E1D40BF4-FBB1-4AC6-A9AF-2B26B8B38042} = {5F45414D-C051-487F-ACA1-32D0E2343332}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4CD3F9FB-58F9-401A-B9A8-2DD1CE9D02EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -95,5 +101,9 @@ Global
 		{A9EE1478-B996-4248-8F07-937AF1E66B71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9EE1478-B996-4248-8F07-937AF1E66B71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9EE1478-B996-4248-8F07-937AF1E66B71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1D40BF4-FBB1-4AC6-A9AF-2B26B8B38042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D40BF4-FBB1-4AC6-A9AF-2B26B8B38042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1D40BF4-FBB1-4AC6-A9AF-2B26B8B38042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1D40BF4-FBB1-4AC6-A9AF-2B26B8B38042}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

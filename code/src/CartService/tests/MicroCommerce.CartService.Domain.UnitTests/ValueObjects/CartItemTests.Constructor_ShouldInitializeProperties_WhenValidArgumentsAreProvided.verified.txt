@@ -1,0 +1,5 @@
+﻿{
+  ProductId: Guid_1,
+  Quantity: 2,
+  PriceAtPurchase: 10.0
+}
