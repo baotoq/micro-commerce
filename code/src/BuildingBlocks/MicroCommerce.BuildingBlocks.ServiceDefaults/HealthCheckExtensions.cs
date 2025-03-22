@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace MicroCommerce.ServiceDefaults;
+namespace MicroCommerce.BuildingBlocks.ServiceDefaults;
 
 public static class HealthCheckExtensions
 {

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +10,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 
-namespace MicroCommerce.ServiceDefaults;
+namespace MicroCommerce.BuildingBlocks.ServiceDefaults;
 
 // Adds common .NET Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
 // This project should be referenced by each service project in your solution.
@@ -20,6 +19,7 @@ public static class Extensions
 {
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
+        builder.Services.AddOpenApi();
         builder.ConfigureOpenTelemetry();
 
         builder.Services.AddRequestTimeouts();
@@ -119,6 +119,13 @@ public static class Extensions
         return builder;
     }
 
+    public static WebApplication UseDefault(this WebApplication app)
+    {
+        app.UseHttpsRedirection();
+
+        return app;
+    }
+
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
         var healthChecks = app.MapGroup("");
@@ -139,6 +146,8 @@ public static class Extensions
             Predicate = static r => r.Tags.Contains("live"),
             ResponseWriter = HealthCheckExtensions.WriteResponse
         });
+
+        app.MapOpenApiEndpoints();
 
         return app;
     }

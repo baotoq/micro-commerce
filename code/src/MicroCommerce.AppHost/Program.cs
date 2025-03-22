@@ -9,15 +9,17 @@ var postgres = builder.AddPostgres("postgres")
 
 var db = postgres.AddDatabase("db");
 
-
 var storage = builder.AddAzureStorage("storage");
 
 if (builder.Environment.IsDevelopment())
 {
     storage.RunAsEmulator(s => s
+        .WithBlobPort(27000)
+        .WithQueuePort(27001)
+        .WithTablePort(27002)
         .WithLifetime(ContainerLifetime.Persistent)
         .WithDataVolume()
-        .WithHttpEndpoint(10000, 10000));
+    );
 }
 
 var blobs = storage.AddBlobs("blobs");
@@ -44,23 +46,19 @@ var rabbitmq = builder.AddRabbitMQ("messaging")
     .WithManagementPlugin()
     .WithLifetime(ContainerLifetime.Persistent);
 
-// var migrationService = builder.AddProject<Projects.MicroCommerce_MigrationService>("migrationservice")
-//     .WithReference(db).WaitFor(db)
-//     .WithReference(rabbitmq).WaitFor(rabbitmq)
-//     .WithReference(blobs)
-//     .WithHttpHealthCheck("/health");
-//
-// var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
-//     .WithReference(elasticsearch)
-//     .WithReference(cache)
-//     .WithReference(rabbitmq).WaitFor(rabbitmq)
-//     .WithReference(db).WaitFor(db)
-//     .WithReference(blobs)
-//     .WithHttpHealthCheck("/health");
-//
-// builder.AddProject<Projects.MicroCommerce_Web>("webfrontend")
-//     .WithExternalHttpEndpoints()
-//     .WithReference(apiService)
-//     .WaitFor(apiService);
+var cartService = builder.AddProject<Projects.MicroCommerce_CartService_Api>("cart-service")
+    .WithReference(cache)
+    .WithReference(rabbitmq).WaitFor(rabbitmq)
+    .WithReference(db).WaitFor(db)
+    .WithReference(blobs)
+    .WithHttpHealthCheck("/health");
+
+var productService = builder.AddProject<Projects.MicroCommerce_ProductService_Api>("product-service")
+    .WithReference(elasticsearch)
+    .WithReference(cache)
+    .WithReference(rabbitmq).WaitFor(rabbitmq)
+    .WithReference(db).WaitFor(db)
+    .WithReference(blobs)
+    .WithHttpHealthCheck("/health");
 
 builder.Build().Run();

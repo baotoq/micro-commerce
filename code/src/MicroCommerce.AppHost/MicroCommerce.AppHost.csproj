@@ -20,4 +20,9 @@
     <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CartService\MicroCommerce.CartService.Api\MicroCommerce.CartService.Api.csproj" />
+    <ProjectReference Include="..\ProductService\MicroCommerce.ProductService.Api\MicroCommerce.ProductService.Api.csproj" />
+  </ItemGroup>
+
 </Project>
