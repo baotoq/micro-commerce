@@ -3,3 +3,8 @@
 
 # Verify
 *.verified.txt text eol=lf working-tree-encoding=UTF-8
+
+*.sh text eol=lf
+*.mod text eol=lf
+*.sum text eol=lf
+*.pfx binary

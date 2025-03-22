@@ -1,2 +1,0 @@
-exclude:
-  - ./code/src/MicroCommerce.MigrationService/Migrations
