@@ -6,11 +6,9 @@ public class CartItem : ValueObject
 {
     public Guid ProductId { get; }
     public int Quantity { get; private set; }
-    public decimal PriceAtPurchase { get; } // Store the price at the time of purchase
+    public Price PriceAtPurchase { get; }
 
-    private CartItem() { }
-
-    public CartItem(Guid productId, int quantity, decimal priceAtPurchase)
+    public CartItem(Guid productId, int quantity, Price priceAtPurchase)
     {
         if (quantity <= 0) throw new ArgumentException("Quantity must be greater than zero.");
 

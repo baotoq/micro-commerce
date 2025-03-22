@@ -2,6 +2,8 @@
   {
     ProductId: Guid_1,
     Quantity: 2,
-    PriceAtPurchase: 10.0
+    PriceAtPurchase: {
+      Amount: 10.0
+    }
   }
 ]

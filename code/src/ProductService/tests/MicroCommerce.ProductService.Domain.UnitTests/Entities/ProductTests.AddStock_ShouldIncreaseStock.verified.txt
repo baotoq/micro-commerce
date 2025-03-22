@@ -1,0 +1,10 @@
+﻿{
+  Name: Default Product,
+  Price: {
+    Amount: 100.0
+  },
+  Stock: 15,
+  Id: {
+    Value: Guid_1
+  }
+}

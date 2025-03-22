@@ -1,7 +1,16 @@
 ﻿[
   {
     ProductId: Guid_1,
-    Quantity: 3,
-    PriceAtPurchase: 10.0
+    Quantity: 1,
+    PriceAtPurchase: {
+      Amount: 10.0
+    }
+  },
+  {
+    ProductId: Guid_2,
+    Quantity: 2,
+    PriceAtPurchase: {
+      Amount: 10.0
+    }
   }
 ]

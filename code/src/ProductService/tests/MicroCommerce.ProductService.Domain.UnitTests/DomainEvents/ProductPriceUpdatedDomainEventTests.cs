@@ -1,7 +1,7 @@
 using MicroCommerce.ProductService.Domain.DomainEvents;
 using MicroCommerce.ProductService.Domain.ValueObjects;
 
-namespace MicroCommerce.ProductService.Domain.UnitTests;
+namespace MicroCommerce.ProductService.Domain.UnitTests.DomainEvents;
 
 public class ProductPriceUpdatedDomainEventTests
 {
@@ -13,7 +13,7 @@ public class ProductPriceUpdatedDomainEventTests
         var newPrice = 150;
 
         // Act
-        var domainEvent = new ProductPriceUpdatedDomainEvent(productId, newPrice);
+        var domainEvent = new ProductPriceUpdatedDomainEvent(productId, new Price(newPrice));
 
         // Assert
         Verify(domainEvent);

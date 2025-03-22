@@ -10,7 +10,7 @@ public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
 
     public IReadOnlyCollection<CartItem> Items => _items.AsReadOnly();
 
-    public void AddItem(Guid productId, int quantity, decimal price)
+    public void AddItem(Guid productId, int quantity, Price price)
     {
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be greater than zero.");

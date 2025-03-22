@@ -10,7 +10,7 @@ public class CartItemTests
         // Arrange
         var productId = Guid.NewGuid();
         var quantity = 2;
-        var priceAtPurchase = 10.0m;
+        var priceAtPurchase = new Price(10.0m);
 
         // Act
         var cartItem = new CartItem(productId, quantity, priceAtPurchase);
@@ -25,7 +25,7 @@ public class CartItemTests
         // Arrange
         var productId = Guid.NewGuid();
         var invalidQuantity = 0;
-        var priceAtPurchase = 10.0m;
+        var priceAtPurchase = new Price(10.0m);
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => new CartItem(productId, invalidQuantity, priceAtPurchase));
@@ -35,7 +35,7 @@ public class CartItemTests
     public async Task IncreaseQuantity_ShouldIncreaseQuantity_WhenValidAmountIsProvided()
     {
         // Arrange
-        var cartItem = new CartItem(Guid.NewGuid(), 1, 10.0m);
+        var cartItem = new CartItem(Guid.NewGuid(), 1, new Price(10.0m));
         var amount = 2;
 
         // Act
@@ -49,7 +49,7 @@ public class CartItemTests
     public void IncreaseQuantity_ShouldThrowException_WhenAmountIsZeroOrNegative()
     {
         // Arrange
-        var cartItem = new CartItem(Guid.NewGuid(), 1, 10.0m);
+        var cartItem = new CartItem(Guid.NewGuid(), 1, new Price(10.0m));
         var invalidAmount = 0;
 
         // Act & Assert
