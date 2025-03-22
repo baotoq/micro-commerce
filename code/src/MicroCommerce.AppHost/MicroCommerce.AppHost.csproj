@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CartService\MicroCommerce.CartService.Api\MicroCommerce.CartService.Api.csproj" />
+    <ProjectReference Include="..\Gateway\MicroCommerce.Yarp\MicroCommerce.Yarp.csproj" />
     <ProjectReference Include="..\ProductService\MicroCommerce.ProductService.Api\MicroCommerce.ProductService.Api.csproj" />
   </ItemGroup>
 

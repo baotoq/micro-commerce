@@ -61,4 +61,8 @@ var productService = builder.AddProject<Projects.MicroCommerce_ProductService_Ap
     .WithReference(blobs)
     .WithHttpHealthCheck("/health");
 
+builder.AddProject<Projects.MicroCommerce_Yarp>("yarp")
+    .WithReference(productService)
+    .WithReference(cartService);
+
 builder.Build().Run();
