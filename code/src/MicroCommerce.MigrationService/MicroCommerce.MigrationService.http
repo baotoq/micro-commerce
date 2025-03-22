@@ -1,6 +1,0 @@
-@MicroCommerce.MigrationService_HostAddress = http://localhost:5193
-
-GET {{MicroCommerce.MigrationService_HostAddress}}/reset
-Accept: application/json
-
-###

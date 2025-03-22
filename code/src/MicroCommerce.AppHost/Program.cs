@@ -44,23 +44,23 @@ var rabbitmq = builder.AddRabbitMQ("messaging")
     .WithManagementPlugin()
     .WithLifetime(ContainerLifetime.Persistent);
 
-var migrationService = builder.AddProject<Projects.MicroCommerce_MigrationService>("migrationservice")
-    .WithReference(db).WaitFor(db)
-    .WithReference(rabbitmq).WaitFor(rabbitmq)
-    .WithReference(blobs)
-    .WithHttpHealthCheck("/health");
-
-var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
-    .WithReference(elasticsearch)
-    .WithReference(cache)
-    .WithReference(rabbitmq).WaitFor(rabbitmq)
-    .WithReference(db).WaitFor(db)
-    .WithReference(blobs)
-    .WithHttpHealthCheck("/health");
-
-builder.AddProject<Projects.MicroCommerce_Web>("webfrontend")
-    .WithExternalHttpEndpoints()
-    .WithReference(apiService)
-    .WaitFor(apiService);
+// var migrationService = builder.AddProject<Projects.MicroCommerce_MigrationService>("migrationservice")
+//     .WithReference(db).WaitFor(db)
+//     .WithReference(rabbitmq).WaitFor(rabbitmq)
+//     .WithReference(blobs)
+//     .WithHttpHealthCheck("/health");
+//
+// var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
+//     .WithReference(elasticsearch)
+//     .WithReference(cache)
+//     .WithReference(rabbitmq).WaitFor(rabbitmq)
+//     .WithReference(db).WaitFor(db)
+//     .WithReference(blobs)
+//     .WithHttpHealthCheck("/health");
+//
+// builder.AddProject<Projects.MicroCommerce_Web>("webfrontend")
+//     .WithExternalHttpEndpoints()
+//     .WithReference(apiService)
+//     .WaitFor(apiService);
 
 builder.Build().Run();

@@ -1,4 +1,0 @@
-﻿{
-  Type: NotFoundException,
-  Message: Queried object Delivery option not found was not found, Key: Guid_1
-}

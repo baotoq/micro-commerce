@@ -12,18 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj"/>
-    <ProjectReference Include="..\MicroCommerce.MigrationService\MicroCommerce.MigrationService.csproj" />
-    <ProjectReference Include="..\MicroCommerce.Web\MicroCommerce.Web.csproj"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0"/>
-    <PackageReference Include="Aspire.Hosting.Azure.Storage" Version="9.0.0" />
-    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.0.0" />
-    <PackageReference Include="Aspire.Hosting.Elasticsearch" Version="9.0.0-*" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="9.0.0" />
-    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.0.0" />
+    <PackageReference Include="Aspire.Hosting.AppHost"/>
+    <PackageReference Include="Aspire.Hosting.Azure.Storage"/>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL"/>
+    <PackageReference Include="Aspire.Hosting.Elasticsearch"/>
+    <PackageReference Include="Aspire.Hosting.Redis"/>
+    <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
   </ItemGroup>
 
 </Project>
