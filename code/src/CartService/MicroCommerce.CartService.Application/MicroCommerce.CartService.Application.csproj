@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Riok.Mapperly" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MicroCommerce.CartService.Domain\MicroCommerce.CartService.Domain.csproj" />
+    <ProjectReference Include="..\MicroCommerce.CartService.Infrastructure\MicroCommerce.CartService.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>

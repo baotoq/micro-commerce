@@ -1,8 +1,10 @@
 using MicroCommerce.BuildingBlocks.ServiceDefaults;
+using MicroCommerce.CartService.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddApplication();
 
 var app = builder.Build();
 

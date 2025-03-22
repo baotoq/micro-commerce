@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" />
+    <PackageReference Include="Riok.Mapperly" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\MicroCommerce.BuildingBlocks.ServiceDefaults\MicroCommerce.BuildingBlocks.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\MicroCommerce.CartService.Application\MicroCommerce.CartService.Application.csproj" />
   </ItemGroup>
 
 </Project>
