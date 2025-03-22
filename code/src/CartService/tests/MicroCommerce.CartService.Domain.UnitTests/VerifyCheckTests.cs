@@ -1,4 +1,4 @@
-namespace MicroCommerce.Tests;
+namespace MicroCommerce.CartService.Domain.UnitTests;
 
 public class VerifyCheckTests
 {

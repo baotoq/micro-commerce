@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\BuildingBlocks\MicroCommerce.BuildingBlocks.Common\MicroCommerce.BuildingBlocks.Common.csproj" />
+    </ItemGroup>
+
 </Project>

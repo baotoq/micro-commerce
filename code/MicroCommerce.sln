@@ -40,6 +40,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductService.Api", "src\ProductService\MicroCommerce.ProductService.Api\MicroCommerce.ProductService.Api.csproj", "{F838993D-F25B-420B-80D6-A95B924B8C87}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E249E695-9DCB-4160-8727-C148022EE5CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductService.Domain.UnitTests", "src\ProductService\tests\MicroCommerce.ProductService.Domain.UnitTests\MicroCommerce.ProductService.Domain.UnitTests.csproj", "{A021C03C-9C1D-4453-9583-63F50816CD92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductService.Application", "src\ProductService\tests\MicroCommerce.ProductService.Application\MicroCommerce.ProductService.Application.csproj", "{028251C9-63B2-458F-94E6-5852B3123F0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +68,9 @@ Global
 		{72BBC9DA-8FD0-4CEE-B35F-772CE2D0D722} = {847997F4-580C-4040-B26D-77E71DF228A5}
 		{30D794E8-A843-4E9B-8410-BCC0EB03C7BC} = {847997F4-580C-4040-B26D-77E71DF228A5}
 		{F838993D-F25B-420B-80D6-A95B924B8C87} = {847997F4-580C-4040-B26D-77E71DF228A5}
+		{E249E695-9DCB-4160-8727-C148022EE5CF} = {847997F4-580C-4040-B26D-77E71DF228A5}
+		{A021C03C-9C1D-4453-9583-63F50816CD92} = {E249E695-9DCB-4160-8727-C148022EE5CF}
+		{028251C9-63B2-458F-94E6-5852B3123F0E} = {E249E695-9DCB-4160-8727-C148022EE5CF}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{151508AA-BA6E-4491-808F-9135AC792625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -112,5 +121,13 @@ Global
 		{F838993D-F25B-420B-80D6-A95B924B8C87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F838993D-F25B-420B-80D6-A95B924B8C87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F838993D-F25B-420B-80D6-A95B924B8C87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A021C03C-9C1D-4453-9583-63F50816CD92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A021C03C-9C1D-4453-9583-63F50816CD92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A021C03C-9C1D-4453-9583-63F50816CD92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A021C03C-9C1D-4453-9583-63F50816CD92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{028251C9-63B2-458F-94E6-5852B3123F0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{028251C9-63B2-458F-94E6-5852B3123F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{028251C9-63B2-458F-94E6-5852B3123F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{028251C9-63B2-458F-94E6-5852B3123F0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

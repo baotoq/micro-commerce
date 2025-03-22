@@ -8,7 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="MediatR" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MicroCommerce.ServiceDefaults\MicroCommerce.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

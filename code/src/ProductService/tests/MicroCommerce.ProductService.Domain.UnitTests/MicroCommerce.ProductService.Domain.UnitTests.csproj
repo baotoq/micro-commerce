@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MicroCommerce.CartService.Domain\MicroCommerce.CartService.Domain.csproj"/>
+    <ProjectReference Include="..\..\MicroCommerce.ProductService.Domain\MicroCommerce.ProductService.Domain.csproj" />
   </ItemGroup>
 
 </Project>

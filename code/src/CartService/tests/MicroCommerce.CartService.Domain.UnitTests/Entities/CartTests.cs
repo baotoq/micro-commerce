@@ -1,6 +1,5 @@
 using MicroCommerce.CartService.Domain.Entities;
 using MicroCommerce.CartService.Domain.ValueObjects;
-using VerifyXunit;
 
 namespace MicroCommerce.CartService.Domain.UnitTests.Entities;
 
