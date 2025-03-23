@@ -1,9 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" />
+    <PackageReference Include="Aspire.Azure.Storage.Blobs"/>
+    <PackageReference Include="Aspire.Elastic.Clients.Elasticsearch"/>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
+    <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching"/>
+    <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching"/>
+    <PackageReference Include="RedLock.net" />
+  </ItemGroup>
+
+  <ItemGroup>
+  </ItemGroup>
 </Project>

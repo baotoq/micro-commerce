@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.AddApplication();
 
+builder.AddRedisDistributedCache("redis");
+builder.AddRedisOutputCache("redis");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
