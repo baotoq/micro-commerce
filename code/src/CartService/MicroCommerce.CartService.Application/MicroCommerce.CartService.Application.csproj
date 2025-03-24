@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MicroCommerce.CartService.Domain\MicroCommerce.CartService.Domain.csproj" />
     <ProjectReference Include="..\MicroCommerce.CartService.Infrastructure\MicroCommerce.CartService.Infrastructure.csproj" />
   </ItemGroup>
+
 </Project>

@@ -9,7 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\MicroCommerce.BuildingBlocks.ServiceDefaults\MicroCommerce.BuildingBlocks.ServiceDefaults.csproj" />
     <ProjectReference Include="..\MicroCommerce.CartService.Application\MicroCommerce.CartService.Application.csproj" />
-    <ProjectReference Include="..\MicroCommerce.CartService.Infrastructure\MicroCommerce.CartService.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

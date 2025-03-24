@@ -13,6 +13,7 @@
     <PackageVersion Include="Riok.Mapperly" Version="4.1.1" />
     <PackageVersion Include="Scalar.AspNetCore" Version="1.2.41" />
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.2.0" />
+    <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <!--Aspire-->

@@ -1,5 +1,6 @@
 using Ardalis.GuardClauses;
 using Elastic.Clients.Elasticsearch;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,6 +16,7 @@ public static class DependencyInjection
 {
     public static void AddInfrastructure(this IHostApplicationBuilder builder)
     {
+        builder.AddEfCore("db");
         builder.AddElasticsearch("elasticsearch");
         builder.AddRedisDistributedCache("redis");
         builder.AddRedisOutputCache("redis");
@@ -46,6 +48,21 @@ public static class DependencyInjection
             //         .IdProperty(p => p.Id)
             //     )
             //     .EnableDebugMode();
+        });
+    }
+
+    private static void AddEfCore(this IHostApplicationBuilder builder, string connectionName)
+    {
+        builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            var connectionString = configuration.GetConnectionString(connectionName);
+            options.UseNpgsql(connectionString)
+                .UseSnakeCaseNamingConvention();
+        });
+        builder.EnrichNpgsqlDbContext<ApplicationDbContext>(s =>
+        {
+            s.DisableRetry = true;
         });
     }
 }
