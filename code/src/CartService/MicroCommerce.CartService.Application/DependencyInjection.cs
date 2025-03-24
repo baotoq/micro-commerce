@@ -2,14 +2,15 @@ using System.Diagnostics;
 using FluentValidation;
 using MicroCommerce.CartService.Application.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace MicroCommerce.CartService.Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static void AddApplication(this IHostApplicationBuilder builder)
     {
-        services.AddProblemDetails(options =>
+        builder.Services.AddProblemDetails(options =>
         {
             options.CustomizeProblemDetails = context =>
             {
@@ -18,12 +19,12 @@ public static class DependencyInjection
                 context.ProblemDetails.Extensions.TryAdd("traceId", Activity.Current?.Id);
             };
         });
-        services.AddExceptionHandler<InvalidValidationExceptionHandler>();
-        services.AddHttpContextAccessor();
+        builder.Services.AddExceptionHandler<InvalidValidationExceptionHandler>();
+        builder.Services.AddHttpContextAccessor();
 
-         services.AddMediatR(cfg =>
+        builder.Services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
-         return services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+        builder.Services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
     }
 }

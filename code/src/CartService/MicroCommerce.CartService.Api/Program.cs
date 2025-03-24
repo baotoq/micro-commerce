@@ -1,13 +1,12 @@
 using MicroCommerce.BuildingBlocks.ServiceDefaults;
 using MicroCommerce.CartService.Application;
+using MicroCommerce.CartService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.Services.AddApplication();
-
-builder.AddRedisDistributedCache("redis");
-builder.AddRedisOutputCache("redis");
+builder.AddApplication();
+builder.AddInfrastructure();
 
 var app = builder.Build();
 
@@ -26,4 +25,4 @@ app.MapGet("/api/carts", () => new[]
     new { Id = 3, Name = "carts 3" },
 });
 
-app.Run();
+await app.RunAsync();
