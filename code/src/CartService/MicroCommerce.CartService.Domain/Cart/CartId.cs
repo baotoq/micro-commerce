@@ -1,7 +1,6 @@
 using MicroCommerce.BuildingBlocks.Common;
-using MicroCommerce.CartService.Domain.Entities;
 
-namespace MicroCommerce.CartService.Domain.ValueObjects;
+namespace MicroCommerce.CartService.Domain.Cart;
 
 public record CartId(Guid Value) : StronglyTypedId<Guid>(Value)
 {

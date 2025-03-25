@@ -1,11 +1,12 @@
 namespace MicroCommerce.BuildingBlocks.Common;
 
-public abstract class BaseAggregateRoot<TId>(TId id)
+public abstract class BaseAggregateRoot<TId>(TId id) : IAggregateRoot
 {
     private readonly List<DomainEvent> _domainEvents = [];
 
+    protected void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
     public TId Id { get; init; } = id ?? throw new ArgumentNullException(nameof(id));
-    protected void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
     public void ClearDomainEvents() => _domainEvents.Clear();
 }

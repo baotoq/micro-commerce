@@ -1,6 +1,6 @@
 using MicroCommerce.BuildingBlocks.Common;
 
-namespace MicroCommerce.CartService.Domain.ValueObjects;
+namespace MicroCommerce.CartService.Domain.Common;
 
 public class Price : ValueObject
 {

@@ -1,8 +1,8 @@
 using MicroCommerce.BuildingBlocks.Common;
+using MicroCommerce.CartService.Domain.Common;
 using MicroCommerce.CartService.Domain.DomainEvents;
-using MicroCommerce.CartService.Domain.ValueObjects;
 
-namespace MicroCommerce.CartService.Domain.Entities;
+namespace MicroCommerce.CartService.Domain.Cart;
 
 public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
 {

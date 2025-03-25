@@ -1,4 +1,4 @@
-using MicroCommerce.CartService.Domain.Entities;
+using MicroCommerce.CartService.Domain.Cart;
 using Riok.Mapperly.Abstractions;
 
 namespace MicroCommerce.CartService.Application.Features;

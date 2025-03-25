@@ -1,6 +1,5 @@
-using MicroCommerce.CartService.Domain.Entities;
+using MicroCommerce.CartService.Domain.Common;
 using MicroCommerce.CartService.Domain.UnitTests.Builders;
-using MicroCommerce.CartService.Domain.ValueObjects;
 
 namespace MicroCommerce.CartService.Domain.UnitTests.Entities;
 

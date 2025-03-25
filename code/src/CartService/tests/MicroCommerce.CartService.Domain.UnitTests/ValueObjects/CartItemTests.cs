@@ -1,4 +1,5 @@
-using MicroCommerce.CartService.Domain.ValueObjects;
+using MicroCommerce.CartService.Domain.Cart;
+using MicroCommerce.CartService.Domain.Common;
 
 namespace MicroCommerce.CartService.Domain.UnitTests.ValueObjects;
 

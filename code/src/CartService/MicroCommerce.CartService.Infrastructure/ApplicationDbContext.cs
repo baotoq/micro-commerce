@@ -1,6 +1,6 @@
 using System;
+using MicroCommerce.CartService.Domain.Cart;
 using Microsoft.EntityFrameworkCore;
-using MicroCommerce.CartService.Domain.Entities;
 
 namespace MicroCommerce.CartService.Infrastructure;
 

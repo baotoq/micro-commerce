@@ -1,15 +1,15 @@
-using MicroCommerce.CartService.Domain.Entities;
-using MicroCommerce.CartService.Domain.ValueObjects;
+using MicroCommerce.CartService.Domain.Cart;
+using MicroCommerce.CartService.Domain.Common;
 
 namespace MicroCommerce.CartService.Domain.UnitTests.Builders;
 
 public class CartBuilder
 {
-    private readonly Cart _cart;
+    private readonly Cart.Cart _cart;
 
     public CartBuilder()
     {
-        _cart = new Cart(CartId.New());
+        _cart = new Cart.Cart(CartId.New());
     }
 
     public CartBuilder WithItem(Guid productId, int quantity, Price price)
@@ -18,7 +18,7 @@ public class CartBuilder
         return this;
     }
 
-    public Cart Build()
+    public Cart.Cart Build()
     {
         return _cart;
     }

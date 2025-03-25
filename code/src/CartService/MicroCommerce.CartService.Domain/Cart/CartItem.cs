@@ -1,6 +1,7 @@
 using MicroCommerce.BuildingBlocks.Common;
+using MicroCommerce.CartService.Domain.Common;
 
-namespace MicroCommerce.CartService.Domain.ValueObjects;
+namespace MicroCommerce.CartService.Domain.Cart;
 
 public class CartItem : ValueObject
 {

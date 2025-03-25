@@ -1,9 +1,9 @@
 using System;
 using MediatR;
-using MicroCommerce.CartService.Domain.Entities;
-using MicroCommerce.CartService.Domain.ValueObjects;
 using MicroCommerce.CartService.Application.Exceptions;
 using Ardalis.GuardClauses;
+using MicroCommerce.CartService.Domain.Cart;
+using MicroCommerce.CartService.Domain.Common;
 using MicroCommerce.CartService.Infrastructure;
 
 namespace MicroCommerce.CartService.Application.Features;

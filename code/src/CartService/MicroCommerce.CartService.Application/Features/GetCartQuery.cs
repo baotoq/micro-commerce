@@ -1,7 +1,6 @@
 using Ardalis.GuardClauses;
 using MediatR;
-using MicroCommerce.CartService.Domain.Entities;
-using MicroCommerce.CartService.Domain.ValueObjects;
+using MicroCommerce.CartService.Domain.Cart;
 using MicroCommerce.CartService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
