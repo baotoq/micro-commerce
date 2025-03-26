@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>MicroCommerce.BuildingBlocks.Common</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" />
+    <PackageReference Include="MediatR" />
+  </ItemGroup>
+</Project>

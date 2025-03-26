@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0"/>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>4fec2275-c610-44b4-a3a6-ac94de7331ca</UserSecretsId>
+    <RootNamespace>MicroCommerce.AppHost</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost"/>
+    <PackageReference Include="Aspire.Hosting.Azure.Storage"/>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL"/>
+    <PackageReference Include="Aspire.Hosting.Elasticsearch"/>
+    <PackageReference Include="Aspire.Hosting.Redis"/>
+    <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CartService\CartService.Api\CartService.Api.csproj" />
+    <ProjectReference Include="..\Gateway\Yarp\Yarp.csproj" />
+    <ProjectReference Include="..\ProductService\ProductService.Api\ProductService.Api.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>MicroCommerce.CartService.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" />
+    <PackageReference Include="Aspire.Azure.Storage.Blobs"/>
+    <PackageReference Include="Aspire.Elastic.Clients.Elasticsearch"/>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
+    <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching"/>
+    <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching"/>
+    <PackageReference Include="RedLock.net" />
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CartService.Domain\CartService.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <AspireVersion>9.1.0</AspireVersion>
     <OpenTelemetryVersion>1.9.0</OpenTelemetryVersion>
+    <EfcoreVersion>9.0.2</EfcoreVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
@@ -14,6 +15,9 @@
     <PackageVersion Include="Scalar.AspNetCore" Version="1.2.41" />
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.2.0" />
     <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
+
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EfcoreVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfcoreVersion)" />
   </ItemGroup>
   <ItemGroup>
     <!--Aspire-->

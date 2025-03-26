@@ -2,53 +2,52 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F955BD9E-EC8B-4706-858E-85EE0BA93179}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.AppHost", "src\MicroCommerce.AppHost\MicroCommerce.AppHost.csproj", "{20D951FE-0AFD-48AF-8F44-0EA4C1591E44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "src\AppHost\AppHost.csproj", "{20D951FE-0AFD-48AF-8F44-0EA4C1591E44}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CartService", "CartService", "{816182F1-7957-4B9A-B1E5-76E8DF634CF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.CartService.Domain", "src\CartService\MicroCommerce.CartService.Domain\MicroCommerce.CartService.Domain.csproj", "{68CE4733-D65D-4D48-B0AB-EE7AAF20B9A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Domain", "src\CartService\CartService.Domain\CartService.Domain.csproj", "{68CE4733-D65D-4D48-B0AB-EE7AAF20B9A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.CartService.Infrastructure", "src\CartService\MicroCommerce.CartService.Infrastructure\MicroCommerce.CartService.Infrastructure.csproj", "{6C8AF743-4D93-415A-9A9E-BD7661280672}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Infrastructure", "src\CartService\CartService.Infrastructure\CartService.Infrastructure.csproj", "{6C8AF743-4D93-415A-9A9E-BD7661280672}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.CartService.Api", "src\CartService\MicroCommerce.CartService.Api\MicroCommerce.CartService.Api.csproj", "{48B3CE31-A7C4-4A85-9E84-852CB0B42C4B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Api", "src\CartService\CartService.Api\CartService.Api.csproj", "{48B3CE31-A7C4-4A85-9E84-852CB0B42C4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.CartService.Application", "src\CartService\MicroCommerce.CartService.Application\MicroCommerce.CartService.Application.csproj", "{B49D8C19-D5E6-4CA6-BF1C-481CCFEFA7DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Application", "src\CartService\CartService.Application\CartService.Application.csproj", "{B49D8C19-D5E6-4CA6-BF1C-481CCFEFA7DE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{164E3563-9349-4456-B284-60705EA1EF35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.BuildingBlocks.Common", "src\BuildingBlocks\MicroCommerce.BuildingBlocks.Common\MicroCommerce.BuildingBlocks.Common.csproj", "{A9EE1478-B996-4248-8F07-937AF1E66B71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Common", "src\BuildingBlocks\BuildingBlocks.Common\BuildingBlocks.Common.csproj", "{A9EE1478-B996-4248-8F07-937AF1E66B71}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5F45414D-C051-487F-ACA1-32D0E2343332}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.CartService.Domain.UnitTests", "src\CartService\tests\MicroCommerce.CartService.Domain.UnitTests\MicroCommerce.CartService.Domain.UnitTests.csproj", "{E1D40BF4-FBB1-4AC6-A9AF-2B26B8B38042}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Domain.UnitTests", "src\CartService\tests\CartService.Domain.UnitTests\CartService.Domain.UnitTests.csproj", "{E1D40BF4-FBB1-4AC6-A9AF-2B26B8B38042}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-items", "{11F3E142-C9E6-4717-BC29-B28400AEB3DC}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Packages.props = Directory.Packages.props
 		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProductService", "ProductService", "{847997F4-580C-4040-B26D-77E71DF228A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductService.Domain", "src\ProductService\MicroCommerce.ProductService.Domain\MicroCommerce.ProductService.Domain.csproj", "{D3DC9D1C-E3D8-44C5-BC88-B9E6B8364584}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Domain", "src\ProductService\ProductService.Domain\ProductService.Domain.csproj", "{D3DC9D1C-E3D8-44C5-BC88-B9E6B8364584}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductService.Application", "src\ProductService\MicroCommerce.ProductService.Application\MicroCommerce.ProductService.Application.csproj", "{72BBC9DA-8FD0-4CEE-B35F-772CE2D0D722}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Application", "src\ProductService\ProductService.Application\ProductService.Application.csproj", "{72BBC9DA-8FD0-4CEE-B35F-772CE2D0D722}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductService.Infrastructure", "src\ProductService\MicroCommerce.ProductService.Infrastructure\MicroCommerce.ProductService.Infrastructure.csproj", "{30D794E8-A843-4E9B-8410-BCC0EB03C7BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Infrastructure", "src\ProductService\ProductService.Infrastructure\ProductService.Infrastructure.csproj", "{30D794E8-A843-4E9B-8410-BCC0EB03C7BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductService.Api", "src\ProductService\MicroCommerce.ProductService.Api\MicroCommerce.ProductService.Api.csproj", "{F838993D-F25B-420B-80D6-A95B924B8C87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Api", "src\ProductService\ProductService.Api\ProductService.Api.csproj", "{F838993D-F25B-420B-80D6-A95B924B8C87}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E249E695-9DCB-4160-8727-C148022EE5CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductService.Domain.UnitTests", "src\ProductService\tests\MicroCommerce.ProductService.Domain.UnitTests\MicroCommerce.ProductService.Domain.UnitTests.csproj", "{A021C03C-9C1D-4453-9583-63F50816CD92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Domain.UnitTests", "src\ProductService\tests\ProductService.Domain.UnitTests\ProductService.Domain.UnitTests.csproj", "{A021C03C-9C1D-4453-9583-63F50816CD92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.ProductService.Application", "src\ProductService\tests\MicroCommerce.ProductService.Application\MicroCommerce.ProductService.Application.csproj", "{028251C9-63B2-458F-94E6-5852B3123F0E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.BuildingBlocks.ServiceDefaults", "src\BuildingBlocks\MicroCommerce.BuildingBlocks.ServiceDefaults\MicroCommerce.BuildingBlocks.ServiceDefaults.csproj", "{91C38C19-328B-4298-96A9-71893F515ED5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.ServiceDefaults", "src\BuildingBlocks\BuildingBlocks.ServiceDefaults\BuildingBlocks.ServiceDefaults.csproj", "{91C38C19-328B-4298-96A9-71893F515ED5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{84229CB8-82DC-46FB-B2DB-AC4A0644D472}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCommerce.Yarp", "src\Gateway\MicroCommerce.Yarp\MicroCommerce.Yarp.csproj", "{9AE803AA-3E82-45E5-8C84-191EBFF30FCF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yarp", "src\Gateway\Yarp\Yarp.csproj", "{9AE803AA-3E82-45E5-8C84-191EBFF30FCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,7 +72,6 @@ Global
 		{F838993D-F25B-420B-80D6-A95B924B8C87} = {847997F4-580C-4040-B26D-77E71DF228A5}
 		{E249E695-9DCB-4160-8727-C148022EE5CF} = {847997F4-580C-4040-B26D-77E71DF228A5}
 		{A021C03C-9C1D-4453-9583-63F50816CD92} = {E249E695-9DCB-4160-8727-C148022EE5CF}
-		{028251C9-63B2-458F-94E6-5852B3123F0E} = {E249E695-9DCB-4160-8727-C148022EE5CF}
 		{91C38C19-328B-4298-96A9-71893F515ED5} = {164E3563-9349-4456-B284-60705EA1EF35}
 		{84229CB8-82DC-46FB-B2DB-AC4A0644D472} = {F955BD9E-EC8B-4706-858E-85EE0BA93179}
 		{9AE803AA-3E82-45E5-8C84-191EBFF30FCF} = {84229CB8-82DC-46FB-B2DB-AC4A0644D472}
@@ -127,10 +125,6 @@ Global
 		{A021C03C-9C1D-4453-9583-63F50816CD92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A021C03C-9C1D-4453-9583-63F50816CD92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A021C03C-9C1D-4453-9583-63F50816CD92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{028251C9-63B2-458F-94E6-5852B3123F0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{028251C9-63B2-458F-94E6-5852B3123F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{028251C9-63B2-458F-94E6-5852B3123F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{028251C9-63B2-458F-94E6-5852B3123F0E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{91C38C19-328B-4298-96A9-71893F515ED5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{91C38C19-328B-4298-96A9-71893F515ED5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91C38C19-328B-4298-96A9-71893F515ED5}.Release|Any CPU.ActiveCfg = Release|Any CPU
