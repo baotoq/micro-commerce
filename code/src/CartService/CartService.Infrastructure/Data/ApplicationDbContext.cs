@@ -1,5 +1,5 @@
 using System.Reflection;
-using MicroCommerce.CartService.Domain.Cart;
+using MicroCommerce.CartService.Domain.Carts;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.CartService.Infrastructure.Data;

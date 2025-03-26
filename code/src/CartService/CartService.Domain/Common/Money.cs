@@ -2,11 +2,11 @@ using MicroCommerce.BuildingBlocks.Common;
 
 namespace MicroCommerce.CartService.Domain.Common;
 
-public class Price : ValueObject
+public class Money : ValueObject
 {
     public decimal Amount { get; }
 
-    public Price(decimal amount)
+    public Money(decimal amount)
     {
         if (amount <= 0)
             throw new ArgumentException("Amount must be greater than zero.");

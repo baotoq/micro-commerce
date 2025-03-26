@@ -1,15 +1,15 @@
 using MicroCommerce.BuildingBlocks.Common;
 using MicroCommerce.CartService.Domain.Common;
 
-namespace MicroCommerce.CartService.Domain.Cart;
+namespace MicroCommerce.CartService.Domain.Carts;
 
 public class CartItem : ValueObject
 {
     public Guid ProductId { get; }
     public int Quantity { get; private set; }
-    public Price PriceAtPurchase { get; }
+    public Money PriceAtPurchase { get; }
 
-    public CartItem(Guid productId, int quantity, Price priceAtPurchase)
+    public CartItem(Guid productId, int quantity, Money priceAtPurchase)
     {
         if (quantity <= 0) throw new ArgumentException("Quantity must be greater than zero.");
 

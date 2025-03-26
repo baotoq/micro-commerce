@@ -1,7 +1,7 @@
 using MicroCommerce.CartService.Domain.Common;
-using MicroCommerce.CartService.Domain.UnitTests.Builders;
+using MicroCommerce.CartService.Domain.UnitTests.TestHelpers.Builders;
 
-namespace MicroCommerce.CartService.Domain.UnitTests.Entities;
+namespace MicroCommerce.CartService.Domain.UnitTests.Carts;
 
 public class CartTests
 {
@@ -12,7 +12,7 @@ public class CartTests
         var cart = new CartBuilder().Build();
         var productId = Guid.NewGuid();
         var quantity = 2;
-        var price = new Price(10.0m);
+        var price = new Money(10.0m);
 
         // Act
         cart.AddItem(productId, quantity, price);
@@ -25,10 +25,10 @@ public class CartTests
     public async Task AddItem_ShouldIncreaseQuantity_WhenProductAlreadyExists()
     {
         // Arrange
-        var cart = new CartBuilder().WithItem(Guid.NewGuid(), 1, new Price(10.0m)).Build();
+        var cart = new CartBuilder().WithItem(Guid.NewGuid(), 1, new Money(10.0m)).Build();
         var productId = Guid.NewGuid();
         var additionalQuantity = 2;
-        var price = new Price(10.0m);
+        var price = new Money(10.0m);
 
         // Act
         cart.AddItem(productId, additionalQuantity, price);
@@ -44,7 +44,7 @@ public class CartTests
         var cart = new CartBuilder().Build();
         var productId = Guid.NewGuid();
         var invalidQuantity = 0;
-        var price = new Price(10.0m);
+        var price = new Money(10.0m);
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => cart.AddItem(productId, invalidQuantity, price));

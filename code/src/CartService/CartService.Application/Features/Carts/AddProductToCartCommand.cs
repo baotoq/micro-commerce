@@ -1,5 +1,5 @@
 using Ardalis.GuardClauses;
-using MicroCommerce.CartService.Domain.Cart;
+using MicroCommerce.CartService.Domain.Carts;
 using MicroCommerce.CartService.Domain.Common;
 using MicroCommerce.CartService.Infrastructure.Data;
 
@@ -23,7 +23,7 @@ public class AddProductToCartCommandHandler(ApplicationDbContext _context)
             throw new NotFoundException(request.CartId.ToString(), nameof(Cart));
         }
 
-        cart.AddItem(request.ProductId, request.Quantity, new Price(0));
+        cart.AddItem(request.ProductId, request.Quantity, new Money(0));
 
         await _context.SaveChangesAsync(cancellationToken);
 

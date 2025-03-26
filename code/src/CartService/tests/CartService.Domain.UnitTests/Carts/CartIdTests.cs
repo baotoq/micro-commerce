@@ -1,6 +1,6 @@
-using MicroCommerce.CartService.Domain.Cart;
+using MicroCommerce.CartService.Domain.Carts;
 
-namespace MicroCommerce.CartService.Domain.UnitTests.ValueObjects;
+namespace MicroCommerce.CartService.Domain.UnitTests.Carts;
 
 public class CartIdTests
 {

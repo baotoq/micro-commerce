@@ -1,4 +1,4 @@
-using MicroCommerce.CartService.Domain.Cart;
+using MicroCommerce.CartService.Domain.Carts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

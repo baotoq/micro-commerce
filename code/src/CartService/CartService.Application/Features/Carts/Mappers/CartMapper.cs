@@ -1,5 +1,5 @@
 using MicroCommerce.CartService.Application.Features.Carts.Contracts;
-using MicroCommerce.CartService.Domain.Cart;
+using MicroCommerce.CartService.Domain.Carts;
 using Riok.Mapperly.Abstractions;
 
 namespace MicroCommerce.CartService.Application.Features.Carts.Mappers;

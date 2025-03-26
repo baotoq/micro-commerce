@@ -1,4 +1,4 @@
-using MicroCommerce.CartService.Domain.Cart;
+using MicroCommerce.CartService.Domain.Carts;
 
 namespace MicroCommerce.CartService.Application.Features.Carts.Contracts;
 

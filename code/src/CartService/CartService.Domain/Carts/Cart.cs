@@ -1,8 +1,8 @@
 using MicroCommerce.BuildingBlocks.Common;
-using MicroCommerce.CartService.Domain.Cart.DomainEvents;
+using MicroCommerce.CartService.Domain.Carts.DomainEvents;
 using MicroCommerce.CartService.Domain.Common;
 
-namespace MicroCommerce.CartService.Domain.Cart;
+namespace MicroCommerce.CartService.Domain.Carts;
 
 public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
 {
@@ -10,7 +10,7 @@ public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
 
     public IReadOnlyCollection<CartItem> Items => _items.AsReadOnly();
 
-    public void AddItem(Guid productId, int quantity, Price price)
+    public void AddItem(Guid productId, int quantity, Money price)
     {
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be greater than zero.");
