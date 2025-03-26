@@ -1,7 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <RootNamespace>MicroCommerce.ProductService.Infrastructure</RootNamespace>
-  </PropertyGroup>
-
-</Project>

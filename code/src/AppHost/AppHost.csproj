@@ -21,7 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\CartService\CartService.Api\CartService.Api.csproj" />
     <ProjectReference Include="..\Gateway\Yarp\Yarp.csproj" />
-    <ProjectReference Include="..\ProductService\ProductService.Api\ProductService.Api.csproj" />
   </ItemGroup>
 
 </Project>

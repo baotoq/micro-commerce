@@ -54,16 +54,7 @@ var cartService = builder.AddProject<Projects.CartService_Api>("cart-service")
     .WithReference(blobs)
     .WithHttpHealthCheck("/health");
 
-var productService = builder.AddProject<Projects.ProductService_Api>("product-service")
-    .WithReference(elasticsearch)
-    .WithReference(cache)
-    .WithReference(rabbitmq).WaitFor(rabbitmq)
-    .WithReference(db).WaitFor(db)
-    .WithReference(blobs)
-    .WithHttpHealthCheck("/health");
-
 builder.AddProject<Projects.Yarp>("yarp")
-    .WithReference(productService)
     .WithReference(cartService);
 
 builder.Build().Run();
