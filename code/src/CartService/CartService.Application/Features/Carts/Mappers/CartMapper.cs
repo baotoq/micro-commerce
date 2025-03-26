@@ -4,7 +4,7 @@ using Riok.Mapperly.Abstractions;
 
 namespace MicroCommerce.CartService.Application.Features.Carts.Mappers;
 
-[Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Target)]
+[Mapper]
 public static partial class CartMapper
 {
     public static partial CartDto ToCartDto(Cart cart);

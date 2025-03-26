@@ -1,5 +1,4 @@
 using Ardalis.GuardClauses;
-using MediatR;
 using MicroCommerce.CartService.Domain.Cart;
 using MicroCommerce.CartService.Domain.Common;
 using MicroCommerce.CartService.Infrastructure.Data;
