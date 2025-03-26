@@ -1,6 +1,6 @@
-@MicroCommerce.CartService.Api_HostAddress = http://localhost:5020
+@Api_HostAddress = http://localhost:5020
 
-GET {{MicroCommerce.CartService.Api_HostAddress}}/weatherforecast/
+GET {{Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

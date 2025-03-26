@@ -5,15 +5,15 @@ namespace MicroCommerce.CartService.Domain.Carts;
 
 public class CartItem : ValueObject
 {
-    public Guid ProductId { get; }
+    public CartItemId CartItemId { get; }
     public int Quantity { get; private set; }
     public Money PriceAtPurchase { get; }
 
-    public CartItem(Guid productId, int quantity, Money priceAtPurchase)
+    public CartItem(CartItemId cartItemId, int quantity, Money priceAtPurchase)
     {
         if (quantity <= 0) throw new ArgumentException("Quantity must be greater than zero.");
 
-        ProductId = productId;
+        CartItemId = cartItemId;
         Quantity = quantity;
         PriceAtPurchase = priceAtPurchase;
     }
@@ -26,7 +26,7 @@ public class CartItem : ValueObject
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return ProductId;
+        yield return CartItemId;
         yield return Quantity;
         yield return PriceAtPurchase;
     }

@@ -1,3 +1,4 @@
+using MicroCommerce.CartService.Domain.Carts;
 using MicroCommerce.CartService.Domain.Common;
 using MicroCommerce.CartService.Domain.UnitTests.TestHelpers.Builders;
 
@@ -10,7 +11,7 @@ public class CartTests
     {
         // Arrange
         var cart = new CartBuilder().Build();
-        var productId = Guid.NewGuid();
+        var productId = CartItemId.New();
         var quantity = 2;
         var price = new Money(10.0m);
 
@@ -25,8 +26,8 @@ public class CartTests
     public async Task AddItem_ShouldIncreaseQuantity_WhenProductAlreadyExists()
     {
         // Arrange
-        var cart = new CartBuilder().WithItem(Guid.NewGuid(), 1, new Money(10.0m)).Build();
-        var productId = Guid.NewGuid();
+        var cart = new CartBuilder().WithItem(CartItemId.New(), 1, new Money(10.0m)).Build();
+        var productId = CartItemId.New();
         var additionalQuantity = 2;
         var price = new Money(10.0m);
 
@@ -42,7 +43,7 @@ public class CartTests
     {
         // Arrange
         var cart = new CartBuilder().Build();
-        var productId = Guid.NewGuid();
+        var productId = CartItemId.New();
         var invalidQuantity = 0;
         var price = new Money(10.0m);
 

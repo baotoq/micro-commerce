@@ -1,13 +1,17 @@
 ﻿[
   {
-    ProductId: Guid_1,
+    CartItemId: {
+      Value: Guid_1
+    },
     Quantity: 1,
     PriceAtPurchase: {
       Amount: 10.0
     }
   },
   {
-    ProductId: Guid_2,
+    CartItemId: {
+      Value: Guid_2
+    },
     Quantity: 2,
     PriceAtPurchase: {
       Amount: 10.0

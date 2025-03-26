@@ -12,9 +12,9 @@ public class CartBuilder
         _cart = new Cart(CartId.New());
     }
 
-    public CartBuilder WithItem(Guid productId, int quantity, Money price)
+    public CartBuilder WithItem(CartItemId cartItemId, int quantity, Money price)
     {
-        _cart.AddItem(productId, quantity, price);
+        _cart.AddItem(cartItemId, quantity, price);
         return this;
     }
 

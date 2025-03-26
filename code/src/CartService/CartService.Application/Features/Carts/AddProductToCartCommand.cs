@@ -8,7 +8,7 @@ namespace MicroCommerce.CartService.Application.Features.Carts;
 public record AddProductToCartCommand : IRequest<CartId>
 {
     public required CartId CartId { get; init; }
-    public required Guid ProductId { get; init; }
+    public required CartItemId CartItemId { get; init; }
     public required int Quantity { get; init; }
 }
 
@@ -23,7 +23,7 @@ public class AddProductToCartCommandHandler(ApplicationDbContext _context)
             throw new NotFoundException(request.CartId.ToString(), nameof(Cart));
         }
 
-        cart.AddItem(request.ProductId, request.Quantity, new Money(0));
+        cart.AddItem(request.CartItemId, request.Quantity, new Money(0));
 
         await _context.SaveChangesAsync(cancellationToken);
 

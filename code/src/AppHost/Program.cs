@@ -47,6 +47,7 @@ var rabbitmq = builder.AddRabbitMQ("messaging")
     .WithLifetime(ContainerLifetime.Persistent);
 
 var cartService = builder.AddProject<Projects.CartService_Api>("cart-service")
+    .WithReference(elasticsearch)
     .WithReference(cache)
     .WithReference(rabbitmq).WaitFor(rabbitmq)
     .WithReference(db).WaitFor(db)

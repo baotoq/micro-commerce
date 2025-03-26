@@ -9,13 +9,13 @@
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="MediatR" Version="12.4.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.3" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
     <PackageVersion Include="RedLock.net" Version="2.3.2" />
     <PackageVersion Include="Riok.Mapperly" Version="4.1.1" />
     <PackageVersion Include="Scalar.AspNetCore" Version="1.2.41" />
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.2.0" />
     <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
-
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EfcoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfcoreVersion)" />
   </ItemGroup>

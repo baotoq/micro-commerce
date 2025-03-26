@@ -1,6 +1,10 @@
 using MicroCommerce.BuildingBlocks.ServiceDefaults;
 using MicroCommerce.CartService.Application;
 using MicroCommerce.CartService.Infrastructure;
+using MicroCommerce.CartService.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +20,31 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(
     )
 );
 
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://localhost";
+        options.Audience = "https://localhost";
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = false,
+        };
+    });
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    await using var scope = app.Services.CreateAsyncScope();
+    await using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await dbContext.Database.EnsureCreatedAsync();
+    //await dbContext.Database.MigrateAsync();
 }
 
 app.UseExceptionHandler();

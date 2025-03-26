@@ -10,21 +10,22 @@ public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
 
     public IReadOnlyCollection<CartItem> Items => _items.AsReadOnly();
 
-    public void AddItem(Guid productId, int quantity, Money price)
+    public void AddItem(CartItemId cartItemId, int quantity, Money price)
     {
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be greater than zero.");
 
-        var existingItem = _items.FirstOrDefault(i => i.ProductId == productId);
+        var existingItem = _items.FirstOrDefault(i => i.CartItemId == cartItemId);
         if (existingItem is not null)
         {
             existingItem.IncreaseQuantity(quantity);
         }
         else
         {
-            _items.Add(new CartItem(productId, quantity, price));
+            existingItem = new CartItem(cartItemId, quantity, price);
+            _items.Add(existingItem);
         }
 
-        AddDomainEvent(new ProductAddedToCartDomainEvent(Id, productId, quantity));
+        AddDomainEvent(new ProductAddedToCartDomainEvent(Id, existingItem));
     }
 }
