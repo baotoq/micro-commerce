@@ -1,15 +1,12 @@
-using System;
-using MediatR;
-using MicroCommerce.CartService.Application.Exceptions;
 using Ardalis.GuardClauses;
+using MediatR;
 using MicroCommerce.CartService.Domain.Cart;
 using MicroCommerce.CartService.Domain.Common;
-using MicroCommerce.CartService.Infrastructure;
 using MicroCommerce.CartService.Infrastructure.Data;
 
-namespace MicroCommerce.CartService.Application.Features;
+namespace MicroCommerce.CartService.Application.Features.Carts;
 
-public class AddProductToCartCommand : IRequest<CartId>
+public record AddProductToCartCommand : IRequest<CartId>
 {
     public required CartId CartId { get; init; }
     public required Guid ProductId { get; init; }

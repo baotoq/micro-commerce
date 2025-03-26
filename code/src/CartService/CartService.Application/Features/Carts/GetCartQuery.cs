@@ -1,20 +1,15 @@
 using Ardalis.GuardClauses;
 using MediatR;
+using MicroCommerce.CartService.Application.Features.Carts.Contracts;
 using MicroCommerce.CartService.Domain.Cart;
-using MicroCommerce.CartService.Infrastructure;
 using MicroCommerce.CartService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace MicroCommerce.CartService.Application.Features;
+namespace MicroCommerce.CartService.Application.Features.Carts;
 
-public class GetCartQuery : IRequest<CartDto>
+public record GetCartQuery : IRequest<CartDto>
 {
     public required CartId CartId { get; set; }
-}
-
-public record CartDto
-{
-    public required CartId Id { get; init; }
 }
 
 public class GetCartQueryHandler(ApplicationDbContext _context) : IRequestHandler<GetCartQuery, CartDto>
@@ -30,8 +25,6 @@ public class GetCartQueryHandler(ApplicationDbContext _context) : IRequestHandle
             throw new NotFoundException(request.CartId.ToString(), nameof(Cart));
         }
 
-        var mapper = new CartMapper();
-
-        return mapper.ToCartDto(cart);
+        return Mappers.CartMapper.ToCartDto(cart);
     }
 }

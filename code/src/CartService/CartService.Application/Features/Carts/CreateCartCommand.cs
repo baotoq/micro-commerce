@@ -1,11 +1,11 @@
 using MediatR;
+using MicroCommerce.CartService.Application.Features.Carts.Contracts;
 using MicroCommerce.CartService.Domain.Cart;
-using MicroCommerce.CartService.Infrastructure;
 using MicroCommerce.CartService.Infrastructure.Data;
 
-namespace MicroCommerce.CartService.Application.Features;
+namespace MicroCommerce.CartService.Application.Features.Carts;
 
-public class CreateCartCommand : IRequest<CartDto>
+public record CreateCartCommand : IRequest<CartDto>
 {
 }
 
@@ -13,13 +13,12 @@ public class CreateCartCommandHandler(ApplicationDbContext _context) : IRequestH
 {
     public async Task<CartDto> Handle(CreateCartCommand request, CancellationToken cancellationToken)
     {
-        var mapper = new CartMapper();
         var cart = new Cart(CartId.New());
 
         await _context.Carts.AddAsync(cart, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return mapper.ToCartDto(cart);
+        return Mappers.CartMapper.ToCartDto(cart);
     }
 }
