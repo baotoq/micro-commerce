@@ -18,9 +18,12 @@
     <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EfcoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfcoreVersion)" />
+    <PackageVersion Include="Dapr.AspNetCore" Version="1.15.2" />
+    <PackageVersion Include="Dapr.Client" Version="1.15.2" />
   </ItemGroup>
   <ItemGroup>
     <!--Aspire-->
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Dapr" Version="9.3.0" />
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />

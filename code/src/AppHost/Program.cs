@@ -1,3 +1,4 @@
+using CommunityToolkit.Aspire.Hosting.Dapr;
 using Microsoft.Extensions.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -47,6 +48,7 @@ var rabbitmq = builder.AddRabbitMQ("messaging")
     .WithLifetime(ContainerLifetime.Persistent);
 
 var cartService = builder.AddProject<Projects.CartService_Api>("cart-service")
+    .WithDaprSidecar()
     .WithReference(elasticsearch)
     .WithReference(cache)
     .WithReference(rabbitmq).WaitFor(rabbitmq)
@@ -54,7 +56,11 @@ var cartService = builder.AddProject<Projects.CartService_Api>("cart-service")
     .WithReference(blobs)
     .WithHttpHealthCheck("/health");
 
+
 builder.AddProject<Projects.Yarp>("yarp")
-    .WithReference(cartService);
+    .WithDaprSidecar(new DaprSidecarOptions
+    {
+        DaprHttpPort = 3500,
+    });
 
 builder.Build().Run();

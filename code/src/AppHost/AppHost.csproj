@@ -16,6 +16,7 @@
     <PackageReference Include="Aspire.Hosting.Elasticsearch"/>
     <PackageReference Include="Aspire.Hosting.Redis"/>
     <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Dapr" />
   </ItemGroup>
 
   <ItemGroup>

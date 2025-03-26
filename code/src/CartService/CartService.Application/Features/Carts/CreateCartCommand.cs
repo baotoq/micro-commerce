@@ -1,4 +1,5 @@
 using MicroCommerce.CartService.Application.Features.Carts.Contracts;
+using MicroCommerce.CartService.Application.Features.Carts.Mappers;
 using MicroCommerce.CartService.Domain.Carts;
 using MicroCommerce.CartService.Infrastructure.Data;
 
@@ -18,6 +19,6 @@ public class CreateCartCommandHandler(ApplicationDbContext _context) : IRequestH
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Mappers.CartMapper.ToCartDto(cart);
+        return CartMapper.ToCartDto(cart);
     }
 }
