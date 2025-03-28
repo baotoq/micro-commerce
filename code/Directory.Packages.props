@@ -14,7 +14,7 @@
     <PackageVersion Include="RedLock.net" Version="2.3.2" />
     <PackageVersion Include="Riok.Mapperly" Version="4.1.1" />
     <PackageVersion Include="Scalar.AspNetCore" Version="1.2.41" />
-    <PackageVersion Include="Yarp.ReverseProxy" Version="2.2.0" />
+    <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
     <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EfcoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfcoreVersion)" />
