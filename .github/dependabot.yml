@@ -11,6 +11,6 @@ updates:
     schedule:
       interval: weekly
   - package-ecosystem: "nuget"
-    directory: "/src"
+    directory: "/code"
     schedule:
       interval: weekly
