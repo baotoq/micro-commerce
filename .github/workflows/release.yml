@@ -33,4 +33,4 @@ jobs:
       - name: Publish container image
         working-directory: code/src/CartService/CartService.Api
         run: |
-          dotnet publish -c Release /p:PublishProfile=github
+          dotnet publish --os linux --arch x64 -c Release --no-build /p:PublishProfile=github
