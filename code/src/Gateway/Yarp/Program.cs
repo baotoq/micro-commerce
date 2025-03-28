@@ -1,7 +1,9 @@
 using System.Threading.RateLimiting;
 using MicroCommerce.BuildingBlocks.ServiceDefaults;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,10 +39,32 @@ builder.Services.AddRateLimiter(options =>
             }));
 });
 
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://localhost";
+        options.Audience = "https://localhost";
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = false,
+        };
+    });
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseDefault();
 app.UseRateLimiter();
+
+app.UseRequestTimeouts();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapDefaultEndpoints();
 app.MapReverseProxy();
 

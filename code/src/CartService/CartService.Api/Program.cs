@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using MicroCommerce.BuildingBlocks.ServiceDefaults;
 using MicroCommerce.CartService.Application;
 using MicroCommerce.CartService.Infrastructure;
@@ -50,12 +52,13 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 app.UseCors();
 
+app.UseDefault();
+
 app.UseRequestTimeouts();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseDefault();
 app.MapDefaultEndpoints();
 
 app.MapGet("/api/carts", () => new[]
@@ -63,6 +66,20 @@ app.MapGet("/api/carts", () => new[]
     new { Id = 1, Name = "carts 1" },
     new { Id = 2, Name = "carts 2" },
     new { Id = 3, Name = "carts 3" },
+});
+
+app.MapPost("/login", (string username, string password) =>
+{
+    if (username != "admin" || password != "password")
+        return Results.Unauthorized();
+
+    var claims = new[]
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, username),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
+
+    return Results.SignIn(new ClaimsPrincipal(new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme)), authenticationScheme: JwtBearerDefaults.AuthenticationScheme);
 });
 
 await app.RunAsync();
