@@ -29,21 +29,34 @@ jobs:
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Load registry credentials
-        id: load-registry-credentials
+      - name: Load credentials
+        id: load-credentials
         uses: 1password/load-secrets-action@v2
         with:
           export-env: false
         env:
           REGISTRY_USERNAME: op://cicd/image-registry/username
           REGISTRY_TOKEN: op://cicd/image-registry/password
+          NUGET_TOKEN: op://cicd/nuget/password
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Image Container Registry
         uses: docker/login-action@v2
         with:
           registry: ${{ env.CONTAINER_REGISTRY }}
-          username: ${{ steps.load-registry-credentials.outputs.REGISTRY_USERNAME }}
-          password: ${{ steps.load-registry-credentials.outputs.REGISTRY_TOKEN }}
+          username: ${{ steps.load-credentials.outputs.REGISTRY_USERNAME }}
+          password: ${{ steps.load-credentials.outputs.REGISTRY_TOKEN }}
+
+      - name: Build and Push Nuget packages
+        working-directory: code/src/BuildingBlocks/BuildingBlocks.Common
+        run: |
+          dotnet pack -c Release -o . /p:Version=1.0.0
+          dotnet nuget push "BuildingBlocks.Common.1.0.0.nupkg" --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
+
+      - name: Build and Push Nuget packages
+        working-directory: code/src/BuildingBlocks/BuildingBlocks.ServiceDefaults
+        run: |
+          dotnet pack -c Release -o . /p:Version=1.0.0
+          dotnet nuget push "BuildingBlocks.ServiceDefaults.1.0.0.nupkg" --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
 
       - name: Build and Push CartService
         working-directory: code/src/CartService/CartService.Api
