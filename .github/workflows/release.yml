@@ -6,6 +6,9 @@ on:
     tags:
       - "v*.*.*"
 
+env:
+  CONTAINER_REGISTRY: ghcr.io
+
 jobs:
   # tests:
   #   uses: ./.github/workflows/dotnet-test.yml
@@ -20,20 +23,34 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+      
+      - name: Configure 1Password Service Account
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load registry credentials
+        id: load-registry-credentials
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: false
+        env:
+          REGISTRY_USERNAME: op://cicd/image-registry/username
+          REGISTRY_TOKEN: op://cicd/image-registry/password
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ steps.load-registry-credentials.outputs.REGISTRY_USERNAME }}
+          password: ${{ steps.load-registry-credentials.outputs.REGISTRY_TOKEN }}
 
       - name: Build and Push CartService
         working-directory: code/src/CartService/CartService.Api
         run: |
           dotnet publish -c Release \
             /t:PublishContainer \
-            -p ContainerRegistry=ghcr.io \
+            -p ContainerRegistry=${{ env.CONTAINER_REGISTRY }} \
             -p ContainerRepository=${{ github.repository }}/cart-service \
             -p ContainerImageTag=${{ github.ref_name }}
 
@@ -42,6 +59,6 @@ jobs:
         run: |
           dotnet publish -c Release \
             /t:PublishContainer \
-            -p ContainerRegistry=ghcr.io \
+            -p ContainerRegistry=${{ env.CONTAINER_REGISTRY }} \
             -p ContainerRepository=${{ github.repository }}/yarp \
             -p ContainerImageTag=${{ github.ref_name }}
