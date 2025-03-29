@@ -1,4 +1,4 @@
-name: Release Docker Images
+name: Release
 
 on:
   workflow_dispatch:
@@ -12,24 +12,19 @@ env:
 jobs:
   # tests:
   #   uses: ./.github/workflows/dotnet-test.yml
-
-  build-and-push:
+  release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-      
       - name: Configure 1Password Service Account
         uses: 1password/load-secrets-action/configure@v2
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Load credentials
+      - name: Load Credentials
         id: load-credentials
         uses: 1password/load-secrets-action@v2
         with:
@@ -39,6 +34,23 @@ jobs:
           REGISTRY_TOKEN: op://cicd/image-registry/password
           NUGET_TOKEN: op://cicd/nuget/password
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Build and Push BuildingBlocks.Common Nuget packages
+        working-directory: code/src/BuildingBlocks/BuildingBlocks.Common
+        run: |
+          dotnet pack -c Release -o . /p:Version=1.0.0
+          dotnet nuget push "BuildingBlocks.Common.1.0.0.nupkg" --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
+
+      - name: Build and Push BuildingBlocks.ServiceDefaults Nuget packages
+        working-directory: code/src/BuildingBlocks/BuildingBlocks.ServiceDefaults
+        run: |
+          dotnet pack -c Release -o . /p:Version=1.0.0
+          dotnet nuget push "BuildingBlocks.ServiceDefaults.1.0.0.nupkg" --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
+
       - name: Log in to Image Container Registry
         uses: docker/login-action@v2
         with:
@@ -46,19 +58,7 @@ jobs:
           username: ${{ steps.load-credentials.outputs.REGISTRY_USERNAME }}
           password: ${{ steps.load-credentials.outputs.REGISTRY_TOKEN }}
 
-      - name: Build and Push Nuget packages
-        working-directory: code/src/BuildingBlocks/BuildingBlocks.Common
-        run: |
-          dotnet pack -c Release -o . /p:Version=1.0.0
-          dotnet nuget push "BuildingBlocks.Common.1.0.0.nupkg" --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
-
-      - name: Build and Push Nuget packages
-        working-directory: code/src/BuildingBlocks/BuildingBlocks.ServiceDefaults
-        run: |
-          dotnet pack -c Release -o . /p:Version=1.0.0
-          dotnet nuget push "BuildingBlocks.ServiceDefaults.1.0.0.nupkg" --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
-
-      - name: Build and Push CartService
+      - name: Build and Push CartService docker image
         working-directory: code/src/CartService/CartService.Api
         run: |
           dotnet publish -c Release \
@@ -67,7 +67,7 @@ jobs:
             -p ContainerRepository=${{ github.repository }}/cart-service \
             -p ContainerImageTag=${{ github.ref_name }}
 
-      - name: Build and Push Yarp
+      - name: Build and Push Yarp docker image
         working-directory: code/src/Gateway/Yarp
         run: |
           dotnet publish -c Release \
