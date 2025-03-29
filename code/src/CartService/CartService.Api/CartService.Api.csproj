@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <RootNamespace>MicroCommerce.CartService.Api</RootNamespace>
-    <ContainerImageTags>1.0.0;latest</ContainerImageTags>
   </PropertyGroup>
   <ItemGroup>
     <ContainerPort Include="80" Type="tcp" />
