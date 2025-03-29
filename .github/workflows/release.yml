@@ -33,9 +33,9 @@ jobs:
       - name: Build Docker image
         working-directory: code/src/CartService/CartService.Api
         run: |
-          dotnet publish -c Release
+          dotnet publish -c Release \
             /t:PublishContainer \
-            -p ContainerRegistry=ghcr.io
+            -p ContainerRegistry=ghcr.io \
             -p ContainerRepository=${{ github.repository }}/cart-service \
             -p ContainerTag=${{ github.ref_name }}
 
