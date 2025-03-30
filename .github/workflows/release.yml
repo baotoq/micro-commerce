@@ -39,28 +39,14 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: Get Latest Version from GitHub Packages
-        id: get_version
+      - name: Generate build version
+        id: generate-build-version
         run: |
-          PACKAGE_NAME=BuildingBlocks.Common
-
-          # Fetch all package versions
-          LATEST_VERSION=$(curl -s -H "Authorization: token ${{ steps.load-credentials.outputs.NUGET_TOKEN }}" \
-            "https://nuget.pkg.github.com/${{ github.actor }}/v3/registration5-semver1/$PACKAGE_NAME/index.json" | jq -r '[.items[].items[].catalogEntry.version] | max')
-
-          # Default to 0.0.0 if no version is found
-          if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" == "null" ]; then 
-            LATEST_VERSION="0.0.0"; 
-          fi
-
-          echo "Latest Version: $LATEST_VERSION"
-          echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
-
-      - name: Increment Version
-        run: |
-          IFS='.' read -r -a parts <<< "${{ env.LATEST_VERSION }}"
-          PATCH=$((parts[2] + 1))
-          NEW_VERSION="${parts[0]}.${parts[1]}.$PATCH"
+          year=$(date '+%Y')
+          month=$(date '+%-m')
+          day=$(date '+%d')
+          hour=$(date '+%-H%M')
+          NEW_VERSION="${year}.${month}${day}.${hour}"
           echo "New Version: $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
