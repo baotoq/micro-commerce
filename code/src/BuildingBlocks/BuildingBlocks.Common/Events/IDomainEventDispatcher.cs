@@ -1,4 +1,4 @@
-namespace MicroCommerce.BuildingBlocks.Common;
+namespace MicroCommerce.BuildingBlocks.Common.Events;
 
 public interface IDomainEventDispatcher
 {

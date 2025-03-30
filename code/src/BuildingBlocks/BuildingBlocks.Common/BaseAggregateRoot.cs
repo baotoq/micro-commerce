@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using MicroCommerce.BuildingBlocks.Common.Events;
 
 namespace MicroCommerce.BuildingBlocks.Common;
 

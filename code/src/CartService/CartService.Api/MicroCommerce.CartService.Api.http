@@ -1,6 +1,13 @@
 @Api_HostAddress = http://localhost:5020
 
-GET {{Api_HostAddress}}/weatherforecast/
+### Get cart by id
+GET {{Api_HostAddress}}/api/carts/ffaf749a-c6a2-4f4d-b8ce-24a00fd2aa81
 Accept: application/json
 
 ###
+### Get cart by id
+POST {{Api_HostAddress}}/api/carts
+Accept: application/json
+
+{
+}

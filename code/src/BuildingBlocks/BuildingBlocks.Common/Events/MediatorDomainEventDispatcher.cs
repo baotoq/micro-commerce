@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace MicroCommerce.BuildingBlocks.Common;
+namespace MicroCommerce.BuildingBlocks.Common.Events;
 
 public class MediatorDomainEventDispatcher(IMediator mediator) : IDomainEventDispatcher
 {

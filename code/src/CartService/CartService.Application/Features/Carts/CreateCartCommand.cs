@@ -13,7 +13,7 @@ public class CreateCartCommandHandler(ApplicationDbContext _context) : IRequestH
 {
     public async Task<CartDto> Handle(CreateCartCommand request, CancellationToken cancellationToken)
     {
-        var cart = new Cart(CartId.New());
+        var cart = Cart.Create();
 
         await _context.Carts.AddAsync(cart, cancellationToken);
 

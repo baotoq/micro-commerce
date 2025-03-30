@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using FluentValidation;
+using MediatR.NotificationPublishers;
 using MicroCommerce.CartService.Application.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,7 +24,10 @@ public static class DependencyInjection
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.AddMediatR(cfg =>
-            cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
+        {
+            cfg.NotificationPublisher = new TaskWhenAllPublisher();
+            cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+        });
 
         builder.Services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
     }

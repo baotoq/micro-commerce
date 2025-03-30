@@ -1,4 +1,5 @@
 using Ardalis.GuardClauses;
+using MicroCommerce.BuildingBlocks.Common.Events;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MicroCommerce.BuildingBlocks.Common;

@@ -1,3 +1,5 @@
+using MicroCommerce.BuildingBlocks.Common.Events;
+
 namespace MicroCommerce.BuildingBlocks.Common;
 
 public interface IAggregateRoot

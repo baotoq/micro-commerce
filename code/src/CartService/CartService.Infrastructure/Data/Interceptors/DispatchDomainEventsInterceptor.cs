@@ -1,4 +1,5 @@
 using MicroCommerce.BuildingBlocks.Common;
+using MicroCommerce.BuildingBlocks.Common.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 

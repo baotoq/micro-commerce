@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using MicroCommerce.BuildingBlocks.ServiceDefaults;
+using MicroCommerce.CartService.Api.Endpoints;
 using MicroCommerce.CartService.Application;
 using MicroCommerce.CartService.Infrastructure;
 using MicroCommerce.CartService.Infrastructure.Data;
@@ -61,12 +62,7 @@ app.UseAuthorization();
 
 app.MapDefaultEndpoints();
 
-app.MapGet("/api/carts", () => new[]
-{
-    new { Id = 1, Name = "carts 1" },
-    new { Id = 2, Name = "carts 2" },
-    new { Id = 3, Name = "carts 3" },
-});
+app.MapCarts();
 
 app.MapPost("/login", (string username, string password) =>
 {

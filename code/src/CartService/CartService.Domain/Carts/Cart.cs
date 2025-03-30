@@ -10,6 +10,13 @@ public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
 
     public IReadOnlyCollection<CartItem> Items => _items.AsReadOnly();
 
+    public static Cart Create()
+    {
+        var cart = new Cart(CartId.New());
+        cart.AddDomainEvent(new CartCreatedDomainEvent(cart.Id));
+        return cart;
+    }
+
     public void AddItem(CartItemId cartItemId, int quantity, Money price)
     {
         if (quantity <= 0)
