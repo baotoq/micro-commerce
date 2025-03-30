@@ -46,20 +46,19 @@ jobs:
           month=$(date '+%-m')
           day=$(date '+%d')
           hour=$(date '+%-H%M')
-          NEW_VERSION="${year}.${month}${day}.${hour}"
-          echo "New Version: $NEW_VERSION"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "::set-output name=VERSION::${year}.${month}${day}.${hour}"
+          echo "Version $VERSION"
 
       - name: Build and Push BuildingBlocks.Common Nuget packages
         working-directory: code/src/BuildingBlocks/BuildingBlocks.Common
         run: |
-          dotnet pack -c Release -o . /p:Version=${{ env.NEW_VERSION }}
+          dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.VERSION }}
           dotnet nuget push *.nupkg --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
 
       - name: Build and Push BuildingBlocks.ServiceDefaults Nuget packages
         working-directory: code/src/BuildingBlocks/BuildingBlocks.ServiceDefaults
         run: |
-          dotnet pack -c Release -o . /p:Version=${{ env.NEW_VERSION }}
+          dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.VERSION }}
           dotnet nuget push *.nupkg --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
 
       - name: Log in to Image Container Registry
