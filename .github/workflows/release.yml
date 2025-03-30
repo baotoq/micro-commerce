@@ -53,13 +53,13 @@ jobs:
       - name: Build and Push BuildingBlocks.Common Nuget packages
         working-directory: code/src/BuildingBlocks/BuildingBlocks.Common
         run: |
-          dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.VERSION }}
+          dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.NEW_VERSION }}
           dotnet nuget push *.nupkg --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
 
       - name: Build and Push BuildingBlocks.ServiceDefaults Nuget packages
         working-directory: code/src/BuildingBlocks/BuildingBlocks.ServiceDefaults
         run: |
-          dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.VERSION }}
+          dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.NEW_VERSION }}
           dotnet nuget push *.nupkg --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
 
       - name: Log in to Image Container Registry
