@@ -1,0 +1,4 @@
+﻿{
+  Type: NotFoundException,
+  Message: Queried object Cart was not found, Key: CartId { Value = Guid_1 }
+}
