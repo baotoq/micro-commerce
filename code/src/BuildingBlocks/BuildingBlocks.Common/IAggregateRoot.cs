@@ -1,3 +1,7 @@
 namespace MicroCommerce.BuildingBlocks.Common;
 
-public interface IAggregateRoot { }
+public interface IAggregateRoot
+{
+    IReadOnlyCollection<DomainEvent> DomainEvents { get; }
+    void ClearDomainEvents();
+}

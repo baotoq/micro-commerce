@@ -2,7 +2,12 @@ using MediatR;
 
 namespace MicroCommerce.BuildingBlocks.Common;
 
-public abstract record DomainEvent : INotification
+public interface IDomainEvent : INotification
+{
+
+}
+
+public abstract record DomainEvent : IDomainEvent
 {
     public EventId Id { get; }
     public DateTimeOffset DateOccurred { get; protected set; } = DateTimeOffset.UtcNow;

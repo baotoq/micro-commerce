@@ -1,6 +1,8 @@
 using Ardalis.GuardClauses;
 using Elastic.Clients.Elasticsearch;
+using MicroCommerce.BuildingBlocks.Common;
 using MicroCommerce.CartService.Infrastructure.Data;
+using MicroCommerce.CartService.Infrastructure.Data.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,7 @@ public static class DependencyInjection
 {
     public static void AddInfrastructure(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddMediatorDomainEventDispatcher();
         builder.AddEfCore("db");
         builder.AddElasticsearch("elasticsearch");
         builder.AddRedisDistributedCache("redis");
@@ -54,12 +57,14 @@ public static class DependencyInjection
 
     private static void AddEfCore(this IHostApplicationBuilder builder, string connectionName)
     {
+        builder.Services.AddScoped<DispatchDomainEventsInterceptor>();
         builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
             var connectionString = configuration.GetConnectionString(connectionName);
             options.UseNpgsql(connectionString)
-                .UseSnakeCaseNamingConvention();
+                .UseSnakeCaseNamingConvention()
+                .AddInterceptors(sp.GetRequiredService<DispatchDomainEventsInterceptor>());
         });
         builder.EnrichNpgsqlDbContext<ApplicationDbContext>(s =>
         {
