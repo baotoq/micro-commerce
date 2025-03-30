@@ -46,8 +46,9 @@ jobs:
           month=$(date '+%-m')
           day=$(date '+%d')
           hour=$(date '+%-H%M')
-          echo "::set-output name=VERSION::${year}.${month}${day}.${hour}"
-          echo "Version $VERSION"
+          NEW_VERSION="${year}.${month}${day}.${hour}"
+          echo "New Version: $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Build and Push BuildingBlocks.Common Nuget packages
         working-directory: code/src/BuildingBlocks/BuildingBlocks.Common
