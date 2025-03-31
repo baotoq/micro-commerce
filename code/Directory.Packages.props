@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <AspireVersion>9.1.0</AspireVersion>
-    <OpenTelemetryVersion>1.9.0</OpenTelemetryVersion>
+    <OpenTelemetryVersion>1.11.1</OpenTelemetryVersion>
     <EfcoreVersion>9.0.2</EfcoreVersion>
   </PropertyGroup>
   <ItemGroup>
