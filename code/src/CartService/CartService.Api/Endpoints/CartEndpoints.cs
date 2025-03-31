@@ -28,5 +28,15 @@ public static class CartEndpoints
             .WithName("CreateCart")
             .Produces(200)
             .ProducesValidationProblem();
+
+        group.MapDelete("{id:guid}/items/{itemId:guid}", async (IMediator mediator, [FromRoute] Guid id, [FromRoute] Guid itemId) =>
+            await mediator.Send(new RemoveProductFromCartCommand
+            {
+                CartId = CartId.From(id),
+                CartItemId = CartItemId.From(itemId)
+            }))
+            .WithName("RemoveProductFromCart")
+            .Produces(200)
+            .ProducesValidationProblem();
     }
 }

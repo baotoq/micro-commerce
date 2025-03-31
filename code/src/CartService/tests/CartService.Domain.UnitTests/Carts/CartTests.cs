@@ -102,4 +102,31 @@ public class CartTests
         // Assert
         await Verify(total);
     }
+
+    [Fact]
+    public async Task RemoveItem_ShouldRemoveItem_WhenItemExists()
+    {
+        // Arrange
+        var cartItemId = CartItemId.New();
+        var cart = new CartBuilder()
+            .WithItem(cartItemId, 1, new Money(10.0m))
+            .Build();
+
+        // Act
+        cart.RemoveItem(cartItemId);
+
+        // Assert
+        await Verify(cart.Items);
+    }
+
+    [Fact]
+    public async Task RemoveItem_ShouldThrowException_WhenItemDoesNotExist()
+    {
+        // Arrange
+        var cart = new CartBuilder().Build();
+        var nonExistentItemId = CartItemId.New();
+
+        // Act & Assert
+        await Throws(() => cart.RemoveItem(nonExistentItemId));
+    }
 }

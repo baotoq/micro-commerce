@@ -47,4 +47,14 @@ public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
 
         Discount = discount;
     }
+
+    public void RemoveItem(CartItemId cartItemId)
+    {
+        var item = _items.FirstOrDefault(i => i.CartItemId == cartItemId);
+        if (item is null)
+            throw new ArgumentException($"Item with ID {cartItemId} not found in cart.");
+
+        _items.Remove(item);
+        AddDomainEvent(new ProductRemovedFromCartDomainEvent(Id, cartItemId));
+    }
 }
