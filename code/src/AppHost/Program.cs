@@ -56,6 +56,14 @@ var cartService = builder.AddProject<Projects.CartService_Api>("cart-service")
     .WithReference(blobs)
     .WithHttpHealthCheck("/health");
 
+var inventoryService = builder.AddProject<Projects.InventoryService_Api>("inventory-service")
+    .WithDaprSidecar()
+    .WithReference(elasticsearch)
+    .WithReference(cache)
+    .WithReference(rabbitmq).WaitFor(rabbitmq)
+    .WithReference(db).WaitFor(db)
+    .WithReference(blobs)
+    .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.Yarp>("yarp")
     .WithDaprSidecar(new DaprSidecarOptions

@@ -1,4 +1,4 @@
-namespace CartService.Api.IntegrationTests;
+namespace MicroCommerce.CartService.Api.IntegrationTests;
 
 public class VerifyCheckTests
 {

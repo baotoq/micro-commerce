@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>MicroCommerce.BuildingBlocks.EFCore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
+    <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching"/>
+    <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching"/>
+    <PackageReference Include="RedLock.net" />
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../BuildingBlocks.Common/BuildingBlocks.Common.csproj" />
+  </ItemGroup>
+
+</Project>

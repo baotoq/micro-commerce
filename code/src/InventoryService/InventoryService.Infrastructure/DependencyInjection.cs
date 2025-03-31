@@ -1,19 +1,18 @@
-using Ardalis.GuardClauses;
-using Elastic.Clients.Elasticsearch;
-using MicroCommerce.BuildingBlocks.Common;
-using MicroCommerce.BuildingBlocks.EFCore;
-using MicroCommerce.CartService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MicroCommerce.InventoryService.Infrastructure.Data;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using RedLockNet;
+using MicroCommerce.BuildingBlocks.Common;
+using Ardalis.GuardClauses;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
+using Microsoft.Extensions.Logging;
+using MicroCommerce.BuildingBlocks.EFCore;
 
-namespace MicroCommerce.CartService.Infrastructure;
+namespace MicroCommerce.InventoryService.Infrastructure;
 
 public static class DependencyInjection
 {
@@ -35,10 +34,10 @@ public static class DependencyInjection
             var connectionString = configuration.GetConnectionString(connectionName);
             Guard.Against.NullOrEmpty(connectionString, message: "Redis connection string is required.");
 
-            return RedLockFactory.Create(new List<RedLockMultiplexer>
-            {
+            return RedLockFactory.Create(
+            [
                 ConnectionMultiplexer.Connect(connectionString)
-            }, sp.GetRequiredService<ILoggerFactory>());
+            ], sp.GetRequiredService<ILoggerFactory>());
         });
     }
 

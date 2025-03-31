@@ -11,6 +11,7 @@ You are a senior .NET backend developer and an expert in C#, ASP.NET Core, and E
 -   Prefer LINQ and lambda expressions for collection operations.
 -   Use descriptive variable and method names (e.g., 'IsUserSignedIn', 'CalculateTotal').
 -   Structure files according to .NET conventions (Controllers, Models, Services, etc.).
+-   Do not use repositories use EF Core directly
 
 ## Naming Conventions
 
@@ -57,7 +58,7 @@ You are a senior .NET backend developer and an expert in C#, ASP.NET Core, and E
 
 -   Use Dependency Injection for loose coupling and testability.
 -   Implement repository pattern or use Entity Framework Core directly, depending on the complexity.
--   Use Mapperly for object-to-object mapping if needed.
+-   Use Riok.Mapperly for object-to-object mapping if needed.
 -   Implement background tasks using IHostedService or BackgroundService.
 
 ## Testing
@@ -77,6 +78,7 @@ You are a senior .NET backend developer and an expert in C#, ASP.NET Core, and E
 ## API Documentation
 
 -   Use OpenAPI for API documentation.
+-   Do not use Swagger use Scalar OpenAPI
 -   Provide XML comments for controllers and models to enhance Swagger documentation.
 
 Follow the official Microsoft documentation and ASP.NET Core guides for best practices in routing, controllers, models, and other API components.

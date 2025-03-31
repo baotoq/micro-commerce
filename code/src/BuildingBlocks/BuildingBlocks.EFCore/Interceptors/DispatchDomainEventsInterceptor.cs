@@ -3,7 +3,7 @@ using MicroCommerce.BuildingBlocks.Common.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace MicroCommerce.CartService.Infrastructure.Data.Interceptors;
+namespace MicroCommerce.BuildingBlocks.EFCore.Interceptors;
 
 public class DispatchDomainEventsInterceptor(IDomainEventDispatcher domainEventDispatcher) : SaveChangesInterceptor
 {

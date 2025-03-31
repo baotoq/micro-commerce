@@ -1,7 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>MicroCommerce.CartService.Infrastructure</RootNamespace>
+    <RootNamespace>MicroCommerce.InventoryService.Infrastructure</RootNamespace>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../BuildingBlocks/BuildingBlocks.EFCore/BuildingBlocks.EFCore.csproj" />
-    <ProjectReference Include="..\CartService.Domain\CartService.Domain.csproj" />
+    <ProjectReference Include="..\InventoryService.Domain\InventoryService.Domain.csproj" />
   </ItemGroup>
 
 </Project>

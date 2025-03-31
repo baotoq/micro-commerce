@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CartService\CartService.Api\CartService.Api.csproj" />
+    <ProjectReference Include="..\InventoryService\InventoryService.Api\InventoryService.Api.csproj" />
     <ProjectReference Include="..\Gateway\Yarp\Yarp.csproj" />
   </ItemGroup>
 

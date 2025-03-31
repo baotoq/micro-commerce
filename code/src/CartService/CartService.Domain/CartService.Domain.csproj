@@ -4,8 +4,8 @@
     <RootNamespace>MicroCommerce.CartService.Domain</RootNamespace>
   </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Common\BuildingBlocks.Common.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Common\BuildingBlocks.Common.csproj" />
+  </ItemGroup>
 
 </Project>

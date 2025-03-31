@@ -1,0 +1,4 @@
+﻿{
+  Type: ArgumentException,
+  Message: Item with ID CartItemId { Value = Guid_1 } not found in cart.
+}
