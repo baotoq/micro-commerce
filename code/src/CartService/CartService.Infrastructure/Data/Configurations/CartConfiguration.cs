@@ -1,5 +1,6 @@
 using MicroCommerce.CartService.Domain.Carts;
 using MicroCommerce.CartService.Domain.Common;
+using MicroCommerce.CartService.Infrastructure.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,6 +16,9 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
             .HasConversion(id => id.Value, value => new CartId(value))
             .ValueGeneratedNever();
 
+        builder.Property(c => c.Discount).HasMoneyConversion();
+        builder.Property(c => c.Total).HasMoneyConversion();
+
         builder.OwnsMany(c => c.Items, itemsBuilder =>
         {
             itemsBuilder.WithOwner();
@@ -23,12 +27,17 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
                 .HasConversion(id => id.Value, value => new CartItemId(value))
                 .IsRequired();
 
+            itemsBuilder.HasIndex(s => s.CartItemId);
+
             itemsBuilder.Property(s => s.Quantity)
                 .IsRequired();
 
-            itemsBuilder.Property(s => s.PriceAtPurchase)
-                .HasConversion(s => s.Amount, value => new Money(value))
+            itemsBuilder.Property(s => s.UnitPriceAtPurchase)
+                .HasMoneyConversion()
                 .IsRequired();
+
+            itemsBuilder.Property(s => s.SubTotal)
+                .HasMoneyConversion();
         });
     }
 }

@@ -1,0 +1,4 @@
+﻿{
+  Type: ArgumentException,
+  Message: Quantity must be greater than zero.
+}

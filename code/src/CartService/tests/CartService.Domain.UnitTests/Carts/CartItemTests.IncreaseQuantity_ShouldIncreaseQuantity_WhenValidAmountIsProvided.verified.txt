@@ -3,7 +3,10 @@
     Value: Guid_1
   },
   Quantity: 3,
-  PriceAtPurchase: {
+  UnitPriceAtPurchase: {
     Amount: 10.0
+  },
+  SubTotal: {
+    Amount: 30.0
   }
 }
