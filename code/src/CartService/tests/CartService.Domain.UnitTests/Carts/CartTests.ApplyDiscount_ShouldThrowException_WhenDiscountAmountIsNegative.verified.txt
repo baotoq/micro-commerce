@@ -1,0 +1,4 @@
+﻿{
+  Type: ArgumentException,
+  Message: Discount amount must be greater than zero.
+}

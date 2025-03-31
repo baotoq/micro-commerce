@@ -7,7 +7,8 @@ public class CartItem : ValueObject
 {
     public CartItemId CartItemId { get; }
     public int Quantity { get; private set; }
-    public Money PriceAtPurchase { get; }
+    public Money UnitPriceAtPurchase { get; private set; }
+    public Money SubTotal => UnitPriceAtPurchase * Quantity;
 
     public CartItem(CartItemId cartItemId, int quantity, Money priceAtPurchase)
     {
@@ -15,7 +16,7 @@ public class CartItem : ValueObject
 
         CartItemId = cartItemId;
         Quantity = quantity;
-        PriceAtPurchase = priceAtPurchase;
+        UnitPriceAtPurchase = priceAtPurchase;
     }
 
     public void IncreaseQuantity(int amount)
@@ -28,6 +29,6 @@ public class CartItem : ValueObject
     {
         yield return CartItemId;
         yield return Quantity;
-        yield return PriceAtPurchase;
+        yield return UnitPriceAtPurchase;
     }
 }

@@ -10,6 +10,10 @@ public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
 
     public IReadOnlyCollection<CartItem> Items => _items.AsReadOnly();
 
+    public Money Total => _items.Aggregate(Money.Zero, (sum, item) => sum + item.SubTotal) - Discount;
+
+    public Money Discount { get; private set; } = Money.Zero;
+
     public static Cart Create()
     {
         var cart = new Cart(CartId.New());
@@ -34,5 +38,13 @@ public class Cart(CartId id) : BaseAggregateRoot<CartId>(id)
         }
 
         AddDomainEvent(new ProductAddedToCartDomainEvent(Id, existingItem));
+    }
+
+    public void ApplyDiscount(Money discount)
+    {
+        if (discount.Amount < 0)
+            throw new ArgumentException("Discount amount must be greater than zero.");
+
+        Discount = discount;
     }
 }
