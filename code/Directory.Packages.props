@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <AspireVersion>9.1.0</AspireVersion>
     <OpenTelemetryVersion>1.11.1</OpenTelemetryVersion>
-    <EfcoreVersion>9.0.2</EfcoreVersion>
+    <EfcoreVersion>9.0.3</EfcoreVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
