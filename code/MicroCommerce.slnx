@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/BuildingBlocks/">
+    <Project Path="BuildingBlocks/BuildingBlocks.Common/BuildingBlocks.Common.csproj" />
+  </Folder>
   <Project Path="MicroCommerce.ApiService/MicroCommerce.ApiService.csproj" />
   <Project Path="MicroCommerce.AppHost/MicroCommerce.AppHost.csproj" />
   <Project Path="MicroCommerce.ServiceDefaults/MicroCommerce.ServiceDefaults.csproj" />
