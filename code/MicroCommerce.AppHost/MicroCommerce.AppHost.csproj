@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Keycloak" Version="13.0.0-preview.1.25560.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj" />
     <ProjectReference Include="..\MicroCommerce.Web\MicroCommerce.Web.csproj" />
   </ItemGroup>

@@ -9,6 +9,23 @@ builder.Services.AddProblemDetails();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddAuthentication()
+    .AddKeycloakJwtBearer(
+        serviceName: "keycloak",
+        realm: "api",
+        options =>
+        {
+            options.Audience = "store.api";
+
+            // For development only - disable HTTPS metadata validation
+            // In production, use explicit Authority configuration instead
+            if (builder.Environment.IsDevelopment())
+            {
+                options.RequireHttpsMetadata = false;
+            }
+        });
+builder.Services.AddAuthorizationBuilder();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,7 +53,8 @@ app.MapGet("/weatherforecast", () =>
             .ToArray();
         return forecast;
     })
-    .WithName("GetWeatherForecast");
+    .WithName("GetWeatherForecast")
+    .RequireAuthorization();
 
 app.MapDefaultEndpoints();
 

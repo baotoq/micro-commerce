@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="..\MicroCommerce.ServiceDefaults\MicroCommerce.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\MicroCommerce.ServiceDefaults\MicroCommerce.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Keycloak.Authentication" Version="13.0.0-preview.1.25560.3" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
   </ItemGroup>
 
