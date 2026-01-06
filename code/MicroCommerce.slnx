@@ -5,5 +5,4 @@
   <Project Path="MicroCommerce.ApiService/MicroCommerce.ApiService.csproj" />
   <Project Path="MicroCommerce.AppHost/MicroCommerce.AppHost.csproj" />
   <Project Path="MicroCommerce.ServiceDefaults/MicroCommerce.ServiceDefaults.csproj" />
-  <Project Path="MicroCommerce.Web/MicroCommerce.Web.csproj" />
 </Solution>

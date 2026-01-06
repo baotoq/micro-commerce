@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.0.0">
+<Project Sdk="Aspire.AppHost.Sdk/13.1.0">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -9,12 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.Keycloak" Version="13.0.0-preview.1.25560.3" />
+    <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.Keycloak" Version="13.1.0-preview.1.25616.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj" />
-    <ProjectReference Include="..\MicroCommerce.Web\MicroCommerce.Web.csproj" />
   </ItemGroup>
 
 </Project>
