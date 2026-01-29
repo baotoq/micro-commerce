@@ -1,1 +1,100 @@
-# Requirements: MicroCommerce\n\n**Defined:** 2026-01-29\n**Core Value:** Ship a functional e-commerce platform that demonstrates modern cloud-native architectural patterns\n\n## v1 Requirements\n\nFocus on core e-commerce functionality. These requirements enable the first release.\n\n### Authentication & Authorization\n\n- [ ] **AUTH-01**: User can sign up with email and password via Keycloak\n- [ ] **AUTH-02**: User receives email verification after signup\n- [ ] **AUTH-03**: User can log in with verified credentials\n- [ ] **AUTH-04**: User can reset password via email link\n- [ ] **AUTH-05**: User session persists across browser refresh (JWT-based)\n- [ ] **AUTH-06**: User can view their authentication status and access token (debugging)\n- [ ] **AUTH-07**: Admin users can be created with elevated permissions\n- [ ] **AUTH-08**: Unauthenticated users are redirected to login for protected routes\n\n### User Profiles\n\n- [ ] **PROF-01**: User can create profile with display name\n- [ ] **PROF-02**: User can update profile information (name, email)\n- [ ] **PROF-03**: User can view their profile\n- [ ] **PROF-04**: User profile includes seller status (for v1, toggle only)\n- [ ] **PROF-05**: Admin can view all user profiles\n\n### Product Management\n\n- [ ] **PROD-01**: Admin can create product with name, description, price\n- [ ] **PROD-02**: Admin can upload product image\n- [ ] **PROD-03**: Admin can update product details (name, description, price)\n- [ ] **PROD-04**: Admin can delete products\n- [ ] **PROD-05**: Admin can manage product inventory (stock quantity)\n- [ ] **PROD-06**: System tracks product creation date and last update\n- [ ] **PROD-07**: Products display \"out of stock\" when inventory = 0\n- [ ] **PROD-08**: Admin can categorize products (initial categories: Electronics, Clothing, Books, Other)\n\n### Product Discovery\n\n- [ ] **DISC-01**: User can view product catalog (paginated, 20 items per page)\n- [ ] **DISC-02**: User can search products by name or description\n- [ ] **DISC-03**: User can filter products by category\n- [ ] **DISC-04**: User can sort products (price: low-to-high, high-to-low; newest first)\n- [ ] **DISC-05**: User can view product detail page (name, description, price, images, inventory status)\n- [ ] **DISC-06**: Product list shows average rating (placeholder: 4.5 stars)\n\n### Shopping Cart\n\n- [ ] **CART-01**: User can add product to cart (authenticated)\n- [ ] **CART-02**: User can view cart contents\n- [ ] **CART-03**: User can update quantity for cart item\n- [ ] **CART-04**: User can remove item from cart\n- [ ] **CART-05**: Cart displays subtotal and calculated tax (flat 10% for v1)\n- [ ] **CART-06**: Cart displays estimated total with shipping (flat $5.00 for v1)\n- [ ] **CART-07**: Cart persists across page refreshes (server-side storage)\n- [ ] **CART-08**: Cart updates when product inventory changes\n- [ ] **CART-09**: User cannot add more items than available inventory\n\n### Checkout & Orders\n\n- [ ] **ORD-01**: User can proceed to checkout from cart\n- [ ] **ORD-02**: Checkout displays shipping address form (name, address, city, state, ZIP)\n- [ ] **ORD-03**: Checkout displays billing address (same/different from shipping)\n- [ ] **ORD-04**: Checkout displays order summary (items, subtotal, tax, shipping, total)\n- [ ] **ORD-05**: User can place order (cart checkout → order creation)\n- [ ] **ORD-06**: Order is recorded with user ID, items, totals, addresses, timestamp\n- [ ] **ORD-07**: Inventory is decremented when order is placed\n- [ ] **ORD-08**: User receives order confirmation (email + UI notification)\n- [ ] **ORD-09**: User can view their order history\n- [ ] **ORD-10**: User can view order details (items, status, tracking)\n- [ ] **ORD-11**: Order status displays as: \"Pending\" → \"Processing\" → \"Shipped\" → \"Delivered\"\n- [ ] **ORD-12**: Admin can update order status\n\n### Payments (v1 Simplified)\n\n- [ ] **PAY-01**: Payment form accepts card details (mock for v1; no real processing)\n- [ ] **PAY-02**: Payment form validates card number, CVC, expiration\n- [ ] **PAY-03**: Order is marked \"Processing\" after successful payment\n- [ ] **PAY-04**: Payment record is stored with order reference\n- [ ] **PAY-05**: Failed payment prevents order from being finalized\n\n### Admin Dashboard\n\n- [ ] **ADMIN-01**: Admin can access dashboard at `/admin`\n- [ ] **ADMIN-02**: Dashboard displays sales metrics (total orders, revenue, active users)\n- [ ] **ADMIN-03**: Admin can view all users in a table\n- [ ] **ADMIN-04**: Admin can view all orders in a table\n- [ ] **ADMIN-05**: Admin can view product inventory status\n- [ ] **ADMIN-06**: Admin can access product management (CRUD)\n- [ ] **ADMIN-07**: Admin can update order status\n- [ ] **ADMIN-08**: Dashboard displays last 7 days of order data in a chart\n\n### API Endpoints\n\n- [ ] **API-01**: `/api/auth/*` — Authentication endpoints (NextAuth.js)\n- [ ] **API-02**: `GET /api/users/profile` — Current user profile\n- [ ] **API-03**: `PUT /api/users/profile` — Update user profile\n- [ ] **API-04**: `GET /api/products` — List products (paginated, filterable)\n- [ ] **API-05**: `GET /api/products/{id}` — Product detail\n- [ ] **API-06**: `POST /api/products` — Create product (admin only)\n- [ ] **API-07**: `PUT /api/products/{id}` — Update product (admin only)\n- [ ] **API-08**: `DELETE /api/products/{id}` — Delete product (admin only)\n- [ ] **API-09**: `GET /api/cart` — Get current cart\n- [ ] **API-10**: `POST /api/cart/items` — Add to cart\n- [ ] **API-11**: `PUT /api/cart/items/{itemId}` — Update cart item quantity\n- [ ] **API-12**: `DELETE /api/cart/items/{itemId}` — Remove from cart\n- [ ] **API-13**: `POST /api/orders` — Place order (checkout)\n- [ ] **API-14**: `GET /api/orders` — Get user's orders\n- [ ] **API-15**: `GET /api/orders/{id}` — Get order details\n- [ ] **API-16**: `PUT /api/orders/{id}/status` — Update order status (admin only)\n- [ ] **API-17**: `POST /api/payments` — Process payment (mock)\n- [ ] **API-18**: `GET /api/admin/dashboard` — Dashboard metrics (admin only)\n\n### System Health\n\n- [ ] **HEALTH-01**: Health check endpoint responds at `/health`\n- [ ] **HEALTH-02**: Liveness check endpoint responds at `/alive`\n- [ ] **HEALTH-03**: Health checks include database connectivity\n- [ ] **HEALTH-04**: OpenAPI documentation available at `/openapi/v1.json`\n\n## v2 Requirements (Deferred)\n\nThese features enhance functionality but are not required for v1 release.\n\n### Seller Capabilities\n\n- **SELLER-01**: Sellers can list their own products\n- **SELLER-02**: Sellers can manage their own inventory\n- **SELLER-03**: Sellers view sales dashboard (their products only)\n- **SELLER-04**: Sellers set shipping rates for their products\n- **SELLER-05**: Commission system deducts platform fee from seller payouts\n\n### Review System\n\n- **REVIEW-01**: User can leave review for purchased product (1-5 stars + text)\n- **REVIEW-02**: Review is associated with user and product\n- **REVIEW-03**: Product detail shows average rating from all reviews\n- **REVIEW-04**: Admin can moderate reviews (flag/remove inappropriate)\n- **REVIEW-05**: Seller can respond to reviews\n\n### Notifications\n\n- **NOTIF-01**: User receives email when order status changes\n- **NOTIF-02**: User receives email when product review is added\n- **NOTIF-03**: User receives in-app notifications (bell icon with unread count)\n- **NOTIF-04**: User can configure notification preferences\n- **NOTIF-05**: Admin receives email for high-value orders\n\n### Search & Analytics\n\n- **SEARCH-01**: Elasticsearch integration indexes product catalog\n- **SEARCH-02**: Full-text search across product name, description, tags\n- **SEARCH-03**: Search suggestions based on popular queries\n- **SEARCH-04**: Admin can view popular search terms\n- **SEARCH-05**: Admin can view product view analytics\n- **SEARCH-06**: Admin can view user behavior analytics\n\n### Real-Time Features\n\n- **REAL-01**: Inventory updates broadcast to shopping carts in real-time\n- **REAL-02**: Order status updates appear without page refresh\n- **REAL-03**: Admin chat with support team (message queue via RabbitMQ)\n\n### Payment Processing\n\n- **PAY-V2-01**: Stripe integration for real credit card processing\n- **PAY-V2-02**: Webhook handling for payment status updates\n- **PAY-V2-03**: Refund processing for cancelled orders\n- **PAY-V2-04**: Subscription/recurring payments support\n\n## Out of Scope\n\n| Feature | Reason |\n|---------|--------|\n| Mobile App | Web-first strategy; can build React Native app later that consumes same APIs |\n| Real Shipping Integration | v1 uses flat shipping; FedEx/UPS APIs deferred to v2 |\n| Multi-Currency | USD only for v1; internationalization and currency conversion in v2 |\n| Tax Calculation | Flat 10% tax for v1; automated tax engine (Taxjar, etc.) in v2 |\n| Marketplace Governance | No content moderation, seller verification, or disputes for v1 |\n| Real-Time Chat | Message routing deferred; basic notifications sufficient for v1 |\n| Recommendation Engine | No ML-powered recommendations for v1; random featured products only |\n| Subscription Products | Recurring billing out of scope for v1 |\n| Digital Products | Physical goods only for v1; digital downloads in v2 |\n| Inventory Reservations | Items reserved immediately upon checkout; holds not configurable for v1 |\n\n## Traceability\n\nMapping requirements to roadmap phases (to be completed after roadmap creation).\n\n| Requirement | Phase | Status |\n|-------------|-------|--------|\n| AUTH-01 through AUTH-08 | Phase 1 | In Progress |\n| PROF-01 through PROF-05 | Phase 2 | Pending |\n| PROD-01 through PROD-08 | Phase 3 | Pending |\n| DISC-01 through DISC-06 | Phase 4 | Pending |\n| CART-01 through CART-09 | Phase 5 | Pending |\n| ORD-01 through ORD-12 | Phase 6 | Pending |\n| PAY-01 through PAY-05 | Phase 7 | Pending |\n| ADMIN-01 through ADMIN-08 | Phase 8 | Pending |\n| API-01 through API-18 | All Phases | Ongoing |\n| HEALTH-01 through HEALTH-04 | Phase 1 | In Progress |\n\n**Coverage:**\n- v1 requirements: 54 total\n- Mapped to phases: 54\n- Unmapped: 0 ✓\n\n---\n\n*Requirements defined: 2026-01-29*\n*Last updated: 2026-01-29 after project initialization*\n"}
+# Requirements
+
+**Project:** MicroCommerce
+**Version:** v1
+**Last updated:** 2026-01-29
+
+## v1 Requirements
+
+### Catalog
+
+- [ ] **CAT-01**: User can browse products in a grid view with image, name, price
+- [ ] **CAT-02**: User can view product detail page with full info and add-to-cart
+- [ ] **CAT-03**: User can filter products by category
+- [ ] **CAT-04**: User can search products by name/description
+
+### Cart
+
+- [ ] **CART-01**: User can view cart, update quantities, and remove items
+- [ ] **CART-02**: User's cart persists across page refreshes (database-backed)
+- [ ] **CART-03**: User sees feedback when adding item to cart (toast/badge)
+- [ ] **CART-04**: Cart updates feel instant (optimistic UI)
+
+### Checkout
+
+- [ ] **CHK-01**: User can complete checkout flow (shipping info, payment, confirmation)
+- [ ] **CHK-02**: User can checkout as guest without creating account
+- [ ] **CHK-03**: User sees mock payment that simulates success/failure
+- [ ] **CHK-04**: User sees order confirmation with summary after purchase
+
+### Orders
+
+- [ ] **ORD-01**: Logged-in user can view their order history
+- [ ] **ORD-02**: User sees real-time order status updates
+- [ ] **ORD-03**: User can view order detail page
+
+### Inventory
+
+- [ ] **INV-01**: System tracks stock levels per product
+- [ ] **INV-02**: System reserves stock during checkout (prevents overselling)
+- [ ] **INV-03**: Stock counts update in real-time when orders placed
+
+### Admin
+
+- [ ] **ADM-01**: Admin can create, edit, and delete products
+- [ ] **ADM-02**: Admin can adjust inventory stock levels
+- [ ] **ADM-03**: Admin sees dashboard with order counts and revenue
+- [ ] **ADM-04**: Admin can view and manage orders
+
+### Infrastructure
+
+- [ ] **INFRA-01**: System has seed data with sample products
+- [ ] **INFRA-02**: API Gateway (YARP) routes frontend requests to services
+- [ ] **INFRA-03**: Services communicate via Azure Service Bus events
+- [ ] **INFRA-04**: Unit and integration tests cover critical paths
+
+## v2 Requirements (Deferred)
+
+Features explicitly deferred to future versions:
+
+- [ ] Real payment processing (Stripe integration)
+- [ ] User reviews and ratings
+- [ ] Wishlist/favorites
+- [ ] Email notifications
+- [ ] Coupon/discount codes
+- [ ] Multiple shipping options
+- [ ] Tax calculation
+- [ ] Multi-currency support
+- [ ] Product variants (size/color)
+- [ ] Saved payment methods
+- [ ] Recommendations engine
+- [ ] Advanced analytics dashboard
+- [ ] Multi-language (i18n)
+- [ ] Address validation
+- [ ] Order cancellation/refunds
+
+## Out of Scope
+
+Explicitly excluded from this project:
+
+| Exclusion | Rationale |
+|-----------|-----------|
+| Real payment processing | Mock payments sufficient for demo, avoids compliance burden |
+| Event sourcing | Adds complexity without proportional demo value |
+| Separate admin application | Integrated admin routes simpler, shared auth context |
+| Mobile app | Web-first, responsive design covers mobile |
+| Real-time chat/support | Not core to e-commerce demo |
+| Multi-tenancy | Single store demonstration |
+| Social login | Keycloak handles this if needed, not v1 priority |
+
+## Traceability
+
+*Populated by roadmap creation*
+
+| REQ-ID | Phase | Status |
+|--------|-------|--------|
+| — | — | — |
+
+---
+*Requirements defined: 2026-01-29*
+*Total v1 requirements: 24*
