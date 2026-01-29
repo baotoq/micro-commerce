@@ -1,1 +1,405 @@
-# Roadmap: MicroCommerce v1\n\n**Status:** 8 phases | 54 requirements | Ready to build\n\n## Phase Overview\n\n| Phase | Name | Goal | Requirements | Status |\n|-------|------|------|--------------|--------|\n| 1 | Foundation | Core infrastructure, auth, health checks | AUTH-01-08, HEALTH-01-04 | ✓ In Progress |\n| 2 | User Profiles | Profile management, user data | PROF-01-05 | ○ Pending |\n| 3 | Product Management | Admin CRUD for products | PROD-01-08 | ○ Pending |\n| 4 | Product Discovery | Search, filter, browse catalog | DISC-01-06 | ○ Pending |\n| 5 | Shopping Cart | Cart functionality, quantity management | CART-01-09 | ○ Pending |\n| 6 | Checkout & Orders | Order placement, status tracking | ORD-01-12 | ○ Pending |\n| 7 | Payment Processing | Payment form, transaction handling | PAY-01-05 | ○ Pending |\n| 8 | Admin Dashboard | Metrics, user/order management | ADMIN-01-08 | ○ Pending |\n\n---\n\n## Phase Details\n\n### Phase 1: Foundation\n\n**Goal:** Establish authentication, authorization, API framework, and operational readiness\n\n**Requirements Covered:**\n- AUTH-01 through AUTH-08 (User authentication and authorization)\n- HEALTH-01 through HEALTH-04 (Health checks and OpenAPI)\n\n**Success Criteria:**\n1. User can sign up with email and password through Keycloak\n2. Authenticated user's JWT token is accessible in the browser session\n3. NextAuth.js middleware protects routes and redirects unauthenticated users\n4. Backend API requires authorization for protected endpoints\n5. Health check endpoint responds with system status\n6. OpenAPI documentation is generated and accessible\n7. Admin users can be created with elevated permissions\n8. Email verification flow works (outbound email configured)\n\n**Key Deliverables:**\n- Keycloak realm with users and roles fully configured\n- NextAuth.js callback logic enriches JWT with access tokens\n- Protected API routes enforce JWT validation\n- Middleware in Next.js blocks unauthenticated access to protected pages\n- Health check integration with Kubernetes readiness/liveness probes\n- E2E test: Sign up → Receive email → Verify → Login → Access protected endpoint\n\n**API Endpoints:**\n- `POST /api/auth/signin` — Initiate OAuth flow\n- `POST /api/auth/signout` — Revoke session\n- `GET /api/auth/session` — Current session (public, but minimal info)\n- `GET /me` (backend) — Current authenticated user (requires JWT)\n- `GET /health`, `GET /alive` — Health checks\n- `GET /openapi/v1.json` — API documentation\n\n**Estimated Effort:** 2-3 weeks (foundation critical, requires careful implementation)\n\n---\n\n### Phase 2: User Profiles\n\n**Goal:** Enable users to manage personal information and establish seller status\n\n**Requirements Covered:**\n- PROF-01 through PROF-05 (User profile creation and management)\n\n**Success Criteria:**\n1. User can view and edit their profile (display name, email)\n2. Profile data is persisted to PostgreSQL\n3. User can toggle seller status (admin sets role in Keycloak)\n4. Admin can view all user profiles and details\n5. Profile page shows created date and last updated date\n6. Email changes trigger verification workflow\n7. Profile page is protected; unauthorized users cannot view others' profiles\n\n**Key Deliverables:**\n- User entity in database with profile fields\n- Profile management API endpoints (GET, PUT, DELETE)\n- Frontend profile page with edit form\n- Backend validation and error handling\n- Admin user list view\n- Database migration for user table\n\n**API Endpoints:**\n- `GET /api/users/profile` — Current user profile\n- `PUT /api/users/profile` — Update profile\n- `GET /api/users` (admin) — List all users\n- `GET /api/users/{id}` (admin) — User details\n- `PATCH /api/users/{id}/seller-status` (admin) — Toggle seller flag\n\n**Estimated Effort:** 1.5-2 weeks\n\n---\n\n### Phase 3: Product Management\n\n**Goal:** Admin can create, read, update, and delete products with inventory\n\n**Requirements Covered:**\n- PROD-01 through PROD-08 (Product CRUD and inventory)\n\n**Success Criteria:**\n1. Admin can access product management page\n2. Admin can create product with name, description, price, category\n3. Admin can upload product image (store in file system or S3)\n4. Admin can edit product details\n5. Admin can delete products\n6. Admin can manage inventory (stock quantity)\n7. Products track creation and modification timestamps\n8. \"Out of stock\" designation when inventory ≤ 0\n9. Categories are pre-defined (Electronics, Clothing, Books, Other)\n10. Product data is visible to non-admins (but only via Discovery phase)\n\n**Key Deliverables:**\n- Product entity in database\n- Category lookup table (seed data)\n- Product CRUD API endpoints\n- Image upload handling (file storage or S3)\n- Admin product management UI\n- Database migrations\n- Validation (price > 0, name not empty, etc.)\n\n**API Endpoints:**\n- `GET /api/products` (admin) — All products (including drafts/unpublished)\n- `POST /api/products` (admin) — Create product\n- `PUT /api/products/{id}` (admin) — Update product\n- `DELETE /api/products/{id}` (admin) — Delete product\n- `PATCH /api/products/{id}/inventory` (admin) — Update stock\n- `GET /api/categories` — Category list\n\n**Estimated Effort:** 2-2.5 weeks\n\n---\n\n### Phase 4: Product Discovery\n\n**Goal:** Users can browse, search, and filter products\n\n**Requirements Covered:**\n- DISC-01 through DISC-06 (Search, filter, sort, product detail)\n\n**Success Criteria:**\n1. Product catalog page displays products paginated (20 per page)\n2. User can search by product name/description (in-database initially; Elasticsearch in v2)\n3. User can filter by category\n4. User can sort by price (ASC, DESC) or recency\n5. Product detail page shows all product information\n6. Product list shows placeholder rating (e.g., 4.5 stars)\n7. Out-of-stock products are clearly marked\n8. Performance: Product list loads in <500ms for 100 products\n\n**Key Deliverables:**\n- Catalog UI with search, filter, sort controls\n- Product detail page\n- Backend query optimization (indexes on name, category)\n- Pagination logic\n- Frontend state management for filter/sort selections\n- Responsive design for mobile viewing\n\n**API Endpoints:**\n- `GET /api/products?page=1&limit=20&category=Electronics&sort=price&order=asc` — List products (public)\n- `GET /api/products/{id}` — Product detail (public)\n- `GET /api/categories` — Categories list (public)\n\n**Estimated Effort:** 1.5-2 weeks\n\n---\n\n### Phase 5: Shopping Cart\n\n**Goal:** Users can add products to cart, manage quantities, persist across sessions\n\n**Requirements Covered:**\n- CART-01 through CART-09 (Cart management and persistence)\n\n**Success Criteria:**\n1. Authenticated user can add product to cart\n2. Cart persists on server (not local storage)\n3. User can view cart contents with images, prices, quantities\n4. User can update quantity for cart items\n5. User can remove items\n6. Cart displays subtotal, tax (flat 10%), shipping (flat $5), and total\n7. Cart updates reflect current product prices (in case admin changes price)\n8. Cart prevents adding more items than available inventory\n9. Cart updates when product inventory changes (across browser tabs/windows)\n10. Removing product from catalog clears it from all carts\n\n**Key Deliverables:**\n- CartItem entity in database\n- Cart CRUD API endpoints\n- Frontend cart page with line items\n- Tax and shipping calculation logic\n- Real-time inventory validation\n- Cart abandonment handling (cleanup old carts)\n\n**API Endpoints:**\n- `GET /api/cart` — Get current user's cart\n- `POST /api/cart/items` — Add item to cart\n- `PUT /api/cart/items/{itemId}` — Update quantity\n- `DELETE /api/cart/items/{itemId}` — Remove item\n- `DELETE /api/cart` — Clear entire cart\n\n**Estimated Effort:** 2-2.5 weeks\n\n---\n\n### Phase 6: Checkout & Orders\n\n**Goal:** Users can place orders from cart with complete order lifecycle\n\n**Requirements Covered:**\n- ORD-01 through ORD-12 (Order placement, status tracking, history)\n\n**Success Criteria:**\n1. User proceeds to checkout from cart\n2. Checkout form captures shipping and billing addresses\n3. Order summary displays items, totals\n4. Order placement decrements inventory\n5. Order record includes all details (user, items, addresses, totals, timestamp)\n6. Order receives unique ID and status (Pending)\n7. User receives order confirmation email\n8. User can view order history (all past orders)\n9. User can view order detail page\n10. Admin can update order status (Pending → Processing → Shipped → Delivered)\n11. Admin can add tracking number to order\n12. User notified when order status changes\n\n**Key Deliverables:**\n- Order entity with line items\n- Order status enum (Pending, Processing, Shipped, Delivered, Cancelled)\n- Checkout flow UI\n- Address validation\n- Order confirmation email template\n- Order history/detail views\n- Admin order management UI\n- Inventory transaction handling\n\n**API Endpoints:**\n- `POST /api/orders` — Create order (checkout)\n- `GET /api/orders` — User's order history\n- `GET /api/orders/{id}` — Order detail\n- `PUT /api/orders/{id}/status` (admin) — Update status\n- `PUT /api/orders/{id}/tracking` (admin) — Add tracking number\n- `GET /api/admin/orders` (admin) — All orders\n\n**Estimated Effort:** 2.5-3 weeks\n\n---\n\n### Phase 7: Payment Processing\n\n**Goal:** Handle payment information and order payment status\n\n**Requirements Covered:**\n- PAY-01 through PAY-05 (Payment form, validation, processing)\n\n**Success Criteria:**\n1. Checkout form includes payment section\n2. Form validates card number (Luhn algorithm), CVC, expiration\n3. Form provides clear feedback for invalid input\n4. Payment submission is handled securely (no sensitive data logged)\n5. Successful payment transitions order to \"Processing\" status\n6. Failed payment prevents order finalization and shows error\n7. Payment record is stored with order reference\n8. Admin can view payment status for each order\n9. Transaction confirmation email sent to user\n10. Payment is idempotent (duplicate request doesn't double-charge)\n\n**Key Deliverables:**\n- Payment entity in database\n- Payment form with client-side validation\n- Payment processing API (mock/Stripe integration)\n- Error handling and retry logic\n- Payment confirmation flow\n- Admin payment view\n- Webhook handling for payment status (if using Stripe)\n\n**API Endpoints:**\n- `POST /api/payments` — Process payment (creates/updates payment record)\n- `GET /api/orders/{id}/payment` — Payment details for order\n- `GET /api/admin/payments` (admin) — All payments\n\n**Estimated Effort:** 2-2.5 weeks (mocked in v1; real processing deferred to v2)\n\n---\n\n### Phase 8: Admin Dashboard\n\n**Goal:** Admin has central view of business metrics and management capabilities\n\n**Requirements Covered:**\n- ADMIN-01 through ADMIN-08 (Dashboard metrics, user/order/product management)\n\n**Success Criteria:**\n1. Admin dashboard displays at `/admin` (protected route)\n2. Dashboard shows key metrics: total orders, total revenue, active users (this period vs. last)\n3. Dashboard displays 7-day sales trend chart\n4. Admin can view all users in table with search/sort/pagination\n5. Admin can view all orders in table with search/sort/pagination\n6. Admin can view product inventory status (low stock alerts)\n7. Admin can access product CRUD from dashboard\n8. Admin can update order status from order detail view\n9. Dashboard updates in real-time (data refreshes without page reload)\n10. Admin can export orders/users to CSV (future: analytics export)\n\n**Key Deliverables:**\n- Admin dashboard UI with layout\n- Metrics calculation queries\n- Chart library (Chart.js or Recharts)\n- User/order/product list views with filtering\n- Low inventory alerts\n- Export functionality\n- Access control (admin-only routes)\n\n**API Endpoints:**\n- `GET /api/admin/dashboard/metrics` — Dashboard metrics\n- `GET /api/admin/users` — Paginated user list\n- `GET /api/admin/orders` — Paginated order list\n- `GET /api/admin/products/low-stock` — Low inventory alerts\n- `GET /api/admin/dashboard/sales-trend?days=7` — 7-day sales data\n\n**Estimated Effort:** 2-2.5 weeks\n\n---\n\n## Phase Dependencies\n\n```\nPhase 1 (Foundation)\n    ↓\nPhase 2 (Profiles) ←—────────────┐\n    ↓                             │\nPhase 3 (Products)                │\n    ↓                             │\nPhase 4 (Discovery)               │\n    ↓                             │\nPhase 5 (Cart)                    │\n    ↓                             │\nPhase 6 (Orders) ←—— requires Profiles\n    ↓                             │\nPhase 7 (Payments)                │\n    ↓                             │\nPhase 8 (Dashboard)               │\n                                  │\n(All phases require Phase 1)  ←———┘\n```\n\n**Notes:**\n- Phase 1 must complete before any other phase\n- Phase 2 (Profiles) can run in parallel with Phase 3-4\n- Phase 6 (Orders) requires Phase 5 (Cart) AND Phase 2 (Profiles for addresses)\n- Phases 7-8 require Phases 5-6 to be complete\n\n---\n\n## Success Criteria for v1 Release\n\nAll of the following must be true:\n\n1. ✓ **Functional e-commerce**: Users can browse products, add to cart, checkout, and place orders\n2. ✓ **Secure authentication**: All user data protected by OAuth2/Keycloak\n3. ✓ **Admin controls**: Products, orders, users fully manageable via admin dashboard\n4. ✓ **Data persistence**: PostgreSQL stores all user, product, order data; survives restarts\n5. ✓ **Production-ready infrastructure**: Docker Compose, health checks, OpenAPI docs\n6. ✓ **Performance**: Pages load <1s, API responds <200ms for typical queries\n7. ✓ **Error handling**: All error paths handled gracefully; no unhandled exceptions\n8. ✓ **Tests**: Integration tests for critical flows (signup, add to cart, checkout)\n9. ✓ **Documentation**: README with setup instructions, API docs via OpenAPI, architecture guide\n10. ✓ **Deployable**: Can run locally with Docker Compose; can deploy to cloud (Azure, AWS, GCP) via Aspire\n\n---\n\n## Post-v1 (Roadmap for v2)\n\nOnce v1 is shipped and validated:\n\n- **Seller Marketplace**: Enable multiple sellers, inventory management, commission system\n- **Reviews & Ratings**: Product reviews, seller ratings, review moderation\n- **Real-Time Features**: Inventory broadcast via WebSockets, order status notifications\n- **Search Enhancement**: Elasticsearch integration, full-text search, faceted navigation\n- **Payments**: Stripe real card processing, recurring subscriptions\n- **Analytics**: Advanced dashboards, user cohort analysis, inventory forecasting\n- **Service Decomposition**: Split into microservices (order service, inventory service, etc.)\n- **Mobile App**: React Native app targeting iOS/Android\n\n---\n\n*Roadmap created: 2026-01-29*\n*Last updated: 2026-01-29 after project initialization*\n"}
+# Roadmap
+
+**Project:** MicroCommerce
+**Depth:** Comprehensive (8-12 phases)
+**Approach:** Gradual extraction (modular monolith first, then split services)
+**Created:** 2026-01-29
+
+## Overview
+
+This roadmap implements a complete e-commerce platform through 10 phases, following the gradual extraction pattern recommended by research. Each phase builds on the previous, establishing clear bounded contexts before any service extraction.
+
+**Total Requirements:** 24
+**Phases:** 10
+**Estimated Duration:** Comprehensive implementation
+
+---
+
+## Phase 1: Foundation & Project Structure
+
+**Goal:** Establish modular monolith structure with clear bounded contexts, shared building blocks, and development patterns.
+
+**Requirements:**
+- None directly (infrastructure phase)
+
+**Deliverables:**
+- Modular monolith structure with Features/ folders (Catalog, Cart, Ordering, Inventory)
+- Database-per-service pattern with separate DbContexts
+- MediatR pipeline with validation behaviors
+- FluentValidation integration
+- In-process domain event dispatcher
+- CQRS usage guidelines
+
+**Success Criteria:**
+1. Developer can create a new feature module by copying existing template
+2. Each module has isolated DbContext with independent migrations
+3. MediatR pipeline validates requests before handlers execute
+4. Domain events fire synchronously within transaction boundary
+
+**Addresses Pitfalls:**
+- Premature service extraction (bounded contexts defined first)
+- CQRS overuse (guidelines established)
+- Database ownership confusion (separate DbContexts)
+
+---
+
+## Phase 2: Catalog Domain & Admin CRUD
+
+**Goal:** Build product catalog domain with admin management capabilities.
+
+**Requirements:**
+- **ADM-01**: Admin can create, edit, and delete products
+
+**Deliverables:**
+- Product aggregate (name, description, price, image, category)
+- Category aggregate
+- Admin product CRUD endpoints
+- Admin product management UI
+- Product domain events (ProductCreated, ProductUpdated, ProductDeleted)
+
+**Success Criteria:**
+1. Admin can create a product with image, price, and category
+2. Admin can edit product details and see changes reflected
+3. Admin can delete a product (soft delete)
+4. Product changes publish domain events
+
+**Dependencies:** Phase 1
+
+---
+
+## Phase 3: Catalog Storefront & Seed Data
+
+**Goal:** Build customer-facing product browsing experience with initial data.
+
+**Requirements:**
+- **CAT-01**: User can browse products in a grid view with image, name, price
+- **CAT-02**: User can view product detail page with full info and add-to-cart
+- **CAT-03**: User can filter products by category
+- **CAT-04**: User can search products by name/description
+- **INFRA-01**: System has seed data with sample products
+
+**Deliverables:**
+- Product listing page with grid layout
+- Product detail page
+- Category filter component
+- Basic search functionality (name/description)
+- Seed data script with 20+ sample products across categories
+- shadcn/ui components for product cards
+
+**Success Criteria:**
+1. User sees product grid on homepage with images, names, and prices
+2. User clicks product and sees detail page with full description
+3. User filters by category and sees only matching products
+4. User searches "laptop" and sees relevant products
+5. Fresh database has sample products after seed runs
+
+**Dependencies:** Phase 2
+
+---
+
+## Phase 4: Inventory Domain
+
+**Goal:** Build inventory tracking with stock management and reservation pattern.
+
+**Requirements:**
+- **INV-01**: System tracks stock levels per product
+- **INV-02**: System reserves stock during checkout (prevents overselling)
+- **ADM-02**: Admin can adjust inventory stock levels
+
+**Deliverables:**
+- StockItem aggregate with quantity tracking
+- Reservation pattern with TTL
+- Admin inventory adjustment UI
+- Stock level display on product pages
+- Optimistic concurrency for stock updates
+- Inventory domain events (StockReserved, StockReleased, StockAdjusted)
+
+**Success Criteria:**
+1. Admin can set stock quantity for any product
+2. Product page shows "In Stock" or "Out of Stock" badge
+3. Reservation reduces available quantity temporarily
+4. Expired reservations auto-release (TTL)
+5. Concurrent stock updates don't corrupt data (optimistic concurrency)
+
+**Addresses Pitfalls:**
+- Inventory overselling (reservation pattern)
+
+**Dependencies:** Phase 3
+
+---
+
+## Phase 5: Event Bus Infrastructure
+
+**Goal:** Establish Azure Service Bus messaging with transactional outbox pattern.
+
+**Requirements:**
+- **INFRA-03**: Services communicate via Azure Service Bus events
+
+**Deliverables:**
+- MassTransit configuration with Azure Service Bus
+- Transactional outbox pattern implementation
+- Idempotent event consumers
+- Dead-letter queue configuration
+- Correlation ID tracking
+- Replace in-process events with Service Bus
+
+**Success Criteria:**
+1. Domain event published in transaction reaches consumer reliably
+2. Duplicate messages don't cause duplicate side effects (idempotency)
+3. Failed messages land in DLQ with correlation for debugging
+4. Events include correlation ID for end-to-end tracing
+
+**Addresses Pitfalls:**
+- Event-driven eventually-never consistency (outbox pattern)
+
+**Dependencies:** Phase 4
+
+---
+
+## Phase 6: Cart Domain
+
+**Goal:** Build shopping cart with guest support, persistence, and optimistic UI.
+
+**Requirements:**
+- **CART-01**: User can view cart, update quantities, and remove items
+- **CART-02**: User's cart persists across page refreshes (database-backed)
+- **CART-03**: User sees feedback when adding item to cart (toast/badge)
+- **CART-04**: Cart updates feel instant (optimistic UI)
+
+**Deliverables:**
+- Cart aggregate with CartItem value objects
+- Guest cart support (cookie-based buyer ID)
+- Cart PostgreSQL persistence
+- Add/update/remove endpoints
+- Cart merge on login (guest + authenticated)
+- Cart expiration job (30-day TTL)
+- Optimistic UI with React Query mutations
+- Toast notifications for cart actions
+- Cart badge in header showing item count
+
+**Success Criteria:**
+1. Guest user adds item to cart, refreshes page, cart persists
+2. User updates quantity, UI updates instantly before server confirms
+3. Toast appears "Added to cart" when item added
+4. Header badge shows correct item count
+5. User logs in, anonymous cart merges with existing cart
+
+**Addresses Pitfalls:**
+- Cart/checkout race conditions (idempotency, concurrency)
+
+**Dependencies:** Phase 5
+
+---
+
+## Phase 7: Ordering Domain & Checkout
+
+**Goal:** Build order creation with checkout flow and guest checkout support.
+
+**Requirements:**
+- **CHK-01**: User can complete checkout flow (shipping info, payment, confirmation)
+- **CHK-02**: User can checkout as guest without creating account
+- **CHK-03**: User sees mock payment that simulates success/failure
+- **CHK-04**: User sees order confirmation with summary after purchase
+- **INV-03**: Stock counts update in real-time when orders placed
+
+**Deliverables:**
+- Order aggregate with OrderItem value objects
+- Checkout multi-step UI (shipping, payment, review)
+- Guest checkout (email-based identification)
+- Mock payment service (configurable success/failure)
+- Order confirmation page
+- Order status state machine (Submitted -> Confirmed -> Paid)
+- Checkout saga with MassTransit
+- Compensation handlers for saga rollback
+- Real-time stock update via events
+
+**Success Criteria:**
+1. User completes checkout: enters shipping, reviews, pays, sees confirmation
+2. Guest (not logged in) can complete full checkout with email
+3. Mock payment shows success/failure states appropriately
+4. Confirmation page shows order number, items, total, shipping address
+5. Stock quantity decreases after successful order
+
+**Addresses Pitfalls:**
+- Saga without compensation (compensation handlers)
+
+**Dependencies:** Phase 6
+
+---
+
+## Phase 8: Order History & Management
+
+**Goal:** Build order history for customers and order management for admins.
+
+**Requirements:**
+- **ORD-01**: Logged-in user can view their order history
+- **ORD-02**: User sees real-time order status updates
+- **ORD-03**: User can view order detail page
+- **ADM-03**: Admin sees dashboard with order counts and revenue
+- **ADM-04**: Admin can view and manage orders
+
+**Deliverables:**
+- Order history page (authenticated users)
+- Order detail page
+- Real-time status updates (polling or SignalR)
+- Admin dashboard with metrics
+- Admin order list with filters
+- Admin order detail with status management
+
+**Success Criteria:**
+1. Logged-in user sees list of past orders with status
+2. Order detail page shows all items, shipping, payment info
+3. User sees status change within seconds of update
+4. Admin dashboard shows today's orders, total revenue
+5. Admin can update order status (e.g., mark shipped)
+
+**Dependencies:** Phase 7
+
+---
+
+## Phase 9: API Gateway
+
+**Goal:** Add YARP-based API Gateway for unified service routing.
+
+**Requirements:**
+- **INFRA-02**: API Gateway (YARP) routes frontend requests to services
+
+**Deliverables:**
+- YARP API Gateway service
+- Route configuration for all modules
+- JWT validation at gateway level
+- Aspire service discovery integration
+- Rate limiting configuration
+- Request logging
+
+**Success Criteria:**
+1. Frontend requests route through gateway to appropriate service
+2. Invalid JWT rejected at gateway before reaching service
+3. Gateway appears in Aspire dashboard with health status
+4. Rate-limited client receives 429 response
+
+**Dependencies:** Phase 8
+
+---
+
+## Phase 10: Testing & Polish
+
+**Goal:** Comprehensive testing and production readiness.
+
+**Requirements:**
+- **INFRA-04**: Unit and integration tests cover critical paths
+
+**Deliverables:**
+- Unit tests for domain logic (aggregates, value objects)
+- Integration tests for API endpoints
+- Integration tests for checkout saga
+- E2E test for critical path (browse -> cart -> checkout)
+- Performance baseline tests
+- Error handling improvements
+- Loading states and empty states polish
+
+**Success Criteria:**
+1. Domain logic has >80% unit test coverage
+2. All API endpoints have integration tests
+3. Checkout saga has tests for success and failure paths
+4. E2E test passes for happy path purchase flow
+5. App handles errors gracefully with user-friendly messages
+
+**Dependencies:** Phase 9
+
+---
+
+## Requirement Traceability Matrix
+
+| REQ-ID | Requirement | Phase |
+|--------|-------------|-------|
+| CAT-01 | Browse products grid | Phase 3 |
+| CAT-02 | Product detail page | Phase 3 |
+| CAT-03 | Filter by category | Phase 3 |
+| CAT-04 | Search products | Phase 3 |
+| CART-01 | View/update/remove cart | Phase 6 |
+| CART-02 | Cart persistence | Phase 6 |
+| CART-03 | Add-to-cart feedback | Phase 6 |
+| CART-04 | Optimistic UI | Phase 6 |
+| CHK-01 | Checkout flow | Phase 7 |
+| CHK-02 | Guest checkout | Phase 7 |
+| CHK-03 | Mock payment | Phase 7 |
+| CHK-04 | Order confirmation | Phase 7 |
+| ORD-01 | Order history | Phase 8 |
+| ORD-02 | Real-time status | Phase 8 |
+| ORD-03 | Order detail page | Phase 8 |
+| INV-01 | Stock tracking | Phase 4 |
+| INV-02 | Stock reservation | Phase 4 |
+| INV-03 | Real-time stock updates | Phase 7 |
+| ADM-01 | Product CRUD | Phase 2 |
+| ADM-02 | Inventory adjustment | Phase 4 |
+| ADM-03 | Admin dashboard | Phase 8 |
+| ADM-04 | Order management | Phase 8 |
+| INFRA-01 | Seed data | Phase 3 |
+| INFRA-02 | API Gateway | Phase 9 |
+| INFRA-03 | Event bus | Phase 5 |
+| INFRA-04 | Tests | Phase 10 |
+
+**Coverage:** 24/24 requirements mapped (100%)
+
+---
+
+## Phase Dependencies Graph
+
+```
+Phase 1 (Foundation)
+    │
+    v
+Phase 2 (Catalog Admin)
+    │
+    v
+Phase 3 (Catalog Storefront + Seed)
+    │
+    v
+Phase 4 (Inventory)
+    │
+    v
+Phase 5 (Event Bus)
+    │
+    v
+Phase 6 (Cart)
+    │
+    v
+Phase 7 (Ordering + Checkout)
+    │
+    v
+Phase 8 (Order History + Admin)
+    │
+    v
+Phase 9 (API Gateway)
+    │
+    v
+Phase 10 (Testing + Polish)
+```
+
+---
+
+## Risk Mitigation
+
+| Risk | Mitigation | Phase |
+|------|------------|-------|
+| Premature service extraction | Modular monolith with bounded contexts first | Phase 1 |
+| CQRS overuse | Guidelines on when to use CQRS | Phase 1 |
+| Inventory overselling | Reservation pattern with TTL | Phase 4 |
+| Event delivery failures | Transactional outbox pattern | Phase 5 |
+| Cart race conditions | Optimistic concurrency, idempotency | Phase 6 |
+| Saga failures | Compensation handlers from start | Phase 7 |
+
+---
+
+## Future Phases (Post-v1)
+
+After v1 completion, consider:
+- **Phase 11: Service Extraction** - Extract to true microservices
+- **Phase 12: Advanced Search** - Elasticsearch integration
+- **Phase 13: Real Payments** - Stripe integration
+
+---
+*Roadmap created: 2026-01-29*
+*Total phases: 10*
+*Total requirements: 24 (100% coverage)*

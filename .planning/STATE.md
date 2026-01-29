@@ -1,1 +1,112 @@
-# State: MicroCommerce Project\n\n**Project:** MicroCommerce - Pet project e-commerce platform\n**Status:** Project initialized\n**Version:** v1.0.0-alpha\n**Last Updated:** 2026-01-29\n\n## Project Reference\n\nSee: `.planning/PROJECT.md` (updated 2026-01-29)\n\n**Core value:** Ship a functional e-commerce platform that demonstrates modern cloud-native architectural patterns\n\n**Current focus:** Phase 1 (Foundation - Authentication & Health Checks)\n\n## Progress\n\n### Milestone: v1.0.0 (First Release)\n\n**Overall Progress:** ████░░░░░░ 10%\n\n**Phase Breakdown:**\n| Phase | Name | Planned | Completed | Status |\n|-------|------|---------|-----------|--------|\n| 1 | Foundation | 8 reqs | 2 reqs | ◆ In Progress |\n| 2 | User Profiles | 5 reqs | 0 reqs | ○ Pending |\n| 3 | Product Mgmt | 8 reqs | 0 reqs | ○ Pending |\n| 4 | Discovery | 6 reqs | 0 reqs | ○ Pending |\n| 5 | Shopping Cart | 9 reqs | 0 reqs | ○ Pending |\n| 6 | Orders | 12 reqs | 0 reqs | ○ Pending |\n| 7 | Payments | 5 reqs | 0 reqs | ○ Pending |\n| 8 | Admin Dashboard | 8 reqs | 0 reqs | ○ Pending |\n| **Total** | **v1** | **54 reqs** | **2 reqs** | **10%** |\n\n### What's Working\n\n✓ **Authentication Infrastructure**\n  - Keycloak realm configured with test users\n  - NextAuth.js v5 (beta) integrated with frontend\n  - JWT token flow: Keycloak → NextAuth → NextAuth session → Client\n  - Protected API endpoints require authorization header\n  - Email verification setup (mock in development)\n\n✓ **Backend API Foundation**\n  - .NET Aspire orchestration with service discovery\n  - ASP.NET Core minimal APIs with Keycloak authentication\n  - CORS configured for cross-origin requests\n  - Health checks implemented (`/health`, `/alive` endpoints)\n  - OpenAPI/Swagger documentation generated\n\n✓ **Frontend Framework**\n  - Next.js 16.0.3 with React 19.2.0\n  - NextAuth.js session provider wraps app\n  - Middleware protects routes and manages auth state\n  - TailwindCSS v4.1.17 for styling\n  - Biome 2.2.0 for linting and formatting\n\n✓ **Infrastructure**\n  - Docker Compose orchestrates Keycloak, PostgreSQL, Redis, RabbitMQ, Elasticsearch, Kibana\n  - Local development via Aspire (automatic service discovery)\n  - Services communicate over Docker network\n  - Persistent data volumes for databases\n\n### What Needs Work\n\n⚠️ **Phase 1 Remaining**\n  - Email verification flow (currently mocked)\n  - Password reset workflow\n  - Session expiry and refresh token handling\n  - Role-based authorization for admin endpoints\n  - E2E tests for auth flow\n\n⚠️ **Phase 2+ Not Started**\n  - No database schema for users, products, orders, carts\n  - No API endpoints for CRUD operations\n  - No frontend pages except home + auth buttons\n  - No admin dashboard\n\n## Technical Decisions Made\n\n| Decision | Rationale | Trade-off |\n|----------|-----------|----------|\n| NextAuth.js v5 (beta) | Latest OAuth2 + token management; enterprise-grade | Smaller community, potential breaking changes |\n| .NET Aspire | Lightweight orchestration; local dev mirrors cloud | Still in preview; production readiness evolving |\n| Keycloak | Centralized identity; multi-tenant ready; open source | Requires container, adds operational complexity |\n| PostgreSQL | ACID compliance, robust for e-commerce; industry standard | No NoSQL; eventual consistency deferred |\n| TailwindCSS | Utility-first, performance optimized, modern tooling | Learning curve for team unfamiliar with approach |\n| Minimal APIs | Fast startup, clear routing, matches Aspire simplicity | Limited for complex business logic (future MediatR) |\n\n## Known Issues & Tech Debt\n\n| Issue | Severity | Status | Notes |\n|-------|----------|--------|-------|\n| Keycloak secrets in realm.json | MEDIUM | ⚠️ Known | Placeholder secrets; must change for production |\n| HTTPS metadata check disabled in dev | LOW | ⚠️ Known | Development convenience; required for production |\n| CORS accepts all origins (*) in dev | MEDIUM | ⚠️ Known | Security risk; must restrict to known origins |\n| NextAuth.js v5 beta in use | LOW | — Accepted | Team understands beta implications |\n| No database schema yet | HIGH | 📋 Planned | Phase 1-2 boundary item |\n| Payment processing mocked | HIGH | 📋 Planned | Real Stripe integration in v2 |\n| Search uses database LIKE | LOW | 📋 Planned | Elasticsearch in v2 for scale |\n\n## Recent Changes\n\n### 2026-01-29 - Project Initialization\n\n**Created:**\n- `.planning/PROJECT.md` — Project vision and constraints\n- `.planning/REQUIREMENTS.md` — 54 detailed requirements with v1/v2 scoping\n- `.planning/ROADMAP.md` — 8-phase breakdown with success criteria\n- `.planning/STATE.md` — This file; project state tracking\n- `.planning/codebase/ARCHITECTURE.md` — Complete architecture documentation\n- `.planning/codebase/STRUCTURE.md` — Directory layout and key files (in progress)\n\n**Context:** Bootstrapped GSD planning infrastructure for brownfield project with existing auth foundation.\n\n## Next Steps\n\n### Immediate (Next 3 days)\n\n1. **Complete Phase 1 Planning** → `/gsd:plan-phase 1`\n   - Break foundation requirements into concrete tasks\n   - Identify blockers (email setup, test data, etc.)\n   - Estimate effort per task\n\n2. **Validate Auth Flow**\n   - Test signup → email verification → login → protected endpoint\n   - Confirm JWT tokens flow correctly\n   - Test session persistence across browser refresh\n\n3. **Set Up Testing Framework**\n   - Integration tests for auth flow\n   - API endpoint tests\n   - Frontend component tests\n\n### This Week\n\n4. **Execute Phase 1** → `/gsd:execute-phase 1`\n   - Implement remaining auth requirements\n   - Wire up email verification\n   - Add role-based authorization\n\n5. **Database Schema** (Phase 2 prep)\n   - Design User entity (beyond Keycloak)\n   - Add profile fields\n   - Create migrations\n\n### Next Week\n\n6. **Phase 2** → `/gsd:plan-phase 2` → `/gsd:execute-phase 2`\n   - User profile CRUD\n   - Admin user management\n   - Prepare for Phase 3 (products)\n\n## Development Environment\n\n### Local Setup\n\n```bash\ncd code\ndotnet run --project MicroCommerce.AppHost\n\n# Automatically starts:\n# - Keycloak (port 8101)\n# - API Service (auto-assigned port)\n# - Frontend (port 3000)\n# - Provides service discovery env vars\n```\n\n### Key Endpoints (Local Dev)\n\n- Frontend: http://localhost:3000\n- Keycloak: http://localhost:8101 (admin console: admin/admin)\n- API: http://localhost:5182 (auto-assigned by Aspire)\n- API OpenAPI: http://localhost:5182/openapi/v1.json\n- Kibana: http://localhost:5601 (logs)\n\n### Test Credentials\n\n- **Regular User**: testuser / testpassword\n- **Admin User**: admin / adminpassword\n- **Keycloak Admin**: admin / admin\n- **Database**: admin / admin (PostgreSQL)\n\n## Configuration\n\n**GSD Mode:** Interactive (confirmation at checkpoints)\n**Model Profile:** Balanced (Sonnet for planning, Haiku for quick tasks)\n**Parallelization:** Yes\n**Commit Docs:** Yes (planning artifacts in git)\n**Research Agents:** Enabled\n**Plan Checker:** Enabled\n**Verifier:** Enabled\n\nSee `.planning/config.json` for details.\n\n## Communication\n\n**Project Owner:** @baotoq\n**Team Size:** Solo\n**Standup Frequency:** As-needed (self-directed)\n**Sprint Length:** 1-week iterations (flexible)\n**Status Updates:** Updated in STATE.md after each phase\n\n---\n\n*State initialized: 2026-01-29 after GSD project bootstrap*\n*Next review: After Phase 1 execution (~1 week)*\n"}
+# Project State
+
+**Project:** MicroCommerce
+**Current Phase:** Phase 1 - Foundation & Project Structure
+**Status:** NOT STARTED
+**Last Updated:** 2026-01-29
+
+---
+
+## Progress Overview
+
+| Phase | Name | Status | Requirements |
+|-------|------|--------|--------------|
+| 1 | Foundation & Project Structure | NOT STARTED | 0 |
+| 2 | Catalog Domain & Admin CRUD | NOT STARTED | ADM-01 |
+| 3 | Catalog Storefront & Seed Data | NOT STARTED | CAT-01, CAT-02, CAT-03, CAT-04, INFRA-01 |
+| 4 | Inventory Domain | NOT STARTED | INV-01, INV-02, ADM-02 |
+| 5 | Event Bus Infrastructure | NOT STARTED | INFRA-03 |
+| 6 | Cart Domain | NOT STARTED | CART-01, CART-02, CART-03, CART-04 |
+| 7 | Ordering Domain & Checkout | NOT STARTED | CHK-01, CHK-02, CHK-03, CHK-04, INV-03 |
+| 8 | Order History & Management | NOT STARTED | ORD-01, ORD-02, ORD-03, ADM-03, ADM-04 |
+| 9 | API Gateway | NOT STARTED | INFRA-02 |
+| 10 | Testing & Polish | NOT STARTED | INFRA-04 |
+
+**Phases Completed:** 0/10
+**Requirements Completed:** 0/24
+
+---
+
+## Current Phase Details
+
+### Phase 1: Foundation & Project Structure
+
+**Status:** NOT STARTED
+**Goal:** Establish modular monolith structure with clear bounded contexts
+
+**Tasks:**
+- [ ] Create Features/ folder structure (Catalog, Cart, Ordering, Inventory modules)
+- [ ] Set up separate DbContexts for each module
+- [ ] Configure MediatR pipeline with validation behaviors
+- [ ] Integrate FluentValidation
+- [ ] Implement in-process domain event dispatcher
+- [ ] Document CQRS usage guidelines
+- [ ] Fix NextAuth token refresh (known gap from research)
+
+**Success Criteria:**
+- [ ] Developer can create a new feature module by copying existing template
+- [ ] Each module has isolated DbContext with independent migrations
+- [ ] MediatR pipeline validates requests before handlers execute
+- [ ] Domain events fire synchronously within transaction boundary
+
+**Blockers:** None
+
+**Notes:**
+- Research identified token refresh as a gap to address in this phase
+- Follow Microsoft eShop patterns for modular monolith structure
+
+---
+
+## Completed Phases
+
+*None yet*
+
+---
+
+## Blocked Items
+
+*None*
+
+---
+
+## Decisions Made
+
+| Date | Decision | Rationale |
+|------|----------|-----------|
+| 2026-01-29 | Start with modular monolith | Research shows premature extraction is #1 microservices failure |
+| 2026-01-29 | 10 phases for comprehensive depth | Matches project config and ensures thorough implementation |
+| 2026-01-29 | Catalog before Inventory | Catalog has no dependencies, foundation for other services |
+| 2026-01-29 | Event bus before Cart/Ordering | Reliable messaging required before saga patterns |
+
+---
+
+## Known Issues
+
+| Issue | Severity | Phase to Address |
+|-------|----------|------------------|
+| NextAuth token refresh not implemented | MEDIUM | Phase 1 |
+| .NET 10 is preview | LOW | Monitor for RTM |
+
+---
+
+## Metrics
+
+| Metric | Value |
+|--------|-------|
+| Phases completed | 0 |
+| Requirements done | 0 |
+| Requirements total | 24 |
+| Completion % | 0% |
+
+---
+
+## Next Actions
+
+1. **Start Phase 1** - Create modular monolith structure
+2. Read ROADMAP.md Phase 1 details
+3. Create Features/ folder structure
+4. Set up DbContexts per module
+
+---
+*State file created: 2026-01-29*
+*Updated: 2026-01-29*
