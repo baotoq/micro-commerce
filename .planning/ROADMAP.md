@@ -36,7 +36,7 @@ This roadmap implements a complete e-commerce platform through 10 phases, follow
 3. MediatR pipeline validates requests before handlers execute
 4. Domain events fire via Service Bus with transactional outbox
 
-**Plans:** 5 plans ✓ COMPLETE
+**Plans:** 6 plans ✓ COMPLETE
 
 Plans:
 - [x] 01-01-PLAN.md — Infrastructure setup (NuGet packages, Aspire resources) ✓
@@ -44,6 +44,7 @@ Plans:
 - [x] 01-03-PLAN.md — MediatR pipeline & validation ✓
 - [x] 01-04-PLAN.md — Domain event infrastructure (MassTransit + outbox) ✓
 - [x] 01-05-PLAN.md — CQRS reference implementation ✓
+- [x] 01-06-PLAN.md — UAT gap fixes (EF migration + exception handler) ✓
 
 **Addresses Pitfalls:**
 - Premature service extraction (bounded contexts defined first)
