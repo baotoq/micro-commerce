@@ -39,7 +39,7 @@ This roadmap implements a complete e-commerce platform through 10 phases, follow
 **Plans:** 5 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Infrastructure setup (NuGet packages, Aspire resources)
+- [x] 01-01-PLAN.md — Infrastructure setup (NuGet packages, Aspire resources) ✓
 - [ ] 01-02-PLAN.md — Module structure & DbContexts
 - [ ] 01-03-PLAN.md — MediatR pipeline & validation
 - [ ] 01-04-PLAN.md — Domain event infrastructure (MassTransit + outbox)
