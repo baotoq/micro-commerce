@@ -1,11 +1,71 @@
 using System.Security.Claims;
 using FluentValidation;
+using MassTransit;
 using MicroCommerce.ApiService.Common.Behaviors;
+using MicroCommerce.ApiService.Common.Persistence;
+using MicroCommerce.ApiService.Features.Cart.Infrastructure;
+using MicroCommerce.ApiService.Features.Catalog.Infrastructure;
+using MicroCommerce.ApiService.Features.Inventory.Infrastructure;
+using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
+
+// Outbox DbContext for transactional domain events
+builder.AddNpgsqlDbContext<OutboxDbContext>("appdb", configureDbContextOptions: options =>
+{
+    options.UseNpgsql(npgsql =>
+        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "outbox"));
+});
+
+// Module DbContexts
+builder.AddNpgsqlDbContext<CatalogDbContext>("appdb", configureDbContextOptions: options =>
+{
+    options.UseNpgsql(npgsql =>
+        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "catalog"));
+});
+
+builder.AddNpgsqlDbContext<CartDbContext>("appdb", configureDbContextOptions: options =>
+{
+    options.UseNpgsql(npgsql =>
+        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "cart"));
+});
+
+builder.AddNpgsqlDbContext<OrderingDbContext>("appdb", configureDbContextOptions: options =>
+{
+    options.UseNpgsql(npgsql =>
+        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "ordering"));
+});
+
+builder.AddNpgsqlDbContext<InventoryDbContext>("appdb", configureDbContextOptions: options =>
+{
+    options.UseNpgsql(npgsql =>
+        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "inventory"));
+});
+
+// MassTransit with Azure Service Bus and EF Core outbox
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumers(typeof(Program).Assembly);
+
+    x.AddEntityFrameworkOutbox<OutboxDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+        o.QueryDelay = TimeSpan.FromSeconds(1);
+    });
+
+    x.UsingAzureServiceBus((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("messaging"));
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
+builder.Services.AddScoped<DomainEventInterceptor>();
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
