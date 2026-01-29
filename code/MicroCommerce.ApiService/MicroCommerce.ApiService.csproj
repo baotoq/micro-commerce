@@ -8,11 +8,34 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MicroCommerce.ServiceDefaults\MicroCommerce.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\BuildingBlocks\BuildingBlocks.Common\BuildingBlocks.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Authentication -->
     <PackageReference Include="Aspire.Keycloak.Authentication" Version="13.1.0-preview.1.25616.3" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+
+    <!-- Core packages -->
+    <PackageReference Include="MediatR" Version="13.1.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+
+    <!-- MassTransit for domain events -->
+    <PackageReference Include="MassTransit" Version="9.0.0" />
+    <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="9.0.0" />
+    <PackageReference Include="MassTransit.EntityFrameworkCore" Version="9.0.0" />
+
+    <!-- EF Core for PostgreSQL -->
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+
+    <!-- Aspire client integrations -->
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.1.0" />
+    <PackageReference Include="Aspire.Azure.Messaging.ServiceBus" Version="13.1.0" />
   </ItemGroup>
 
 </Project>
