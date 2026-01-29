@@ -1,1 +1,95 @@
-# MicroCommerce - Pet Project Initiative\n\n## What This Is\n\nMicroCommerce is a cloud-native e-commerce platform that serves a dual purpose: demonstrating real-world architectural patterns and best practices for modern distributed systems (ASP.NET Core, Next.js, Aspire, Keycloak) while building an actually-functional marketplace where users can buy and sell products. It's a proof-of-concept that enterprise architectural choices can coexist with shipping value.\n\n## Core Value\n\nShip a functional e-commerce platform that demonstrates **how to build modern, scalable systems using contemporary cloud-native patterns** without sacrificing ease of development or operational simplicity.\n\n## Requirements\n\n### Validated (Currently Shipped)\n\n- ✓ **User Authentication** — Keycloak-based OAuth2/OIDC flows integrated with both frontend (NextAuth.js) and backend (.NET API)\n- ✓ **Frontend Framework** — Next.js 16 with React 19, server components, middleware protection, session management\n- ✓ **Backend API** — ASP.NET Core minimal APIs with JWT authorization, health checks, OpenAPI documentation\n- ✓ **Orchestration** — .NET Aspire for local development and cloud deployment; automatic service discovery\n- ✓ **Infrastructure** — Docker Compose for PostgreSQL, Redis, RabbitMQ, Elasticsearch/Kibana, Keycloak\n- ✓ **Identity Management** — Multi-tenant realm support with role-based access control (user, admin roles)\n- ✓ **Styling** — TailwindCSS with modern component architecture\n\n### Active (Building Toward)\n\n- [ ] **Product Catalog** — CRUD for products with inventory tracking, pricing, descriptions, images\n- [ ] **Shopping Cart** — Persistent cart with quantity management, price recalculation\n- [ ] **Order Management** — Order placement, status tracking, order history\n- [ ] **Payment Processing** — Stripe or similar integration; transaction recording\n- [ ] **User Profiles** — Profile management, address book, order history, wishlist\n- [ ] **Search & Filtering** — Elasticsearch integration for product search, category/tag filtering\n- [ ] **Admin Dashboard** — Order management, product inventory, user management, analytics\n- [ ] **Real-Time Notifications** — Order status updates, inventory alerts (RabbitMQ)\n- [ ] **Seller Capabilities** — Multi-vendor support; seller profiles and inventory management\n- [ ] **Review System** — Product ratings, reviews, seller ratings\n\n### Out of Scope (For v1 Milestone)\n\n- **Mobile App** — Web-first strategy; mobile later as separate React Native project\n- **Advanced Analytics** — Beyond basic admin dashboards; data warehouse later\n- **Multi-Currency Support** — USD only for v1; internationalization in v2\n- **Physical Shipping Integration** — Order placement only; shipping provider APIs deferred\n- **Recommendation Engine** — Static catalog; ML-powered recommendations in v2\n- **Marketplace Governance** — No content moderation workflows for v1; abuse reporting only\n- **Accounting/Tax** — No automated tax calculation or accounting exports for v1\n\n## Context\n\n### Architecture Decisions\n\n1. **Microservices Foundation**: Using .NET Aspire as a lightweight orchestrator that enables gradual service decomposition without requiring Kubernetes upfront. Services start as features within monolith, split to separate services as needed.\n\n2. **Authentication First**: Keycloak as centralized identity provider removes auth complexity from each service and establishes a model for multi-tenant systems from the start.\n\n3. **Event-Driven Ready**: MediatR + Domain Events pattern in building blocks enables transition to eventual consistency when services separate.\n\n4. **Infrastructure as Code**: Docker Compose for local development matches production containers; Aspire manifests enable migration to Kubernetes/Azure Container Apps.\n\n5. **Frontend-Backend Separation**: Next.js with server components and API routes provides both customer UI and admin interfaces while consuming internal APIs.\n\n### Domain Expertise\n\n- Built by **@baotoq** as personal learning project\n- Inspired by **Microsoft eShop** patterns but simplified for pet project scope\n- Actively exploring latest .NET 10, Next.js 16, and Aspire 13 capabilities\n\n### Key Constraints\n\n- **Solo Development**: All decisions must be implementable by one person; complexity carefully bounded\n- **Learning Driven**: Code is meant to be read and understood; over-engineering avoided in favor of clarity\n- **Cloud Native from Day 1**: All architectural choices assume eventual cloud deployment (not local-only)\n\n## Constraints\n\n- **Tech Stack**: .NET 10 backend, Next.js 16 frontend (non-negotiable; chosen for learning value)\n- **Timeline**: Pet project with no deadline; features completed as time permits\n- **Data Persistence**: PostgreSQL only; no NoSQL for v1\n- **Infrastructure**: Docker-based; Kubernetes-ready but not required for local dev\n- **Deployment**: Cloud-native (Azure preferred, but AWS or GCP compatible)\n- **Scale**: v1 targets <100 concurrent users; scale improvements in later milestones\n\n## Key Decisions\n\n| Decision | Rationale | Outcome |\n|----------|-----------|----------|\n| NextAuth.js v5 (beta) for frontend auth | Latest version supports OAuth2 PKCE + server-side token storage; eliminates XSS attack surface | — Pending (v1 deployed, v2 will validate impact) |\n| Keycloak for centralized identity | Industry-standard, scales to multi-tenant, features (2FA, federation) available for future; eliminates auth as blocker | ✓ Good (working well, great developer experience) |\n| .NET Aspire for orchestration | Lightweight alternative to Kubernetes that supports gradual service migration; excellent local dev experience | — Pending (working in preview; production readiness TBD) |\n| Domain Events via MediatR | Enables event-driven architecture without coupling; allows service decomposition without major refactoring | — Pending (infrastructure ready, not yet used for features) |\n| Minimal APIs (no controllers) | Lightweight, matches Aspire simplicity, easy to understand for solo developer | ✓ Good (fast startup, clear routing) |\n| TailwindCSS with JIT | Modern, performance-optimized styling; removes CSS-in-JS complexity | ✓ Good (build fast, DX excellent) |\n| Biome for linting (web) | Modern toolchain, unified rules for TS + formatting; replaces ESLint + Prettier | ⚠️ Revisit (smaller community, but stable enough) |\n\n---\n\n*Last updated: 2026-01-29 after project initialization*\n"}
+# MicroCommerce
+
+## What This Is
+
+A showcase e-commerce platform demonstrating modern .NET microservices architecture with best practices. Users can browse products, add items to cart, and complete purchases through a polished Next.js storefront. The project serves as a reference implementation for cloud-native patterns using .NET Aspire, event-driven architecture, and gradual service extraction.
+
+## Core Value
+
+**A user can complete a purchase end-to-end** — browse products, add to cart, checkout as a guest, and see their order confirmation. Everything else supports this flow.
+
+## Requirements
+
+### Validated
+
+- ✓ Keycloak authentication integrated — existing
+- ✓ Next.js frontend with NextAuth — existing
+- ✓ .NET Aspire orchestration — existing
+- ✓ DDD building blocks (aggregates, domain events, value objects) — existing
+- ✓ OpenTelemetry observability — existing
+- ✓ Kubernetes deployment manifests — existing
+- ✓ GitOps with FluxCD — existing
+
+### Active
+
+- [ ] Product catalog with categories and search
+- [ ] Product detail pages
+- [ ] Shopping cart (persistent, guest-friendly)
+- [ ] Checkout flow with mock payment
+- [ ] Order confirmation and history
+- [ ] Inventory tracking with stock levels
+- [ ] Admin UI for product management
+- [ ] Seed data for initial products
+- [ ] API Gateway for service routing
+- [ ] Event-driven communication between services
+- [ ] CQRS pattern with MediatR
+- [ ] Database-per-service isolation
+- [ ] Unit and integration tests
+- [ ] shadcn/ui component library integration
+
+### Out of Scope
+
+- Real payment processing (Stripe, etc.) — mock payments sufficient for demo
+- Event sourcing — adds complexity without proportional demo value
+- Separate admin application — integrated admin routes simpler
+- Mobile app — web-first, responsive design covers mobile
+- Real-time features (chat, live inventory) — not core to e-commerce demo
+- Multi-tenancy — single store demonstration
+- Internationalization — English only for v1
+
+## Context
+
+**Existing Foundation:**
+- .NET 10 with Aspire 13.1.0 for orchestration
+- Next.js 16 with React 19 frontend
+- Keycloak for identity (realm: micro-commerce)
+- MediatR for domain events and CQRS
+- OpenTelemetry instrumentation configured
+- Kubernetes manifests with Kustomize overlays
+- FluxCD for GitOps deployment
+- Dev container with full toolchain
+
+**Architecture Approach:**
+- Start as modular monolith, gradually extract to microservices
+- Target services: Catalog, Cart, Ordering, Inventory
+- Azure Service Bus emulator for inter-service messaging
+- Each service owns its Postgres database
+- API Gateway routes frontend requests to services
+
+**Frontend Approach:**
+- shadcn/ui component library for polished UI
+- Admin routes integrated in main Next.js app
+- Guest checkout supported (no account required)
+
+## Constraints
+
+- **Tech Stack**: .NET 10 + Aspire for backend, Next.js 16 for frontend — already committed
+- **Identity**: Keycloak — already integrated, don't duplicate auth
+- **Message Broker**: Azure Service Bus emulator — Aspire ecosystem alignment
+- **Database**: Postgres — already in deployment manifests
+- **Deployment**: Kubernetes with FluxCD — existing GitOps setup
+
+## Key Decisions
+
+| Decision | Rationale | Outcome |
+|----------|-----------|---------|
+| Gradual service extraction | Real-world pattern, demonstrates monolith-to-microservices journey | — Pending |
+| Database-per-service | True microservices isolation, showcases data ownership | — Pending |
+| Guest checkout | Lower friction, simpler v1 scope | — Pending |
+| Mock payments | Avoid payment processor complexity while demonstrating flow | — Pending |
+| Cart in Postgres (not Redis) | Durability over speed, consistent with database-per-service | — Pending |
+| Admin in main app | Simpler deployment, shared auth context | — Pending |
+| shadcn/ui | Modern, Tailwind-based, great DX | — Pending |
+
+---
+*Last updated: 2025-01-29 after initialization*
