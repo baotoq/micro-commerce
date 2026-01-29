@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 1 of 10 (Foundation & Project Structure)
-Plan: 2 of 5 in current phase
+Plan: 3 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-29 - Completed 01-02-PLAN.md
+Last activity: 2026-01-29 - Completed 01-03-PLAN.md
 
-Progress: ████░░░░░░ 20%
+Progress: ██████░░░░ 30%
 
 ---
 
@@ -22,7 +22,7 @@ Progress: ████░░░░░░ 20%
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
-| 1 | Foundation & Project Structure | IN PROGRESS | 2/5 |
+| 1 | Foundation & Project Structure | IN PROGRESS | 3/5 |
 | 2 | Catalog Domain & Admin CRUD | NOT STARTED | 0/? |
 | 3 | Catalog Storefront & Seed Data | NOT STARTED | 0/? |
 | 4 | Inventory Domain | NOT STARTED | 0/? |
@@ -34,7 +34,7 @@ Progress: ████░░░░░░ 20%
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 0/10
-**Plans Completed (Phase 1):** 2/5
+**Plans Completed (Phase 1):** 3/5
 
 ---
 
@@ -43,6 +43,7 @@ Progress: ████░░░░░░ 20%
 ### Phase 1
 - [x] **01-01**: Infrastructure setup (NuGet packages, Aspire resources) - `141b031`, `f230804`
 - [x] **01-02**: Module structure & DbContexts - `439b842`, `e89c3fd`
+- [x] **01-03**: MediatR pipeline & validation - `cfeb3c6`, `6533d8f`
 
 ---
 
@@ -58,6 +59,8 @@ Progress: ████░░░░░░ 20%
 | 2026-01-29 | PostgreSQL with pgAdmin | Easy database inspection and management |
 | 2026-01-29 | Schema-per-module isolation | Each module gets own PostgreSQL schema for data boundaries |
 | 2026-01-29 | Namespace-filtered configurations | DbContexts only apply configs from their module namespace |
+| 2026-01-29 | Validation as first pipeline behavior | Fail fast before handler execution |
+| 2026-01-29 | Validators auto-discovered from assembly | Zero-config validator registration |
 
 ---
 
@@ -73,17 +76,17 @@ Progress: ████░░░░░░ 20%
 
 ## Session Continuity
 
-Last session: 2026-01-29T15:32:43Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-01-29T15:36:12Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Execute Plan 01-03** - DbContext DI registration
-2. Register DbContexts in dependency injection
-3. Configure connection strings with Aspire
+1. **Execute Plan 01-04** - Domain event infrastructure (MassTransit + outbox)
+2. Establish transactional outbox pattern for reliable event publishing
+3. Configure Azure Service Bus integration
 
 ---
 *State file created: 2026-01-29*
