@@ -2,6 +2,7 @@ using System.Security.Claims;
 using FluentValidation;
 using MassTransit;
 using MicroCommerce.ApiService.Common.Behaviors;
+using MicroCommerce.ApiService.Common.Exceptions;
 using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Cart.Infrastructure;
 using MicroCommerce.ApiService.Features.Catalog;
@@ -69,6 +70,7 @@ builder.Services.AddMassTransit(x =>
 builder.Services.AddScoped<DomainEventInterceptor>();
 
 // Add services to the container.
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 // Add CORS for frontend
