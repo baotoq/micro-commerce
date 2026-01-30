@@ -36,6 +36,7 @@
     <!-- Aspire client integrations -->
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.1.0" />
     <PackageReference Include="Aspire.Azure.Messaging.ServiceBus" Version="13.1.0" />
+    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="13.1.0" />
   </ItemGroup>
 
 </Project>

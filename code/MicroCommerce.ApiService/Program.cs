@@ -48,6 +48,9 @@ builder.AddNpgsqlDbContext<InventoryDbContext>("appdb", configureDbContextOption
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "inventory"));
 });
 
+// Azure Blob Storage for product images
+builder.AddAzureBlobServiceClient("blobs");
+
 // MassTransit with Azure Service Bus and EF Core outbox
 builder.Services.AddMassTransit(x =>
 {
@@ -118,6 +121,9 @@ builder.Services.AddMediatR(cfg =>
 
 // FluentValidation - auto-discover validators
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+// Catalog services
+builder.Services.AddScoped<IImageUploadService, ImageUploadService>();
 
 var app = builder.Build();
 
