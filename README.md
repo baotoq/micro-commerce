@@ -1,6 +1,7 @@
 # MicroCommerce
 
 A showcase e-commerce platform demonstrating modern .NET microservices architecture with best practices.
+I don't write code — Claude Code does.
 
 | Project | Tests | Sonar |
 |---------|-------|-------|

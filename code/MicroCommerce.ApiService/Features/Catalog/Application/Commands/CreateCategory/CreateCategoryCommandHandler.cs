@@ -23,7 +23,7 @@ public sealed class CreateCategoryCommandHandler : IRequestHandler<CreateCategor
         var name = CategoryName.Create(request.Name);
         var category = Category.Create(name, request.Description);
 
-        _context.Categories.Add(category);
+        await _context.Categories.AddAsync(category, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return category.Id;
