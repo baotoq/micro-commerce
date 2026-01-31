@@ -42,7 +42,7 @@ Plans:
 - [x] 01-01-PLAN.md — Infrastructure setup (NuGet packages, Aspire resources) ✓
 - [x] 01-02-PLAN.md — Module structure & DbContexts ✓
 - [x] 01-03-PLAN.md — MediatR pipeline & validation ✓
-- [ ] 01-04-PLAN.md — Domain event infrastructure (MassTransit + outbox)
+- [x] 01-04-PLAN.md — Domain event infrastructure (MassTransit + outbox) ✓
 - [ ] 01-05-PLAN.md — Template module & CQRS guidelines
 
 **Addresses Pitfalls:**

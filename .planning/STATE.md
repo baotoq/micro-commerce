@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 1 of 10 (Foundation & Project Structure)
-Plan: 3 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-29 - Completed 01-03-PLAN.md
+Last activity: 2026-01-29 - Completed 01-04-PLAN.md
 
-Progress: ██████░░░░ 30%
+Progress: ████████░░ 40%
 
 ---
 
@@ -22,7 +22,7 @@ Progress: ██████░░░░ 30%
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
-| 1 | Foundation & Project Structure | IN PROGRESS | 3/5 |
+| 1 | Foundation & Project Structure | IN PROGRESS | 4/5 |
 | 2 | Catalog Domain & Admin CRUD | NOT STARTED | 0/? |
 | 3 | Catalog Storefront & Seed Data | NOT STARTED | 0/? |
 | 4 | Inventory Domain | NOT STARTED | 0/? |
@@ -34,7 +34,7 @@ Progress: ██████░░░░ 30%
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 0/10
-**Plans Completed (Phase 1):** 3/5
+**Plans Completed (Phase 1):** 4/5
 
 ---
 
@@ -44,6 +44,7 @@ Progress: ██████░░░░ 30%
 - [x] **01-01**: Infrastructure setup (NuGet packages, Aspire resources) - `141b031`, `f230804`
 - [x] **01-02**: Module structure & DbContexts - `439b842`, `e89c3fd`
 - [x] **01-03**: MediatR pipeline & validation - `cfeb3c6`, `6533d8f`
+- [x] **01-04**: Domain event infrastructure (MassTransit + outbox) - `81c9fa0`, `293f73d`, `f6f5c7e`
 
 ---
 
@@ -61,6 +62,8 @@ Progress: ██████░░░░ 30%
 | 2026-01-29 | Namespace-filtered configurations | DbContexts only apply configs from their module namespace |
 | 2026-01-29 | Validation as first pipeline behavior | Fail fast before handler execution |
 | 2026-01-29 | Validators auto-discovered from assembly | Zero-config validator registration |
+| 2026-01-29 | SavedChangesAsync for event dispatch | Events published after transaction commit, not during |
+| 2026-01-29 | Dedicated outbox schema | MassTransit tables isolated in 'outbox' schema |
 
 ---
 
@@ -76,17 +79,17 @@ Progress: ██████░░░░ 30%
 
 ## Session Continuity
 
-Last session: 2026-01-29T15:36:12Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-01-29T15:39:28Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Execute Plan 01-04** - Domain event infrastructure (MassTransit + outbox)
-2. Establish transactional outbox pattern for reliable event publishing
-3. Configure Azure Service Bus integration
+1. **Execute Plan 01-05** - Template module & CQRS guidelines
+2. Create example module template for consistent feature development
+3. Document CQRS usage guidelines
 
 ---
 *State file created: 2026-01-29*
