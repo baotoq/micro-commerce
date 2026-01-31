@@ -1,47 +1,152 @@
-# Micro Commerce
+# MicroCommerce
 
-migrating to .net 9 with aspire..............
+A showcase e-commerce platform demonstrating modern .NET microservices architecture with best practices.
 
-| Project|Tests|Sonar|
-|-|-|-|
-|Backend|![Test Result](https://github.com/baotoq/micro-commerce/actions/workflows/dotnet-test.yml/badge.svg)|[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=baotoq_micro-commerce&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=baotoq_micro-commerce) [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=baotoq_micro-commerce&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=baotoq_micro-commerce)|
+| Project | Tests | Sonar |
+|---------|-------|-------|
+| Backend | ![Test Result](https://github.com/baotoq/micro-commerce/actions/workflows/dotnet-test.yml/badge.svg) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=baotoq_micro-commerce&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=baotoq_micro-commerce) [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=baotoq_micro-commerce&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=baotoq_micro-commerce) |
 
-Inspired by **[`Microsoft eShop`](https://github.com/dotnet/eShop)** my pet project aims to showcase the latest .NET stack. Through this project, we're building a sample e-commerce platform that adheres to microservice principles, enabling scalability, flexibility, and resilience.
+Inspired by **[Microsoft eShop](https://github.com/dotnet/eShop)**, this pet project showcases the latest .NET stack with a focus on:
 
-![homepage screenshot](img/homepage-screenshot.jpg) 
+- **Modular Monolith → Microservices** — Start simple, extract when needed
+- **DDD & CQRS** — Clean domain-driven architecture with MediatR
+- **Event-Driven** — MassTransit with transactional outbox for reliable messaging
+- **Cloud-Native** — .NET Aspire orchestration, Kubernetes-ready
 
-## Technical stack
+![homepage screenshot](img/homepage-screenshot.jpg)
+
+## Quick Start
+
+```bash
+# Run with .NET Aspire (starts all services + infrastructure)
+dotnet run --project code/MicroCommerce.AppHost
+
+# Open Aspire dashboard at https://localhost:17225
+# Frontend at http://localhost:3000
+# API at http://localhost:5000
+```
+
+**Requirements:** .NET 10 SDK, Docker Desktop
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Next.js Frontend                      │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      API Gateway (YARP)                      │
+└─────────────────────────────────────────────────────────────┘
+                              │
+       ┌──────────────────────┼──────────────────────┐
+       ▼                      ▼                      ▼
+┌─────────────┐     ┌─────────────┐     ┌─────────────────────┐
+│   Catalog   │     │    Cart     │     │      Ordering       │
+│   Module    │     │   Module    │     │       Module        │
+└─────────────┘     └─────────────┘     └─────────────────────┘
+       │                  │                       │
+       └──────────────────┼───────────────────────┘
+                          ▼
+            ┌─────────────────────────┐
+            │    Azure Service Bus    │
+            │   (Domain Events)       │
+            └─────────────────────────┘
+```
+
+### Modules
+
+| Module | Responsibility | Key Features |
+|--------|----------------|--------------|
+| **Catalog** | Products & categories | CRUD, search, filtering |
+| **Cart** | Shopping cart | Guest carts, persistence, merge on login |
+| **Ordering** | Checkout & orders | Saga-based checkout, order history |
+| **Inventory** | Stock management | Reservations, real-time updates |
+
+## Tech Stack
+
+### Backend
+- **.NET 10** with ASP.NET Core Minimal APIs
+- **.NET Aspire 13.1.0** — Cloud-native orchestration
+- **MediatR** — CQRS with pipeline behaviors
+- **MassTransit 9.0** — Messaging with transactional outbox
+- **EF Core 10** — PostgreSQL with schema-per-module
+- **FluentValidation** — Request validation
+
+### Frontend
+- **Next.js 16** with React 19
+- **shadcn/ui** — Component library
+- **NextAuth.js v5** — Authentication
 
 ### Infrastructure
+- **PostgreSQL** — Primary database
+- **Azure Service Bus** — Message broker (emulator for dev)
+- **Keycloak** — Identity provider
+- **Kubernetes** — Container orchestration
+- **FluxCD** — GitOps deployment
 
-- **[`.NET Aspire`](https://learn.microsoft.com/en-us/dotnet/aspire/get-started/aspire-overview)** - .NET Aspire is an opinionated, cloud ready stack for building observable, production ready, distributed applications.
-- **[`Kubernetes`](https://kubernetes.io)** - The app is designed to run on Kubernetes (both locally as well as on the cloud)
-- **[`ELK`](https://www.elastic.co/elastic-stack)** - The ELK Stack (Elasticsearch, Logstash, Kibana) is a streamlined solution for log management, offering scalable search, data processing, and visualization capabilities in one package.
+## Project Structure
 
-### Front-end
+```
+code/
+├── MicroCommerce.AppHost/           # Aspire orchestrator
+├── MicroCommerce.ApiService/        # Backend API
+│   ├── Features/                    # Domain modules
+│   │   ├── Catalog/
+│   │   ├── Cart/
+│   │   ├── Ordering/
+│   │   └── Inventory/
+│   └── Common/                      # Shared infrastructure
+├── MicroCommerce.Web/               # Next.js frontend
+├── MicroCommerce.ServiceDefaults/   # Shared Aspire config
+└── BuildingBlocks/                  # DDD primitives
+```
 
-- **[`Refine`](https://refine.dev)** - Refine is a React meta-framework for CRUD-heavy web applications. It addresses a wide range of enterprise use cases including internal tools, admin panels, dashboards and B2B apps.
-- **[`Next.js`](https://nextjs.org)** - A modern server side rendering for React application
-  
-### Back-end
+## Development
 
-- **[`.NET Core 9`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
-- **[`EF Core 9`](https://github.com/dotnet/efcore)** - Modern object-database mapper for .NET. It supports LINQ queries, change tracking, updates, and schema migrations
-- **[`MediatR`](https://github.com/jbogard/MediatR)** - Simple, unambitious mediator implementation in .NET
+### Prerequisites
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [Node.js 20+](https://nodejs.org/) (for frontend)
 
-### Testing
+### Commands
 
-- **[`TestContainer`](https://testcontainers.com/guides/getting-started-with-testcontainers-for-dotnet)** - Testcontainers is a testing library that provides easy and lightweight APIs for bootstrapping integration tests with real services wrapped in Docker containers
+```bash
+# Run full stack
+dotnet run --project code/MicroCommerce.AppHost
 
+# Build
+dotnet build code/
 
+# Run tests
+dotnet test code/
 
-### CI & CD
+# EF migrations
+dotnet ef migrations add <Name> --context CatalogDbContext \
+  --output-dir Features/Catalog/Infrastructure/Migrations
+```
 
-- **[`GitHub Actions`](https://github.com/features/actions)**
-- **[`Flux CD`](https://fluxcd.io/)** - Flux CD automates Kubernetes deployment from Git, ensuring continuous delivery seamlessly.
-- **[`Argo CD`](https://argoproj.github.io/cd/)** - Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes.
-- **[`SonarCloud`](https://sonarcloud.io/)**
+### Claude Code
 
+This project uses the GSD (Get Shit Done) workflow for planning and execution. See `CLAUDE.md` for project-specific guidance.
+
+```bash
+# Check project progress
+/gsd:progress
+
+# Plan next phase
+/gsd:plan-phase <number>
+
+# Execute plans
+/gsd:execute-phase <number>
+```
+
+## CI/CD
+
+- **GitHub Actions** — Build, test, code quality
+- **SonarCloud** — Static analysis
+- **FluxCD** — GitOps deployment to Kubernetes
 
 ## Star History
 
@@ -52,3 +157,7 @@ Inspired by **[`Microsoft eShop`](https://github.com/dotnet/eShop)** my pet proj
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=baotoq/micro-commerce&type=Date" />
  </picture>
 </a>
+
+## License
+
+MIT
