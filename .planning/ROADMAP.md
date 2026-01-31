@@ -17,7 +17,7 @@ This roadmap implements a complete e-commerce platform through 10 phases, follow
 
 ## Phase 1: Foundation & Project Structure
 
-**Goal:** Establish modular monolith structure with clear bounded contexts, shared building blocks, and development patterns.
+**Goal:** Establish modular monolith structure with clear bounded contexts, shared building blocks, and development patterns. Service Bus and transactional outbox from day one per user decision.
 
 **Requirements:**
 - None directly (infrastructure phase)
@@ -27,14 +27,23 @@ This roadmap implements a complete e-commerce platform through 10 phases, follow
 - Database-per-service pattern with separate DbContexts
 - MediatR pipeline with validation behaviors
 - FluentValidation integration
-- In-process domain event dispatcher
+- Domain event infrastructure (Service Bus + transactional outbox)
 - CQRS usage guidelines
 
 **Success Criteria:**
 1. Developer can create a new feature module by copying existing template
 2. Each module has isolated DbContext with independent migrations
 3. MediatR pipeline validates requests before handlers execute
-4. Domain events fire synchronously within transaction boundary
+4. Domain events fire via Service Bus with transactional outbox
+
+**Plans:** 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Infrastructure setup (NuGet packages, Aspire resources)
+- [ ] 01-02-PLAN.md — Module structure & DbContexts
+- [ ] 01-03-PLAN.md — MediatR pipeline & validation
+- [ ] 01-04-PLAN.md — Domain event infrastructure (MassTransit + outbox)
+- [ ] 01-05-PLAN.md — Template module & CQRS guidelines
 
 **Addresses Pitfalls:**
 - Premature service extraction (bounded contexts defined first)
@@ -130,18 +139,16 @@ This roadmap implements a complete e-commerce platform through 10 phases, follow
 
 ## Phase 5: Event Bus Infrastructure
 
-**Goal:** Establish Azure Service Bus messaging with transactional outbox pattern.
+**Goal:** Add idempotent consumers, dead-letter queue configuration, and correlation tracking. (Core Service Bus + outbox already established in Phase 1)
 
 **Requirements:**
 - **INFRA-03**: Services communicate via Azure Service Bus events
 
 **Deliverables:**
-- MassTransit configuration with Azure Service Bus
-- Transactional outbox pattern implementation
 - Idempotent event consumers
 - Dead-letter queue configuration
 - Correlation ID tracking
-- Replace in-process events with Service Bus
+- Consumer error handling patterns
 
 **Success Criteria:**
 1. Domain event published in transaction reaches consumer reliably
@@ -386,7 +393,7 @@ Phase 10 (Testing + Polish)
 | Premature service extraction | Modular monolith with bounded contexts first | Phase 1 |
 | CQRS overuse | Guidelines on when to use CQRS | Phase 1 |
 | Inventory overselling | Reservation pattern with TTL | Phase 4 |
-| Event delivery failures | Transactional outbox pattern | Phase 5 |
+| Event delivery failures | Transactional outbox pattern | Phase 1 |
 | Cart race conditions | Optimistic concurrency, idempotency | Phase 6 |
 | Saga failures | Compensation handlers from start | Phase 7 |
 
