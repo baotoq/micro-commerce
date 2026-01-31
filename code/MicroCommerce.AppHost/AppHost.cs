@@ -13,6 +13,12 @@ var appDb = postgres.AddDatabase("appdb");
 var messaging = builder.AddAzureServiceBus("messaging")
     .RunAsEmulator();
 
+// Azure Blob Storage emulator for product images
+var storage = builder.AddAzureStorage("storage")
+    .RunAsEmulator();
+
+var blobs = storage.AddBlobs("blobs");
+
 var keycloak = builder
     .AddKeycloak("keycloak", 8101)
     .WithDataVolume()
@@ -23,6 +29,7 @@ var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservi
     .WithReference(keycloak)
     .WithReference(appDb)
     .WithReference(messaging)
+    .WithReference(blobs)
     .WithHttpHealthCheck("/health");
 
 builder.AddJavaScriptApp("frontend", "../MicroCommerce.Web")

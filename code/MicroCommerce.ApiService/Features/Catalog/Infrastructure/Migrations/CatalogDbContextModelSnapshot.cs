@@ -56,6 +56,96 @@ namespace MicroCommerce.ApiService.Features.Catalog.Infrastructure.Migrations
 
                     b.ToTable("categories", "catalog");
                 });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Domain.Entities.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Sku")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("Sku")
+                        .IsUnique()
+                        .HasFilter("\"Sku\" IS NOT NULL");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("Products", "catalog");
+                });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Domain.Entities.Product", b =>
+                {
+                    b.HasOne("MicroCommerce.ApiService.Features.Catalog.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.OwnsOne("MicroCommerce.ApiService.Features.Catalog.Domain.ValueObjects.Money", "Price", b1 =>
+                        {
+                            b1.Property<Guid>("ProductId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("numeric(18,2)")
+                                .HasColumnName("Price");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .ValueGeneratedOnAdd()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasDefaultValue("USD")
+                                .HasColumnName("PriceCurrency");
+
+                            b1.HasKey("ProductId");
+
+                            b1.ToTable("Products", "catalog");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId");
+                        });
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Price")
+                        .IsRequired();
+                });
 #pragma warning restore 612, 618
         }
     }
