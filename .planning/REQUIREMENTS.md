@@ -89,12 +89,37 @@ Explicitly excluded from this project:
 
 ## Traceability
 
-*Populated by roadmap creation*
-
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| — | — | — |
+| CAT-01 | Phase 3 | NOT STARTED |
+| CAT-02 | Phase 3 | NOT STARTED |
+| CAT-03 | Phase 3 | NOT STARTED |
+| CAT-04 | Phase 3 | NOT STARTED |
+| CART-01 | Phase 6 | NOT STARTED |
+| CART-02 | Phase 6 | NOT STARTED |
+| CART-03 | Phase 6 | NOT STARTED |
+| CART-04 | Phase 6 | NOT STARTED |
+| CHK-01 | Phase 7 | NOT STARTED |
+| CHK-02 | Phase 7 | NOT STARTED |
+| CHK-03 | Phase 7 | NOT STARTED |
+| CHK-04 | Phase 7 | NOT STARTED |
+| ORD-01 | Phase 8 | NOT STARTED |
+| ORD-02 | Phase 8 | NOT STARTED |
+| ORD-03 | Phase 8 | NOT STARTED |
+| INV-01 | Phase 4 | NOT STARTED |
+| INV-02 | Phase 4 | NOT STARTED |
+| INV-03 | Phase 7 | NOT STARTED |
+| ADM-01 | Phase 2 | NOT STARTED |
+| ADM-02 | Phase 4 | NOT STARTED |
+| ADM-03 | Phase 8 | NOT STARTED |
+| ADM-04 | Phase 8 | NOT STARTED |
+| INFRA-01 | Phase 3 | NOT STARTED |
+| INFRA-02 | Phase 9 | NOT STARTED |
+| INFRA-03 | Phase 5 | NOT STARTED |
+| INFRA-04 | Phase 10 | NOT STARTED |
 
 ---
 *Requirements defined: 2026-01-29*
+*Traceability added: 2026-01-29*
 *Total v1 requirements: 24*
+*Coverage: 100% mapped to phases*
