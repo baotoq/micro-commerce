@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.Features.Catalog.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Catalog.Infrastructure;
@@ -9,8 +10,7 @@ public class CatalogDbContext : DbContext
     {
     }
 
-    // DbSets will be added as entities are created
-    // public DbSet<Product> Products => Set<Product>();
+    public DbSet<Category> Categories => Set<Category>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,7 +23,5 @@ public class CatalogDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(CatalogDbContext).Assembly,
             t => t.Namespace?.Contains("Features.Catalog") == true);
-
-        // MassTransit outbox entities will be added in Plan 04
     }
 }
