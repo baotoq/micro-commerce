@@ -18,7 +18,6 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - ✓ DDD building blocks (aggregates, domain events, value objects) — existing
 - ✓ OpenTelemetry observability — existing
 - ✓ Kubernetes deployment manifests — existing
-- ✓ GitOps with FluxCD — existing
 
 ### Active
 
@@ -56,7 +55,6 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - MediatR for domain events and CQRS
 - OpenTelemetry instrumentation configured
 - Kubernetes manifests with Kustomize overlays
-- FluxCD for GitOps deployment
 - Dev container with full toolchain
 
 **Architecture Approach:**
@@ -77,7 +75,7 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - **Identity**: Keycloak — already integrated, don't duplicate auth
 - **Message Broker**: Azure Service Bus emulator — Aspire ecosystem alignment
 - **Database**: Postgres — already in deployment manifests
-- **Deployment**: Kubernetes with FluxCD — existing GitOps setup
+- **Deployment**: Kubernetes with FluxCD
 
 ## Key Decisions
 
