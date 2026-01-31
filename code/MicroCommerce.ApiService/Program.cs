@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using FluentValidation;
+using MicroCommerce.ApiService.Common.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +43,18 @@ builder.Services.AddAuthentication()
             }
         });
 builder.Services.AddAuthorizationBuilder();
+
+// MediatR with validation pipeline
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<Program>();
+
+    // Validation runs first - fail fast before handler executes
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+
+// FluentValidation - auto-discover validators
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();
 
