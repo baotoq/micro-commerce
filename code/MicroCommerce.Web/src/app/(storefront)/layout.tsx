@@ -1,3 +1,5 @@
+import { Toaster } from 'sonner';
+
 import { Header } from '@/components/storefront/header';
 import { Footer } from '@/components/storefront/footer';
 
@@ -11,6 +13,7 @@ export default function StorefrontLayout({
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
+      <Toaster position="top-right" />
     </div>
   );
 }
