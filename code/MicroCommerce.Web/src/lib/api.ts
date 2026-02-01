@@ -239,3 +239,85 @@ export async function getStorefrontProducts(
   return getProducts({ ...params, status: 'Published' });
 }
 
+// Inventory types
+export interface StockInfoDto {
+  productId: string;
+  quantityOnHand: number;
+  availableQuantity: number;
+  isInStock: boolean;
+  isLowStock: boolean;
+}
+
+export interface AdjustmentDto {
+  id: string;
+  adjustment: number;
+  quantityAfter: number;
+  reason: string | null;
+  adjustedBy: string | null;
+  createdAt: string;
+}
+
+export interface AdjustStockRequest {
+  adjustment: number;
+  reason?: string;
+}
+
+// Inventory API functions
+export async function getStockByProductId(productId: string): Promise<StockInfoDto | null> {
+  const response = await fetch(`${API_BASE}/api/inventory/stock/${productId}`, {
+    cache: 'no-store',
+  });
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch stock info');
+  }
+
+  return response.json();
+}
+
+export async function getStockLevels(productIds: string[]): Promise<StockInfoDto[]> {
+  if (productIds.length === 0) {
+    return [];
+  }
+
+  const response = await fetch(
+    `${API_BASE}/api/inventory/stock?productIds=${productIds.join(',')}`,
+    { cache: 'no-store' }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch stock levels');
+  }
+
+  return response.json();
+}
+
+export async function adjustStock(productId: string, data: AdjustStockRequest): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/inventory/stock/${productId}/adjust`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to adjust stock');
+  }
+}
+
+export async function getAdjustmentHistory(productId: string): Promise<AdjustmentDto[]> {
+  const response = await fetch(`${API_BASE}/api/inventory/stock/${productId}/adjustments`, {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch adjustment history');
+  }
+
+  return response.json();
+}
+
