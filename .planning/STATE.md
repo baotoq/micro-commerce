@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 3 of 10 (Catalog Storefront & Seed Data)
-Plan: 1 of 6 in current phase
+Plan: 2 of 6 in current phase
 Status: In progress
-Last activity: 2026-02-07 - Completed 03-01-PLAN.md
+Last activity: 2026-02-07 - Completed 03-02-PLAN.md (Storefront Layout & Hero Banner)
 
-Progress: █████░░░░░░░░░░░░░░░ 22%
+Progress: █████░░░░░░░░░░░░░░░ 24%
 
 ---
 
@@ -24,7 +24,7 @@ Progress: █████░░░░░░░░░░░░░░░ 22%
 |-------|------|--------|-------|
 | 1 | Foundation & Project Structure | COMPLETE | 6/6 |
 | 2 | Catalog Domain & Admin CRUD | COMPLETE | 7/7 |
-| 3 | Catalog Storefront & Seed Data | IN PROGRESS | 1/6 |
+| 3 | Catalog Storefront & Seed Data | IN PROGRESS | 2/6 |
 | 4 | Inventory Domain | NOT STARTED | 0/? |
 | 5 | Event Bus Infrastructure | NOT STARTED | 0/? |
 | 6 | Cart Domain | NOT STARTED | 0/? |
@@ -34,7 +34,7 @@ Progress: █████░░░░░░░░░░░░░░░ 22%
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 2/10
-**Plans Completed (Phase 3):** 1/6
+**Plans Completed (Phase 3):** 2/6
 
 ---
 
@@ -59,6 +59,7 @@ Progress: █████░░░░░░░░░░░░░░░ 22%
 
 ### Phase 3
 - [x] **03-01**: Sort support & seed data - `4db9e1eb`, `fffac359`
+- [x] **03-02**: Storefront layout & hero banner - `eab9565d`, `a59f959c`
 
 ---
 
@@ -88,6 +89,9 @@ Progress: █████░░░░░░░░░░░░░░░ 22%
 | 2026-01-30 | Hard delete for categories | Simple entities, referential integrity via FK constraint |
 | 2026-02-07 | BackgroundService for data seeding | Simpler than EF UseAsyncSeeding, works well with Aspire |
 | 2026-02-07 | Development-only seeding with idempotency guard | Check Categories table emptiness before seeding |
+| 2026-02-07 | Apple Store aesthetic for storefront | Zinc palette, generous whitespace, backdrop blur header |
+| 2026-02-07 | Route group layout for storefront | (storefront) wraps customer pages independently of admin |
+| 2026-02-07 | Skeleton loading for product placeholders | Consistent with admin loading patterns |
 
 ---
 
@@ -104,16 +108,16 @@ Progress: █████░░░░░░░░░░░░░░░ 22%
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed 03-01-PLAN.md (sort support & seed data)
+Stopped at: Completed 03-02-PLAN.md (Storefront Layout & Hero Banner)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 3** - Execute 03-02-PLAN.md (storefront API endpoints)
-2. Build storefront product browsing UI
-3. Add search and filtering capabilities
+1. **Continue Phase 3** - Execute 03-03-PLAN.md (Product Grid & Cards)
+2. Build product card components with infinite scroll
+3. Wire up product listing to storefront API
 
 ---
 *State file created: 2026-01-29*
