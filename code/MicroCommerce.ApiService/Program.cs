@@ -127,6 +127,10 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddScoped<IImageUploadService, ImageUploadService>();
 builder.Services.AddHostedService<CatalogDataSeeder>();
 
+// Inventory services
+builder.Services.AddHostedService<ReservationCleanupService>();
+builder.Services.AddHostedService<InventoryDataSeeder>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
