@@ -18,16 +18,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Pencil, Archive, Eye, EyeOff, Package } from 'lucide-react';
-import { ProductDto, changeProductStatus, archiveProduct } from '@/lib/api';
+import { MoreHorizontal, Pencil, Archive, Eye, EyeOff, Package, History } from 'lucide-react';
+import { ProductDto, StockInfoDto, changeProductStatus, archiveProduct } from '@/lib/api';
 
 interface ProductsTableProps {
   products: ProductDto[];
+  stockLevels: Record<string, StockInfoDto>;
   onEdit: (product: ProductDto) => void;
   onRefresh: () => void;
+  onAdjustStock: (productId: string) => void;
+  onViewHistory: (productId: string) => void;
 }
 
-export function ProductsTable({ products, onEdit, onRefresh }: ProductsTableProps) {
+export function ProductsTable({
+  products,
+  stockLevels,
+  onEdit,
+  onRefresh,
+  onAdjustStock,
+  onViewHistory,
+}: ProductsTableProps) {
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleStatusChange = async (product: ProductDto) => {
@@ -76,6 +86,34 @@ export function ProductsTable({ products, onEdit, onRefresh }: ProductsTableProp
     }
   };
 
+  const getStockBadge = (productId: string) => {
+    const stock = stockLevels[productId];
+
+    if (!stock) {
+      return <span className="text-gray-400">-</span>;
+    }
+
+    if (stock.availableQuantity === 0) {
+      return (
+        <Badge variant="destructive">Out of Stock</Badge>
+      );
+    }
+
+    if (stock.isLowStock) {
+      return (
+        <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
+          Only {stock.availableQuantity} left
+        </Badge>
+      );
+    }
+
+    return (
+      <Badge variant="secondary">
+        In Stock ({stock.availableQuantity})
+      </Badge>
+    );
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -84,6 +122,7 @@ export function ProductsTable({ products, onEdit, onRefresh }: ProductsTableProp
           <TableHead>Name</TableHead>
           <TableHead>Category</TableHead>
           <TableHead className="text-right">Price</TableHead>
+          <TableHead>Stock</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="w-[70px]">Actions</TableHead>
         </TableRow>
@@ -117,6 +156,27 @@ export function ProductsTable({ products, onEdit, onRefresh }: ProductsTableProp
             <TableCell>{product.categoryName}</TableCell>
             <TableCell className="text-right">
               {formatPrice(product.price, product.priceCurrency)}
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => onAdjustStock(product.id)}
+                  title="Adjust stock"
+                >
+                  {getStockBadge(product.id)}
+                </button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => onViewHistory(product.id)}
+                  title="View adjustment history"
+                >
+                  <History className="h-3.5 w-3.5 text-gray-400" />
+                </Button>
+              </div>
             </TableCell>
             <TableCell>{getStatusBadge(product.status)}</TableCell>
             <TableCell>
@@ -168,4 +228,3 @@ export function ProductsTable({ products, onEdit, onRefresh }: ProductsTableProp
     </Table>
   );
 }
-

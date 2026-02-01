@@ -8,12 +8,23 @@ import { ProductsTable } from '@/components/admin/products-table';
 import { ProductFilters } from '@/components/admin/product-filters';
 import { Pagination } from '@/components/admin/pagination';
 import { ProductDrawer } from '@/components/admin/product-drawer';
-import { getProducts, getCategories, ProductDto, ProductListDto, CategoryDto } from '@/lib/api';
+import { StockAdjustDialog } from '@/components/admin/stock-adjust-dialog';
+import { AdjustmentHistoryDialog } from '@/components/admin/adjustment-history-dialog';
+import {
+  getProducts,
+  getCategories,
+  getStockLevels,
+  ProductDto,
+  ProductListDto,
+  CategoryDto,
+  StockInfoDto,
+} from '@/lib/api';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<ProductListDto | null>(null);
   const [categories, setCategories] = useState<CategoryDto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stockLevels, setStockLevels] = useState<Record<string, StockInfoDto>>({});
 
   // Filter state
   const [search, setSearch] = useState('');
@@ -24,6 +35,28 @@ export default function ProductsPage() {
   // Drawer state
   const [editingProduct, setEditingProduct] = useState<ProductDto | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Stock adjust dialog state
+  const [adjustProductId, setAdjustProductId] = useState<string | null>(null);
+  const [isAdjustOpen, setIsAdjustOpen] = useState(false);
+
+  // History dialog state
+  const [historyProductId, setHistoryProductId] = useState<string | null>(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  const fetchStockLevels = useCallback(async (productIds: string[]) => {
+    if (productIds.length === 0) return;
+    try {
+      const levels = await getStockLevels(productIds);
+      const map: Record<string, StockInfoDto> = {};
+      for (const level of levels) {
+        map[level.productId] = level;
+      }
+      setStockLevels(map);
+    } catch (error) {
+      console.error('Failed to fetch stock levels:', error);
+    }
+  }, []);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -36,12 +69,15 @@ export default function ProductsPage() {
         search: search || undefined,
       });
       setProducts(data);
+      // Fetch stock levels for all products on this page
+      const productIds = data.items.map((p) => p.id);
+      fetchStockLevels(productIds);
     } catch (error) {
       console.error('Failed to fetch products:', error);
     } finally {
       setLoading(false);
     }
-  }, [page, categoryId, status, search]);
+  }, [page, categoryId, status, search, fetchStockLevels]);
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -77,6 +113,36 @@ export default function ProductsPage() {
   const handleAddNew = () => {
     setEditingProduct(null);
     setIsDrawerOpen(true);
+  };
+
+  const handleAdjustStock = (productId: string) => {
+    setAdjustProductId(productId);
+    setIsAdjustOpen(true);
+  };
+
+  const handleViewHistory = (productId: string) => {
+    setHistoryProductId(productId);
+    setIsHistoryOpen(true);
+  };
+
+  const handleStockAdjusted = () => {
+    // Refetch stock levels after adjustment
+    if (products) {
+      const productIds = products.items.map((p) => p.id);
+      fetchStockLevels(productIds);
+    }
+  };
+
+  // Helper to find product name by ID
+  const getProductName = (productId: string | null) => {
+    if (!productId || !products) return '';
+    const product = products.items.find((p) => p.id === productId);
+    return product?.name || '';
+  };
+
+  const getCurrentStock = (productId: string | null) => {
+    if (!productId) return 0;
+    return stockLevels[productId]?.availableQuantity ?? 0;
   };
 
   return (
@@ -121,8 +187,11 @@ export default function ProductsPage() {
         ) : products && products.items.length > 0 ? (
           <ProductsTable
             products={products.items}
+            stockLevels={stockLevels}
             onEdit={handleEdit}
             onRefresh={fetchProducts}
+            onAdjustStock={handleAdjustStock}
+            onViewHistory={handleViewHistory}
           />
         ) : (
           <div className="p-12 text-center">
@@ -166,7 +235,24 @@ export default function ProductsPage() {
         categories={categories}
         onSave={fetchProducts}
       />
+
+      {/* Stock adjustment dialog */}
+      <StockAdjustDialog
+        open={isAdjustOpen}
+        onOpenChange={setIsAdjustOpen}
+        productId={adjustProductId}
+        productName={getProductName(adjustProductId)}
+        currentStock={getCurrentStock(adjustProductId)}
+        onAdjusted={handleStockAdjusted}
+      />
+
+      {/* Adjustment history dialog */}
+      <AdjustmentHistoryDialog
+        open={isHistoryOpen}
+        onOpenChange={setIsHistoryOpen}
+        productId={historyProductId}
+        productName={getProductName(historyProductId)}
+      />
     </div>
   );
 }
-
