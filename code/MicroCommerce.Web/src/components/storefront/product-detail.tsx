@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Package } from "lucide-react";
+import { ShoppingCart, Package, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RelatedProducts } from "@/components/storefront/related-products";
-import { getProductById, type ProductDto } from "@/lib/api";
+import { getProductById, getStockByProductId, type ProductDto, type StockInfoDto } from "@/lib/api";
 
 interface ProductDetailProps {
   productId: string;
@@ -24,9 +24,42 @@ function formatPrice(price: number, currency: string): string {
   }).format(price);
 }
 
+function StockStatus({ stockInfo, loading: stockLoading }: { stockInfo: StockInfoDto | null; loading: boolean }) {
+  if (stockLoading) {
+    return <Skeleton className="h-6 w-28 rounded-full" />;
+  }
+
+  if (!stockInfo || stockInfo.availableQuantity === 0) {
+    return (
+      <div className="flex items-center gap-1.5 text-sm font-medium text-red-600">
+        <XCircle className="size-4" />
+        <span>Out of Stock</span>
+      </div>
+    );
+  }
+
+  if (stockInfo.availableQuantity <= 10) {
+    return (
+      <div className="flex items-center gap-1.5 text-sm font-medium text-amber-600">
+        <AlertTriangle className="size-4" />
+        <span>Only {stockInfo.availableQuantity} left!</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1.5 text-sm font-medium text-emerald-600">
+      <CheckCircle className="size-4" />
+      <span>In Stock</span>
+    </div>
+  );
+}
+
 export function ProductDetail({ productId }: ProductDetailProps) {
   const [product, setProduct] = useState<ProductDto | null>(null);
+  const [stockInfo, setStockInfo] = useState<StockInfoDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [stockLoading, setStockLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -51,11 +84,30 @@ export function ProductDetail({ productId }: ProductDetailProps) {
       }
     }
 
+    async function fetchStock() {
+      try {
+        setStockLoading(true);
+        const data = await getStockByProductId(productId);
+        if (!cancelled) {
+          setStockInfo(data);
+        }
+      } catch {
+        // Stock fetch failure is non-critical
+      } finally {
+        if (!cancelled) {
+          setStockLoading(false);
+        }
+      }
+    }
+
     fetchProduct();
+    fetchStock();
     return () => {
       cancelled = true;
     };
   }, [productId]);
+
+  const isInStock = stockInfo ? stockInfo.availableQuantity > 0 : !stockLoading;
 
   if (loading) {
     return <ProductDetailSkeleton />;
@@ -140,6 +192,10 @@ export function ProductDetail({ productId }: ProductDetailProps) {
             {formatPrice(product.price, product.priceCurrency)}
           </p>
 
+          <div className="mt-3">
+            <StockStatus stockInfo={stockInfo} loading={stockLoading} />
+          </div>
+
           {product.description && (
             <p className="mt-6 whitespace-pre-line leading-relaxed text-zinc-500">
               {product.description}
@@ -151,14 +207,22 @@ export function ProductDetail({ productId }: ProductDetailProps) {
           )}
 
           <div className="mt-8">
-            <Button
-              size="lg"
-              className="w-full rounded-full sm:w-auto"
-              onClick={() => toast("Cart coming soon!")}
-            >
-              <ShoppingCart className="mr-2 size-4" />
-              Add to Cart
-            </Button>
+            {isInStock ? (
+              <Button
+                size="lg"
+                className="w-full rounded-full sm:w-auto"
+                onClick={() => toast("Cart coming soon!")}
+              >
+                <ShoppingCart className="mr-2 size-4" />
+                Add to Cart
+              </Button>
+            ) : (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-3 text-center">
+                <p className="text-sm font-medium text-red-700">
+                  This product is currently out of stock
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
