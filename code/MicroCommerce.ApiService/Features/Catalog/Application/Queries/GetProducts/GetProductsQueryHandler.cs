@@ -47,8 +47,22 @@ public sealed class GetProductsQueryHandler
 
         var totalCount = await query.CountAsync(cancellationToken);
 
+        // Apply sorting
+        var isDescending = string.Equals(request.SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
+
+        query = request.SortBy?.ToLowerInvariant() switch
+        {
+            "price" => isDescending
+                ? query.OrderByDescending(p => p.Price.Amount)
+                : query.OrderBy(p => p.Price.Amount),
+            "name" => isDescending
+                ? query.OrderByDescending(p => p.Name.Value)
+                : query.OrderBy(p => p.Name.Value),
+            "newest" => query.OrderByDescending(p => p.CreatedAt),
+            _ => query.OrderByDescending(p => p.CreatedAt)
+        };
+
         var items = await query
-            .OrderByDescending(p => p.CreatedAt)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(p => new ProductDto(
