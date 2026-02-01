@@ -124,6 +124,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Catalog services
 builder.Services.AddScoped<IImageUploadService, ImageUploadService>();
+builder.Services.AddHostedService<CatalogDataSeeder>();
 
 var app = builder.Build();
 
