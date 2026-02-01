@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
-import type { ProductDto } from "@/lib/api";
-import { getStorefrontProducts } from "@/lib/api";
+import type { ProductDto, StockInfoDto } from "@/lib/api";
+import { getStorefrontProducts, getStockLevels } from "@/lib/api";
 
 import { ProductCard, ProductCardSkeleton } from "./product-card";
 
@@ -24,6 +24,7 @@ export function ProductGrid({
   sortDirection,
 }: ProductGridProps) {
   const [products, setProducts] = useState<ProductDto[]>([]);
+  const [stockMap, setStockMap] = useState<Map<string, StockInfoDto>>(new Map());
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -50,12 +51,31 @@ export function ProductGrid({
     if (filtersChanged) {
       filtersRef.current = { categoryId, search, sortBy, sortDirection };
       setProducts([]);
+      setStockMap(new Map());
       setPage(1);
       setHasMore(true);
       setInitialLoad(true);
       setLoading(true);
     }
   }, [categoryId, search, sortBy, sortDirection]);
+
+  // Fetch stock levels for a batch of products and merge into stockMap
+  const fetchStockForProducts = useCallback(async (productItems: ProductDto[]) => {
+    if (productItems.length === 0) return;
+    try {
+      const productIds = productItems.map((p) => p.id);
+      const stockLevels = await getStockLevels(productIds);
+      setStockMap((prev) => {
+        const next = new Map(prev);
+        for (const stock of stockLevels) {
+          next.set(stock.productId, stock);
+        }
+        return next;
+      });
+    } catch {
+      // Stock fetch failure is non-critical - cards render without stock badges
+    }
+  }, []);
 
   // Fetch products
   const fetchProducts = useCallback(async (
@@ -87,6 +107,9 @@ export function ProductGrid({
           ? data.totalCount > data.items.length
           : data.totalCount > products.length + data.items.length
       );
+
+      // Fetch stock levels for the newly loaded products
+      fetchStockForProducts(data.items);
     } catch {
       // Silently handle error - products stay as-is
     } finally {
@@ -94,7 +117,7 @@ export function ProductGrid({
       setLoadingMore(false);
       setInitialLoad(false);
     }
-  }, [products.length]);
+  }, [products.length, fetchStockForProducts]);
 
   // Initial load and filter reset
   useEffect(() => {
@@ -139,7 +162,7 @@ export function ProductGrid({
     <div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} stockInfo={stockMap.get(product.id)} />
         ))}
 
         {/* Loading more skeletons */}
