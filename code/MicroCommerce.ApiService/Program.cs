@@ -3,6 +3,7 @@ using FluentValidation;
 using MassTransit;
 using MicroCommerce.ApiService.Common.Behaviors;
 using MicroCommerce.ApiService.Common.Exceptions;
+using MicroCommerce.ApiService.Common.Messaging;
 using MicroCommerce.ApiService.Common.Messaging.Exceptions;
 using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Cart.Infrastructure;
@@ -52,6 +53,9 @@ builder.AddNpgsqlDbContext<InventoryDbContext>("appdb", configureDbContextOption
 
 // Azure Blob Storage for product images
 builder.AddAzureBlobServiceClient("blobs");
+
+// Azure Service Bus client for DLQ management (Aspire integration registers ServiceBusClient)
+builder.AddAzureServiceBusClient("messaging");
 
 // MassTransit with Azure Service Bus and EF Core outbox
 builder.Services.AddMassTransit(x =>
@@ -160,6 +164,9 @@ builder.Services.AddHostedService<CatalogDataSeeder>();
 // Inventory services
 builder.Services.AddHostedService<ReservationCleanupService>();
 builder.Services.AddHostedService<InventoryDataSeeder>();
+
+// Messaging services
+builder.Services.AddScoped<IDeadLetterQueueService, DeadLetterQueueService>();
 
 var app = builder.Build();
 
