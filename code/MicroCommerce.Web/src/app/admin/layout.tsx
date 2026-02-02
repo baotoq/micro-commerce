@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Package, FolderTree, LayoutDashboard } from 'lucide-react';
+import { Package, FolderTree, LayoutDashboard, AlertTriangle } from 'lucide-react';
 import { Toaster } from 'sonner';
 
 export default function AdminLayout({
@@ -40,6 +40,13 @@ export default function AdminLayout({
                 >
                   <FolderTree className="w-4 h-4 mr-2" />
                   Categories
+                </Link>
+                <Link
+                  href="/admin/dead-letters"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
+                >
+                  <AlertTriangle className="w-4 h-4 mr-2" />
+                  Dead Letters
                 </Link>
               </nav>
             </div>
