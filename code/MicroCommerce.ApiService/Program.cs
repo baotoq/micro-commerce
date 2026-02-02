@@ -9,6 +9,7 @@ using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Cart.Infrastructure;
 using MicroCommerce.ApiService.Features.Catalog;
 using MicroCommerce.ApiService.Features.Catalog.Infrastructure;
+using MicroCommerce.ApiService.Features.Messaging;
 using MicroCommerce.ApiService.Features.Inventory;
 using MicroCommerce.ApiService.Features.Inventory.Infrastructure;
 using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
@@ -220,6 +221,7 @@ app.MapDefaultEndpoints();
 // Module endpoints
 app.MapCatalogEndpoints();
 app.MapInventoryEndpoints();
+app.MapMessagingEndpoints();
 
 app.Run();
 
