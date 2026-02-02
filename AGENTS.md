@@ -1,61 +1,79 @@
-# Copilot instructions
+# AGENTS.md
 
-This repository is set up to use Aspire. Aspire is an orchestrator for the entire application and will take care of configuring dependencies, building, and running the application. The resources that make up the application are defined in `apphost.cs` including application code and external dependencies.
+Version: 0.25 (2026-02-01)
 
-## General recommendations for working with Aspire
-1. Before making any changes always run the apphost using `aspire run` and inspect the state of resources to make sure you are building from a known state.
-1. Changes to the _apphost.cs_ file will require a restart of the application to take effect.
-2. Make changes incrementally and run the aspire application using the `aspire run` command to validate changes.
-3. Use the Aspire MCP tools to check the status of resources and debug issues.
+## Agent Protocol
+- “Make a note” => edit AGENTS.md (Ignore `CLAUDE.md`, symlink for AGENTS.md).
+- New deps: quick health check (recent releases/commits, adoption).
 
-## Running the application
-To run the application run the following command:
+## Guardrails
+- Use `trash` for deletes.
+- Use `mv` / `cp` to move and copy files.
+- Bugs: add regression test when it fits.
+- Keep files <~400 LOC; split/refactor as needed.
+- Simplicity first: handle only important cases; no enterprise over-engineering.
+- New functionality: small OR absolutely necessary.
+- NEVER delete files, folders or other data unless explicilty approved or part of a plan.
+- Before writing code, stricly follow the blow research rules
 
-```
-aspire run
-```
+## Research
+- Always create a spec, even if minimal
+- Prefer skills if available over research
+- Prefer researched knowledge over existing knowledge when skills are unavailable
+- Research: Exa to websearch early, and Ref to seek specific documention or web fetch.
+- Best results: Quote exact errors; prefer 2025-2026 sources.
 
-If there is already an instance of the application running it will prompt to stop the existing instance. You only need to restart the application if code in `apphost.cs` is changed, but if you experience problems it can be useful to reset everything to the starting state.
+## Git
+- Always use `gh` to communicate with GitHub.
+- GitHub CLI for PRs/CI/releases. Given issue/PR URL (or `/pull/5`): use `gh`, not web search.
+- Examples: `gh issue view <url> --comments -R owner/repo`, `gh pr view <url> --comments --files -R owner/repo`.
+- Conventional branches (`feat|fix|refactor|build|ci|chore|docs|style|perf|test`).
+- Safe by default: `git status/diff/log`. Push only when user asks.
+- `git checkout` ok for PR review / explicit request.
+- Branch changes require user consent.
+- Destructive ops forbidden unless explicit (`reset --hard`, `clean`, `restore`, `rm`, …).
+- No repo-wide S/R scripts; keep edits small/reviewable.
+- Avoid manual `git stash`; if Git auto-stashes during pull/rebase, that’s fine (hint, not hard guardrail).
+- If user types a command (“pull and push”), that’s consent for that command.
+- Big review: `git --no-pager diff --color=never`.
 
-## Checking resources
-To check the status of resources defined in the app model use the _list resources_ tool. This will show you the current state of each resource and if there are any issues. If a resource is not running as expected you can use the _execute resource command_ tool to restart it or perform other actions.
+## Error Handling
+- Expected issues: explicit result types (not throw/try/catch).
+  - Exception: external systems (git, gh) → try/catch ok.
+  - Exception: React Query mutations → throw ok.
+- Unexpected issues: fail loud (throw/console.error + toast.error); NEVER add fallbacks.
 
-## Listing integrations
-IMPORTANT! When a user asks you to add a resource to the app model you should first use the _list integrations_ tool to get a list of the current versions of all the available integrations. You should try to use the version of the integration which aligns with the version of the Aspire.AppHost.Sdk. Some integration versions may have a preview suffix. Once you have identified the correct integration you should always use the _get integration docs_ tool to fetch the latest documentation for the integration and follow the links to get additional guidance.
+## Backwards Compat
+- Local/uncommitted: none needed; rewrite as if fresh.
+- In main: probably needed, ask user.
 
-## Debugging issues
-IMPORTANT! Aspire is designed to capture rich logs and telemetry for all resources defined in the app model. Use the following diagnostic tools when debugging issues with the application before making changes to make sure you are focusing on the right things.
+## Critical Thinking
+- Fix root cause (not band-aid).
+- Unsure: read more code; if still stuck, ask w/ short options (A/B/C).
+- Conflicts: stop. call out; pick safer path.
+- Unrecognized changes: assume other agent; keep going; focus your changes. If it causes issues, stop + ask user.
 
-1. _list structured logs_; use this tool to get details about structured logs.
-2. _list console logs_; use this tool to get details about console logs.
-3. _list traces_; use this tool to get details about traces.
-4. _list trace structured logs_; use this tool to get logs related to a trace
+## Completion and Autonomy Gate
+- Assume "continue" unless the user explicitly says "stop" or "pause".
+- Do not ask "should I continue?" or similar questions.
+- If more progress is possible without user input, continue.
+- BEFORE you end a turn or ask the user a question, run this checklist
+-- Answer these privately, then act:
+   1) Was the initial task fully completed?
+   2) If a definition-of-done was provided, did you run and verify every item?
+   3) Are you about to stop to ask a question?
+      - If yes: is the question actually blocking forward progress?
+   4) Can the question be answered by choosing an opinionated default?
+      - If yes: choose a default, document it in , and continue.
+- When you choose opinionated defaults, document them in `/docs/choices.md` as you work.
+- Leave breadcrumb notes in thread and `/docs/breadcrumbs.md`.
+- When writing to `/docs/choices.md` or `/docs/breadcrumbs.md` categorize by date (tail)
+- If you must ask the user:
+-- Ask exclusively blocking question only.
+-- Explain why it is blocking and what you will do once answered.
+-- Provide your best default/assumption as an alternative if the user does not care.
 
-## Other Aspire MCP tools
+## User Notes
+Use below list to store and recall user notes when asked to do so.
 
-1. _select apphost_; use this tool if working with multiple app hosts within a workspace.
-2. _list apphosts_; use this tool to get details about active app hosts.
-
-## Playwright MCP server
-
-The playwright MCP server has also been configured in this repository and you should use it to perform functional investigations of the resources defined in the app model as you work on the codebase. To get endpoints that can be used for navigation using the playwright MCP server use the list resources tool.
-
-## Updating the app host
-The user may request that you update the Aspire apphost. You can do this using the `aspire update` command. This will update the apphost to the latest version and some of the Aspire specific packages in referenced projects, however you may need to manually update other packages in the solution to ensure compatibility. You can consider using the `dotnet-outdated` with the users consent. To install the `dotnet-outdated` tool use the following command:
-
-```
-dotnet tool install --global dotnet-outdated-tool
-```
-
-## Persistent containers
-IMPORTANT! Consider avoiding persistent containers early during development to avoid creating state management issues when restarting the app.
-
-## Aspire workload
-IMPORTANT! The aspire workload is obsolete. You should never attempt to install or use the Aspire workload.
-
-## Official documentation
-IMPORTANT! Always prefer official documentation when available. The following sites contain the official documentation for Aspire and related components
-
-1. https://aspire.dev
-2. https://learn.microsoft.com/dotnet/aspire
-3. https://nuget.org (for specific integration package details)
+- (Replace this one when asked for first note)
