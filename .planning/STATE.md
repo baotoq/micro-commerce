@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 5 of 10 (Event Bus Infrastructure)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-09 - Completed 05-01-PLAN.md (Global MassTransit Middleware)
+Last activity: 2026-02-09 - Completed 05-02-PLAN.md (DLQ Management Backend)
 
-Progress: ██████████████░░░░░░ 57%
+Progress: ███████████████░░░░░ 60%
 
 ---
 
@@ -26,7 +26,7 @@ Progress: ██████████████░░░░░░ 57%
 | 2 | Catalog Domain & Admin CRUD | COMPLETE | 7/7 |
 | 3 | Catalog Storefront & Seed Data | IN PROGRESS | 5/6 |
 | 4 | Inventory Domain | COMPLETE | 5/5 |
-| 5 | Event Bus Infrastructure | IN PROGRESS | 1/3 |
+| 5 | Event Bus Infrastructure | IN PROGRESS | 2/3 |
 | 6 | Cart Domain | NOT STARTED | 0/? |
 | 7 | Ordering Domain & Checkout | NOT STARTED | 0/? |
 | 8 | Order History & Management | NOT STARTED | 0/? |
@@ -34,7 +34,7 @@ Progress: ██████████████░░░░░░ 57%
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 3/10
-**Plans Completed (Phase 5):** 1/3
+**Plans Completed (Phase 5):** 2/3
 
 ---
 
@@ -73,6 +73,7 @@ Progress: ██████████████░░░░░░ 57%
 
 ### Phase 5
 - [x] **05-01**: Global MassTransit Middleware & PermanentException - `8766ddb8`, `cc029c82`
+- [x] **05-02**: DLQ Management Backend (service, CQRS, endpoints, fault consumer) - `23b07849`, `8c03d633`
 
 ---
 
@@ -128,6 +129,11 @@ Progress: ██████████████░░░░░░ 57%
 | 2026-02-09 | Single AddConfigureEndpointsCallback for all middleware | DLQ, circuit breaker, retry, inbox outbox in one callback |
 | 2026-02-09 | Middleware order: circuit breaker -> retry -> inbox outbox | Outermost to innermost for correct failure handling |
 | 2026-02-09 | MassTransit package in ServiceDefaults | Required for DiagnosticHeaders.DefaultListenerName tracing |
+| 2026-02-09 | Aspire AddAzureServiceBusClient for ServiceBusClient DI | Same connection as MassTransit, enables DLQ service |
+| 2026-02-09 | Hardcoded known queue names in DLQ service | Extensible list, grows as consumers added |
+| 2026-02-09 | Graceful ServiceBusException handling in DLQ service | Emulator may not fully support DLQ sub-queues |
+| 2026-02-09 | Generic DomainEventFaultConsumer<T> for fault logging | Auto-discovered by MassTransit assembly scanning |
+| 2026-02-09 | RequireAuthorization on messaging route group | Admin-only DLQ management access |
 
 ---
 
@@ -144,17 +150,16 @@ Progress: ██████████████░░░░░░ 57%
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 05-01-PLAN.md (Global MassTransit Middleware)
+Stopped at: Completed 05-02-PLAN.md (DLQ Management Backend)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 5** - Execute 05-02-PLAN.md and 05-03-PLAN.md
-2. **05-02**: Cross-module event contracts and consumers
-3. **05-03**: Integration testing and verification
+1. **Continue Phase 5** - Execute 05-03-PLAN.md
+2. **05-03**: Integration testing and verification
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-09*
+*Updated: 2026-02-09 (05-02 complete)*
