@@ -50,7 +50,7 @@
 
 - [ ] **INFRA-01**: System has seed data with sample products
 - [ ] **INFRA-02**: API Gateway (YARP) routes frontend requests to services
-- [ ] **INFRA-03**: Services communicate via Azure Service Bus events
+- [x] **INFRA-03**: Services communicate via Azure Service Bus events
 - [ ] **INFRA-04**: Unit and integration tests cover critical paths
 
 ## v2 Requirements (Deferred)
@@ -115,7 +115,7 @@ Explicitly excluded from this project:
 | ADM-04 | Phase 8 | NOT STARTED |
 | INFRA-01 | Phase 3 | NOT STARTED |
 | INFRA-02 | Phase 9 | NOT STARTED |
-| INFRA-03 | Phase 5 | NOT STARTED |
+| INFRA-03 | Phase 5 | Complete |
 | INFRA-04 | Phase 10 | NOT STARTED |
 
 ---
