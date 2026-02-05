@@ -6,6 +6,7 @@ using MicroCommerce.ApiService.Common.Exceptions;
 using MicroCommerce.ApiService.Common.Messaging;
 using MicroCommerce.ApiService.Common.Messaging.Exceptions;
 using MicroCommerce.ApiService.Common.Persistence;
+using MicroCommerce.ApiService.Features.Cart;
 using MicroCommerce.ApiService.Features.Cart.Infrastructure;
 using MicroCommerce.ApiService.Features.Catalog;
 using MicroCommerce.ApiService.Features.Catalog.Infrastructure;
@@ -166,6 +167,9 @@ builder.Services.AddHostedService<CatalogDataSeeder>();
 builder.Services.AddHostedService<ReservationCleanupService>();
 builder.Services.AddHostedService<InventoryDataSeeder>();
 
+// Cart services
+builder.Services.AddHostedService<CartExpirationService>();
+
 // Messaging services
 builder.Services.AddScoped<IDeadLetterQueueService, DeadLetterQueueService>();
 
@@ -221,6 +225,7 @@ app.MapDefaultEndpoints();
 // Module endpoints
 app.MapCatalogEndpoints();
 app.MapInventoryEndpoints();
+app.MapCartEndpoints();
 app.MapMessagingEndpoints();
 
 app.Run();
