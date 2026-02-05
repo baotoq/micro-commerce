@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.Features.Cart.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Cart.Infrastructure;
@@ -9,9 +10,8 @@ public class CartDbContext : DbContext
     {
     }
 
-    // DbSets will be added as entities are created
-    // public DbSet<Cart> Carts => Set<Cart>();
-    // public DbSet<CartItem> CartItems => Set<CartItem>();
+    public DbSet<Domain.Entities.Cart> Carts => Set<Domain.Entities.Cart>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,7 +24,5 @@ public class CartDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(CartDbContext).Assembly,
             t => t.Namespace?.Contains("Features.Cart") == true);
-
-        // MassTransit outbox entities will be added in Plan 04
     }
 }
