@@ -51,13 +51,13 @@ jobs:
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Build and Push BuildingBlocks.Common Nuget packages
-        working-directory: code/src/BuildingBlocks/BuildingBlocks.Common
+        working-directory: src/BuildingBlocks/BuildingBlocks.Common
         run: |
           dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.NEW_VERSION }}
           dotnet nuget push *.nupkg --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
 
       - name: Build and Push BuildingBlocks.ServiceDefaults Nuget packages
-        working-directory: code/src/BuildingBlocks/BuildingBlocks.ServiceDefaults
+        working-directory: src/BuildingBlocks/BuildingBlocks.ServiceDefaults
         run: |
           dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.NEW_VERSION }}
           dotnet nuget push *.nupkg --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
@@ -70,7 +70,7 @@ jobs:
           password: ${{ steps.load-credentials.outputs.REGISTRY_TOKEN }}
 
       - name: Build and Push CartService docker image
-        working-directory: code/src/CartService/CartService.Api
+        working-directory: src/CartService/CartService.Api
         run: |
           dotnet publish -c Release \
             /t:PublishContainer \
@@ -79,7 +79,7 @@ jobs:
             -p ContainerImageTag=${{ github.ref_name }}
 
       - name: Build and Push Yarp docker image
-        working-directory: code/src/Gateway/Yarp
+        working-directory: src/Gateway/Yarp
         run: |
           dotnet publish -c Release \
             /t:PublishContainer \

@@ -20,7 +20,7 @@ Inspired by **[Microsoft eShop](https://github.com/dotnet/eShop)**, this pet pro
 
 ```bash
 # Run with .NET Aspire (starts all services + infrastructure)
-dotnet run --project code/MicroCommerce.AppHost
+dotnet run --project src/MicroCommerce.AppHost
 
 # Open Aspire dashboard at https://localhost:17225
 # Frontend at http://localhost:3000
@@ -90,7 +90,7 @@ dotnet run --project code/MicroCommerce.AppHost
 ## Project Structure
 
 ```
-code/
+src/
 ├── MicroCommerce.AppHost/           # Aspire orchestrator
 ├── MicroCommerce.ApiService/        # Backend API
 │   ├── Features/                    # Domain modules
@@ -115,13 +115,13 @@ code/
 
 ```bash
 # Run full stack
-dotnet run --project code/MicroCommerce.AppHost
+dotnet run --project src/MicroCommerce.AppHost
 
 # Build
-dotnet build code/
+dotnet build src/
 
 # Run tests
-dotnet test code/
+dotnet test src/
 
 # EF migrations
 dotnet ef migrations add <Name> --context CatalogDbContext \

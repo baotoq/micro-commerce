@@ -9,12 +9,12 @@ on:
   push:
     branches: ["master"]
     paths:
-      - "code/**"
+      - "src/**"
       - ".github/**"
 
 defaults:
   run:
-    working-directory: ./code
+    working-directory: ./src
 
 jobs:
   unit-tests:
