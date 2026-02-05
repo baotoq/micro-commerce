@@ -2,7 +2,21 @@
 
 A showcase e-commerce platform demonstrating modern .NET microservices architecture with best practices.
 
-> **Disclaimer:** I mass-approved tool permissions and mass-typed "y" while Claude Code wrote every line of this project. My biggest contribution was picking the font. If there's a bug, blame the AI. If it works, I mass-typed "y" really well.
+> [!IMPORTANT]
+> **Since 2026, zero lines of code have been written by a human.**
+>
+> Before 2026, I wrote code like a normal person. Then [Claude Code](https://docs.anthropic.com/en/docs/claude-code) happened.
+>
+> Now I mass-type `y` to approve tool permissions while Claude Code does all the actual work.
+>
+> **My contributions (2026–present):**
+> - Mass-typing `y`
+> - Mass-typing `y` faster
+> - Mass-typing `y` with increasing confidence
+>
+> **Job title:** Senior LGTM Engineer | Chief `y` Officer
+>
+> If it works — I mass-typed `y` really well. If it doesn't — I probably typed `n` once by accident.
 
 | Project | Tests | Sonar |
 |---------|-------|-------|
