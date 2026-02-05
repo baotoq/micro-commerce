@@ -321,6 +321,99 @@ export async function getAdjustmentHistory(productId: string): Promise<Adjustmen
   return response.json();
 }
 
+// Cart types
+export interface CartItemDto {
+  id: string;
+  productId: string;
+  productName: string;
+  unitPrice: number;
+  imageUrl: string | null;
+  quantity: number;
+  lineTotal: number;
+}
+
+export interface CartDto {
+  id: string;
+  items: CartItemDto[];
+  totalPrice: number;
+  totalItems: number;
+}
+
+export interface AddToCartRequest {
+  productId: string;
+  productName: string;
+  unitPrice: number;
+  imageUrl: string | null;
+  quantity: number;
+}
+
+export interface AddToCartResponse {
+  isUpdate: boolean;
+}
+
+export interface UpdateCartItemRequest {
+  quantity: number;
+}
+
+// Cart API functions
+export async function getCart(): Promise<CartDto | null> {
+  const response = await fetch(`${API_BASE}/api/cart`, {
+    credentials: "include",
+    cache: "no-store",
+  });
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch cart");
+  }
+
+  return response.json();
+}
+
+export async function addToCart(data: AddToCartRequest): Promise<AddToCartResponse> {
+  const response = await fetch(`${API_BASE}/api/cart/items`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to add to cart");
+  }
+
+  return response.json();
+}
+
+export async function updateCartItemQuantity(itemId: string, quantity: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/cart/items/${itemId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ quantity } satisfies UpdateCartItemRequest),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to update cart item");
+  }
+}
+
+export async function removeCartItem(itemId: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/cart/items/${itemId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to remove cart item");
+  }
+}
+
 // Dead Letter Queue types
 export interface DeadLetterMessageDto {
   sequenceNumber: number;
