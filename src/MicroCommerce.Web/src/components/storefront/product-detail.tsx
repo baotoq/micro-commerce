@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Package, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
-import { toast } from "sonner";
+import { ShoppingCart, Package, CheckCircle, AlertTriangle, XCircle, Loader2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RelatedProducts } from "@/components/storefront/related-products";
+import { useAddToCart } from "@/hooks/use-cart";
 import { getProductById, getStockByProductId, type ProductDto, type StockInfoDto } from "@/lib/api";
 
 interface ProductDetailProps {
@@ -61,6 +61,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
   const [loading, setLoading] = useState(true);
   const [stockLoading, setStockLoading] = useState(true);
   const [error, setError] = useState(false);
+  const addToCart = useAddToCart();
 
   useEffect(() => {
     let cancelled = false;
@@ -211,10 +212,28 @@ export function ProductDetail({ productId }: ProductDetailProps) {
               <Button
                 size="lg"
                 className="w-full rounded-full sm:w-auto"
-                onClick={() => toast("Cart coming soon!")}
+                disabled={addToCart.isPending}
+                onClick={() =>
+                  addToCart.mutate({
+                    productId: product.id,
+                    productName: product.name,
+                    unitPrice: product.price,
+                    imageUrl: product.imageUrl,
+                    quantity: 1,
+                  })
+                }
               >
-                <ShoppingCart className="mr-2 size-4" />
-                Add to Cart
+                {addToCart.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="mr-2 size-4" />
+                    Add to Cart
+                  </>
+                )}
               </Button>
             ) : (
               <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-3 text-center">
