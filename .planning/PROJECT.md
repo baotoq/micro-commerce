@@ -17,7 +17,6 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - ✓ .NET Aspire orchestration — existing
 - ✓ DDD building blocks (aggregates, domain events, value objects) — existing
 - ✓ OpenTelemetry observability — existing
-- ✓ Kubernetes deployment manifests — existing
 
 ### Active
 
