@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 6 of 10 (Cart Domain)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-09 - Completed 06-02-PLAN.md (Cart CQRS & API Endpoints)
+Last activity: 2026-02-09 - Completed 06-03-PLAN.md (Cart React Query Hooks)
 
-Progress: ██████████████████░░ 70%
+Progress: ██████████████████░░ 72%
 
 ---
 
@@ -27,14 +27,14 @@ Progress: ██████████████████░░ 70%
 | 3 | Catalog Storefront & Seed Data | IN PROGRESS | 5/6 |
 | 4 | Inventory Domain | COMPLETE | 5/5 |
 | 5 | Event Bus Infrastructure | COMPLETE | 3/3 |
-| 6 | Cart Domain | IN PROGRESS | 2/4 |
+| 6 | Cart Domain | IN PROGRESS | 3/4 |
 | 7 | Ordering Domain & Checkout | NOT STARTED | 0/? |
 | 8 | Order History & Management | NOT STARTED | 0/? |
 | 9 | API Gateway | NOT STARTED | 0/? |
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 4/10
-**Plans Completed (Phase 6):** 2/4
+**Plans Completed (Phase 6):** 3/4
 
 ---
 
@@ -79,6 +79,7 @@ Progress: ██████████████████░░ 70%
 ### Phase 6
 - [x] **06-01**: Cart Domain Model & Persistence - `c8c74c80`, `00700bdd`
 - [x] **06-02**: Cart CQRS & API Endpoints - `8d26f1c1`, `b4d6e115`
+- [x] **06-03**: Cart React Query Hooks - `498813d6`, `645016c7`
 
 ---
 
@@ -146,6 +147,9 @@ Progress: ██████████████████░░ 70%
 | 2026-02-09 | Max quantity 99 enforced in Cart and CartItem | Practical upper bound for e-commerce quantities |
 | 2026-02-09 | Cookie-based buyer identity with 7-day MaxAge | Guest cart persistence without authentication requirement |
 | 2026-02-09 | ExecuteDeleteAsync for cart expiration | More efficient bulk delete vs load-then-remove pattern |
+| 2026-02-09 | useState pattern for QueryClient | Prevents SSR state leakage in Next.js App Router |
+| 2026-02-09 | Single ["cart"] query key for all cart hooks | Cache consistency between useCart and useCartItemCount |
+| 2026-02-09 | Optimistic mutations with snapshot rollback | Instant UI feedback, server reconciliation on settle |
 
 ---
 
@@ -162,16 +166,15 @@ Progress: ██████████████████░░ 70%
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 06-02-PLAN.md (Cart CQRS & API Endpoints)
+Stopped at: Completed 06-03-PLAN.md (Cart React Query Hooks)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 6** - Execute 06-03-PLAN.md (Cart Storefront UI)
-2. Execute remaining cart plan (06-04)
+1. **Continue Phase 6** - Execute 06-04-PLAN.md (Cart UI Components)
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-09 (06-02 complete, Phase 6 in progress)*
+*Updated: 2026-02-09 (06-03 complete, Phase 6 in progress)*
