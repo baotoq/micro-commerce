@@ -20,7 +20,6 @@
       "Bash(git tag:*)",
       "Skill(gsd:map-codebase)",
       "Skill(gsd:map-codebase:*)",
-      "WebFetch(domain:www.bigcommerce.com)",
       "WebFetch(domain:masstransit.io)",
       "WebFetch(domain:microsoft.github.io)"
     ]
