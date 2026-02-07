@@ -7,5 +7,7 @@ public sealed record GetProductsQuery(
     int PageSize = 20,
     Guid? CategoryId = null,
     string? Status = null,
-    string? Search = null) : IRequest<ProductListDto>;
+    string? Search = null,
+    string? SortBy = null,
+    string? SortDirection = "asc") : IRequest<ProductListDto>;
 

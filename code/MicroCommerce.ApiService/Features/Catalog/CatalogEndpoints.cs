@@ -167,6 +167,8 @@ public static class CatalogEndpoints
         [FromQuery] Guid? categoryId,
         [FromQuery] string? status,
         [FromQuery] string? search,
+        [FromQuery] string? sortBy,
+        [FromQuery] string? sortDirection,
         ISender sender,
         CancellationToken cancellationToken)
     {
@@ -175,7 +177,9 @@ public static class CatalogEndpoints
             pageSize == 0 ? 20 : pageSize,
             categoryId,
             status,
-            search);
+            search,
+            sortBy,
+            sortDirection);
         var result = await sender.Send(query, cancellationToken);
         return Results.Ok(result);
     }
