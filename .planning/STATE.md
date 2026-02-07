@@ -25,7 +25,7 @@ Progress: ██████████████░░░░░░ 54%
 | 1 | Foundation & Project Structure | COMPLETE | 6/6 |
 | 2 | Catalog Domain & Admin CRUD | COMPLETE | 7/7 |
 | 3 | Catalog Storefront & Seed Data | IN PROGRESS | 5/6 |
-| 4 | Inventory Domain | IN PROGRESS | 4/? |
+| 4 | Inventory Domain | COMPLETE | 5/5 |
 | 5 | Event Bus Infrastructure | NOT STARTED | 0/? |
 | 6 | Cart Domain | NOT STARTED | 0/? |
 | 7 | Ordering Domain & Checkout | NOT STARTED | 0/? |
@@ -33,8 +33,8 @@ Progress: ██████████████░░░░░░ 54%
 | 9 | API Gateway | NOT STARTED | 0/? |
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
-**Phases Completed:** 2/10
-**Plans Completed (Phase 4):** 4/?
+**Phases Completed:** 3/10
+**Plans Completed (Phase 4):** 5/5
 
 ---
 
@@ -69,6 +69,7 @@ Progress: ██████████████░░░░░░ 54%
 - [x] **04-02**: Inventory CQRS & API Endpoints - `ffb1e4ab`, `98698643`
 - [x] **04-03**: Background Services & Data Seeder - `d2f9adab`, `879a9d66`
 - [x] **04-04**: Admin Stock Management UI - `e151a377`, `ed820b97`
+- [x] **04-05**: Storefront Stock Status Display - `64b0d56b`, `6dfb7c61`
 
 ---
 
@@ -118,6 +119,9 @@ Progress: ██████████████░░░░░░ 54%
 | 2026-02-08 | Record<string, StockInfoDto> for stock levels prop | Simpler than Map for React props serialization |
 | 2026-02-08 | Batch stock fetch after product list loads | Single API call for all products on page |
 | 2026-02-08 | Refetch stock after adjustment (not optimistic) | Ensures accuracy from server state |
+| 2026-02-08 | Stock badges at top-right of product image | Visible without dominating card layout |
+| 2026-02-08 | Parallel stock fetch on product detail | Catalog SSR + Inventory client-side for clean module boundary |
+| 2026-02-08 | isInStock defaults true while loading | Avoid flash of out-of-stock content during fetch |
 
 ---
 
@@ -134,15 +138,15 @@ Progress: ██████████████░░░░░░ 54%
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 04-04-PLAN.md (Admin Stock Management UI)
+Stopped at: Completed 04-05-PLAN.md (Storefront Stock Status Display) - Phase 4 complete
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 4** - Execute remaining inventory domain plans (commands, queries, API)
-2. Complete Phase 4 and begin Phase 5 (Event Bus Infrastructure)
+1. **Phase 4 complete** - All 5 inventory domain plans executed
+2. **Begin Phase 5** - Event Bus Infrastructure (Azure Service Bus, MassTransit consumers)
 
 ---
 *State file created: 2026-01-29*
