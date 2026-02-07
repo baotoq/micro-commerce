@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.Features.Ordering.Application.Saga;
 using MicroCommerce.ApiService.Features.Ordering.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ public class OrderingDbContext : DbContext
 
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<CheckoutState> CheckoutSagas => Set<CheckoutState>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,7 +26,5 @@ public class OrderingDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(OrderingDbContext).Assembly,
             t => t.Namespace?.Contains("Features.Ordering") == true);
-
-        // MassTransit outbox entities will be added in Plan 04
     }
 }

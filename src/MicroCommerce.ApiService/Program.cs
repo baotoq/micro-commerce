@@ -14,6 +14,7 @@ using MicroCommerce.ApiService.Features.Messaging;
 using MicroCommerce.ApiService.Features.Inventory;
 using MicroCommerce.ApiService.Features.Inventory.Infrastructure;
 using MicroCommerce.ApiService.Features.Ordering;
+using MicroCommerce.ApiService.Features.Ordering.Application.Saga;
 using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,6 +65,14 @@ builder.AddAzureServiceBusClient("messaging");
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumers(typeof(Program).Assembly);
+
+    x.AddSagaStateMachine<CheckoutStateMachine, CheckoutState>()
+        .EntityFrameworkRepository(r =>
+        {
+            r.ConcurrencyMode = ConcurrencyMode.Optimistic;
+            r.ExistingDbContext<OrderingDbContext>();
+            r.UsePostgres();
+        });
 
     x.AddEntityFrameworkOutbox<OutboxDbContext>(o =>
     {
