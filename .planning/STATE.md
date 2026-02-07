@@ -12,9 +12,9 @@
 Phase: 8 of 10 (Order History & Management)
 Plan: 2 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-12 - Completed 08-02-PLAN.md (Frontend Data Layer Infrastructure)
+Last activity: 2026-02-12 - Completed 08-01-PLAN.md (Order Backend API)
 
-Progress: ██████████████████░░ 80%
+Progress: ██████████████████░░ 82%
 
 ---
 
@@ -29,7 +29,7 @@ Progress: ██████████████████░░ 80%
 | 5 | Event Bus Infrastructure | COMPLETE | 3/3 |
 | 6 | Cart Domain | IN PROGRESS | 3/4 |
 | 7 | Ordering Domain & Checkout | IN PROGRESS | 3/? |
-| 8 | Order History & Management | IN PROGRESS | 1/5 |
+| 8 | Order History & Management | IN PROGRESS | 2/5 |
 | 9 | API Gateway | NOT STARTED | 0/? |
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
@@ -87,6 +87,7 @@ Progress: ██████████████████░░ 80%
 - [x] **07-03**: Checkout Saga State Machine & Consumers - `5e87febf`, `0e1547e6`
 
 ### Phase 8
+- [x] **08-01**: Order Backend API (domain extensions, queries, endpoints) - `57928777`, `1c98db54`
 - [x] **08-02**: Frontend Data Layer Infrastructure - `fd96a3f8`, `bec2af5e`
 
 ---
@@ -171,6 +172,11 @@ Progress: ██████████████████░░ 80%
 | 2026-02-12 | Terminal status polling stop for order hooks | Delivered/Failed/Cancelled orders stop polling to reduce server load |
 | 2026-02-12 | 20-second polling interval for order status | Balance responsiveness with server load for order processing |
 | 2026-02-12 | Scoped query key hierarchy for orders | buyer vs admin query keys allow targeted cache invalidation |
+| 2026-02-12 | Shared OrderListDto across buyer and admin queries | Reduce duplication, consistent response shape |
+| 2026-02-12 | Item thumbnails capped at 3 per order card | Preview without loading all items |
+| 2026-02-12 | Dashboard zero-fill for missing daily counts | Consistent 7-day chart data for frontend |
+| 2026-02-12 | InvalidOperationException mapped to 400 Bad Request | Domain guard clause violations return proper HTTP status |
+| 2026-02-12 | MarkAsFailed guard includes Shipped/Delivered | Prevent late-stage orders from reverting to Failed |
 
 ---
 
@@ -187,18 +193,17 @@ Progress: ██████████████████░░ 80%
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 08-02-PLAN.md (Frontend Data Layer Infrastructure)
+Stopped at: Completed 08-01-PLAN.md (Order Backend API)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Execute 08-01** - Backend: Order domain extensions, new queries, endpoints
-2. **Execute 08-03** - Customer order history page
-3. **Execute 08-04** - Admin order dashboard
-4. **Execute 08-05** - Admin order kanban board
+1. **Execute 08-03** - Customer order history page
+2. **Execute 08-04** - Admin order dashboard
+3. **Execute 08-05** - Admin order kanban board
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-12 (08-02 complete, Phase 8 in progress)*
+*Updated: 2026-02-12 (08-01 complete, Phase 8 in progress)*
