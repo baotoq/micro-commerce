@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Inventory.Infrastructure;
@@ -9,9 +10,9 @@ public class InventoryDbContext : DbContext
     {
     }
 
-    // DbSets will be added as entities are created
-    // public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
-    // public DbSet<StockReservation> StockReservations => Set<StockReservation>();
+    public DbSet<StockItem> StockItems => Set<StockItem>();
+    public DbSet<StockReservation> StockReservations => Set<StockReservation>();
+    public DbSet<StockAdjustment> StockAdjustments => Set<StockAdjustment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,7 +25,5 @@ public class InventoryDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(InventoryDbContext).Assembly,
             t => t.Namespace?.Contains("Features.Inventory") == true);
-
-        // MassTransit outbox entities will be added in Plan 04
     }
 }
