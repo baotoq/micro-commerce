@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X, ClipboardList } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 
 import { useCartItemCount } from '@/hooks/use-cart';
@@ -43,6 +43,13 @@ export function Header() {
         {/* Right: Icons */}
         <div className="flex shrink-0 items-center gap-4">
           <Link
+            href="/orders"
+            className="hidden text-zinc-500 transition-colors hover:text-zinc-900 sm:block"
+            aria-label="My orders"
+          >
+            <ClipboardList className="h-4 w-4" />
+          </Link>
+          <Link
             href="/cart"
             className="relative text-zinc-500 transition-colors hover:text-zinc-900"
             aria-label="Shopping cart"
@@ -80,6 +87,13 @@ export function Header() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Products
+            </Link>
+            <Link
+              href="/orders"
+              className="block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Orders
             </Link>
           </div>
         </div>
