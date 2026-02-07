@@ -35,14 +35,14 @@
 
 ### Inventory
 
-- [ ] **INV-01**: System tracks stock levels per product
-- [ ] **INV-02**: System reserves stock during checkout (prevents overselling)
+- [x] **INV-01**: System tracks stock levels per product
+- [x] **INV-02**: System reserves stock during checkout (prevents overselling)
 - [ ] **INV-03**: Stock counts update in real-time when orders placed
 
 ### Admin
 
 - [ ] **ADM-01**: Admin can create, edit, and delete products
-- [ ] **ADM-02**: Admin can adjust inventory stock levels
+- [x] **ADM-02**: Admin can adjust inventory stock levels
 - [ ] **ADM-03**: Admin sees dashboard with order counts and revenue
 - [ ] **ADM-04**: Admin can view and manage orders
 
@@ -106,11 +106,11 @@ Explicitly excluded from this project:
 | ORD-01 | Phase 8 | NOT STARTED |
 | ORD-02 | Phase 8 | NOT STARTED |
 | ORD-03 | Phase 8 | NOT STARTED |
-| INV-01 | Phase 4 | NOT STARTED |
-| INV-02 | Phase 4 | NOT STARTED |
+| INV-01 | Phase 4 | Complete |
+| INV-02 | Phase 4 | Complete |
 | INV-03 | Phase 7 | NOT STARTED |
 | ADM-01 | Phase 2 | NOT STARTED |
-| ADM-02 | Phase 4 | NOT STARTED |
+| ADM-02 | Phase 4 | Complete |
 | ADM-03 | Phase 8 | NOT STARTED |
 | ADM-04 | Phase 8 | NOT STARTED |
 | INFRA-01 | Phase 3 | NOT STARTED |
