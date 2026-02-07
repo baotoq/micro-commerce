@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 7 of 10 (Ordering Domain & Checkout)
-Plan: 2 of ? in current phase
+Plan: 3 of ? in current phase
 Status: In progress
-Last activity: 2026-02-10 - Completed 07-02-PLAN.md (Ordering CQRS & API Endpoints)
+Last activity: 2026-02-10 - Completed 07-03-PLAN.md (Checkout Saga State Machine)
 
-Progress: ██████████████████░░ 76%
+Progress: ██████████████████░░ 78%
 
 ---
 
@@ -28,7 +28,7 @@ Progress: ██████████████████░░ 76%
 | 4 | Inventory Domain | COMPLETE | 5/5 |
 | 5 | Event Bus Infrastructure | COMPLETE | 3/3 |
 | 6 | Cart Domain | IN PROGRESS | 3/4 |
-| 7 | Ordering Domain & Checkout | IN PROGRESS | 2/? |
+| 7 | Ordering Domain & Checkout | IN PROGRESS | 3/? |
 | 8 | Order History & Management | NOT STARTED | 0/? |
 | 9 | API Gateway | NOT STARTED | 0/? |
 | 10 | Testing & Polish | NOT STARTED | 0/? |
@@ -84,6 +84,7 @@ Progress: ██████████████████░░ 76%
 ### Phase 7
 - [x] **07-01**: Order Domain Model & Persistence - `237a46a0`, `cadb1fbc`
 - [x] **07-02**: Ordering CQRS & API Endpoints - `7e682068`, `f581eb3c`
+- [x] **07-03**: Checkout Saga State Machine & Consumers - `5e87febf`, `0e1547e6`
 
 ---
 
@@ -160,6 +161,10 @@ Progress: ██████████████████░░ 76%
 | 2026-02-10 | Flat $5.99 shipping + 8% tax | Simple calculation, configurable later |
 | 2026-02-10 | PaymentCompleted/PaymentFailed in Contracts.cs | Shared location for CQRS and saga plans to reference |
 | 2026-02-10 | BuyerIdentity reused from Cart module | Consistent buyer identification across cart and ordering |
+| 2026-02-10 | ExistingDbContext for saga persistence | Saga state in same schema as orders, no extra DbContext |
+| 2026-02-10 | Optimistic concurrency for saga state | MassTransit auto-retries on conflicts, better throughput |
+| 2026-02-10 | JSON serialization for reservation ID map | Simple string serialization, no extra tables needed |
+| 2026-02-10 | SetCompletedWhenFinalized for saga cleanup | Auto-removes completed saga rows, prevents table bloat |
 
 ---
 
@@ -176,15 +181,15 @@ Progress: ██████████████████░░ 76%
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed 07-02-PLAN.md (Ordering CQRS & API Endpoints)
+Stopped at: Completed 07-03-PLAN.md (Checkout Saga State Machine)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 7** - Execute next ordering plan (Saga or Checkout UI)
+1. **Continue Phase 7** - Execute next ordering plan (Checkout UI or remaining plans)
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-10 (07-02 complete, Phase 7 in progress)*
+*Updated: 2026-02-10 (07-03 complete, Phase 7 in progress)*
