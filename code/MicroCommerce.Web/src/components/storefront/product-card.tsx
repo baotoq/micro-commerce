@@ -2,16 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { CheckCircle, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { ProductDto } from "@/lib/api";
+import type { ProductDto, StockInfoDto } from "@/lib/api";
 
 interface ProductCardProps {
   product: ProductDto;
+  stockInfo?: StockInfoDto;
 }
 
 function formatPrice(price: number, currency: string): string {
@@ -21,14 +22,43 @@ function formatPrice(price: number, currency: string): string {
   }).format(price);
 }
 
-export function ProductCard({ product }: ProductCardProps) {
-  const isOutOfStock = product.status !== "Published";
+function StockBadge({ stockInfo }: { stockInfo?: StockInfoDto }) {
+  if (!stockInfo) return null;
+
+  const { availableQuantity } = stockInfo;
+
+  if (availableQuantity === 0) {
+    return (
+      <Badge variant="destructive" className="text-[10px] font-semibold">
+        Out of Stock
+      </Badge>
+    );
+  }
+
+  if (availableQuantity <= 10) {
+    return (
+      <Badge className="bg-amber-100 text-[10px] font-semibold text-amber-800 hover:bg-amber-100">
+        Only {availableQuantity} left!
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge className="bg-emerald-50 text-[10px] font-semibold text-emerald-700 hover:bg-emerald-50">
+      <CheckCircle className="mr-0.5 size-3" />
+      In Stock
+    </Badge>
+  );
+}
+
+export function ProductCard({ product, stockInfo }: ProductCardProps) {
+  const isOutOfStock = stockInfo ? stockInfo.availableQuantity === 0 : false;
 
   return (
     <Link href={`/products/${product.id}`} className="group block">
       <div
         className={`relative overflow-hidden rounded-xl bg-white shadow-sm transition-shadow duration-300 group-hover:shadow-md ${
-          isOutOfStock ? "opacity-60 grayscale" : ""
+          isOutOfStock ? "opacity-60" : ""
         }`}
       >
         {/* Image area */}
@@ -39,7 +69,9 @@ export function ProductCard({ product }: ProductCardProps) {
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className={`object-cover transition-transform duration-500 group-hover:scale-105 ${
+                isOutOfStock ? "grayscale" : ""
+              }`}
             />
           ) : (
             <div className="flex h-full items-center justify-center">
@@ -49,13 +81,16 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
 
+          {/* Stock badge - top right of image */}
+          {stockInfo && (
+            <div className="absolute right-2 top-2">
+              <StockBadge stockInfo={stockInfo} />
+            </div>
+          )}
+
           {/* Out of stock overlay */}
           {isOutOfStock && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/50">
-              <Badge variant="secondary" className="text-xs font-semibold">
-                Out of Stock
-              </Badge>
-            </div>
+            <div className="absolute inset-0 bg-white/30" />
           )}
 
           {/* Hover overlay with Add to Cart */}
