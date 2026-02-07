@@ -1,11 +1,12 @@
-export default function AdminDashboard() {
+"use client";
+
+import { OrderDashboard } from "@/components/admin/order-dashboard";
+
+export default function AdminDashboardPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-      <p className="mt-2 text-gray-600">
-        Welcome to MicroCommerce Admin. Use the navigation above to manage products and categories.
-      </p>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+      <OrderDashboard />
     </div>
   );
 }
-
