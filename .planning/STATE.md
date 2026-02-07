@@ -12,9 +12,9 @@
 Phase: 8 of 10 (Order History & Management)
 Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-12 - Completed 08-04-PLAN.md (Admin Order Dashboard)
+Last activity: 2026-02-12 - Completed 08-03-PLAN.md (Customer Order History)
 
-Progress: ██████████████████░░ 84%
+Progress: ██████████████████░░ 86%
 
 ---
 
@@ -89,6 +89,7 @@ Progress: ██████████████████░░ 84%
 ### Phase 8
 - [x] **08-01**: Order Backend API (domain extensions, queries, endpoints) - `57928777`, `1c98db54`
 - [x] **08-02**: Frontend Data Layer Infrastructure - `fd96a3f8`, `bec2af5e`
+- [x] **08-03**: Customer Order History & Detail Pages - `2bae9ee4`, `c9f5fab4`
 - [x] **08-04**: Admin Order Dashboard (stat cards, bar chart, recent orders) - `930f8eba`, `fe40dabc`
 
 ---
@@ -179,6 +180,9 @@ Progress: ██████████████████░░ 84%
 | 2026-02-12 | InvalidOperationException mapped to 400 Bad Request | Domain guard clause violations return proper HTTP status |
 | 2026-02-12 | MarkAsFailed guard includes Shipped/Delivered | Prevent late-stage orders from reverting to Failed |
 | 2026-02-12 | Status badge color mapping pattern for admin order views | Reusable Submitted=yellow, Confirmed=blue, Paid=green, Shipped=purple, Delivered=green, Failed=red |
+| 2026-02-12 | 5-step customer lifecycle mapping in stepper | StockReserved mapped to Submitted; Failed/Cancelled shown as error on last step |
+| 2026-02-12 | useParams for client-side dynamic route params | Client components use useParams hook instead of page props |
+| 2026-02-12 | Orders icon in storefront header | ClipboardList icon + mobile menu link for order history discoverability |
 
 ---
 
@@ -195,16 +199,15 @@ Progress: ██████████████████░░ 84%
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 08-04-PLAN.md (Admin Order Dashboard)
+Stopped at: Completed 08-03-PLAN.md (Customer Order History)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Execute 08-03** - Customer order history page
-2. **Execute 08-05** - Admin order kanban board
+1. **Execute 08-05** - Admin order kanban board
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-12 (08-04 complete, Phase 8 nearly done)*
+*Updated: 2026-02-12 (08-03 complete, Phase 8 nearly done)*
