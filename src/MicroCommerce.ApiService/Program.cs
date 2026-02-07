@@ -13,6 +13,7 @@ using MicroCommerce.ApiService.Features.Catalog.Infrastructure;
 using MicroCommerce.ApiService.Features.Messaging;
 using MicroCommerce.ApiService.Features.Inventory;
 using MicroCommerce.ApiService.Features.Inventory.Infrastructure;
+using MicroCommerce.ApiService.Features.Ordering;
 using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -226,6 +227,7 @@ app.MapDefaultEndpoints();
 app.MapCatalogEndpoints();
 app.MapInventoryEndpoints();
 app.MapCartEndpoints();
+app.MapOrderingEndpoints();
 app.MapMessagingEndpoints();
 
 app.Run();
