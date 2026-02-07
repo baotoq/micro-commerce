@@ -152,6 +152,15 @@ Plans:
 4. Expired reservations auto-release (TTL)
 5. Concurrent stock updates don't corrupt data (optimistic concurrency)
 
+**Plans:** 5 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Domain model, EF configurations & migration
+- [ ] 04-02-PLAN.md — CQRS commands, queries, endpoints & ProductCreated consumer
+- [ ] 04-03-PLAN.md — Reservation cleanup service & stock data seeder
+- [ ] 04-04-PLAN.md — Admin stock management UI (adjust, history)
+- [ ] 04-05-PLAN.md — Storefront stock display (cards & detail page)
+
 **Addresses Pitfalls:**
 - Inventory overselling (reservation pattern)
 
