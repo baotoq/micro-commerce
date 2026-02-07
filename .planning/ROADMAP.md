@@ -114,6 +114,16 @@ Plans:
 4. User searches "laptop" and sees relevant products
 5. Fresh database has sample products after seed runs
 
+**Plans:** 6 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Backend sort support & seed data (~50 products)
+- [ ] 03-02-PLAN.md — Storefront layout, header, footer & hero banner
+- [ ] 03-03-PLAN.md — Product grid with cards & infinite scroll
+- [ ] 03-04-PLAN.md — Product detail page & related products
+- [ ] 03-05-PLAN.md — Search, category filters & sort with URL state
+- [ ] 03-06-PLAN.md — End-to-end verification checkpoint
+
 **Dependencies:** Phase 2
 
 ---
