@@ -10,9 +10,9 @@
 ## Current Position
 
 Phase: 4 of 10 (Inventory Domain)
-Plan: 1 of ? in current phase
+Plan: 2 of ? in current phase
 Status: In progress
-Last activity: 2026-02-08 - Completed 04-01-PLAN.md (Inventory Domain Model)
+Last activity: 2026-02-08 - Completed 04-02-PLAN.md (Inventory CQRS & API Endpoints)
 
 Progress: █████████░░░░░░░░░░░ 36%
 
@@ -25,7 +25,7 @@ Progress: █████████░░░░░░░░░░░ 36%
 | 1 | Foundation & Project Structure | COMPLETE | 6/6 |
 | 2 | Catalog Domain & Admin CRUD | COMPLETE | 7/7 |
 | 3 | Catalog Storefront & Seed Data | IN PROGRESS | 5/6 |
-| 4 | Inventory Domain | IN PROGRESS | 1/? |
+| 4 | Inventory Domain | IN PROGRESS | 2/? |
 | 5 | Event Bus Infrastructure | NOT STARTED | 0/? |
 | 6 | Cart Domain | NOT STARTED | 0/? |
 | 7 | Ordering Domain & Checkout | NOT STARTED | 0/? |
@@ -34,7 +34,7 @@ Progress: █████████░░░░░░░░░░░ 36%
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 2/10
-**Plans Completed (Phase 4):** 1/?
+**Plans Completed (Phase 4):** 2/?
 
 ---
 
@@ -66,6 +66,7 @@ Progress: █████████░░░░░░░░░░░ 36%
 
 ### Phase 4
 - [x] **04-01**: Inventory Domain Model - `00f0c76e`, `f7454fea`
+- [x] **04-02**: Inventory CQRS & API Endpoints - `ffb1e4ab`, `98698643`
 
 ---
 
@@ -106,6 +107,9 @@ Progress: █████████░░░░░░░░░░░ 36%
 | 2026-02-08 | xmin concurrency token via IsRowVersion() | PostgreSQL native optimistic concurrency without extra columns |
 | 2026-02-08 | 15-minute TTL for stock reservations | Balance holding stock for checkout vs releasing abandoned carts |
 | 2026-02-08 | StockLow threshold at 10 units | Simple threshold for alerts, configurable later |
+| 2026-02-08 | preferred_username claim for audit trail | JWT claim used in AdjustStock, falls back to "system" |
+| 2026-02-08 | Zero-stock entries for missing product IDs in batch query | Consumer-friendly: always returns entry per requested ID |
+| 2026-02-08 | stockItemId as query param for ReleaseReservation | Aggregate must be loaded by its own ID, not reservation ID |
 
 ---
 
@@ -122,7 +126,7 @@ Progress: █████████░░░░░░░░░░░ 36%
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 04-01-PLAN.md (Inventory Domain Model)
+Stopped at: Completed 04-02-PLAN.md (Inventory CQRS & API Endpoints)
 Resume file: None
 
 ---
