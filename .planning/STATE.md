@@ -1,20 +1,20 @@
 # Project State
 
 **Project:** MicroCommerce
-**Current Phase:** Phase 3 - Catalog Storefront & Seed Data
+**Current Phase:** Phase 4 - Inventory Domain
 **Status:** In Progress
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-08
 
 ---
 
 ## Current Position
 
-Phase: 3 of 10 (Catalog Storefront & Seed Data)
-Plan: 5 of 6 in current phase
+Phase: 4 of 10 (Inventory Domain)
+Plan: 1 of ? in current phase
 Status: In progress
-Last activity: 2026-02-07 - Completed 03-05-PLAN.md (Search, Filter & Sort Controls)
+Last activity: 2026-02-08 - Completed 04-01-PLAN.md (Inventory Domain Model)
 
-Progress: ████████░░░░░░░░░░░░ 34%
+Progress: █████████░░░░░░░░░░░ 36%
 
 ---
 
@@ -25,7 +25,7 @@ Progress: ████████░░░░░░░░░░░░ 34%
 | 1 | Foundation & Project Structure | COMPLETE | 6/6 |
 | 2 | Catalog Domain & Admin CRUD | COMPLETE | 7/7 |
 | 3 | Catalog Storefront & Seed Data | IN PROGRESS | 5/6 |
-| 4 | Inventory Domain | NOT STARTED | 0/? |
+| 4 | Inventory Domain | IN PROGRESS | 1/? |
 | 5 | Event Bus Infrastructure | NOT STARTED | 0/? |
 | 6 | Cart Domain | NOT STARTED | 0/? |
 | 7 | Ordering Domain & Checkout | NOT STARTED | 0/? |
@@ -34,7 +34,7 @@ Progress: ████████░░░░░░░░░░░░ 34%
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 2/10
-**Plans Completed (Phase 3):** 5/6
+**Plans Completed (Phase 4):** 1/?
 
 ---
 
@@ -63,6 +63,9 @@ Progress: ████████░░░░░░░░░░░░ 34%
 - [x] **03-03**: Product grid & cards with infinite scroll - `c893f6b4`, `be9ba295`
 - [x] **03-04**: Product detail page & related products - `ac8dff98`
 - [x] **03-05**: Search, filter & sort controls - `7d22382c`, `025c1a3f`
+
+### Phase 4
+- [x] **04-01**: Inventory Domain Model - `00f0c76e`, `f7454fea`
 
 ---
 
@@ -99,6 +102,10 @@ Progress: ████████░░░░░░░░░░░░ 34%
 | 2026-02-07 | getStorefrontProducts always filters Published | Storefront never shows Draft/Archived products |
 | 2026-02-07 | URL params as filter state source of truth | Shareable links, browser back/forward navigation |
 | 2026-02-07 | 300ms debounce on search input | Balance responsiveness with API call reduction |
+| 2026-02-08 | Raw Guid for ProductId in Inventory module | Cross-module boundary - Inventory does not reference Catalog types |
+| 2026-02-08 | xmin concurrency token via IsRowVersion() | PostgreSQL native optimistic concurrency without extra columns |
+| 2026-02-08 | 15-minute TTL for stock reservations | Balance holding stock for checkout vs releasing abandoned carts |
+| 2026-02-08 | StockLow threshold at 10 units | Simple threshold for alerts, configurable later |
 
 ---
 
@@ -114,17 +121,17 @@ Progress: ████████░░░░░░░░░░░░ 34%
 
 ## Session Continuity
 
-Last session: 2026-02-07
-Stopped at: Completed 03-05-PLAN.md (Search, Filter & Sort Controls)
+Last session: 2026-02-08
+Stopped at: Completed 04-01-PLAN.md (Inventory Domain Model)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 3** - Execute 03-06-PLAN.md (remaining storefront tasks)
-2. Complete Phase 3 and begin Phase 4 (Inventory Domain)
+1. **Continue Phase 4** - Execute remaining inventory domain plans (commands, queries, API)
+2. Complete Phase 4 and begin Phase 5 (Event Bus Infrastructure)
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-07*
+*Updated: 2026-02-08*
