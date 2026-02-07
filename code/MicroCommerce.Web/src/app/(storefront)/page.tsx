@@ -1,7 +1,38 @@
+import { Suspense } from 'react';
+
 import { HeroBanner } from '@/components/storefront/hero-banner';
+import { ProductFilters } from '@/components/storefront/product-filters';
 import { ProductGrid } from '@/components/storefront/product-grid';
 
-export default function HomePage() {
+function parseSortParam(sort: string | undefined): {
+  sortBy?: string;
+  sortDirection?: string;
+} {
+  switch (sort) {
+    case 'price-asc':
+      return { sortBy: 'price', sortDirection: 'asc' };
+    case 'price-desc':
+      return { sortBy: 'price', sortDirection: 'desc' };
+    case 'name-asc':
+      return { sortBy: 'name', sortDirection: 'asc' };
+    case 'newest':
+    default:
+      return {};
+  }
+}
+
+interface HomePageProps {
+  searchParams: Promise<{
+    search?: string;
+    category?: string;
+    sort?: string;
+  }>;
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const params = await searchParams;
+  const { sortBy, sortDirection } = parseSortParam(params.sort);
+
   return (
     <div>
       <HeroBanner />
@@ -17,7 +48,20 @@ export default function HomePage() {
           </p>
         </div>
 
-        <ProductGrid />
+        <div className="mb-8">
+          <Suspense fallback={null}>
+            <ProductFilters />
+          </Suspense>
+        </div>
+
+        <Suspense fallback={null}>
+          <ProductGrid
+            categoryId={params.category}
+            search={params.search}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+          />
+        </Suspense>
       </section>
     </div>
   );
