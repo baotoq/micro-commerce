@@ -38,6 +38,8 @@ export interface GetProductsParams {
   categoryId?: string;
   status?: string;
   search?: string;
+  sortBy?: string;
+  sortDirection?: string;
 }
 
 export interface CreateProductRequest {
@@ -69,6 +71,8 @@ export async function getProducts(params: GetProductsParams = {}): Promise<Produ
   if (params.categoryId) searchParams.set('categoryId', params.categoryId);
   if (params.status) searchParams.set('status', params.status);
   if (params.search) searchParams.set('search', params.search);
+  if (params.sortBy) searchParams.set('sortBy', params.sortBy);
+  if (params.sortDirection) searchParams.set('sortDirection', params.sortDirection);
 
   const response = await fetch(`${API_BASE}/api/catalog/products?${searchParams}`, {
     cache: 'no-store',
@@ -224,5 +228,14 @@ export async function deleteCategory(id: string): Promise<void> {
     const error = await response.json();
     throw new Error(error.detail || 'Failed to delete category');
   }
+}
+
+// Storefront API functions
+export type GetStorefrontProductsParams = Omit<GetProductsParams, 'status'>;
+
+export async function getStorefrontProducts(
+  params: GetStorefrontProductsParams = {}
+): Promise<ProductListDto> {
+  return getProducts({ ...params, status: 'Published' });
 }
 
