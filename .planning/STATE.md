@@ -1,7 +1,7 @@
 # Project State
 
 **Project:** MicroCommerce
-**Current Phase:** Phase 9 - API Gateway
+**Current Phase:** Phase 10 - Testing & Polish
 **Status:** In Progress
 **Last Updated:** 2026-02-12
 
@@ -9,10 +9,10 @@
 
 ## Current Position
 
-Phase: 9 of 10 (API Gateway)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-02-12 - Completed all Phase 9 plans (API Gateway)
+Phase: 10 of 10 (Testing & Polish)
+Plan: 1 of 8 in current phase
+Status: In progress
+Last activity: 2026-02-12 - Completed 10-01-PLAN.md (Test Infrastructure and Order Domain Tests)
 
 Progress: ██████████████████░░ 95%
 
@@ -31,10 +31,10 @@ Progress: ██████████████████░░ 95%
 | 7 | Ordering Domain & Checkout | IN PROGRESS | 3/? |
 | 8 | Order History & Management | COMPLETE | 5/5 |
 | 9 | API Gateway | COMPLETE | 3/3 |
-| 10 | Testing & Polish | NOT STARTED | 0/? |
+| 10 | Testing & Polish | IN PROGRESS | 1/8 |
 
 **Phases Completed:** 6/10
-**Plans Completed (Phase 9):** 3/3
+**Plans Completed (Phase 10):** 1/8
 
 ---
 
@@ -99,6 +99,10 @@ Progress: ██████████████████░░ 95%
 - [x] **09-01**: API Gateway Foundation - `b1f482e6`, `b4576e5e`
 - [x] **09-02**: Gateway Security & Rate Limiting - `9998452c`, `9fddfd8e`
 - [x] **09-03**: Frontend Gateway Integration - `bcc7c18c`, `34f2ea4c`
+
+### Phase 10
+
+- [x] **10-01**: Test Infrastructure and Order Domain Tests - `c5834083`, `b10fb826`
 
 ---
 
@@ -202,6 +206,10 @@ Progress: ██████████████████░░ 95%
 | 2026-02-12 | X-Request-ID via custom middleware | Simpler than YARP transform API, adds distributed tracing header |
 | 2026-02-12 | Per-route authorization policies in appsettings.json | Write operations require auth, reads are public |
 | 2026-02-12 | CORS centralized at gateway, removed from ApiService | Single enforcement point prevents policy drift |
+| 2026-02-12 | FluentAssertions for test assertions | More readable and maintainable than xUnit Assert |
+| 2026-02-12 | Testcontainers.PostgreSql for integration tests | Real database testing without Docker Compose setup |
+| 2026-02-12 | Helper methods for test data creation | CreateValidOrder() and CreateOrderInStatus() reduce duplication |
+| 2026-02-12 | Trait Category=Unit for test categorization | Enable filtering unit vs integration tests |
 
 ---
 
@@ -218,15 +226,15 @@ Progress: ██████████████████░░ 95%
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed Phase 9 (API Gateway) - all 3 plans
+Stopped at: Completed 10-01-PLAN.md (Test Infrastructure and Order Domain Tests)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Begin Phase 10** - Testing & Polish
+1. **Continue Phase 10** - Plans 10-02 through 10-08 remaining
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-12 (Phase 9 complete)*
+*Updated: 2026-02-12 (Phase 10 started)*
