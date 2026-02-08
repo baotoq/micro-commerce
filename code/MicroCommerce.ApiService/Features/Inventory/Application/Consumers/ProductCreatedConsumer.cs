@@ -23,9 +23,16 @@ public sealed class ProductCreatedConsumer : IConsumer<ProductCreatedDomainEvent
 
     public async Task Consume(ConsumeContext<ProductCreatedDomainEvent> context)
     {
+        using var scope = _logger.BeginScope(new Dictionary<string, object?>
+        {
+            ["CorrelationId"] = context.CorrelationId?.ToString() ?? "none",
+            ["MessageId"] = context.MessageId?.ToString() ?? "none",
+            ["ConversationId"] = context.ConversationId?.ToString() ?? "none"
+        });
+
         var productId = context.Message.ProductId;
 
-        // Idempotency check - skip if stock item already exists
+        // Supplementary idempotency check - defense-in-depth alongside inbox deduplication
         var exists = await _context.StockItems
             .AnyAsync(s => s.ProductId == productId, context.CancellationToken);
 
