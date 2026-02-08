@@ -3,6 +3,7 @@ using FluentValidation;
 using MassTransit;
 using MicroCommerce.ApiService.Common.Behaviors;
 using MicroCommerce.ApiService.Common.Exceptions;
+using MicroCommerce.ApiService.Common.Messaging.Exceptions;
 using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Cart.Infrastructure;
 using MicroCommerce.ApiService.Features.Catalog;
@@ -62,6 +63,35 @@ builder.Services.AddMassTransit(x =>
         o.UsePostgres();
         o.UseBusOutbox();
         o.QueryDelay = TimeSpan.FromSeconds(1);
+        o.DuplicateDetectionWindow = TimeSpan.FromMinutes(5);
+    });
+
+    x.AddConfigureEndpointsCallback((context, name, cfg) =>
+    {
+        // DLQ routing for Azure Service Bus endpoints
+        if (cfg is IServiceBusReceiveEndpointConfigurator sb)
+        {
+            sb.ConfigureDeadLetterQueueErrorTransport();
+        }
+
+        // Circuit breaker (outermost) - stops consuming after sustained failures
+        cfg.UseCircuitBreaker(cb =>
+        {
+            cb.TrackingPeriod = TimeSpan.FromMinutes(1);
+            cb.TripThreshold = 15;
+            cb.ActiveThreshold = 10;
+            cb.ResetInterval = TimeSpan.FromMinutes(5);
+        });
+
+        // Retry with exponential backoff - PermanentException skips retries
+        cfg.UseMessageRetry(r =>
+        {
+            r.Intervals(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(25));
+            r.Ignore<PermanentException>();
+        });
+
+        // Inbox deduplication (innermost) - prevents duplicate message processing
+        cfg.UseEntityFrameworkOutbox<OutboxDbContext>(context);
     });
 
     x.UsingAzureServiceBus((context, cfg) =>
