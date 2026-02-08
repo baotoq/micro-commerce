@@ -1,20 +1,20 @@
 # Project State
 
 **Project:** MicroCommerce
-**Current Phase:** Phase 4 - Inventory Domain
+**Current Phase:** Phase 5 - Event Bus Infrastructure
 **Status:** In Progress
-**Last Updated:** 2026-02-08
+**Last Updated:** 2026-02-09
 
 ---
 
 ## Current Position
 
-Phase: 4 of 10 (Inventory Domain)
-Plan: 5 of 5 in current phase
-Status: Phase complete
-Last activity: 2026-02-08 - Completed 04-05-PLAN.md (Storefront Stock Status Display)
+Phase: 5 of 10 (Event Bus Infrastructure)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-09 - Completed 05-01-PLAN.md (Global MassTransit Middleware)
 
-Progress: ██████████████░░░░░░ 54%
+Progress: ██████████████░░░░░░ 57%
 
 ---
 
@@ -26,7 +26,7 @@ Progress: ██████████████░░░░░░ 54%
 | 2 | Catalog Domain & Admin CRUD | COMPLETE | 7/7 |
 | 3 | Catalog Storefront & Seed Data | IN PROGRESS | 5/6 |
 | 4 | Inventory Domain | COMPLETE | 5/5 |
-| 5 | Event Bus Infrastructure | NOT STARTED | 0/? |
+| 5 | Event Bus Infrastructure | IN PROGRESS | 1/3 |
 | 6 | Cart Domain | NOT STARTED | 0/? |
 | 7 | Ordering Domain & Checkout | NOT STARTED | 0/? |
 | 8 | Order History & Management | NOT STARTED | 0/? |
@@ -34,7 +34,7 @@ Progress: ██████████████░░░░░░ 54%
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 3/10
-**Plans Completed (Phase 4):** 5/5
+**Plans Completed (Phase 5):** 1/3
 
 ---
 
@@ -70,6 +70,9 @@ Progress: ██████████████░░░░░░ 54%
 - [x] **04-03**: Background Services & Data Seeder - `d2f9adab`, `879a9d66`
 - [x] **04-04**: Admin Stock Management UI - `e151a377`, `ed820b97`
 - [x] **04-05**: Storefront Stock Status Display - `64b0d56b`, `6dfb7c61`
+
+### Phase 5
+- [x] **05-01**: Global MassTransit Middleware & PermanentException - `8766ddb8`, `cc029c82`
 
 ---
 
@@ -122,6 +125,9 @@ Progress: ██████████████░░░░░░ 54%
 | 2026-02-08 | Stock badges at top-right of product image | Visible without dominating card layout |
 | 2026-02-08 | Parallel stock fetch on product detail | Catalog SSR + Inventory client-side for clean module boundary |
 | 2026-02-08 | isInStock defaults true while loading | Avoid flash of out-of-stock content during fetch |
+| 2026-02-09 | Single AddConfigureEndpointsCallback for all middleware | DLQ, circuit breaker, retry, inbox outbox in one callback |
+| 2026-02-09 | Middleware order: circuit breaker -> retry -> inbox outbox | Outermost to innermost for correct failure handling |
+| 2026-02-09 | MassTransit package in ServiceDefaults | Required for DiagnosticHeaders.DefaultListenerName tracing |
 
 ---
 
@@ -137,17 +143,18 @@ Progress: ██████████████░░░░░░ 54%
 
 ## Session Continuity
 
-Last session: 2026-02-08
-Stopped at: Completed 04-05-PLAN.md (Storefront Stock Status Display) - Phase 4 complete
+Last session: 2026-02-09
+Stopped at: Completed 05-01-PLAN.md (Global MassTransit Middleware)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Phase 4 complete** - All 5 inventory domain plans executed
-2. **Begin Phase 5** - Event Bus Infrastructure (Azure Service Bus, MassTransit consumers)
+1. **Continue Phase 5** - Execute 05-02-PLAN.md and 05-03-PLAN.md
+2. **05-02**: Cross-module event contracts and consumers
+3. **05-03**: Integration testing and verification
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-08*
+*Updated: 2026-02-09*
