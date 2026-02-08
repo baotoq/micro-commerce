@@ -187,6 +187,13 @@ Plans:
 3. Failed messages land in DLQ with correlation for debugging
 4. Events include correlation ID for end-to-end tracing
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Global consumer middleware (idempotency, retry, circuit breaker, tracing)
+- [ ] 05-02-PLAN.md — DLQ service, CQRS handlers, API endpoints & fault consumer
+- [ ] 05-03-PLAN.md — Admin dead-letter queue UI page
+
 **Addresses Pitfalls:**
 - Event-driven eventually-never consistency (outbox pattern)
 
