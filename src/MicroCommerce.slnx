@@ -4,5 +4,6 @@
   </Folder>
   <Project Path="MicroCommerce.ApiService/MicroCommerce.ApiService.csproj" />
   <Project Path="MicroCommerce.AppHost/MicroCommerce.AppHost.csproj" />
+  <Project Path="MicroCommerce.Gateway/MicroCommerce.Gateway.csproj" />
   <Project Path="MicroCommerce.ServiceDefaults/MicroCommerce.ServiceDefaults.csproj" />
 </Solution>
