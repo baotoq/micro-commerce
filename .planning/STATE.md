@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 10 of 10 (Testing & Polish)
-Plan: 2 of 8 in current phase
+Plan: 3 of 8 in current phase
 Status: In progress
-Last activity: 2026-02-12 - Completed 10-05-PLAN.md (Playwright E2E Tests)
+Last activity: 2026-02-12 - Completed 10-04-PLAN.md (API Integration Tests)
 
-Progress: ██████████████████░░ 96%
+Progress: ██████████████████░░ 97%
 
 ---
 
@@ -31,10 +31,10 @@ Progress: ██████████████████░░ 96%
 | 7 | Ordering Domain & Checkout | IN PROGRESS | 3/? |
 | 8 | Order History & Management | COMPLETE | 5/5 |
 | 9 | API Gateway | COMPLETE | 3/3 |
-| 10 | Testing & Polish | IN PROGRESS | 2/8 |
+| 10 | Testing & Polish | IN PROGRESS | 3/8 |
 
 **Phases Completed:** 6/10
-**Plans Completed (Phase 10):** 2/8
+**Plans Completed (Phase 10):** 3/8
 
 ---
 
@@ -103,6 +103,7 @@ Progress: ██████████████████░░ 96%
 ### Phase 10
 
 - [x] **10-01**: Test Infrastructure and Order Domain Tests - `c5834083`, `b10fb826`
+- [x] **10-04**: API Integration Tests - `eadd17cb`, `7133d21f`
 - [x] **10-05**: Playwright E2E Tests - `21cc2f6c`, `c17aec96`
 
 ---
@@ -215,6 +216,11 @@ Progress: ██████████████████░░ 96%
 | 2026-02-12 | No webServer in Playwright config | MicroCommerce requires full Aspire stack (API, DB, Keycloak, Service Bus) |
 | 2026-02-12 | Flexible selector strategy with .or() fallbacks | Tests resilient to UI changes, won't break on class name changes |
 | 2026-02-12 | Accessibility-first E2E selectors | Prefer getByRole, getByPlaceholder over CSS classes |
+| 2026-02-12 | WebApplicationFactory with Testcontainers PostgreSQL | Integration tests require real database to verify SQL, migrations, and EF Core mappings |
+| 2026-02-12 | MassTransit test harness instead of real Service Bus | Integration tests focus on HTTP contract, not saga execution |
+| 2026-02-12 | Disable background services in tests | Data seeders and cleanup services interfere with test isolation |
+| 2026-02-12 | Cookie-based buyer identity in Cart/Ordering tests | Tests don't use real authentication, cookie simulates guest buyer flow |
+| 2026-02-12 | PostgreSQL 15 Alpine image | Lighter weight than full postgres image, sufficient for tests |
 
 ---
 
@@ -231,14 +237,14 @@ Progress: ██████████████████░░ 96%
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 10-05-PLAN.md (Playwright E2E Tests)
+Stopped at: Completed 10-04-PLAN.md (API Integration Tests)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 10** - Plans 10-02, 10-03, 10-04, 10-06, 10-07, 10-08 remaining
+1. **Continue Phase 10** - Plans 10-02, 10-03, 10-06, 10-07, 10-08 remaining
 
 ---
 *State file created: 2026-01-29*
