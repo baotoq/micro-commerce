@@ -1,4 +1,5 @@
 using FluentAssertions;
+using CartEntity = MicroCommerce.ApiService.Features.Cart.Domain.Entities.Cart;
 using MicroCommerce.ApiService.Features.Cart.Domain.Entities;
 using MicroCommerce.ApiService.Features.Cart.Domain.ValueObjects;
 
@@ -14,7 +15,7 @@ public sealed class CartTests
         Guid buyerId = Guid.NewGuid();
 
         // Act
-        Domain.Entities.Cart cart = Domain.Entities.Cart.Create(buyerId);
+        CartEntity cart = CartEntity.Create(buyerId);
 
         // Assert
         cart.BuyerId.Should().Be(buyerId);
@@ -31,7 +32,7 @@ public sealed class CartTests
         DateTimeOffset expectedExpiry = DateTimeOffset.UtcNow.AddDays(30);
 
         // Act
-        Domain.Entities.Cart cart = Domain.Entities.Cart.Create(buyerId);
+        CartEntity cart = CartEntity.Create(buyerId);
 
         // Assert
         cart.ExpiresAt.Should().BeCloseTo(expectedExpiry, TimeSpan.FromSeconds(5));
@@ -41,7 +42,7 @@ public sealed class CartTests
     public void AddItem_NewProduct_AddsToItems()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         Guid productId = Guid.NewGuid();
 
         // Act
@@ -60,7 +61,7 @@ public sealed class CartTests
     public void AddItem_ExistingProduct_IncrementsQuantity()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         Guid productId = Guid.NewGuid();
         cart.AddItem(productId, "Test Product", 99.99m, null, 2);
 
@@ -76,7 +77,7 @@ public sealed class CartTests
     public void AddItem_QuantityExceeds99_CappedAt99()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         Guid productId = Guid.NewGuid();
 
         // Act
@@ -91,7 +92,7 @@ public sealed class CartTests
     public void AddItem_ZeroQuantity_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
 
         // Act
         Action act = () => cart.AddItem(Guid.NewGuid(), "Test Product", 99.99m, null, 0);
@@ -106,7 +107,7 @@ public sealed class CartTests
     public void AddItem_UpdatesLastModifiedAt()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         DateTimeOffset originalLastModified = cart.LastModifiedAt;
 
         // Wait a bit to ensure time difference
@@ -123,7 +124,7 @@ public sealed class CartTests
     public void AddItem_ResetsExpiresAt()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         DateTimeOffset originalExpiresAt = cart.ExpiresAt;
         DateTimeOffset expectedNewExpiry = DateTimeOffset.UtcNow.AddDays(30);
 
@@ -142,7 +143,7 @@ public sealed class CartTests
     public void UpdateItemQuantity_ValidQuantity_UpdatesItem()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         Guid productId = Guid.NewGuid();
         cart.AddItem(productId, "Test Product", 99.99m, null, 1);
         CartItemId itemId = cart.Items.First().Id;
@@ -158,7 +159,7 @@ public sealed class CartTests
     public void UpdateItemQuantity_Exceeds99_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         cart.AddItem(Guid.NewGuid(), "Test Product", 99.99m, null, 1);
         CartItemId itemId = cart.Items.First().Id;
 
@@ -175,7 +176,7 @@ public sealed class CartTests
     public void UpdateItemQuantity_Zero_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         cart.AddItem(Guid.NewGuid(), "Test Product", 99.99m, null, 5);
         CartItemId itemId = cart.Items.First().Id;
 
@@ -191,7 +192,7 @@ public sealed class CartTests
     public void UpdateItemQuantity_InvalidItemId_ThrowsInvalidOperationException()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         CartItemId nonExistentItemId = CartItemId.New();
 
         // Act
@@ -206,7 +207,7 @@ public sealed class CartTests
     public void RemoveItem_ExistingItem_RemovesFromCollection()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         cart.AddItem(Guid.NewGuid(), "Product 1", 10.00m, null, 1);
         cart.AddItem(Guid.NewGuid(), "Product 2", 20.00m, null, 1);
         cart.Items.Should().HaveCount(2);
@@ -224,7 +225,7 @@ public sealed class CartTests
     public void RemoveItem_NonExistentItem_NoOp()
     {
         // Arrange
-        Domain.Entities.Cart cart = CreateValidCart();
+        CartEntity cart = CreateValidCart();
         cart.AddItem(Guid.NewGuid(), "Product", 10.00m, null, 1);
         int originalCount = cart.Items.Count;
         CartItemId nonExistentItemId = CartItemId.New();
@@ -238,8 +239,8 @@ public sealed class CartTests
 
     // Helper methods
 
-    private static Domain.Entities.Cart CreateValidCart()
+    private static CartEntity CreateValidCart()
     {
-        return Domain.Entities.Cart.Create(Guid.NewGuid());
+        return CartEntity.Create(Guid.NewGuid());
     }
 }

@@ -29,8 +29,7 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
 
     public ApiWebApplicationFactory()
     {
-        _dbContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:15-alpine")
+        _dbContainer = new PostgreSqlBuilder("postgres:15-alpine")
             .WithDatabase("microcommerce_test")
             .WithCleanUp(true)
             .Build();
