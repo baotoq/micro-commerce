@@ -1,202 +1,314 @@
 # Pitfalls Research
 
-**Domain:** E-commerce Microservices
-**Researched:** 2025-01-29
-**Confidence:** MEDIUM (based on domain expertise; web search verification unavailable)
+**Domain:** E-commerce platform adding user profiles, product reviews, and wishlists to existing modular monolith
+**Researched:** 2026-02-13
+**Confidence:** MEDIUM
 
 ## Critical Pitfalls
 
-### Pitfall 1: Premature Service Extraction
+### Pitfall 1: Guest-to-Authenticated Cart/Order Migration Race Condition
 
 **What goes wrong:**
-Teams extract services before understanding domain boundaries. Results in chatty inter-service communication, distributed transactions that should be local, and services that can't be deployed independently because they're too coupled.
+When a user logs in after browsing as a guest, their cookie-based cart (BuyerId = guest GUID) needs to merge with their authenticated account (BuyerId = Keycloak sub claim). Without proper synchronization, concurrent requests during login can result in:
+- Duplicate carts (guest cart retained, new empty authenticated cart created)
+- Lost cart items (guest cart deleted before merge completes)
+- Partial migrations (some items copied, then interrupted)
+- Order history orphaned (guest orders not linked to authenticated account)
+
+The existing `BuyerIdentity.GetOrCreateBuyerId()` immediately switches from cookie to claim on authentication, but there's no migration logic. Orders table stores `BuyerId` as raw GUID with no link to user profile.
 
 **Why it happens:**
-- Technical boundaries (one team, one service) chosen over business boundaries
-- Excitement about microservices leads to extracting too early
-- Modular monolith not given enough time to reveal natural seams
+The code switches identity sources (cookie → claim) without coordinating data ownership. The cart uses `Guid BuyerId` which is overloaded to mean both "guest session" and "authenticated user ID". When Keycloak sub claim appears, the system treats it as a new buyer, abandoning the guest session's data.
 
 **How to avoid:**
-1. Start with a modular monolith with strict module boundaries
-2. Enforce: modules communicate only through well-defined interfaces (no shared database tables)
-3. Track inter-module communication patterns for 2-4 sprints before extraction
-4. Extract only when: deployment independence is needed OR scaling requirements differ OR team ownership is clear
+1. Create a `MigrateGuestDataCommand` triggered on first authenticated request per session
+2. Use PostgreSQL advisory locks during migration (`pg_advisory_xact_lock(hashtext(guest_guid))`)
+3. Query both CartDbContext and OrderingDbContext for guest BuyerId records
+4. Update `BuyerId` atomically within a distributed transaction or saga
+5. Only delete guest cookie after successful migration verification
+6. Handle idempotency: if migration already happened (cart exists for authenticated ID), merge items instead of failing
 
 **Warning signs:**
-- Services call each other synchronously for every request
-- "We need to deploy these 3 services together"
-- Database joins across what are supposed to be separate bounded contexts
-- Single user action requires >3 synchronous service calls
+- Authenticated users report empty carts after login
+- "Lost my cart" support tickets correlate with login events
+- Database contains multiple carts with same items but different BuyerIds
+- Order history page shows guest orders disappearing after account creation
 
 **Phase to address:**
-Foundation phase — establish modular monolith with clear boundaries before any extraction
+Phase 1 (User Profiles & Authentication Flow) — must implement migration before user profiles launch, as this affects existing cart/order data.
 
 ---
 
-### Pitfall 2: Cart/Checkout Race Conditions (The Double-Spend Problem)
+### Pitfall 2: Cross-Context Query Hell for Verified Purchase Reviews
 
 **What goes wrong:**
-User clicks "Place Order" twice quickly, or opens checkout in two tabs. Without proper idempotency and optimistic concurrency, they get charged twice or inventory goes negative.
+Displaying reviews requires joining data from 4 separate DbContexts:
+1. **ReviewDbContext**: Review text, rating, helpful votes
+2. **CatalogDbContext**: Product name, image (for review cards)
+3. **OrderingDbContext**: Verify purchase (is reviewer a real buyer?)
+4. **UserProfileDbContext**: Reviewer name, avatar, badge (new context)
+
+Naive approaches cause N+1 queries, cartesian explosion, or inconsistent data:
+- Load reviews, then loop fetching product/user/order data = 100+ queries for 20 reviews
+- Perform JOIN across contexts via in-memory LINQ = loads entire tables into memory
+- Use separate queries with eventual consistency = reviews show "Verified Buyer" before order confirmation event propagates
+
+CQRS pattern says "define a view database for queries," but [Microsoft's documentation warns](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/cqrs-microservice-reads) you can't enlist message brokers and databases into a single distributed transaction, creating synchronization challenges.
 
 **Why it happens:**
-- Cart state checked at time T, order placed at T+100ms when cart already changed
-- No idempotency key on checkout requests
-- Optimistic concurrency not implemented on cart aggregate
-- Frontend doesn't disable submit button or show loading state
+Database-per-feature isolation (correct DDD) collides with read-heavy UI requirements (product pages need aggregated review data). Developers reach for EF Core's familiar LINQ and accidentally query across boundaries. [Martin Fowler warns](https://www.martinfowler.com/bliki/CQRS.html) "CQRS should only be used on specific portions of a system (a BoundedContext in DDD lingo) and not the system as a whole," but reviews inherently need data from multiple contexts.
 
 **How to avoid:**
-1. **Idempotency keys**: Every checkout request includes client-generated idempotency key. Server deduplicates within 24-hour window.
-2. **Optimistic concurrency**: Cart aggregate has version/ETag. Checkout fails if cart modified since last read.
-3. **Frontend guards**: Disable checkout button on click, show processing state, prevent double-submit
-4. **Saga compensation**: If payment succeeds but order creation fails, automatically refund
+1. Create a **read model projection** (`ProductReviewSummary` table in ReviewDbContext):
+   - Subscribe to `OrderConfirmedEvent`, `ProductCreatedEvent`, `UserProfileCreatedEvent`
+   - Denormalize: store product name, user display name, avatar URL, verified purchase flag
+   - Update via event handlers, not in review write path
+2. Query read model for display, use write model for mutations
+3. Accept eventual consistency: "Verified Buyer" badge appears ~100ms after order confirmation
+4. Implement health checks: alert if event lag exceeds 5 seconds
 
 **Warning signs:**
-- QA can create duplicate orders by rapid clicking
-- Customer complaints about double charges
-- Inventory occasionally goes negative
-- Cart totals don't match order totals
+- Product page load time scales linearly with review count (N+1 queries)
+- Database CPU spikes when users view popular products
+- EF Core query logs show `Include()` chains across multiple DbContexts
+- "Verified Buyer" badge disappears/reappears inconsistently
 
 **Phase to address:**
-Cart Service phase — implement concurrency controls from day one, not retrofitted
+Phase 2 (Product Reviews & Ratings) — design read model upfront, before implementing review display.
 
 ---
 
-### Pitfall 3: Inventory Overselling (Distributed Stock Problem)
+### Pitfall 3: Keycloak Profile Data Duplication (Auth vs Application Domain)
 
 **What goes wrong:**
-100 users try to buy the last 10 items simultaneously. Without proper reservation, 100 orders are placed for 10 items. Either you oversell (bad) or reject orders after payment (worse).
+Developers duplicate user profile data across Keycloak custom attributes and application UserProfileDbContext:
+- **Keycloak**: `custom_attribute.display_name`, `custom_attribute.avatar_url`
+- **Application DB**: `user_profiles.display_name`, `user_profiles.avatar_url`
+
+Changes to one don't propagate to the other. Users update their name in the app, but JWTs still contain the old value (Keycloak hasn't synced). Worse, [Keycloak v24+ enforces declarative user profile schemas](https://medium.com/@saissv2398/keycloak-user-attributes-what-no-one-tells-you-about-version-differences-v21-1-1-vs-v24-876118a11a43), reducing flexibility for raw key-value attributes. [Security concerns](https://www.baeldung.com/keycloak-custom-user-attributes) mean only explicitly configured attributes are "manageable" by default.
+
+Avatar URLs stored in Keycloak custom attributes create another problem: Keycloak doesn't manage file storage, so the URL points to your application's blob storage, creating a circular dependency.
 
 **Why it happens:**
-- Stock check happens before payment, decrement happens after — race window
-- Inventory service is eventually consistent but checkout expects immediate consistency
-- No reservation mechanism — just "check and decrement"
+Confusion between "identity claims" (authentication, in JWT) vs "application profile data" (business logic, in database). Developers see Keycloak has a user model and assume it should be the single source of truth for all user data, but [Keycloak's official guidance](https://www.keycloak.org/docs/latest/server_admin/index.html) shows custom attributes work best for identity-related data, not complex business objects.
 
 **How to avoid:**
-1. **Reservation pattern**: Reserve inventory when added to cart (with TTL). Confirm on successful order, release on abandonment/timeout.
-2. **Pessimistic locking at checkout**: Lock inventory row during checkout saga (short duration)
-3. **Accept overselling gracefully**: For low-value items, allow overselling and handle backorders
-4. **Separate high-demand items**: Flash sales need different patterns (queue-based, not optimistic)
+1. **Keycloak stores**: Authentication-critical data only
+   - `sub` (user ID, immutable)
+   - `email`, `email_verified`
+   - `preferred_username` (login identifier)
+2. **UserProfileDbContext stores**: Application-specific data
+   - Display name, bio, avatar URL
+   - Preference flags (newsletter opt-in, theme)
+   - Business logic attributes (loyalty tier, seller status)
+3. **Profile sync strategy**:
+   - On first login, create UserProfile record with `sub` as foreign key
+   - Application queries UserProfileDbContext for display data
+   - If Keycloak user updates email via account console, sync to UserProfile via webhook
+4. **JWT claims**: Include only `sub` + `email` + `roles`. App fetches rest from database.
 
 **Warning signs:**
-- Negative inventory counts in database
-- Customer complaints about order cancellation after payment
-- Flash sales consistently oversell
-- Inventory service shows different stock than catalog service
+- User profile updates require restarting Keycloak or clearing sessions
+- Avatar images return 404 because URL in JWT is stale
+- Profile data differs between pages (some read Keycloak claims, some read database)
+- Unit tests mock 20+ claim values to simulate authenticated users
 
 **Phase to address:**
-Inventory Service phase — reservation pattern is architectural, not just code
+Phase 1 (User Profiles & Authentication Flow) — establish the pattern before adding reviews/wishlists that reference user data.
 
 ---
 
-### Pitfall 4: Event-Driven Eventually-Never Consistency
+### Pitfall 4: Review Spam Without Verified Purchase Enforcement
 
 **What goes wrong:**
-Services publish events but consumers fail silently. Order placed event published, but inventory never decremented because consumer crashed. No one notices until inventory audit.
+Product reviews accept any authenticated user, without verifying they actually purchased the product. Result:
+- Competitors post fake 1-star reviews
+- Sellers create sockpuppet accounts for fake 5-star reviews
+- Users review products they've never used based on unboxing videos
+
+Research shows [30-35% of online reviews are spam](https://www.mdpi.com/2076-3417/9/5/987), and [fake reviews on dark web forums start at £4 per review](https://almcorp.com/blog/google-reviews-deleted-ai-legal-takedowns-2025/). Without moderation, automated detection is the only defense, but it's complex (behavioral patterns, ML models, real-time transaction verification).
 
 **Why it happens:**
-- No dead-letter queue monitoring
-- No idempotent consumers — retry causes duplicate processing
-- No correlation ID tracking across service boundaries
-- "Fire and forget" mentality without verification
+Developers implement the "write a review" feature first, deferring verification as "phase 2 hardening." By then, fake reviews pollute the dataset, making cleanup impossible (which are real?). The database schema lacks a foreign key between Reviews and Orders, so the verification query isn't enforced.
 
 **How to avoid:**
-1. **Outbox pattern**: Events written to outbox table in same transaction as business data. Background process publishes reliably.
-2. **Idempotent consumers**: Every handler checks if event already processed (by event ID)
-3. **Dead-letter monitoring**: Alert on any message hitting DLQ. DLQ is not a trash bin.
-4. **Correlation tracking**: Every event chain has correlation ID. Trace entire saga.
-5. **Reconciliation jobs**: Periodic jobs verify eventual consistency actually happened
+1. **Database constraint**: Add `OrderId` foreign key to Reviews table (nullable for backwards compatibility, but require for new reviews)
+2. **Write operation**: `CreateReviewCommand` requires `OrderId`, validate via query:
+   ```csharp
+   var order = await orderingDbContext.Orders
+       .Where(o => o.BuyerId == userId && o.Items.Any(i => i.ProductId == productId) && o.Status == OrderStatus.Delivered)
+       .FirstOrDefaultAsync();
+   if (order == null) throw new ValidationException("Must purchase product before reviewing");
+   ```
+3. **Once-per-order**: `HasReviewedOrderItem(userId, productId, orderId)` check prevents duplicate reviews for same purchase
+4. **UI indicator**: "Verified Purchase" badge pulled from `Reviews.OrderId IS NOT NULL`
+5. **Delayed review window**: Allow reviews 24 hours after order delivery (prevents immediate competitor spam)
 
 **Warning signs:**
-- DLQ has messages older than 1 hour
-- No alerts on consumer failures
-- "We'll fix it in the next deployment" for stuck messages
-- Inventory doesn't match orders after end-of-day reconciliation
+- Product rating distribution is "I-shaped" (all 5-star or all 1-star) instead of natural "J-shaped"
+- New products get 50+ reviews within hours of launch
+- Accounts with single purchase review 100+ other products
+- Review text is generic template ("Great product! Highly recommend!!!1!")
 
 **Phase to address:**
-Messaging Infrastructure phase — outbox pattern and monitoring before any event publishing
+Phase 2 (Product Reviews & Ratings) — enforce on day 1, not "later." Schema must include OrderId from the start.
 
 ---
 
-### Pitfall 5: Database-Per-Service Without Data Ownership Clarity
+### Pitfall 5: Wishlist-to-Cart Bounded Context Violation
 
 **What goes wrong:**
-Teams implement database-per-service but still need cross-service queries. They either: (a) make synchronous calls creating latency, (b) duplicate data without sync strategy, or (c) add shared database defeating isolation.
+"Add Wishlist to Cart" button requires moving items from WishlistDbContext to CartDbContext. Naive implementation:
+1. Load wishlist items (ProductId, quantity)
+2. Loop: call `AddToCartCommand` for each item
+3. Delete wishlist
+
+Problems:
+- **Partial failure**: Item 3 fails (out of stock), but items 1-2 already added to cart, wishlist fully deleted
+- **Inconsistent pricing**: Wishlist stores snapshot price, cart fetches current price from Catalog — user sees different total
+- **Inventory race**: Between wishlist load and cart add, last item is purchased by another user
+- **No rollback**: Cart commands succeed, then wishlist delete fails — items duplicated
+
+[DDD integration patterns](https://medium.com/ssense-tech/ddd-beyond-the-basics-mastering-multi-bounded-context-integration-ca0c7cec6561) recommend anti-corruption layers, but [Reformed Programmer warns](https://www.thereformedprogrammer.net/evolving-modular-monoliths-3-passing-data-between-bounded-contexts/) "too many tight interactions may be a sign of high coupling."
 
 **Why it happens:**
-- Reports need joins across Order + Customer + Product
-- Admin dashboards need aggregated views
-- No CQRS — same model for writes and reads
-- Data ownership not defined before service split
+Wishlist and Cart feel like related features, so developers reuse commands/queries across boundaries. The shared `ProductId` tempts direct coupling instead of event-driven coordination.
 
 **How to avoid:**
-1. **Define data ownership first**: Before extraction, document which service owns which data entities
-2. **CQRS for reads**: Separate read models that aggregate data from events
-3. **API composition**: BFF or API gateway composes responses from multiple services for complex queries
-4. **Event-carried state transfer**: Services publish events with enough data for consumers to build local read models
+1. **Saga pattern**: `MoveWishlistToCartSaga` coordinates the workflow
+   ```
+   Start → ValidateInventory → AddItemsToCart → ClearWishlist → Complete
+   ```
+2. **Compensating transactions**: If cart add fails, saga doesn't reach delete step
+3. **UI feedback**: Partial success states
+   - "3 of 5 items added (2 out of stock)"
+   - "Added to cart, keeping in wishlist until checkout"
+4. **Alternative design**: Wishlist items stay in wishlist, cart has "from wishlist" flag — delete wishlist items on order confirmation, not on cart add
 
 **Warning signs:**
-- Services make synchronous calls to get data for responses
-- "We need a reporting database" that duplicates production
-- Admin queries bypass services to hit databases directly
-- Circular dependencies between services
+- Users report "wishlist disappeared but cart is empty"
+- Cart total doesn't match wishlist subtotal shown before migration
+- Database logs show orphaned wishlist records with no corresponding items
+- Error logs show `AddToCartCommand` failures but no rollback of wishlist deletions
 
 **Phase to address:**
-Foundation phase — data ownership mapping before any service has a database
+Phase 3 (Wishlists & Saved Items) — design the integration pattern before implementing the "add all to cart" feature.
 
 ---
 
-### Pitfall 6: Saga Implementation Without Compensation
+### Pitfall 6: Avatar Storage in Ephemeral Container Filesystem
 
 **What goes wrong:**
-Order saga: Reserve Inventory -> Charge Payment -> Create Order. Payment fails. No compensation logic to release inventory reservation. Inventory locked forever.
+User uploads avatar image, code saves to `/app/uploads/avatars/{userId}.jpg` inside the container. File persists until:
+- Container restarts (lost on deploy)
+- Horizontal scaling adds second instance (avatar only exists on instance A, requests to instance B return 404)
+- Aspire `docker compose down` (development data lost)
+
+Database stores `avatar_url = "/uploads/avatars/123.jpg"`, but file is gone. All profile images break.
 
 **Why it happens:**
-- Happy path implemented first, compensation "later"
-- Compensation logic is hard — requires reversing side effects
-- No saga orchestrator — just chained events with no central tracking
-- Testing only covers success scenarios
+Developers familiar with traditional web hosting (persistent `/var/www/html`) assume containerized apps work the same way. [Container data typically disappears once the instance shuts down](https://www.aquasec.com/cloud-native-academy/docker-container/microservices-and-containerization/), requiring external storage mechanisms.
 
 **How to avoid:**
-1. **Implement compensation with each step**: Never implement forward action without its compensating action
-2. **Saga orchestrator pattern**: Central coordinator tracks saga state, triggers compensations
-3. **Test failure scenarios**: Every saga test includes: "what if step N fails?"
-4. **Timeouts with compensation**: Long-running sagas need timeout + compensation, not just timeout
+1. **External blob storage**: Azure Blob Storage, AWS S3, MinIO (self-hosted S3-compatible)
+2. **Development**: Add MinIO service to Aspire AppHost
+   ```csharp
+   builder.AddContainer("minio", "minio/minio")
+       .WithEnvironment("MINIO_ROOT_USER", "minioadmin")
+       .WithEnvironment("MINIO_ROOT_PASSWORD", "minioadmin")
+       .WithBindMount("./data/minio", "/data")
+       .WithArgs("server", "/data");
+   ```
+3. **Production**: Use managed blob storage with CDN
+4. **Database**: Store full URL including bucket (`avatar_url = "https://cdn.example.com/avatars/123.jpg"`)
+5. **Cleanup policy**: Delete orphaned images when user account is deleted
 
 **Warning signs:**
-- Inventory reservations never released
-- Customer support manually fixing stuck orders
-- "We need to restart the service to clear stuck sagas"
-- Saga state table growing indefinitely
+- Avatar images break after deployment
+- "File not found" errors in production logs
+- `/app/uploads` directory grows unbounded (no cleanup)
+- Different users see different avatars (load balancer round-robin to different instances)
 
 **Phase to address:**
-Ordering Service phase — saga pattern with compensation from first implementation
+Phase 1 (User Profiles & Authentication Flow) — set up blob storage before implementing avatar uploads.
 
 ---
 
-### Pitfall 7: CQRS/MediatR Overuse
+### Pitfall 7: Review Helpfulness Ranking Creates Recency Bias
 
 **What goes wrong:**
-Every operation becomes a Command or Query, even simple CRUD. 4-file ceremony (Command, Handler, Validator, Response) for "get product by ID". Codebase becomes navigable only through IDE "find usages".
+Reviews are sorted by "helpful votes" (descending). Older reviews accumulate votes over months, newer reviews stay buried at the bottom even if more relevant. Example:
+- Review from 2023: "Great product" (150 helpful votes) — product version changed since
+- Review from 2026: "Improved version fixes main issue" (2 helpful votes) — actually more useful, but invisible
+
+[Research shows](https://arxiv.org/pdf/1901.06274) "older reviews have an advantage because they accumulated helpfulness votes over time, while recent reviews may not be considered good for not having enough votes." Additionally, [non-voted reviews are often overlooked](https://www.sciencedirect.com/science/article/abs/pii/S0952197623012599), even though they might be highly relevant.
 
 **Why it happens:**
-- "We're doing CQRS" becomes religion, not pragmatism
-- Pattern applied uniformly without considering complexity
-- Separate read/write models for data that doesn't need it
+Sorting by raw vote count is simple but time-biased. Algorithms that account for review age, vote velocity, and verified purchase status are complex, so MVPs skip them.
 
 **How to avoid:**
-1. **Reserve CQRS for complex domains**: Ordering, Cart, Inventory (state machines, business rules)
-2. **Simple CRUD stays simple**: Product catalog reads can be direct repository calls
-3. **Vertical slices, not layers**: Group by feature, not by pattern
-4. **Pragmatic handlers**: Read-only queries can skip validation ceremony
+1. **Composite score** instead of raw votes:
+   ```
+   Score = (helpful_votes / (helpful_votes + unhelpful_votes + 1))
+         × log(1 + total_votes)
+         × recency_multiplier
+         × verified_purchase_bonus
+   ```
+   - **Wilson score** for vote ratio (handles small sample sizes)
+   - **Log scale** prevents old reviews from dominating
+   - **Recency multiplier**: Reviews <30 days get 1.5x, 30-90 days 1.2x, >90 days 1.0x
+   - **Verified purchase bonus**: +0.2 to score
+2. **Default sort**: "Most Relevant" (composite score), with manual sort options (newest, highest rated, most helpful)
+3. **Highlighted**: Auto-promote "helpful recent reviews" to top (score >X, created <60 days)
 
 **Warning signs:**
-- More infrastructure code than business logic
-- Simple endpoint requires touching 5+ files
-- Developers avoid making changes because "it's too much ceremony"
-- MediatR pipelines have 6+ behaviors
+- All top reviews are >6 months old
+- Product update released, but top reviews reference old version
+- Conversion rate drops (users reading outdated negative reviews)
+- New reviewers complain "no one votes on my review"
 
 **Phase to address:**
-Foundation phase — establish when to use CQRS vs simple patterns
+Phase 2 (Product Reviews & Ratings) — implement in initial ranking query, not post-launch fix.
+
+---
+
+### Pitfall 8: Domain Event Eventual Consistency UX Breakdown
+
+**What goes wrong:**
+User submits review. Review write succeeds, but the read model projection lags:
+1. ReviewWriteDbContext commits review (tx committed)
+2. Browser redirects to product page
+3. ProductReviewSummaryQuery executes against read model (still processing)
+4. User sees "No reviews yet" or old review count
+5. User refreshes → review appears
+
+Same problem with verified purchase verification:
+1. Order status changes to Delivered
+2. `OrderDeliveredEvent` published
+3. Review service subscribes, updates `can_review` flag
+4. User immediately tries to review → "Must purchase product first" error
+5. 2 seconds later, works
+
+[Microsoft's CQRS docs](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/domain-events-design-implementation) note "if you commit changes to the original aggregate and afterwards, when the events are being dispatched, if there's an issue, you'll have inconsistencies between aggregates."
+
+**Why it happens:**
+Eventual consistency is inherent to CQRS + event-driven architecture, but UX doesn't account for lag. Developers test locally (events process in <10ms) and ship, production has 200ms+ lag under load.
+
+**How to avoid:**
+1. **Optimistic UI updates**: After review submit, inject new review into client-side state before API response
+2. **Polling fallback**: If review not visible after 3s, poll read model every 500ms (max 5 attempts)
+3. **Event lag monitoring**: Alert if `DomainEventPublisher` lag >1 second
+4. **Inline read for write user**: `CreateReviewCommand` returns full `ReviewDto`, UI renders that instead of querying read model
+5. **Health check**: Canary event published every 10s, alarm if not consumed within 2s
+
+**Warning signs:**
+- "My review disappeared" support tickets spike
+- Users refresh page multiple times after posting review
+- Metrics show high "view product immediately after review" rate with no review visible
+- MassTransit dead letter queue accumulates events
+
+**Phase to address:**
+Phase 2 (Product Reviews & Ratings) — test with artificial event delay (Thread.Sleep(2000)) during development.
 
 ---
 
@@ -206,12 +318,16 @@ Shortcuts that seem reasonable but create long-term problems.
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| Shared database between services | Faster initial development | Coupling, can't deploy independently, schema migrations affect all services | Never in target architecture; OK in modular monolith phase |
-| Synchronous service calls for reads | Simpler implementation | Latency multiplication, cascading failures, tight coupling | OK for BFF composition; never for service-to-service writes |
-| Event handlers without idempotency | Faster development | Duplicate processing, data corruption on retries | Never |
-| Cart stored in memory/session | Simpler, faster | Lost carts on restart, no cross-device support | Never for e-commerce; acceptable for quick demos |
-| Skipping outbox pattern | Simpler event publishing | Lost events, inconsistent state | Only for non-critical events (analytics) |
-| Single shared message topic | Less infrastructure | Consumer coupling, message filtering overhead | Never for domain events |
+| Store avatar as base64 in database | No blob storage setup | Database bloat, slow queries, no CDN caching | Never — avatar images 50KB-5MB each |
+| Allow unverified reviews "for now" | Faster MVP launch | Fake review pollution, impossible cleanup, reputation damage | Never — schema must include OrderId from day 1 |
+| Use Keycloak custom attributes for profile data | Single source of truth | Sync nightmares, schema inflexibility, JWT bloat | Only for `email`, `preferred_username` — everything else in app DB |
+| Skip guest-to-auth migration | Simpler login flow | Lost carts, orphaned orders, angry users | Never — migration required before user profiles launch |
+| Sort reviews by newest first | No algorithm needed | Buries helpful reviews, reduces conversion | Acceptable for <50 reviews per product, fix before scaling |
+| Synchronous cross-context queries (JOIN) | Familiar LINQ patterns | N+1 queries, memory explosion, coupling | Never in production — use read model projections |
+| Store wishlist item prices | Faster subtotal display | Stale prices confuse users | Acceptable if UI shows "Price may have changed" warning |
+| Manual review moderation | No ML infrastructure | Doesn't scale, spam overwhelms moderators | Acceptable for <100 reviews/day, automate before growth |
+
+---
 
 ## Integration Gotchas
 
@@ -219,13 +335,14 @@ Common mistakes when connecting to external services.
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| Azure Service Bus | No dead-letter handling | Configure DLQ, monitor actively, process or alert on DLQ messages |
-| Azure Service Bus | Large messages | Keep messages small (<256KB), use claim check pattern for large payloads |
-| Keycloak | Hardcoded token URLs | Use OIDC discovery (/.well-known/openid-configuration) |
-| Keycloak | Not validating audience | Always validate aud claim matches expected API audience |
-| PostgreSQL (per service) | Schema migrations in code | Use migration tools (EF migrations, Flyway) with versioning |
-| PostgreSQL | Connection exhaustion | Configure connection pooling, use connection limits per service |
-| MediatR | Handler not registered | Use assembly scanning with explicit registration verification in tests |
+| **Keycloak JWT** | Trusting claims without validation | Verify signature, issuer, audience, expiration — use `Microsoft.AspNetCore.Authentication.JwtBearer` built-in validation |
+| **Keycloak user sync** | Polling `/admin/users` API every 5 min | Subscribe to Keycloak event webhooks (`USER_UPDATED`, `USER_DELETED`) via custom Event Listener SPI |
+| **Blob storage URLs** | Storing relative paths (`/avatars/123.jpg`) | Store absolute URLs with CDN (`https://cdn.example.com/avatars/123.jpg`), support URL migration when CDN changes |
+| **MassTransit events** | Fire-and-forget publish without correlation ID | Always include `CorrelationId`, enable OpenTelemetry tracing, use Inbox/Outbox pattern for transactional guarantees |
+| **PostgreSQL locks** | Use table-level locks for cart migration | Use advisory locks `pg_advisory_xact_lock()` scoped to specific BuyerId GUID hash |
+| **EF Core migrations** | Share DbContext across features | Each feature owns its DbContext, migrations run independently, use separate connection strings or schemas |
+
+---
 
 ## Performance Traps
 
@@ -233,12 +350,14 @@ Patterns that work at small scale but fail as usage grows.
 
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| N+1 queries in catalog | Slow product list pages | Use projection queries, include related data | >100 products per page |
-| No pagination on search | Memory exhaustion, timeouts | Cursor-based pagination from day one | >1000 total products |
-| Cart recalculation on every request | Slow add-to-cart | Calculate totals on cart modification, cache result | >20 items in cart |
-| Synchronous inventory check | Checkout timeout | Async reservation with confirmation | >100 concurrent checkouts |
-| Event replay without batching | Consumer overwhelmed | Batch processing for event replay/rebuild | >10,000 events in replay |
-| Full product in search index | Index size explosion | Index only searchable fields, fetch full product on detail view | >100,000 products |
+| **Loading full wishlist in single query** | Query time scales linearly with items | Paginate: load 10 items, lazy-load rest on scroll | >50 items per wishlist |
+| **Counting review helpful votes on every page load** | `COUNT(*)` query on reviews_helpful_votes table | Denormalize: store `helpful_count` column, update via event | >500 votes per review |
+| **Fetching user avatars in foreach loop** | N+1 queries for 20 reviews = 21 DB queries | Batch query: `userIds.ToList()` → `IN (...)` query, or use read model with denormalized avatars | >10 reviews per page |
+| **Synchronous blob upload during avatar change** | HTTP request blocks for 2-5 seconds | Background job: save to temp storage, enqueue upload, return immediately | Files >500KB |
+| **Broadcasting domain events to all subscribers** | MassTransit overhead scales with subscriber count | Topic-based routing: reviews only subscribe to `OrderDeliveredEvent`, not all order events | >5 subscribers per event type |
+| **Recalculating "Top Reviewed Products" on every dashboard load** | Full table scan of reviews, GROUP BY product | Materialized view or scheduled cache refresh (every 5 min) | >10,000 reviews |
+
+---
 
 ## Security Mistakes
 
@@ -246,40 +365,47 @@ Domain-specific security issues beyond general web security.
 
 | Mistake | Risk | Prevention |
 |---------|------|------------|
-| Cart ID in URL without ownership check | Users can view/modify other carts | Associate cart with user/session, verify ownership on every operation |
-| Order total calculated client-side | Price manipulation | Always recalculate totals server-side from source of truth |
-| Inventory count exposed in API | Competitor intelligence | Expose only "in stock" / "low stock" / "out of stock" |
-| Coupon codes enumerable | Coupon abuse | Rate limit coupon validation, use non-sequential codes |
-| Guest checkout without rate limiting | Fraud, card testing | Rate limit by IP, require CAPTCHA after N failures |
-| Payment status in client-accessible JWT | Order status manipulation | Payment status server-side only, never in client token |
+| **Exposing internal BuyerId GUIDs in review APIs** | Attacker correlates anonymous reviews to users, de-anonymizes buyers | Return `reviewer_display_name` and `avatar_url`, never BuyerId |
+| **No rate limiting on review submission** | Single user spams 1000 fake reviews | Rate limit: 1 review per product per user, 5 reviews per day per user, CAPTCHA after 3 |
+| **Trusting client-side OrderId in `CreateReviewCommand`** | Attacker claims fake purchase, forges "Verified Buyer" badge | Server validates `OrderId` ownership: `order.BuyerId == currentUserId && order.Status == Delivered` |
+| **Avatar upload accepts all file types** | User uploads `avatar.php`, executes code | Validate MIME type (image/jpeg, image/png), strip EXIF metadata, resize to fixed dimensions, rename with GUID |
+| **Review helpful votes allow unlimited votes** | Bots upvote fake reviews to front page | 1 vote per user per review (unique constraint on `user_id + review_id`), rate limit 10 votes/hour per user |
+| **Guest cart cookie not HttpOnly** | XSS attack steals buyer_id cookie, hijacks cart | Use `HttpOnly = true, Secure = true, SameSite = Lax` (already implemented in BuyerIdentity.cs) |
+
+---
 
 ## UX Pitfalls
 
-Common user experience mistakes in e-commerce microservices.
+Common user experience mistakes in this domain.
 
 | Pitfall | User Impact | Better Approach |
 |---------|-------------|-----------------|
-| Cart lost on login | Frustration, abandoned purchase | Merge anonymous cart with user cart on login |
-| Stale inventory on product page | Disappointment at checkout | Show "X left" only for low stock, check at checkout |
-| No checkout progress indicator | Anxiety, page refresh | Show clear steps (Cart -> Shipping -> Payment -> Confirm) |
-| Payment timeout without recovery | Lost sale, double charge risk | Store payment intent, allow resume on return |
-| Order confirmation only by email | User can't verify immediately | Show confirmation page with order number, don't rely on email |
-| "Out of stock" after add to cart | Frustration | Soft reserve on add, clear message if reservation expires |
+| **Silent guest cart abandonment on login** | "Where did my cart go?" confusion | Show migration progress toast: "Moving 3 items from guest cart..." |
+| **Review submitted → redirected to product page → review not visible** | "Did it work? Should I submit again?" | Show success banner: "Review submitted, may take a few seconds to appear" OR optimistically inject review into page |
+| **Wishlist "Add All to Cart" fails on item 5 of 20** | User doesn't know which items failed, manually re-adds all 20 | Show partial success: "Added 4 items. 1 item out of stock: [Product Name]" with retry button |
+| **Avatar upload fails silently** | User thinks avatar changed, but still sees old one | Show upload progress bar, validation errors ("File too large"), preview before save |
+| **"Verified Purchase" badge with no explanation** | Users don't trust it (what does it mean?) | Tooltip: "This reviewer purchased this product" |
+| **Review sorting defaults to "Newest"** | Least helpful reviews shown first | Default to "Most Relevant" (composite score), allow manual sort |
+| **Wishlist items show stale prices** | User adds to cart, shocked by real price | Show "Price may have changed" if wishlist item >7 days old, refresh prices on "Add to Cart" |
+
+---
 
 ## "Looks Done But Isn't" Checklist
 
 Things that appear complete but are missing critical pieces.
 
-- [ ] **Cart Service:** Often missing cart merge on login — verify anonymous cart + authenticated cart merge
-- [ ] **Cart Service:** Often missing cart expiration — verify TTL and cleanup job exist
-- [ ] **Checkout:** Often missing idempotency — verify duplicate submit handled gracefully
-- [ ] **Checkout:** Often missing address validation — verify shipping address validated before payment
-- [ ] **Inventory:** Often missing reservation timeout — verify reservations released after TTL
-- [ ] **Inventory:** Often missing stock reconciliation — verify periodic job compares expected vs actual
-- [ ] **Orders:** Often missing order status webhooks — verify status change triggers notifications
-- [ ] **Orders:** Often missing cancellation window — verify orders cancelable before shipping
-- [ ] **Events:** Often missing DLQ monitoring — verify alerts on dead-lettered messages
-- [ ] **Events:** Often missing event replay capability — verify system can rebuild read models from events
+- [ ] **Guest-to-Auth Migration:** Often missing race condition handling — verify advisory locks implemented, test with concurrent login requests
+- [ ] **Review Verified Purchase:** Often missing OrderId foreign key — verify database schema includes non-nullable OrderId, query validates order ownership
+- [ ] **Avatar Upload:** Often missing blob storage — verify files NOT saved to container filesystem, test avatar persistence after container restart
+- [ ] **Review Read Model:** Often missing event subscription setup — verify MassTransit consumers registered, test projection updates when order delivered
+- [ ] **Wishlist to Cart:** Often missing partial failure handling — verify saga compensating transactions, test with intentionally failed inventory check
+- [ ] **Review Helpfulness:** Often missing recency weighting — verify score algorithm includes time decay, test that new reviews can outrank old ones
+- [ ] **User Profile Sync:** Often missing Keycloak webhook handlers — verify email changes in Keycloak propagate to UserProfileDbContext
+- [ ] **Cross-Context Queries:** Often missing read model — verify no direct JOINs between CatalogDbContext and ReviewDbContext in production queries
+- [ ] **Avatar Security:** Often missing file type validation — verify MIME type checks, test upload of .exe renamed to .jpg
+- [ ] **Event Lag Monitoring:** Often missing health checks — verify alerts configured for domain event processing delays >2 seconds
+
+---
 
 ## Recovery Strategies
 
@@ -287,12 +413,16 @@ When pitfalls occur despite prevention, how to recover.
 
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| Premature service extraction | HIGH | Identify coupled services, consolidate back to module, re-extract with proper boundaries |
-| Checkout race conditions | MEDIUM | Add idempotency retroactively, reconcile duplicate orders, refund affected customers |
-| Inventory overselling | MEDIUM | Implement backorder flow, notify affected customers, add reservation pattern |
-| Lost events (no outbox) | HIGH | Event replay from source systems, manual reconciliation, implement outbox pattern |
-| Saga without compensation | HIGH | Manual cleanup of stuck states, implement compensation handlers, replay failed sagas |
-| CQRS overuse | MEDIUM | Identify simple CRUD, remove unnecessary handlers, consolidate to simpler patterns |
+| **Lost guest carts on login** | LOW | Query orphaned carts (BuyerId = cookie not in user_profiles), match by session timestamps, manual migration script |
+| **Fake unverified reviews** | MEDIUM | Add nullable OrderId column, backfill from order history where possible, mark rest as "Legacy Review (Unverified)", implement verification going forward |
+| **Avatars stored in container** | MEDIUM | Batch migration: enumerate /app/uploads, upload to blob storage, update avatar_url in database, add blob cleanup cron job |
+| **Review read model out of sync** | LOW | Rebuild projection: query ReviewWriteDbContext, denormalize product/user/order data, bulk insert to read model, resume event subscription |
+| **Wishlist items duplicated in cart** | LOW | Deduplication query: `DELETE FROM cart_items WHERE id NOT IN (SELECT MIN(id) FROM cart_items GROUP BY cart_id, product_id)` |
+| **Keycloak profile data out of sync with app DB** | MEDIUM | One-time sync job: query Keycloak /admin/users, upsert to UserProfileDbContext, establish webhook for future changes |
+| **Review rankings stuck with old algorithm** | LOW | Recalculate scores: update `helpful_score = NewAlgorithm(votes, created_at)`, rebuild product review summary, redeploy frontend |
+| **Event processing lag accumulation** | HIGH | Scale out MassTransit consumers (add instances), increase partition count if using Azure Service Bus, investigate slow event handlers, add database indexes |
+
+---
 
 ## Pitfall-to-Phase Mapping
 
@@ -300,33 +430,60 @@ How roadmap phases should address these pitfalls.
 
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| Premature service extraction | Phase 1: Foundation | Module boundaries enforced, inter-module communication tracked |
-| Cart/checkout race conditions | Phase 2: Cart Service | Idempotency tests pass, concurrent checkout tests pass |
-| Inventory overselling | Phase 3: Inventory Service | Concurrent purchase tests verify no overselling |
-| Event consistency issues | Phase 1: Foundation | Outbox pattern implemented, DLQ monitoring active |
-| Database ownership confusion | Phase 1: Foundation | Data ownership document created and reviewed |
-| Saga compensation missing | Phase 4: Ordering Service | Failure scenario tests verify compensation triggers |
-| CQRS overuse | Phase 1: Foundation | Guidelines document specifies when to use CQRS |
+| Guest-to-Auth Migration Race | Phase 1: User Profiles | Integration test: simulate concurrent login + cart add, verify no duplicate/lost carts |
+| Cross-Context Query Hell | Phase 2: Reviews | Query profiling: max 3 DB queries per product page load, no N+1 patterns |
+| Keycloak Data Duplication | Phase 1: User Profiles | Schema review: UserProfile table exists, Keycloak custom attributes limited to identity data |
+| Review Spam (Unverified) | Phase 2: Reviews | Schema constraint: reviews.order_id NOT NULL, validation test rejects fake OrderId |
+| Wishlist-to-Cart Violation | Phase 3: Wishlists | Saga test: simulate AddToCart failure, verify wishlist not deleted |
+| Avatar Container Storage | Phase 1: User Profiles | Deployment test: restart AppHost, verify avatars still load |
+| Review Recency Bias | Phase 2: Reviews | Algorithm test: new review with 5 votes outranks old review with 50 votes |
+| Event Consistency UX | Phase 2: Reviews | UX test: submit review, measure time until visible, verify <3 seconds or loading state shown |
 
-## MicroCommerce-Specific Risks
-
-Based on current project state from CONCERNS.md:
-
-| Existing Concern | Related Pitfall | Mitigation |
-|------------------|-----------------|------------|
-| Domain events dispatch without transaction | Lost events | Implement outbox pattern before using domain events |
-| Unused BuildingBlocks infrastructure | Over-engineering | Use when needed, remove if not needed by Phase 2 |
-| Preview/beta dependencies (.NET 10, NextAuth beta) | Unexpected breaking changes | Pin versions, test upgrade path before production |
-| No test coverage | All pitfalls undetected | Add integration tests for race conditions and saga failures |
-| Token refresh not implemented | Session drops during checkout | Implement refresh before checkout flow |
+---
 
 ## Sources
 
-- Domain expertise in distributed systems and e-commerce architecture
-- Analysis of existing MicroCommerce codebase (`.planning/codebase/*.md`)
-- Common patterns from microservices literature (Saga pattern, Outbox pattern, CQRS)
-- Note: Web search verification unavailable; findings based on established patterns
+**Guest-to-Authenticated Migration:**
+- [E-Commerce Authentication: 2026 Benchmark + Best Practice](https://www.corbado.com/blog/ecommerce-authentication)
+- [Passwordless Authentication: The Most Important Ecommerce Upgrade for Secure, High-Converting Stores in 2026](https://www.nopaccelerate.com/passwordless-authentication-ecommerce-2026/)
+- [Preventing Postgres SQL Race Conditions with SELECT FOR UPDATE](https://on-systems.tech/blog/128-preventing-read-committed-sql-concurrency-errors/)
+- [Using PostgreSQL advisory locks to avoid race conditions](https://firehydrant.com/blog/using-advisory-locks-to-avoid-race-conditions-in-rails/)
+
+**Cross-Context Queries & CQRS:**
+- [Implementing reads/queries in a CQRS microservice - .NET | Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/cqrs-microservice-reads)
+- [CQRS - Martin Fowler](https://www.martinfowler.com/bliki/CQRS.html)
+- [CQRS Design Pattern in Microservices - GeeksforGeeks](https://www.geeksforgeeks.org/system-design/cqrs-design-pattern-in-microservices/)
+
+**Keycloak Profile Management:**
+- [Keycloak User Attributes – What No One Tells You About Version Differences (v21.1.1 vs v24+)](https://medium.com/@saissv2398/keycloak-user-attributes-what-no-one-tells-you-about-version-differences-v21-1-1-vs-v24-876118a11a43)
+- [Custom User Attributes with Keycloak | Baeldung](https://www.baeldung.com/keycloak-custom-user-attributes)
+- [Managing Keycloak user metadata and custom attributes - Mastertheboss](https://www.mastertheboss.com/keycloak/managing-keycloak-user-metadata-and-custom-attributes/)
+
+**Review Spam Prevention:**
+- [The Global Wave of Google Reviews Being Deleted: AI Detection, Legal Takedowns, and What Businesses Must Know Going Into 2026](https://almcorp.com/blog/google-reviews-deleted-ai-legal-takedowns-2025/)
+- [Spam Review Detection Techniques: A Systematic Literature Review](https://www.mdpi.com/2076-3417/9/5/987)
+- [Optional purchase verification in e-commerce platforms](https://onlinelibrary.wiley.com/doi/abs/10.1111/poms.13731)
+
+**Review Ranking & Helpfulness:**
+- [A Survey on E-Commerce Learning to Rank](https://arxiv.org/html/2412.03581v1)
+- [Ranking Online Consumer Reviews](https://arxiv.org/pdf/1901.06274)
+- [Review helpfulness prediction on e-commerce websites: A comprehensive survey](https://www.sciencedirect.com/science/article/abs/pii/S0952197623012599)
+
+**Bounded Context Integration:**
+- [Integrating Bounded Context for DDD Beginners](https://medium.com/@dangeabunea/integrating-bounded-context-for-ddd-beginners-63c21af875fb)
+- [DDD Beyond the Basics: Mastering Multi-Bounded Context Integration](https://medium.com/ssense-tech/ddd-beyond-the-basics-mastering-multi-bounded-context-integration-ca0c7cec6561)
+- [Evolving modular monoliths: 3. Passing data between bounded contexts](https://www.thereformedprogrammer.net/evolving-modular-monoliths-3-passing-data-between-bounded-contexts/)
+
+**Container Storage:**
+- [Microservices and Containerization: Challenges and Best Practices](https://www.aquasec.com/cloud-native-academy/docker-container/microservices-and-containerization/)
+- [Mastering Microservices: Top Best Practices for 2026](https://www.imaginarycloud.com/blog/microservices-best-practices)
+
+**Domain Events & Eventual Consistency:**
+- [Domain events: Design and implementation - .NET | Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/domain-events-design-implementation)
+- [CQRS and Event Sourcing in Event Driven Architecture of Ordering Microservices](https://medium.com/aspnetrun/cqrs-and-event-sourcing-in-event-driven-architecture-of-ordering-microservices-fb67dc44da7a)
 
 ---
-*Pitfalls research for: E-commerce Microservices (MicroCommerce)*
-*Researched: 2025-01-29*
+
+*Pitfalls research for: MicroCommerce v1.1 — User Profiles, Reviews, Wishlists*
+*Researched: 2026-02-13*
+*Confidence: MEDIUM — Web search findings verified against official Microsoft/.NET documentation where possible, some e-commerce-specific patterns based on industry research without direct technical verification*

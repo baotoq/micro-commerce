@@ -1,208 +1,349 @@
 # Feature Research
 
-**Domain:** E-commerce (Showcase/Demo Platform)
-**Researched:** 2026-01-29
-**Confidence:** HIGH (well-established domain with clear patterns)
+**Domain:** E-commerce User Accounts, Product Reviews, and Wishlists
+**Researched:** 2026-02-13
+**Confidence:** MEDIUM
 
 ## Feature Landscape
 
 ### Table Stakes (Users Expect These)
 
-Features users assume exist. Missing these = the demo feels broken or incomplete.
+Features users assume exist. Missing these = product feels incomplete.
+
+#### User Profiles & Accounts
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| Product listing with grid view | Users need to see what's for sale | LOW | Card-based grid with image, name, price |
-| Product detail page | Users expect to see full info before buying | LOW | Hero image, description, price, add-to-cart button |
-| Product images | Users won't buy what they can't see | LOW | At minimum one image per product |
-| Shopping cart | Core purchase flow requirement | MEDIUM | View, update quantities, remove items |
-| Cart persistence | Users expect cart survives page refresh | MEDIUM | Store in DB for guest users (session-based) |
-| Add to cart feedback | Users need confirmation action worked | LOW | Toast notification or cart icon badge update |
-| Checkout flow | Core purchase completion | MEDIUM | Shipping info, payment (mock), confirmation |
-| Guest checkout | Many users won't create account for demo | LOW | No forced registration |
-| Order confirmation | Users need to know purchase succeeded | LOW | Thank you page with order summary |
-| Product categories | Users expect to filter/browse by type | LOW | Category list + filtered views |
-| Basic search | Users expect to find products by name | MEDIUM | Text search on product name/description |
-| Price display | Users won't buy without knowing cost | LOW | Clear price on listing and detail pages |
-| Responsive design | Users browse on mobile | LOW | shadcn/ui handles this well |
-| Loading states | Users need feedback while data loads | LOW | Skeleton loaders, spinners |
-| Error handling | Graceful failures maintain trust | LOW | User-friendly error messages |
+| Display name & avatar | Users expect personalized identity in modern apps | LOW | Simple profile metadata, image upload/storage |
+| Saved shipping addresses (address book) | Checkout friction killer—users expect to save addresses | MEDIUM | Need CRUD UI, default address selection, validation |
+| Order history linkage | "My orders" requires account—users expect permanent record | LOW | Link existing orders to authenticated user ID |
+| Account settings page | Self-service profile management is standard UX | LOW | Form with validation, update endpoints already exist pattern |
+| Guest-to-authenticated migration | Users expect cart/orders to persist after login/signup | MEDIUM | Merge guest BuyerId with authenticated user, data migration |
+
+#### Product Reviews & Ratings
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Star rating (1-5) | Universal e-commerce standard | LOW | Aggregate rating calculation, display on product cards |
+| Written review text | Users expect detailed feedback beyond stars | LOW | Text field with length limits (e.g., 500-5000 chars) |
+| Verified purchase badge | Trust signal—60% of users filter to verified only | MEDIUM | Cross-reference order history, badge display logic |
+| Review display on product page | Reviews influence 93% of purchase decisions | LOW | Query reviews by ProductId, pagination, sorting |
+| Average rating summary | Users scan rating before reading reviews | LOW | Aggregate calculation, cache for performance |
+| Review submission form | Standard expectation after purchase | MEDIUM | Validation, one-review-per-product-per-user enforcement |
+
+#### Wishlists
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Add/remove products | Core wishlist functionality | LOW | Simple CRUD on wishlist items |
+| Persistent across sessions | Users expect saved lists, not ephemeral | LOW | Database storage, user association |
+| Move to cart | Conversion path—users expect quick checkout from wishlist | LOW | Copy wishlist item to cart, remove from wishlist |
+| Visual indicator on product cards | "Already wishlisted" feedback prevents duplicates | LOW | Check existence, show filled/unfilled heart icon |
+| Wishlist page/view | Dedicated UI to manage saved items | MEDIUM | List view with product details, bulk actions |
 
 ### Differentiators (Competitive Advantage)
 
-For a **showcase platform**, differentiators are features that demonstrate architectural sophistication or modern UX patterns — things that impress technical reviewers.
+Features that set the product apart. Not required, but valuable.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| Real-time inventory updates | Shows event-driven architecture in action | MEDIUM | Stock count updates when order placed |
-| Order history (logged in users) | Demonstrates user data isolation, auth integration | LOW | List past orders with status |
-| Product search with filters | Shows query complexity handling | MEDIUM | Filter by category, price range, in-stock |
-| Admin product CRUD | Demonstrates full-stack competency | MEDIUM | Create, edit, delete products |
-| Admin inventory management | Shows business logic beyond CRUD | LOW | Adjust stock levels, low-stock alerts |
-| Optimistic UI updates | Modern UX pattern | MEDIUM | Cart updates feel instant |
-| Micro-interactions | Polish that signals quality | LOW | Button hover states, transitions |
-| Empty states | Professional UX touch | LOW | "No items in cart", "No search results" |
-| Breadcrumb navigation | Shows attention to UX details | LOW | Category > Product navigation |
-| Recently viewed products | Personalization without complexity | LOW | Client-side storage, shows last N products |
+| Review helpfulness voting | Surfaces quality reviews, reduces noise | MEDIUM | Upvote/downvote counts, sort by helpfulness, prevent self-voting |
+| Review images/media upload | Visual proof increases trust 3x vs text-only | HIGH | Image storage, moderation, thumbnail generation |
+| Review response from admin | Shows brand engagement, builds trust | MEDIUM | Admin reply to reviews, notification to reviewer |
+| Wishlist price drop alerts | Re-engagement tool—30% conversion on price drops | HIGH | Price tracking, background job, email/notification |
+| Wishlist stock alerts | Notify when out-of-stock items return | MEDIUM | Inventory event subscriber, notification system |
+| Review summary with AI | Quick insights without reading all reviews | HIGH | LLM integration, cost per summary, caching |
+| Multiple wishlists | Power users organize by category (birthday, holiday, etc.) | MEDIUM | List CRUD, name/description, default list |
+| Wishlist sharing (read-only link) | Gift registry use case, viral growth | MEDIUM | Public/private toggle, share token generation |
+| Review sorting/filtering | By date, rating, verified, helpfulness | LOW | Query parameterization, index optimization |
+| Review photos in lightbox | Enhanced UX for image reviews | LOW | Frontend component, already common pattern |
 
-### Anti-Features (Deliberately NOT Building)
+### Anti-Features (Commonly Requested, Often Problematic)
 
-Features that seem valuable but are wrong for a **demo/showcase** project.
+Features that seem good but create problems.
 
 | Feature | Why Requested | Why Problematic | Alternative |
 |---------|---------------|-----------------|-------------|
-| Real payment processing | "Complete e-commerce experience" | Massive scope creep, compliance burden, not needed for demo | Mock payment that simulates success/failure |
-| User reviews/ratings | "Standard e-commerce feature" | Requires moderation, spam handling, adds little demo value | Seed data with fake reviews if needed |
-| Wishlists/favorites | "Nice user feature" | Low demo value, distracts from core flow | Focus on cart flow |
-| Email notifications | "Real systems send emails" | Email infrastructure complexity, deliverability issues | Log "email sent" events, skip actual sending |
-| Coupon/discount codes | "Common e-commerce feature" | Pricing logic complexity, edge cases | Static prices for demo |
-| Multiple shipping options | "Real checkout has this" | Complicates checkout flow, fake data anyway | Single "Standard Shipping" option |
-| Tax calculation | "Real e-commerce has tax" | Jurisdiction complexity, fake data | Either skip or hard-code flat rate |
-| Multi-currency | "International users" | Exchange rates, price display complexity | Single currency (USD or local) |
-| Product variants (size/color) | "Standard e-commerce" | Significant data model complexity, SKU management | Simple products only for demo |
-| Saved payment methods | "Returning customer flow" | PCI compliance concerns, mock anyway | Fresh payment entry each time |
-| Social login | "Easier signup" | OAuth complexity beyond Keycloak | Keycloak handles social if needed later |
-| Recommendations engine | "Amazon has it" | ML complexity, needs data volume | Static "related products" or none |
-| Inventory reservations | "Real systems reserve stock" | Race conditions, timeout handling | Simple decrement on order placement |
-| Advanced analytics | "Business needs data" | Dashboard complexity, data pipeline | Basic order counts in admin |
-| Multi-language (i18n) | "International users" | Translation management, RTL support | English only stated in scope |
-| Address validation | "Real checkout validates" | Third-party API dependency | Basic form validation only |
-| Order cancellation | "Users need this" | Refund logic, inventory restoration | Orders are final in demo |
+| Anonymous reviews | "Increases participation" claim | Fake reviews explode, trust collapses, Amazon/Walmart ban them | Require verified purchase, simple signup |
+| Incentivized reviews (discount for review) | Boosts review volume fast | FTC compliance nightmare, biases ratings upward, damages trust | Post-purchase email campaigns, patience |
+| Real-time review moderation UI | "Catch bad reviews instantly" | Human moderation doesn't scale, creates bottleneck, legal risks if selective | Automated profanity filter + flag/report system |
+| Public wishlist by default | "Social proof drives sales" | Privacy violation perception—users think it's "greedy" (NN/g research) | Private by default, opt-in sharing |
+| Unlimited review length | "Let customers express fully" | Review spam, SEO manipulation, poor UX (no one reads novels) | 500 min, 5000 max characters with validation |
+| Review editing after submission | "Users make typos" | Review manipulation after purchase disputes, trust issues | Show "edited" badge if allowed, or disallow entirely |
+| Wishlist notification spam | "Keep users engaged" | Unsubscribes spike, brand damage, every price fluctuation triggers email | Smart throttling: max 1 alert/week per item, batch notifications |
 
 ## Feature Dependencies
 
 ```
-[Product Catalog]
-    └──requires──> [Product Data Model]
-                       └──used by──> [Admin Product CRUD]
-                       └──used by──> [Product Search]
+[User Profile]
+    └──requires──> [Authentication] (✓ exists: Keycloak)
+    └──enables──> [Product Reviews]
+                      └──requires──> [Order History] (✓ exists)
+                      └──enables──> [Verified Purchase Badge]
+    └──enables──> [Wishlists]
+                      └──enhances──> [Shopping Cart] (✓ exists)
 
-[Shopping Cart]
-    └──requires──> [Product Catalog] (to display cart items)
-    └──requires──> [Cart Persistence] (session/DB storage)
+[Address Book]
+    └──requires──> [User Profile]
+    └──enhances──> [Checkout] (✓ exists)
+    └──reduces──> [Cart Abandonment]
 
-[Checkout Flow]
-    └──requires──> [Shopping Cart] (items to purchase)
-    └──requires──> [Inventory Service] (stock validation)
-    └──requires──> [Mock Payment] (payment simulation)
+[Guest-to-Auth Migration]
+    └──requires──> [User Profile]
+    └──requires──> [Guest Cart] (✓ exists: BuyerIdentity)
+    └──requires──> [Order History] (✓ exists)
 
-[Order Confirmation]
-    └──requires──> [Checkout Flow] (order creation)
+[Verified Purchase Badge]
+    └──requires──> [Order History] (✓ exists)
+    └──requires──> [Product Reviews]
+    └──conflicts──> [Anonymous Reviews] (anti-feature)
 
-[Order History]
-    └──requires──> [Authentication] (user context)
-    └──requires──> [Order Confirmation] (orders to display)
+[Review Helpfulness Voting]
+    └──requires──> [Product Reviews]
+    └──optional──> [User Profile] (can allow guest voting, but prevents manipulation if required)
 
-[Admin Inventory]
-    └──requires──> [Inventory Service]
-    └──requires──> [Admin Auth] (role check)
+[Wishlist Stock Alerts]
+    └──requires──> [Wishlists]
+    └──requires──> [Inventory Events] (✓ exists: stock reservation system)
+    └──requires──> [Notification System] (new)
 
-[Real-time Stock Updates]
-    └──requires──> [Inventory Service]
-    └──requires──> [Event Bus] (Azure Service Bus)
-    └──enhances──> [Product Detail Page]
+[Wishlist Price Drop Alerts]
+    └──requires──> [Wishlists]
+    └──requires──> [Price History Tracking] (new)
+    └──requires──> [Background Jobs] (new)
+    └──requires──> [Notification System] (new)
 ```
 
 ### Dependency Notes
 
-- **Shopping Cart requires Product Catalog:** Can't add items without products existing
-- **Checkout requires Inventory:** Must validate stock before completing order
-- **Order History requires Auth:** Need user identity to show their orders
-- **Real-time updates require Event Bus:** Demonstrates event-driven architecture value
+- **User Profile requires Authentication:** Already satisfied—Keycloak integrated, JWT validation working.
+- **Product Reviews require Order History:** Verified purchase badge needs order-product association check.
+- **Guest-to-Auth Migration is critical path:** Users signing up after guest checkout expect data persistence—UX failure if cart/orders vanish.
+- **Wishlists enhance Shopping Cart:** "Move to cart" is primary conversion path from wishlist.
+- **Review voting optional auth:** Guest voting increases participation but enables manipulation; require auth for quality.
+- **Notification system is cross-cutting:** Needed for review responses, wishlist alerts, future features—build once, reuse.
+- **Price alerts are complex:** Require background job infrastructure (Hangfire/Quartz), price history table, throttling logic.
 
 ## MVP Definition
 
-### Launch With (v1)
+### Launch With (v1.1)
 
-Minimum for a functional demo that proves architecture patterns.
+Minimum viable product for user accounts, reviews, and wishlists.
 
-- [x] Product catalog browsing (list + detail pages)
-- [x] Category filtering
-- [x] Shopping cart (add, update, remove, persist)
-- [x] Guest checkout flow
-- [x] Mock payment processing
-- [x] Order confirmation page
-- [x] Basic inventory tracking (stock levels)
-- [x] Admin: product CRUD
-- [x] Seed data (sample products)
+- **User Profile Management**
+  - [ ] Display name & avatar upload — Identity foundation
+  - [ ] Address book CRUD (add, edit, delete, set default) — Reduces checkout friction
+  - [ ] Link existing orders to authenticated users — "My account" completeness
+  - [ ] Guest-to-auth migration on signup/login — Preserve cart & order history
 
-### Add After Validation (v1.x)
+- **Product Reviews**
+  - [ ] Star rating (1-5) + written review submission — Core review functionality
+  - [ ] One review per product per user enforcement — Prevents spam
+  - [ ] Verified purchase badge — Trust signal (Amazon weights 10x heavier)
+  - [ ] Review display on product pages — Influences 93% of purchases
+  - [ ] Average rating calculation & display — Quick trust signal
+  - [ ] Basic profanity filter — Automated moderation
 
-Features to add once core flow works end-to-end.
+- **Wishlists**
+  - [ ] Single wishlist per user — Simplicity over power-user features
+  - [ ] Add/remove products — Core CRUD
+  - [ ] Wishlist page with product grid — Dedicated view
+  - [ ] Move to cart action — Primary conversion path
+  - [ ] Visual indicator on product cards — Prevent duplicate adds
 
-- [ ] Product search — when browsing feels limited
-- [ ] Order history (logged in users) — when demonstrating auth value
-- [ ] Admin: inventory adjustments — when showing business logic
-- [ ] Low stock alerts — when demonstrating event-driven patterns
-- [ ] Recently viewed products — quick UX win
+### Add After Validation (v1.2+)
+
+Features to add once core is working and usage patterns emerge.
+
+- [ ] Review helpfulness voting — Add when review volume > 10/product (signal-to-noise issue)
+- [ ] Review sorting/filtering (date, rating, verified) — Add when reviews > 20/product
+- [ ] Review image uploads — Add after moderation workflow validated
+- [ ] Wishlist sharing (read-only link) — Add if gift registry requests appear
+- [ ] Multiple wishlists — Add if user research shows organization need
+- [ ] Admin review response — Add when support team requests engagement tool
 
 ### Future Consideration (v2+)
 
-Defer until showcase is mature.
+Features to defer until product-market fit and resource availability.
 
-- [ ] Advanced search/filtering — only if basic search proves limiting
-- [ ] Real-time inventory updates — after event bus is stable
-- [ ] Multiple product images — nice to have, not essential
+- [ ] Wishlist price drop alerts — Requires background job infrastructure, notification system, price history
+- [ ] Wishlist stock alerts — Requires notification infrastructure
+- [ ] AI review summary — Requires LLM integration, cost analysis, caching strategy
+- [ ] Review media lightbox — Nice-to-have UX polish
+- [ ] Review question/answer section — Separate feature, large scope
 
 ## Feature Prioritization Matrix
 
 | Feature | User Value | Implementation Cost | Priority |
 |---------|------------|---------------------|----------|
-| Product listing | HIGH | LOW | P1 |
-| Product detail | HIGH | LOW | P1 |
-| Shopping cart | HIGH | MEDIUM | P1 |
-| Cart persistence | HIGH | MEDIUM | P1 |
-| Checkout flow | HIGH | MEDIUM | P1 |
-| Order confirmation | HIGH | LOW | P1 |
-| Guest checkout | HIGH | LOW | P1 |
-| Category filtering | MEDIUM | LOW | P1 |
-| Admin product CRUD | MEDIUM | MEDIUM | P1 |
-| Inventory tracking | MEDIUM | MEDIUM | P1 |
-| Seed data | HIGH | LOW | P1 |
-| Basic search | MEDIUM | MEDIUM | P2 |
-| Order history | MEDIUM | LOW | P2 |
-| Admin inventory | MEDIUM | LOW | P2 |
-| Real-time updates | LOW | MEDIUM | P3 |
-| Recently viewed | LOW | LOW | P3 |
+| User profile (name, avatar) | HIGH | LOW | P1 |
+| Address book | HIGH | MEDIUM | P1 |
+| Guest-to-auth migration | HIGH | MEDIUM | P1 |
+| Star rating + review text | HIGH | LOW | P1 |
+| Verified purchase badge | HIGH | MEDIUM | P1 |
+| Review display on product page | HIGH | LOW | P1 |
+| Average rating summary | HIGH | LOW | P1 |
+| Wishlist add/remove | HIGH | LOW | P1 |
+| Wishlist page | HIGH | MEDIUM | P1 |
+| Move to cart | HIGH | LOW | P1 |
+| Review helpfulness voting | MEDIUM | MEDIUM | P2 |
+| Review image upload | MEDIUM | HIGH | P2 |
+| Review sorting/filtering | MEDIUM | LOW | P2 |
+| Admin review response | MEDIUM | MEDIUM | P2 |
+| Multiple wishlists | LOW | MEDIUM | P2 |
+| Wishlist sharing | MEDIUM | MEDIUM | P2 |
+| Wishlist price alerts | MEDIUM | HIGH | P3 |
+| Wishlist stock alerts | MEDIUM | MEDIUM | P3 |
+| AI review summary | LOW | HIGH | P3 |
 
 **Priority key:**
-- P1: Must have for demo to feel complete
-- P2: Should have, add when core flow stable
-- P3: Nice to have, demonstrates advanced patterns
+- P1: Must have for v1.1 launch — core functionality, table stakes
+- P2: Should have, add in v1.2+ — enhances core, user requests validate
+- P3: Nice to have, future consideration — complex, requires infrastructure
 
 ## Competitor Feature Analysis
 
-For a **showcase project**, competitors are other reference architectures and demo projects.
+| Feature | Amazon | Shopify (default) | Our Approach (v1.1) |
+|---------|--------|-------------------|---------------------|
+| User profiles | Name, avatar, payment methods | Basic account info | Name, avatar, address book (focused scope) |
+| Address book | Full CRUD, default, nicknames | Saved addresses | Full CRUD, default address, no nicknames (v1) |
+| Verified purchase | Verified badge, weighted 10x | Varies by app (Yotpo, Judge.me) | Verified badge, order history cross-check |
+| Review submission | Star + text + images | Star + text (apps add images) | Star + text (images deferred to v1.2) |
+| Review voting | Helpful/Not helpful | Plugin-dependent | Defer to v1.2 (needs review volume first) |
+| Review moderation | Automated + manual | Plugin-dependent | Automated profanity filter only (v1) |
+| Wishlists | Single list, shareable | App-based (multiple lists common) | Single list, private (sharing v1.2+) |
+| Wishlist alerts | Stock alerts, Lightning Deals | App-based (price/stock) | Defer to v2 (needs notification infra) |
+| Guest migration | Seamless on login | Account merge prompts | Automatic merge on first auth after guest session |
 
-| Feature | eShop (Microsoft) | Northwind Traders | MicroCommerce Approach |
-|---------|-------------------|-------------------|------------------------|
-| Product browsing | Full catalog with filters | Basic listing | Full catalog with categories |
-| Cart | In-memory/Redis | Session-based | Postgres (durability demo) |
-| Checkout | Full flow with mock | Simplified | Full flow with mock payment |
-| Auth | Identity Server | Azure AD | Keycloak (already integrated) |
-| Admin | Separate MVC app | Minimal | Integrated Next.js routes |
-| Architecture demo | Microservices | Monolith | Modular monolith → microservices |
+## Implementation Notes
 
-## Complexity Estimates for Planning
+### Existing Assets to Leverage
 
-| Feature Group | Story Points (Rough) | Notes |
-|---------------|---------------------|-------|
-| Product Catalog (list, detail, categories) | 8 | Backend API + Frontend pages |
-| Shopping Cart (full CRUD + persistence) | 13 | Cart service + guest handling |
-| Checkout Flow (form, validation, mock payment) | 13 | Multi-step flow, order creation |
-| Order Confirmation + History | 5 | Simple display pages |
-| Admin Product CRUD | 8 | Forms, validation, image handling |
-| Admin Inventory | 5 | Stock adjustment UI |
-| Search | 5 | Full-text search setup |
-| Seed Data | 3 | Script + sample products |
+**Already Built (v1.0):**
+- Keycloak authentication (backend JWT + NextAuth.js frontend)
+- Guest cart with BuyerIdentity cookie system
+- Order history with status tracking
+- Product catalog with images
+- Inventory system with stock tracking
+- MassTransit messaging infrastructure
+- PostgreSQL per-feature databases
+
+**Integration Points:**
+- **User Profile DB:** New `Users` feature with `UserProfile`, `Address` entities
+- **Reviews DB:** New `Reviews` feature with `ProductReview`, `ReviewVote` entities (vote deferred)
+- **Wishlist DB:** New `Wishlists` feature with `Wishlist`, `WishlistItem` entities
+- **Link to existing:** Orders (via UserId), Products (via ProductId), Inventory (for stock checks)
+
+### Technical Considerations
+
+**User Profile:**
+- **Avatar storage:** Azure Blob Storage or local file system (dev), size limits (2MB), format validation (jpg, png, webp)
+- **Address validation:** Consider address verification API (SmartyStreets, Google) or basic format validation
+- **Guest migration:** On signup/login, check for guest BuyerId cookie → migrate cart + orders → clear cookie
+
+**Product Reviews:**
+- **Verified purchase logic:** `SELECT COUNT(*) FROM Orders WHERE UserId = @UserId AND OrderItems.ProductId = @ProductId AND Status = 'Completed'`
+- **One review per user-product:** Unique index on `(UserId, ProductId)`
+- **Rating aggregation:** Cached computed column or materialized view, recalculate on review add/update/delete
+- **Profanity filter:** Library like `ProfanityFilter.NET` or simple regex blacklist
+
+**Wishlists:**
+- **Single list simplification:** `Wishlist` table with `UserId` (1:1), `WishlistItems` join table (many-to-many with Products)
+- **Stock check on display:** Join with Inventory to show "Out of Stock" on wishlist page
+- **Move to cart:** Copy `WishlistItem.ProductId` to `CartItem`, delete from wishlist
+
+### Data Model Sketch
+
+```csharp
+// Users feature
+public class UserProfile : Entity<UserId>
+{
+    public string DisplayName { get; private set; }
+    public string? AvatarUrl { get; private set; }
+    public string Email { get; private set; } // from Keycloak
+    public DateTime CreatedAt { get; private set; }
+    private readonly List<Address> _addresses = [];
+    public IReadOnlyCollection<Address> Addresses => _addresses.AsReadOnly();
+}
+
+public class Address : Entity<AddressId>
+{
+    public UserId UserId { get; private set; }
+    public string FullName { get; private set; }
+    public string Line1 { get; private set; }
+    public string? Line2 { get; private set; }
+    public string City { get; private set; }
+    public string State { get; private set; }
+    public string PostalCode { get; private set; }
+    public string Country { get; private set; }
+    public bool IsDefault { get; private set; }
+}
+
+// Reviews feature
+public class ProductReview : Entity<ReviewId>
+{
+    public ProductId ProductId { get; private set; }
+    public UserId UserId { get; private set; }
+    public int Rating { get; private set; } // 1-5
+    public string ReviewText { get; private set; }
+    public bool IsVerifiedPurchase { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
+    // Future: HelpfulVotes, UnhelpfulVotes, AdminResponse
+}
+
+// Wishlists feature
+public class Wishlist : Entity<WishlistId>
+{
+    public UserId UserId { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    private readonly List<WishlistItem> _items = [];
+    public IReadOnlyCollection<WishlistItem> Items => _items.AsReadOnly();
+}
+
+public class WishlistItem : Entity<WishlistItemId>
+{
+    public WishlistId WishlistId { get; private set; }
+    public ProductId ProductId { get; private set; }
+    public DateTime AddedAt { get; private set; }
+}
+```
 
 ## Sources
 
-- Domain knowledge from established e-commerce patterns (Shopify, BigCommerce, WooCommerce)
-- Microsoft eShopOnContainers reference architecture patterns
-- Baymard Institute checkout usability research (industry standard)
-- Project context from PROJECT.md (existing decisions)
+**E-commerce User Profile Best Practices:**
+- [60+ Best Profile page Top 2026 Design Patterns | Muzli](https://muz.li/inspiration/profile-page/)
+- [The Ultimate Ecommerce Website Checklist For 2026 | Limely](https://www.limely.co.uk/blog/the-ultimate-ecommerce-website-checklist-for-2026)
+- [15 Must-Have E-commerce Features for 2026 (and How to Build Them)](https://www.sctinfo.com/blog/build-a-e-commerce-website/)
+- [Ecommerce User Experience: Complete Guide (2025)](https://www.parallelhq.com/blog/ecommerce-user-experience)
+
+**Product Review Systems:**
+- [11 Best Product Review Software for Ecommerce (2026)](https://wiserreview.com/blog/product-review-software/)
+- [Amazon Customer Reviews & Ratings](https://www.amazon.com/gp/help/customer/display.html?nodeId=G8UYX7LALQC8V9KA)
+- [Verified Purchaser | Bazaarvoice](https://developers.bazaarvoice.com/v1.0-ConversationsAPI/docs/verified-purchaser)
+- [Do Verified Badges on Reviews Boost Shopper Confidence?](https://en.verified-reviews.com/blog/verified-badges-reviews/)
+
+**Review Moderation & Voting:**
+- [Moderating content: Why it matters and how to do it | Bazaarvoice](https://www.bazaarvoice.com/blog/moderating-content-tips-and-best-practices/)
+- [What Is Product Review Moderation? | Yotpo](https://www.yotpo.com/glossary/product-review-moderation/)
+- [How product review voting is influenced | ScienceDirect](https://www.sciencedirect.com/science/article/abs/pii/S0167923623000568)
+
+**Wishlist Features:**
+- [15 Ways a Wishlist Can Boost Your E-commerce Strategy](https://www.getswym.com/blog/15-ways-a-wishlist-can-boost-your-e-commerce-strategy)
+- [Use These E-Commerce Wishlist Examples to Increase Revenue](https://www.drip.com/blog/e-commerce-wishlist-examples)
+- [Wishlist or shopping cart? Saving products for later | NN/G](https://www.nngroup.com/articles/wishlist-or-cart/)
+- [What is a WishList and Why It is an Important in Ecommerce?](https://devrims.com/blog/ecommerce-wishlist/)
+- [Understand wish list features - Oracle Commerce](https://docs.oracle.com/en/cloud/saas/cx-commerce/uoccs/understand-wish-list-features.html)
+
+**Address Book UX:**
+- [713 'Address Book' Design Examples | Baymard](https://baymard.com/ecommerce-design-examples/59-address-book)
+- [Commerce Addressbook | Drupal.org](https://www.drupal.org/project/commerce_addressbook)
+
+**Review & Rating System Pitfalls:**
+- [Ratings and Reviews in E-Commerce: A Guide for Brands](https://metricscart.com/insights/ratings-and-reviews-in-e-commerce/)
+- [A Complete Guide to eCommerce Reviews Management | Sendlane](https://www.sendlane.com/blog/manage-ecommerce-reviews)
+- [What's Really Causing Bad Reviews for Ecommerce Businesses? | Veeqo](https://www.veeqo.com/blog/bad-reviews-ecommerce-businesses)
 
 ---
-*Feature research for: MicroCommerce (showcase e-commerce)*
-*Researched: 2026-01-29*
+*Feature research for: E-commerce User Accounts, Product Reviews, and Wishlists*
+*Researched: 2026-02-13*
