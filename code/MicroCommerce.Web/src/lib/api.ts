@@ -321,3 +321,70 @@ export async function getAdjustmentHistory(productId: string): Promise<Adjustmen
   return response.json();
 }
 
+// Dead Letter Queue types
+export interface DeadLetterMessageDto {
+  sequenceNumber: number;
+  messageType: string;
+  errorDescription: string;
+  correlationId: string | null;
+  enqueuedTime: string;
+  queueName: string;
+}
+
+export interface DeadLetterMessagesResponse {
+  messages: DeadLetterMessageDto[];
+  queueNames: string[];
+}
+
+// Dead Letter Queue API functions
+export async function getDeadLetterMessages(
+  queueName?: string,
+  maxMessages?: number
+): Promise<DeadLetterMessagesResponse> {
+  const searchParams = new URLSearchParams();
+  if (queueName) searchParams.set('queueName', queueName);
+  if (maxMessages) searchParams.set('maxMessages', maxMessages.toString());
+
+  const response = await fetch(`${API_BASE}/api/messaging/dead-letters?${searchParams}`, {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch dead-letter messages');
+  }
+
+  return response.json();
+}
+
+export async function retryDeadLetterMessage(
+  queueName: string,
+  sequenceNumber: number
+): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/messaging/dead-letters/retry`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ queueName, sequenceNumber }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to retry dead-letter message');
+  }
+}
+
+export async function purgeDeadLetterMessages(queueName: string): Promise<number> {
+  const response = await fetch(`${API_BASE}/api/messaging/dead-letters/purge`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ queueName }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to purge dead-letter messages');
+  }
+
+  const result = await response.json();
+  return result.purgedCount;
+}
+
