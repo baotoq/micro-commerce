@@ -1,7 +1,8 @@
 # MicroCommerce
 
 A showcase e-commerce platform demonstrating modern .NET microservices architecture with best practices.
-I don't write code — Claude Code does.
+
+> **Disclaimer:** I mass-approved tool permissions and mass-typed "y" while Claude Code wrote every line of this project. My biggest contribution was picking the font. If there's a bug, blame the AI. If it works, I mass-typed "y" really well.
 
 | Project | Tests | Sonar |
 |---------|-------|-------|
@@ -13,8 +14,6 @@ Inspired by **[Microsoft eShop](https://github.com/dotnet/eShop)**, this pet pro
 - **DDD & CQRS** — Clean domain-driven architecture with MediatR
 - **Event-Driven** — MassTransit with transactional outbox for reliable messaging
 - **Cloud-Native** — .NET Aspire orchestration, Kubernetes-ready
-
-![homepage screenshot](img/homepage-screenshot.jpg)
 
 ## Quick Start
 
