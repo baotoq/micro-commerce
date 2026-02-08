@@ -32,6 +32,10 @@ var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservi
     .WithReference(blobs)
     .WithHttpHealthCheck("/health");
 
+var gateway = builder.AddProject<Projects.MicroCommerce_Gateway>("gateway")
+    .WithReference(apiService)
+    .WithHttpHealthCheck("/health");
+
 builder.AddJavaScriptApp("frontend", "../MicroCommerce.Web")
     .WithReference(apiService)
     .WithReference(keycloak)

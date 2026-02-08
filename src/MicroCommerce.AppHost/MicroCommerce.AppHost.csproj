@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj" />
+    <ProjectReference Include="..\MicroCommerce.Gateway\MicroCommerce.Gateway.csproj" />
   </ItemGroup>
 
 </Project>
