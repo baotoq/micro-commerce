@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 9 of 10 (API Gateway)
-Plan: 3 of ? in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-12 - Completed 09-03-PLAN.md (Frontend Gateway Integration)
+Last activity: 2026-02-12 - Completed 09-02-PLAN.md (Gateway Security & Rate Limiting)
 
-Progress: ██████████████████░░ 90%
+Progress: ██████████████████░░ 92%
 
 ---
 
@@ -30,11 +30,11 @@ Progress: ██████████████████░░ 90%
 | 6 | Cart Domain | IN PROGRESS | 3/4 |
 | 7 | Ordering Domain & Checkout | IN PROGRESS | 3/? |
 | 8 | Order History & Management | COMPLETE | 5/5 |
-| 9 | API Gateway | IN PROGRESS | 1/? |
+| 9 | API Gateway | IN PROGRESS | 2/3 |
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 5/10
-**Plans Completed (Phase 9):** 1/?
+**Plans Completed (Phase 9):** 2/3
 
 ---
 
@@ -97,6 +97,7 @@ Progress: ██████████████████░░ 90%
 ### Phase 9
 
 - [x] **09-01**: API Gateway Foundation - `b1f482e6`, `b4576e5e`
+- [x] **09-02**: Gateway Security & Rate Limiting - `9998452c`, `9fddfd8e`
 - [x] **09-03**: Frontend Gateway Integration - `bcc7c18c`, `34f2ea4c`
 
 ---
@@ -196,6 +197,11 @@ Progress: ██████████████████░░ 90%
 | 2026-02-12 | Frontend references gateway in AppHost | Frontend uses gateway as single API entry point via Aspire service discovery |
 | 2026-02-12 | Gateway port 5200 for fallback URLs | Matches gateway HTTP port from launchSettings.json for local development |
 | 2026-02-12 | All API paths preserved through gateway | Gateway proxies /api/* paths transparently to ApiService |
+| 2026-02-12 | Middleware pipeline order: CORS -> RateLimiter -> Auth -> AuthZ | ORDER MATTERS - CORS first for preflight, auth/authz before proxying |
+| 2026-02-12 | Partitioned rate limiting by user identity | 30 req/min anonymous, 100 req/min authenticated prevents abuse |
+| 2026-02-12 | X-Request-ID via custom middleware | Simpler than YARP transform API, adds distributed tracing header |
+| 2026-02-12 | Per-route authorization policies in appsettings.json | Write operations require auth, reads are public |
+| 2026-02-12 | CORS centralized at gateway, removed from ApiService | Single enforcement point prevents policy drift |
 
 ---
 
@@ -212,16 +218,16 @@ Progress: ██████████████████░░ 90%
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 09-03-PLAN.md (Frontend Gateway Integration)
+Stopped at: Completed 09-02-PLAN.md (Gateway Security & Rate Limiting)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 9** - API Gateway (Plan 02: Security & Rate Limiting)
+1. **Complete Phase 9** - API Gateway (proceed to UAT/polish if needed)
 2. **Begin Phase 10** - Testing & Polish
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-12 (09-01 complete)*
+*Updated: 2026-02-12 (09-02 complete)*
