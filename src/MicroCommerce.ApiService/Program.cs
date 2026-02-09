@@ -16,6 +16,7 @@ using MicroCommerce.ApiService.Features.Inventory.Infrastructure;
 using MicroCommerce.ApiService.Features.Ordering;
 using MicroCommerce.ApiService.Features.Ordering.Application.Saga;
 using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
+using MicroCommerce.ApiService.Features.Profiles.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +54,12 @@ builder.AddNpgsqlDbContext<InventoryDbContext>("appdb", configureDbContextOption
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "inventory"));
+});
+
+builder.AddNpgsqlDbContext<ProfilesDbContext>("appdb", configureDbContextOptions: options =>
+{
+    options.UseNpgsql(npgsql =>
+        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "profiles"));
 });
 
 // Azure Blob Storage for product images
@@ -170,6 +177,9 @@ builder.Services.AddHostedService<CartExpirationService>();
 
 // Messaging services
 builder.Services.AddScoped<IDeadLetterQueueService, DeadLetterQueueService>();
+
+// Profile services
+builder.Services.AddScoped<IAvatarImageService, AvatarImageService>();
 
 var app = builder.Build();
 
