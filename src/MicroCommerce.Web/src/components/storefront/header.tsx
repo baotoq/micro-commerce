@@ -2,12 +2,26 @@
 
 import Link from 'next/link';
 import { ShoppingCart, Menu, X } from 'lucide-react';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 
+import { useCartItemCount } from '@/hooks/use-cart';
 import { SearchBar } from './search-bar';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: cartCount = 0 } = useCartItemCount();
+  const [bounce, setBounce] = useState(false);
+  const prevCount = useRef(cartCount);
+
+  useEffect(() => {
+    if (cartCount !== prevCount.current && cartCount > 0) {
+      setBounce(true);
+      const timer = setTimeout(() => setBounce(false), 300);
+      prevCount.current = cartCount;
+      return () => clearTimeout(timer);
+    }
+    prevCount.current = cartCount;
+  }, [cartCount]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/80 backdrop-blur-xl">
@@ -28,16 +42,18 @@ export function Header() {
 
         {/* Right: Icons */}
         <div className="flex shrink-0 items-center gap-4">
-          <button
-            type="button"
+          <Link
+            href="/cart"
             className="relative text-zinc-500 transition-colors hover:text-zinc-900"
             aria-label="Shopping cart"
           >
-            <ShoppingCart className="h-4 w-4" />
-            <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-zinc-900 text-[9px] font-medium text-white">
-              0
-            </span>
-          </button>
+            <ShoppingCart className={`h-4 w-4 transition-transform duration-300 ${bounce ? 'scale-125' : 'scale-100'}`} />
+            {cartCount > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-zinc-900 text-[9px] font-medium text-white">
+                {cartCount > 99 ? '99+' : cartCount}
+              </span>
+            )}
+          </Link>
 
           {/* Mobile menu toggle */}
           <button
