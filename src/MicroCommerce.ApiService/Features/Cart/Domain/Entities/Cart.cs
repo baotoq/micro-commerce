@@ -106,6 +106,15 @@ public sealed class Cart : BaseAggregateRoot<CartId>
     }
 
     /// <summary>
+    /// Transfers cart ownership to a different buyer (used during guest-to-auth merge).
+    /// </summary>
+    public void TransferOwnership(Guid newBuyerId)
+    {
+        BuyerId = newBuyerId;
+        Touch();
+    }
+
+    /// <summary>
     /// Updates modification timestamp and resets TTL.
     /// </summary>
     private void Touch()

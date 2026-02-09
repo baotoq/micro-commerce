@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using MediatR;
 using MicroCommerce.ApiService.Features.Cart.Application.Commands.AddToCart;
+using MicroCommerce.ApiService.Features.Cart.Application.Commands.MergeCarts;
 using MicroCommerce.ApiService.Features.Cart.Application.Commands.RemoveCartItem;
 using MicroCommerce.ApiService.Features.Cart.Application.Commands.UpdateCartItem;
 using MicroCommerce.ApiService.Features.Cart.Application.Queries.GetCart;
@@ -46,6 +48,12 @@ public static class CartEndpoints
             .WithName("GetCartItemCount")
             .WithSummary("Get total item count for cart badge")
             .Produces<int>();
+
+        group.MapPost("/merge", MergeCarts)
+            .WithName("MergeCarts")
+            .WithSummary("Merge guest cart into authenticated user's cart")
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status204NoContent);
 
         return endpoints;
     }
@@ -117,6 +125,40 @@ public static class CartEndpoints
         var buyerId = BuyerIdentity.GetOrCreateBuyerId(httpContext);
         var count = await sender.Send(new GetCartItemCountQuery(buyerId), cancellationToken);
         return Results.Ok(count);
+    }
+
+    private static async Task<IResult> MergeCarts(
+        HttpContext httpContext,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var sub = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                  ?? httpContext.User.FindFirstValue("sub");
+
+        if (string.IsNullOrEmpty(sub) || !Guid.TryParse(sub, out var authenticatedBuyerId))
+        {
+            return Results.Unauthorized();
+        }
+
+        // Read guest buyer_id from cookie
+        if (!httpContext.Request.Cookies.TryGetValue("buyer_id", out var cookieValue)
+            || !Guid.TryParse(cookieValue, out var guestBuyerId))
+        {
+            return Results.NoContent(); // No guest cart to merge
+        }
+
+        // Don't merge if guest and auth IDs are the same
+        if (guestBuyerId == authenticatedBuyerId)
+        {
+            return Results.NoContent();
+        }
+
+        await sender.Send(new MergeCartsCommand(guestBuyerId, authenticatedBuyerId), cancellationToken);
+
+        // Clear the guest cookie after merge
+        httpContext.Response.Cookies.Delete("buyer_id");
+
+        return Results.NoContent();
     }
 }
 
