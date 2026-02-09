@@ -1,20 +1,20 @@
 # Project State
 
 **Project:** MicroCommerce
-**Current Phase:** Phase 5 - Event Bus Infrastructure
-**Status:** Phase Complete
+**Current Phase:** Phase 6 - Cart Domain
+**Status:** In Progress
 **Last Updated:** 2026-02-09
 
 ---
 
 ## Current Position
 
-Phase: 5 of 10 (Event Bus Infrastructure)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-02-09 - Completed 05-03-PLAN.md (Admin DLQ Management Page)
+Phase: 6 of 10 (Cart Domain)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-09 - Completed 06-01-PLAN.md (Cart Domain Model & Persistence)
 
-Progress: ████████████████░░░░ 65%
+Progress: █████████████████░░░ 68%
 
 ---
 
@@ -27,14 +27,14 @@ Progress: ████████████████░░░░ 65%
 | 3 | Catalog Storefront & Seed Data | IN PROGRESS | 5/6 |
 | 4 | Inventory Domain | COMPLETE | 5/5 |
 | 5 | Event Bus Infrastructure | COMPLETE | 3/3 |
-| 6 | Cart Domain | NOT STARTED | 0/? |
+| 6 | Cart Domain | IN PROGRESS | 1/4 |
 | 7 | Ordering Domain & Checkout | NOT STARTED | 0/? |
 | 8 | Order History & Management | NOT STARTED | 0/? |
 | 9 | API Gateway | NOT STARTED | 0/? |
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
 **Phases Completed:** 4/10
-**Plans Completed (Phase 5):** 3/3
+**Plans Completed (Phase 6):** 1/4
 
 ---
 
@@ -75,6 +75,9 @@ Progress: ████████████████░░░░ 65%
 - [x] **05-01**: Global MassTransit Middleware & PermanentException - `8766ddb8`, `cc029c82`
 - [x] **05-02**: DLQ Management Backend (service, CQRS, endpoints, fault consumer) - `23b07849`, `8c03d633`
 - [x] **05-03**: Admin DLQ Management Page - `b775fad7`, `d9049da4`
+
+### Phase 6
+- [x] **06-01**: Cart Domain Model & Persistence - `c8c74c80`, `00700bdd`
 
 ---
 
@@ -137,6 +140,10 @@ Progress: ████████████████░░░░ 65%
 | 2026-02-09 | RequireAuthorization on messaging route group | Admin-only DLQ management access |
 | 2026-02-09 | 30-second auto-refresh for DLQ admin page | Live monitoring without WebSocket complexity |
 | 2026-02-09 | Purge requires queue selection | Prevent accidental mass deletion across all queues |
+| 2026-02-09 | CartItem is regular class, not aggregate root | Owned by Cart aggregate, not independently accessible |
+| 2026-02-09 | 30-day TTL on Cart, resets on modification | Balance cart persistence with cleanup of abandoned carts |
+| 2026-02-09 | Max quantity 99 enforced in Cart and CartItem | Practical upper bound for e-commerce quantities |
+| 2026-02-09 | Cookie-based buyer identity with 7-day MaxAge | Guest cart persistence without authentication requirement |
 
 ---
 
@@ -153,16 +160,16 @@ Progress: ████████████████░░░░ 65%
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 05-03-PLAN.md (Admin DLQ Management Page) - Phase 5 complete
+Stopped at: Completed 06-01-PLAN.md (Cart Domain Model & Persistence)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Begin Phase 6** - Cart Domain
-2. Plan and execute cart functionality leveraging event bus infrastructure
+1. **Continue Phase 6** - Execute 06-02-PLAN.md (Cart CQRS & API Endpoints)
+2. Execute remaining cart plans (06-03, 06-04)
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-09 (05-03 complete, Phase 5 complete)*
+*Updated: 2026-02-09 (06-01 complete, Phase 6 in progress)*
