@@ -712,3 +712,203 @@ export async function updateOrderStatus(
   }
 }
 
+// Profile types
+export interface AddressDto {
+  id: string;
+  name: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  isDefault: boolean;
+}
+
+export interface ProfileDto {
+  id: string;
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  addresses: AddressDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UpdateProfileRequest {
+  displayName: string;
+}
+
+export interface AddAddressRequest {
+  name: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  setAsDefault?: boolean;
+}
+
+export interface UpdateAddressRequest {
+  name: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+
+// Profile API functions
+export async function getMyProfile(accessToken?: string): Promise<ProfileDto> {
+  const headers: Record<string, string> = {};
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/profiles/me`, {
+    credentials: "include",
+    cache: "no-store",
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch profile");
+  }
+
+  return response.json();
+}
+
+export async function updateProfile(data: UpdateProfileRequest, accessToken?: string): Promise<void> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/profiles/me`, {
+    method: "PUT",
+    headers,
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to update profile");
+  }
+}
+
+export async function uploadAvatar(file: File, accessToken?: string): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const headers: Record<string, string> = {};
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/profiles/me/avatar`, {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to upload avatar");
+  }
+
+  const result = await response.json();
+  return result.avatarUrl;
+}
+
+export async function removeAvatar(accessToken?: string): Promise<void> {
+  const headers: Record<string, string> = {};
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/profiles/me/avatar`, {
+    method: "DELETE",
+    headers,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to remove avatar");
+  }
+}
+
+export async function addAddress(data: AddAddressRequest, accessToken?: string): Promise<{ id: string }> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/profiles/me/addresses`, {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to add address");
+  }
+
+  return response.json();
+}
+
+export async function updateAddress(addressId: string, data: UpdateAddressRequest, accessToken?: string): Promise<void> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/profiles/me/addresses/${addressId}`, {
+    method: "PUT",
+    headers,
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to update address");
+  }
+}
+
+export async function deleteAddress(addressId: string, accessToken?: string): Promise<void> {
+  const headers: Record<string, string> = {};
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/profiles/me/addresses/${addressId}`, {
+    method: "DELETE",
+    headers,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete address");
+  }
+}
+
+export async function setDefaultAddress(addressId: string, accessToken?: string): Promise<void> {
+  const headers: Record<string, string> = {};
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/profiles/me/addresses/${addressId}/default`, {
+    method: "PATCH",
+    headers,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to set default address");
+  }
+}
+
