@@ -37,11 +37,14 @@
   3. User can view "My Account" page showing profile info and order history
   4. Guest cart and orders automatically merge to user account on login without data loss
   5. Avatar images persist across deployments (Azure Blob Storage, not container filesystem)
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 11-01: TBD
-- [ ] 11-02: TBD
+- [ ] 11-01-PLAN.md -- Backend Profiles domain model + infrastructure (aggregate, value objects, DbContext, AvatarImageService)
+- [ ] 11-02-PLAN.md -- Cart merge backend + frontend auth integration (MergeCartsCommand, endpoint, NextAuth callback)
+- [ ] 11-03-PLAN.md -- Backend Profile CQRS handlers + API endpoints (commands, queries, validators, ProfilesEndpoints)
+- [ ] 11-04-PLAN.md -- Frontend account layout + profile page (sidebar, profile view/edit, avatar upload, hooks)
+- [ ] 11-05-PLAN.md -- Frontend address book + header + cart merge wiring (address CRUD dialogs, header icon, middleware)
 
 #### Phase 12: Product Reviews & Ratings
 **Goal**: Users can submit star ratings and written reviews for purchased products with verified purchase badges, and all users can view aggregate ratings on product pages
@@ -106,7 +109,7 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 8. Order History & Management | v1.0 | 5/5 | Complete | 2026-02-12 |
 | 9. API Gateway | v1.0 | 3/3 | Complete | 2026-02-12 |
 | 10. Testing & Polish | v1.0 | 6/6 | Complete | 2026-02-13 |
-| 11. User Profiles & Authentication Flow | v1.1 | 0/TBD | Not started | - |
+| 11. User Profiles & Authentication Flow | v1.1 | 0/5 | Not started | - |
 | 12. Product Reviews & Ratings | v1.1 | 0/TBD | Not started | - |
 | 13. Wishlists & Saved Items | v1.1 | 0/TBD | Not started | - |
 | 14. Integration & Polish | v1.1 | 0/TBD | Not started | - |
