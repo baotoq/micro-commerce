@@ -229,6 +229,14 @@ Plans:
 4. Header badge shows correct item count
 5. User logs in, anonymous cart merges with existing cart
 
+**Plans:** 4 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Cart domain model, EF config, migration & buyer identity
+- [ ] 06-02-PLAN.md — Cart CQRS handlers, API endpoints & expiration service
+- [ ] 06-03-PLAN.md — React Query setup, cart API functions & hooks
+- [ ] 06-04-PLAN.md — Cart page UI, header badge & add-to-cart integration
+
 **Addresses Pitfalls:**
 - Cart/checkout race conditions (idempotency, concurrency)
 
