@@ -273,6 +273,14 @@ Plans:
 4. Confirmation page shows order number, items, total, shipping address
 5. Stock quantity decreases after successful order
 
+**Plans:** 4 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Order domain model, value objects, EF configs & migration
+- [ ] 07-02-PLAN.md — Order CQRS commands/queries & checkout API endpoints
+- [ ] 07-03-PLAN.md — Checkout saga state machine & integration consumers
+- [ ] 07-04-PLAN.md — Checkout UI (accordion, shipping, payment), hooks & order confirmation page
+
 **Addresses Pitfalls:**
 - Saga without compensation (compensation handlers)
 
