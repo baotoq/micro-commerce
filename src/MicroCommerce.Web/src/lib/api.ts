@@ -481,3 +481,114 @@ export async function purgeDeadLetterMessages(queueName: string): Promise<number
   return result.purgedCount;
 }
 
+// Ordering types
+export interface OrderItemDto {
+  id: string;
+  productId: string;
+  productName: string;
+  unitPrice: number;
+  imageUrl: string | null;
+  quantity: number;
+  lineTotal: number;
+}
+
+export interface ShippingAddressDto {
+  name: string;
+  email: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
+
+export interface OrderDto {
+  id: string;
+  orderNumber: string;
+  buyerEmail: string;
+  status: string;
+  shippingAddress: ShippingAddressDto;
+  items: OrderItemDto[];
+  subtotal: number;
+  shippingCost: number;
+  tax: number;
+  total: number;
+  createdAt: string;
+  paidAt: string | null;
+  failureReason: string | null;
+}
+
+export interface SubmitOrderRequest {
+  email: string;
+  shippingAddress: ShippingAddressDto;
+  items: {
+    productId: string;
+    productName: string;
+    unitPrice: number;
+    imageUrl: string | null;
+    quantity: number;
+  }[];
+}
+
+export interface SubmitOrderResult {
+  orderId: string;
+  orderNumber: string;
+}
+
+export interface SimulatePaymentRequest {
+  shouldSucceed: boolean;
+}
+
+export interface SimulatePaymentResult {
+  success: boolean;
+  failureReason: string | null;
+}
+
+// Ordering API functions
+export async function submitOrder(data: SubmitOrderRequest): Promise<SubmitOrderResult> {
+  const response = await fetch(`${API_BASE}/api/ordering/checkout`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to submit order");
+  }
+
+  return response.json();
+}
+
+export async function simulatePayment(
+  orderId: string,
+  data: SimulatePaymentRequest
+): Promise<SimulatePaymentResult> {
+  const response = await fetch(`${API_BASE}/api/ordering/orders/${orderId}/pay`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to process payment");
+  }
+
+  return response.json();
+}
+
+export async function getOrderById(orderId: string): Promise<OrderDto> {
+  const response = await fetch(`${API_BASE}/api/ordering/orders/${orderId}`, {
+    credentials: "include",
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch order");
+  }
+
+  return response.json();
+}
+
