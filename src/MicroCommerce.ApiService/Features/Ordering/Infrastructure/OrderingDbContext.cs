@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.Features.Ordering.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Ordering.Infrastructure;
@@ -9,9 +10,8 @@ public class OrderingDbContext : DbContext
     {
     }
 
-    // DbSets will be added as entities are created
-    // public DbSet<Order> Orders => Set<Order>();
-    // public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
