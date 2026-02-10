@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -49,12 +51,9 @@ export function CartSummary({ items }: CartSummaryProps) {
           </span>
         </div>
 
-        <Button className="w-full rounded-full" size="lg" disabled>
-          Proceed to Checkout
+        <Button asChild className="w-full rounded-full" size="lg">
+          <Link href="/checkout">Proceed to Checkout</Link>
         </Button>
-        <p className="text-center text-xs text-zinc-400">
-          Checkout coming soon
-        </p>
       </CardContent>
     </Card>
   );
