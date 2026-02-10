@@ -1,20 +1,20 @@
 # Project State
 
 **Project:** MicroCommerce
-**Current Phase:** Phase 6 - Cart Domain
+**Current Phase:** Phase 7 - Ordering Domain & Checkout
 **Status:** In Progress
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-02-10
 
 ---
 
 ## Current Position
 
-Phase: 6 of 10 (Cart Domain)
-Plan: 3 of 4 in current phase
+Phase: 7 of 10 (Ordering Domain & Checkout)
+Plan: 1 of ? in current phase
 Status: In progress
-Last activity: 2026-02-09 - Completed 06-03-PLAN.md (Cart React Query Hooks)
+Last activity: 2026-02-10 - Completed 07-01-PLAN.md (Order Domain Model & Persistence)
 
-Progress: ██████████████████░░ 72%
+Progress: ██████████████████░░ 74%
 
 ---
 
@@ -28,7 +28,7 @@ Progress: ██████████████████░░ 72%
 | 4 | Inventory Domain | COMPLETE | 5/5 |
 | 5 | Event Bus Infrastructure | COMPLETE | 3/3 |
 | 6 | Cart Domain | IN PROGRESS | 3/4 |
-| 7 | Ordering Domain & Checkout | NOT STARTED | 0/? |
+| 7 | Ordering Domain & Checkout | IN PROGRESS | 1/? |
 | 8 | Order History & Management | NOT STARTED | 0/? |
 | 9 | API Gateway | NOT STARTED | 0/? |
 | 10 | Testing & Polish | NOT STARTED | 0/? |
@@ -80,6 +80,9 @@ Progress: ██████████████████░░ 72%
 - [x] **06-01**: Cart Domain Model & Persistence - `c8c74c80`, `00700bdd`
 - [x] **06-02**: Cart CQRS & API Endpoints - `8d26f1c1`, `b4d6e115`
 - [x] **06-03**: Cart React Query Hooks - `498813d6`, `645016c7`
+
+### Phase 7
+- [x] **07-01**: Order Domain Model & Persistence - `237a46a0`, `cadb1fbc`
 
 ---
 
@@ -150,6 +153,10 @@ Progress: ██████████████████░░ 72%
 | 2026-02-09 | useState pattern for QueryClient | Prevents SSR state leakage in Next.js App Router |
 | 2026-02-09 | Single ["cart"] query key for all cart hooks | Cache consistency between useCart and useCartItemCount |
 | 2026-02-09 | Optimistic mutations with snapshot rollback | Instant UI feedback, server reconciliation on settle |
+| 2026-02-10 | OwnsOne for ShippingAddress mapping | Clearer column naming vs ComplexProperty |
+| 2026-02-10 | RandomNumberGenerator for OrderNumber | Cryptographically secure MC-XXXXXX codes |
+| 2026-02-10 | Status transitions with guard clauses | Prevent invalid state transitions in Order aggregate |
+| 2026-02-10 | Flat $5.99 shipping + 8% tax | Simple calculation, configurable later |
 
 ---
 
@@ -165,16 +172,16 @@ Progress: ██████████████████░░ 72%
 
 ## Session Continuity
 
-Last session: 2026-02-09
-Stopped at: Completed 06-03-PLAN.md (Cart React Query Hooks)
+Last session: 2026-02-10
+Stopped at: Completed 07-01-PLAN.md (Order Domain Model & Persistence)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 6** - Execute 06-04-PLAN.md (Cart UI Components)
+1. **Continue Phase 7** - Execute next ordering plan (Checkout CQRS or Saga)
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-09 (06-03 complete, Phase 6 in progress)*
+*Updated: 2026-02-10 (07-01 complete, Phase 7 in progress)*
