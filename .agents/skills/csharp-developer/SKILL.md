@@ -54,7 +54,7 @@ Load detailed guidance based on context:
 
 ### MUST DO
 - Enable nullable reference types in all projects
-- Use file-scoped namespaces and primary constructors (C# 12)
+- Use file-scoped namespaces and primary constructors (C# 14)
 - Apply async/await for all I/O operations
 - Use dependency injection for all services
 - Include XML documentation for public APIs
@@ -81,4 +81,4 @@ When implementing .NET features, provide:
 
 ## Knowledge Reference
 
-C# 12, .NET 8, ASP.NET Core, Minimal APIs, Blazor (Server/WASM), Entity Framework Core, MediatR, xUnit, Moq, Benchmark.NET, SignalR, gRPC, Azure SDK, Polly, FluentValidation, Serilog
+C# 14, .NET 10, ASP.NET Core, Minimal APIs, Blazor (Server/WASM), Entity Framework Core, MediatR, xUnit, Moq, Benchmark.NET, SignalR, gRPC, Azure SDK, Polly, FluentValidation, Serilog

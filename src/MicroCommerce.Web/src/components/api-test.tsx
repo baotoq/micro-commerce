@@ -171,8 +171,8 @@ export function ApiTest() {
                 </tr>
               </thead>
               <tbody>
-                {weather.map((w, i) => (
-                  <tr key={i} className="border-b border-zinc-100 dark:border-zinc-800">
+                {weather.map((w) => (
+                  <tr key={w.date} className="border-b border-zinc-100 dark:border-zinc-800">
                     <td className="py-2 text-zinc-900 dark:text-zinc-100">{w.date}</td>
                     <td className="py-2 text-zinc-900 dark:text-zinc-100">{w.temperatureC}°</td>
                     <td className="py-2 text-zinc-900 dark:text-zinc-100">{w.temperatureF}°</td>
