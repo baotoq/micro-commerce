@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 11 of 14 (User Profiles & Authentication Flow)
-Plan: 4 of 5 complete (01, 02, 03, 04 done)
-Status: Executing
-Last activity: 2026-02-13 — Completed 11-03 Profiles API Layer
+Plan: 5 of 5 complete (Phase 11 COMPLETE)
+Status: Phase Complete
+Last activity: 2026-02-13 — Completed 11-05 Address Book UI & Cart Merge Frontend
 
-Progress: [██████████░░░░] 75% (52/69 total plans across v1.0+v1.1)
+Progress: [██████████░░░░] 77% (53/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -47,9 +47,10 @@ Progress: [██████████░░░░] 75% (52/69 total plans ac
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | 11-01 | 4 min | 2 | 15 |
-| 11-02 | - | - | - |
+| 11-02 | 2 min | 2 | 7 |
 | 11-03 | 3 min | 2 | 13 |
-| 11-04 | - | - | - |
+| 11-04 | 3 min | 2 | 12 |
+| 11-05 | 2 min | 2 | 6 |
 
 ## Accumulated Context
 
@@ -64,6 +65,9 @@ Recent decisions affecting current work:
 - [Phase 11]: ImageSharp 3.1.6 for avatar processing with crop-to-square and 400x400 resize
 - [Phase 11-03]: Auto-create profile on first GET ensures profile always exists for authenticated users
 - [Phase 11-03]: UserId (Guid) from JWT 'sub' claim used as profile lookup key
+- [Phase 11-05]: Modal dialog form for both adding and editing addresses (not inline editing)
+- [Phase 11-05]: Login/register available via header account icon AND at checkout
+- [Phase 11-05]: Cart merge happens silently on login without user intervention
 
 ### Pending Todos
 
@@ -76,6 +80,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 11-03-PLAN.md (Profiles API layer)
+Stopped at: Completed 11-05-PLAN.md (Address Book UI & Cart Merge Frontend)
 Resume file: None
-Next step: Execute 11-05-PLAN.md (only incomplete plan remaining in phase 11)
+Next step: Phase 11 complete. Ready for Phase 12 (per ROADMAP.md)
