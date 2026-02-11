@@ -1,12 +1,12 @@
 import { auth } from "@/auth";
 
 export default auth((req) => {
-  // Add any route protection logic here
-  // For example, to protect all routes under /dashboard:
-  // if (!req.auth && req.nextUrl.pathname.startsWith("/dashboard")) {
-  //   const newUrl = new URL("/api/auth/signin", req.nextUrl.origin);
-  //   return Response.redirect(newUrl);
-  // }
+  // Protect account routes - require authentication
+  if (!req.auth && req.nextUrl.pathname.startsWith("/account")) {
+    const signInUrl = new URL("/api/auth/signin", req.nextUrl.origin);
+    signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+    return Response.redirect(signInUrl);
+  }
 });
 
 export const config = {
