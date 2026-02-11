@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 11 of 14 (User Profiles & Authentication Flow)
-Plan: 1 of 5 complete (01 done)
+Plan: 4 of 5 complete (01, 02, 03, 04 done)
 Status: Executing
-Last activity: 2026-02-13 — Completed 11-01 Profiles Backend Foundation
+Last activity: 2026-02-13 — Completed 11-03 Profiles API Layer
 
-Progress: [██████████░░░░] 72% (50/69 total plans across v1.0+v1.1)
+Progress: [██████████░░░░] 75% (52/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -47,6 +47,9 @@ Progress: [██████████░░░░] 72% (50/69 total plans ac
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | 11-01 | 4 min | 2 | 15 |
+| 11-02 | - | - | - |
+| 11-03 | 3 min | 2 | 13 |
+| 11-04 | - | - | - |
 
 ## Accumulated Context
 
@@ -59,6 +62,8 @@ Recent decisions affecting current work:
 - Guest checkout: Migration from guest to authenticated users is critical for Phase 11
 - Keycloak authentication: Foundation established, v1.1 extends with profile attributes
 - [Phase 11]: ImageSharp 3.1.6 for avatar processing with crop-to-square and 400x400 resize
+- [Phase 11-03]: Auto-create profile on first GET ensures profile always exists for authenticated users
+- [Phase 11-03]: UserId (Guid) from JWT 'sub' claim used as profile lookup key
 
 ### Pending Todos
 
@@ -71,6 +76,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 11-01-PLAN.md (Profiles backend foundation)
+Stopped at: Completed 11-03-PLAN.md (Profiles API layer)
 Resume file: None
-Next step: Execute 11-02-PLAN.md
+Next step: Execute 11-05-PLAN.md (only incomplete plan remaining in phase 11)
