@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-## Project Overview
+## Project Overview 
 
 MicroCommerce is a showcase e-commerce platform demonstrating modern .NET microservices architecture. Users can browse products, add to cart, and checkout through a Next.js storefront. The backend is a modular monolith designed for gradual extraction to microservices.
 
