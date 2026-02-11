@@ -56,11 +56,12 @@ Plans:
   3. User can see all reviews on product detail pages with average rating and review count
   4. User can edit or delete their own review (one review per product enforced)
   5. Review submission is blocked for products the user has not purchased
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 12-01: TBD
-- [ ] 12-02: TBD
+- [ ] 12-01-PLAN.md -- Backend Reviews domain model + infrastructure (aggregate, value objects, DbContext, migration, Product rating fields)
+- [ ] 12-02-PLAN.md -- Backend Reviews CQRS + API endpoints (commands, queries, validators, endpoints, purchase verification, aggregate recalculation)
+- [ ] 12-03-PLAN.md -- Frontend review components, hooks, API + integration into product detail, product cards, order history
 
 #### Phase 13: Wishlists & Saved Items
 **Goal**: Users can save products to a persistent wishlist and move items to cart
