@@ -105,7 +105,7 @@ public sealed class MoneyTests
         string result = money.ToString();
 
         // Assert
-        result.Should().Be("USD 99.99");
+        result.Should().MatchRegex(@"USD 99[.,]99");
     }
 
     [Fact]

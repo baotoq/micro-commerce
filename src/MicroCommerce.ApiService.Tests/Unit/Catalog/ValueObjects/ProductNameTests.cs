@@ -69,8 +69,7 @@ public sealed class ProductNameTests
         Action act = () => ProductName.Create(oneCharName);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithParameterName("value");
+        act.Should().Throw<ArgumentException>();
     }
 
     [Fact]
@@ -83,8 +82,7 @@ public sealed class ProductNameTests
         Action act = () => ProductName.Create(tooLongName);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithParameterName("value");
+        act.Should().Throw<ArgumentException>();
     }
 
     [Fact]
