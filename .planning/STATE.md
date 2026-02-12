@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 8 of 10 (Order History & Management)
-Plan: 4 of 5 in current phase
-Status: In progress
-Last activity: 2026-02-12 - Completed 08-03-PLAN.md (Customer Order History)
+Plan: 5 of 5 in current phase
+Status: Phase complete
+Last activity: 2026-02-12 - Completed 08-05-PLAN.md (Admin Order Kanban Board)
 
-Progress: ██████████████████░░ 86%
+Progress: ██████████████████░░ 88%
 
 ---
 
@@ -29,12 +29,12 @@ Progress: ██████████████████░░ 86%
 | 5 | Event Bus Infrastructure | COMPLETE | 3/3 |
 | 6 | Cart Domain | IN PROGRESS | 3/4 |
 | 7 | Ordering Domain & Checkout | IN PROGRESS | 3/? |
-| 8 | Order History & Management | IN PROGRESS | 4/5 |
+| 8 | Order History & Management | COMPLETE | 5/5 |
 | 9 | API Gateway | NOT STARTED | 0/? |
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
-**Phases Completed:** 4/10
-**Plans Completed (Phase 6):** 3/4
+**Phases Completed:** 5/10
+**Plans Completed (Phase 8):** 5/5
 
 ---
 
@@ -91,6 +91,7 @@ Progress: ██████████████████░░ 86%
 - [x] **08-02**: Frontend Data Layer Infrastructure - `fd96a3f8`, `bec2af5e`
 - [x] **08-03**: Customer Order History & Detail Pages - `2bae9ee4`, `c9f5fab4`
 - [x] **08-04**: Admin Order Dashboard (stat cards, bar chart, recent orders) - `930f8eba`, `fe40dabc`
+- [x] **08-05**: Admin Order Kanban Board & Detail Page - `f09732ec`, `81572462`
 
 ---
 
@@ -183,6 +184,9 @@ Progress: ██████████████████░░ 86%
 | 2026-02-12 | 5-step customer lifecycle mapping in stepper | StockReserved mapped to Submitted; Failed/Cancelled shown as error on last step |
 | 2026-02-12 | useParams for client-side dynamic route params | Client components use useParams hook instead of page props |
 | 2026-02-12 | Orders icon in storefront header | ClipboardList icon + mobile menu link for order history discoverability |
+| 2026-02-12 | Only Confirmed->Shipped and Shipped->Delivered DnD transitions | Matches backend UpdateOrderStatus which only accepts Shipped and Delivered |
+| 2026-02-12 | 8px PointerSensor activation constraint | Prevents accidental drags when clicking card links |
+| 2026-02-12 | Separate drag handle from card link | GripVertical button handles drag; card body is Link to detail page |
 
 ---
 
@@ -199,15 +203,16 @@ Progress: ██████████████████░░ 86%
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 08-03-PLAN.md (Customer Order History)
+Stopped at: Completed 08-05-PLAN.md (Admin Order Kanban Board)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Execute 08-05** - Admin order kanban board
+1. **Begin Phase 9** - API Gateway
+2. **Begin Phase 10** - Testing & Polish
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-12 (08-03 complete, Phase 8 nearly done)*
+*Updated: 2026-02-12 (08-05 complete, Phase 8 complete)*
