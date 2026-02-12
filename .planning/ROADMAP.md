@@ -314,14 +314,14 @@ Plans:
 4. Admin dashboard shows today's orders, total revenue
 5. Admin can update order status (e.g., mark shipped)
 
-**Plans:** 5 plans
+**Plans:** 5 plans ✓ COMPLETE
 
 Plans:
-- [ ] 08-01-PLAN.md — Backend: Order domain extension (Shipped/Delivered), new queries, endpoints
-- [ ] 08-02-PLAN.md — Frontend: Dependencies, QueryProvider, API functions, React Query hooks
-- [ ] 08-03-PLAN.md — Storefront: Order history page (auth-gated) & order detail with status stepper
-- [ ] 08-04-PLAN.md — Admin: Dashboard with stat cards, bar chart & recent orders table
-- [ ] 08-05-PLAN.md — Admin: Kanban board with drag-and-drop & order detail page
+- [x] 08-01-PLAN.md — Backend: Order domain extension (Shipped/Delivered), new queries, endpoints ✓
+- [x] 08-02-PLAN.md — Frontend: Dependencies, QueryProvider, API functions, React Query hooks ✓
+- [x] 08-03-PLAN.md — Storefront: Order history page (auth-gated) & order detail with status stepper ✓
+- [x] 08-04-PLAN.md — Admin: Dashboard with stat cards, bar chart & recent orders table ✓
+- [x] 08-05-PLAN.md — Admin: Kanban board with drag-and-drop & order detail page ✓
 
 **Dependencies:** Phase 7
 
