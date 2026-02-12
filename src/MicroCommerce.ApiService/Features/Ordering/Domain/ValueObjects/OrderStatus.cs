@@ -6,6 +6,8 @@ public enum OrderStatus
     StockReserved,
     Paid,
     Confirmed,
+    Shipped,
+    Delivered,
     Failed,
     Cancelled
 }

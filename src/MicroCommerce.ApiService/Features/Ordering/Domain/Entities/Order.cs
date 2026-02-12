@@ -113,7 +113,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(reason);
 
-        if (Status is OrderStatus.Confirmed or OrderStatus.Failed)
+        if (Status is OrderStatus.Confirmed or OrderStatus.Shipped or OrderStatus.Delivered or OrderStatus.Failed)
             throw new InvalidOperationException($"Cannot mark order as failed when status is '{Status}'.");
 
         Status = OrderStatus.Failed;
@@ -130,6 +130,30 @@ public sealed class Order : BaseAggregateRoot<OrderId>
             throw new InvalidOperationException($"Cannot confirm order when status is '{Status}'.");
 
         Status = OrderStatus.Confirmed;
+    }
+
+    /// <summary>
+    /// Marks the order as shipped (admin transition).
+    /// Only valid when status is Confirmed.
+    /// </summary>
+    public void Ship()
+    {
+        if (Status != OrderStatus.Confirmed)
+            throw new InvalidOperationException($"Cannot ship order when status is '{Status}'. Order must be Confirmed.");
+
+        Status = OrderStatus.Shipped;
+    }
+
+    /// <summary>
+    /// Marks the order as delivered (admin transition).
+    /// Only valid when status is Shipped.
+    /// </summary>
+    public void Deliver()
+    {
+        if (Status != OrderStatus.Shipped)
+            throw new InvalidOperationException($"Cannot deliver order when status is '{Status}'. Order must be Shipped.");
+
+        Status = OrderStatus.Delivered;
     }
 
     /// <summary>

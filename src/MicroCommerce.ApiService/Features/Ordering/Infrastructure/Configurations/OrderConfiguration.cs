@@ -106,6 +106,8 @@ public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Navigation(o => o.Items)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
+        builder.HasIndex(o => o.Status);
+
         // Index on CreatedAt descending for recent orders
         builder.HasIndex(o => o.CreatedAt)
             .IsDescending();
