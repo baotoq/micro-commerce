@@ -18,6 +18,7 @@ using MicroCommerce.ApiService.Features.Ordering.Application.Saga;
 using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
 using MicroCommerce.ApiService.Features.Profiles;
 using MicroCommerce.ApiService.Features.Profiles.Infrastructure;
+using MicroCommerce.ApiService.Features.Reviews;
 using MicroCommerce.ApiService.Features.Reviews.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -244,6 +245,7 @@ app.MapCartEndpoints();
 app.MapOrderingEndpoints();
 app.MapMessagingEndpoints();
 app.MapProfilesEndpoints();
+app.MapReviewsEndpoints();
 
 app.Run();
 
