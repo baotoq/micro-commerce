@@ -34,10 +34,11 @@ var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservi
 
 var gateway = builder.AddProject<Projects.MicroCommerce_Gateway>("gateway")
     .WithReference(apiService)
+    .WithReference(keycloak)
     .WithHttpHealthCheck("/health");
 
 builder.AddJavaScriptApp("frontend", "../MicroCommerce.Web")
-    .WithReference(apiService)
+    .WithReference(gateway)
     .WithReference(keycloak)
     .WithHttpEndpoint(port: 3000, env: "PORT");
 
