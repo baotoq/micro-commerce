@@ -382,6 +382,17 @@ Plans:
 4. E2E test passes for happy path purchase flow
 5. App handles errors gracefully with user-friendly messages
 
+**Plans:** 6 plans
+
+Plans:
+
+- [ ] 10-01-PLAN.md — Test project setup & Ordering domain unit tests
+- [ ] 10-02-PLAN.md — Catalog, Cart, Inventory unit tests & validator tests
+- [ ] 10-03-PLAN.md — Checkout saga state machine tests
+- [ ] 10-04-PLAN.md — Integration tests with Testcontainers PostgreSQL
+- [ ] 10-05-PLAN.md — Playwright E2E tests for browsing & cart
+- [ ] 10-06-PLAN.md — UX polish (error handling, loading, empty states) & final verification
+
 **Dependencies:** Phase 9
 
 ---
