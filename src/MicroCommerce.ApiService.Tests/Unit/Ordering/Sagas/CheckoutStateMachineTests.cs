@@ -217,7 +217,7 @@ public class CheckoutStateMachineTests
         });
 
         // Assert: State populated on initial event
-        CheckoutState? saga = sagaHarness.Sagas.Select(x => x.CorrelationId == _orderId).FirstOrDefault();
+        CheckoutState? saga = sagaHarness.Sagas.Select(x => x.CorrelationId == _orderId).FirstOrDefault()?.Saga;
         saga.Should().NotBeNull();
         saga!.OrderId.Should().Be(_orderId);
         saga.BuyerId.Should().Be(_buyerId);
@@ -234,7 +234,7 @@ public class CheckoutStateMachineTests
         });
 
         // Assert: ReservationIdsJson populated
-        saga = sagaHarness.Sagas.Select(x => x.CorrelationId == _orderId).FirstOrDefault();
+        saga = sagaHarness.Sagas.Select(x => x.CorrelationId == _orderId).FirstOrDefault()?.Saga;
         saga.Should().NotBeNull();
         saga!.ReservationIdsJson.Should().Be(reservationIdsJson);
     }
@@ -277,7 +277,7 @@ public class CheckoutStateMachineTests
         });
 
         // Assert: FailureReason captured in saga state
-        CheckoutState? saga = sagaHarness.Sagas.Select(x => x.CorrelationId == _orderId).FirstOrDefault();
+        CheckoutState? saga = sagaHarness.Sagas.Select(x => x.CorrelationId == _orderId).FirstOrDefault()?.Saga;
         saga.Should().NotBeNull();
         saga!.FailureReason.Should().Be(expectedReason);
     }
@@ -326,7 +326,7 @@ public class CheckoutStateMachineTests
         });
 
         // Assert: FailureReason captured in saga state
-        CheckoutState? saga = sagaHarness.Sagas.Select(x => x.CorrelationId == _orderId).FirstOrDefault();
+        CheckoutState? saga = sagaHarness.Sagas.Select(x => x.CorrelationId == _orderId).FirstOrDefault()?.Saga;
         saga.Should().NotBeNull();
         saga!.FailureReason.Should().Be(expectedReason);
     }
