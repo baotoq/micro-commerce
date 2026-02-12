@@ -10,9 +10,9 @@
 ## Current Position
 
 Phase: 9 of 10 (API Gateway)
-Plan: 1 of ? in current phase
+Plan: 3 of ? in current phase
 Status: In progress
-Last activity: 2026-02-12 - Completed 09-01-PLAN.md (API Gateway Foundation)
+Last activity: 2026-02-12 - Completed 09-03-PLAN.md (Frontend Gateway Integration)
 
 Progress: ██████████████████░░ 90%
 
@@ -97,6 +97,7 @@ Progress: ██████████████████░░ 90%
 ### Phase 9
 
 - [x] **09-01**: API Gateway Foundation - `b1f482e6`, `b4576e5e`
+- [x] **09-03**: Frontend Gateway Integration - `bcc7c18c`, `34f2ea4c`
 
 ---
 
@@ -192,6 +193,9 @@ Progress: ██████████████████░░ 90%
 | 2026-02-12 | Only Confirmed->Shipped and Shipped->Delivered DnD transitions | Matches backend UpdateOrderStatus which only accepts Shipped and Delivered |
 | 2026-02-12 | 8px PointerSensor activation constraint | Prevents accidental drags when clicking card links |
 | 2026-02-12 | Separate drag handle from card link | GripVertical button handles drag; card body is Link to detail page |
+| 2026-02-12 | Frontend references gateway in AppHost | Frontend uses gateway as single API entry point via Aspire service discovery |
+| 2026-02-12 | Gateway port 5200 for fallback URLs | Matches gateway HTTP port from launchSettings.json for local development |
+| 2026-02-12 | All API paths preserved through gateway | Gateway proxies /api/* paths transparently to ApiService |
 
 ---
 
@@ -208,7 +212,7 @@ Progress: ██████████████████░░ 90%
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 09-01-PLAN.md (API Gateway Foundation)
+Stopped at: Completed 09-03-PLAN.md (Frontend Gateway Integration)
 Resume file: None
 
 ---
