@@ -1,20 +1,20 @@
 # Project State
 
 **Project:** MicroCommerce
-**Current Phase:** Phase 7 - Ordering Domain & Checkout
+**Current Phase:** Phase 8 - Order History & Management
 **Status:** In Progress
-**Last Updated:** 2026-02-10
+**Last Updated:** 2026-02-12
 
 ---
 
 ## Current Position
 
-Phase: 7 of 10 (Ordering Domain & Checkout)
-Plan: 3 of ? in current phase
+Phase: 8 of 10 (Order History & Management)
+Plan: 2 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-10 - Completed 07-03-PLAN.md (Checkout Saga State Machine)
+Last activity: 2026-02-12 - Completed 08-02-PLAN.md (Frontend Data Layer Infrastructure)
 
-Progress: ██████████████████░░ 78%
+Progress: ██████████████████░░ 80%
 
 ---
 
@@ -29,7 +29,7 @@ Progress: ██████████████████░░ 78%
 | 5 | Event Bus Infrastructure | COMPLETE | 3/3 |
 | 6 | Cart Domain | IN PROGRESS | 3/4 |
 | 7 | Ordering Domain & Checkout | IN PROGRESS | 3/? |
-| 8 | Order History & Management | NOT STARTED | 0/? |
+| 8 | Order History & Management | IN PROGRESS | 1/5 |
 | 9 | API Gateway | NOT STARTED | 0/? |
 | 10 | Testing & Polish | NOT STARTED | 0/? |
 
@@ -85,6 +85,9 @@ Progress: ██████████████████░░ 78%
 - [x] **07-01**: Order Domain Model & Persistence - `237a46a0`, `cadb1fbc`
 - [x] **07-02**: Ordering CQRS & API Endpoints - `7e682068`, `f581eb3c`
 - [x] **07-03**: Checkout Saga State Machine & Consumers - `5e87febf`, `0e1547e6`
+
+### Phase 8
+- [x] **08-02**: Frontend Data Layer Infrastructure - `fd96a3f8`, `bec2af5e`
 
 ---
 
@@ -165,6 +168,9 @@ Progress: ██████████████████░░ 78%
 | 2026-02-10 | Optimistic concurrency for saga state | MassTransit auto-retries on conflicts, better throughput |
 | 2026-02-10 | JSON serialization for reservation ID map | Simple string serialization, no extra tables needed |
 | 2026-02-10 | SetCompletedWhenFinalized for saga cleanup | Auto-removes completed saga rows, prevents table bloat |
+| 2026-02-12 | Terminal status polling stop for order hooks | Delivered/Failed/Cancelled orders stop polling to reduce server load |
+| 2026-02-12 | 20-second polling interval for order status | Balance responsiveness with server load for order processing |
+| 2026-02-12 | Scoped query key hierarchy for orders | buyer vs admin query keys allow targeted cache invalidation |
 
 ---
 
@@ -180,16 +186,19 @@ Progress: ██████████████████░░ 78%
 
 ## Session Continuity
 
-Last session: 2026-02-10
-Stopped at: Completed 07-03-PLAN.md (Checkout Saga State Machine)
+Last session: 2026-02-12
+Stopped at: Completed 08-02-PLAN.md (Frontend Data Layer Infrastructure)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 7** - Execute next ordering plan (Checkout UI or remaining plans)
+1. **Execute 08-01** - Backend: Order domain extensions, new queries, endpoints
+2. **Execute 08-03** - Customer order history page
+3. **Execute 08-04** - Admin order dashboard
+4. **Execute 08-05** - Admin order kanban board
 
 ---
 *State file created: 2026-01-29*
-*Updated: 2026-02-10 (07-03 complete, Phase 7 in progress)*
+*Updated: 2026-02-12 (08-02 complete, Phase 8 in progress)*
