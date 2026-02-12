@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StarRatingDisplay } from "@/components/reviews/star-rating-display";
 import type { ProductDto, StockInfoDto } from "@/lib/api";
 
 interface ProductCardProps {
@@ -123,6 +124,15 @@ export function ProductCard({ product, stockInfo }: ProductCardProps) {
           <h3 className="line-clamp-2 text-sm font-medium text-zinc-900">
             {product.name}
           </h3>
+          {product.reviewCount > 0 && product.averageRating !== null && (
+            <div className="mt-1.5">
+              <StarRatingDisplay
+                rating={product.averageRating}
+                count={product.reviewCount}
+                size="sm"
+              />
+            </div>
+          )}
           <p className="mt-1 text-sm font-semibold text-zinc-900">
             {formatPrice(product.price, product.priceCurrency)}
           </p>
