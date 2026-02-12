@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 12 of 14 (Product Reviews & Ratings)
-Plan: 1 of 3
+Plan: 2 of 3
 Status: Executing
-Last activity: 2026-02-13 — Completed 12-01-PLAN.md
+Last activity: 2026-02-13 — Completed 12-02-PLAN.md
 
-Progress: [██████████░░░░] 78% (54/69 total plans across v1.0+v1.1)
+Progress: [██████████░░░░] 79% (55/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Progress: [██████████░░░░] 78% (54/69 total plans ac
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | 12-01 | 3 min | 2 | 14 |
+| 12-02 | 3 min | 2 | 13 |
 
 ## Accumulated Context
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 12-01]: Composite unique index on (UserId, ProductId) enforces one review per user per product
 - [Phase 12-01]: Rating (1-5) and ReviewText (10-1000 chars) as value objects with validation
 - [Phase 12-01]: Product.AverageRating and ReviewCount denormalized for query performance
+- [Phase 12]: Purchase verification gates review creation by querying Orders with Paid/Confirmed/Shipped/Delivered status
+- [Phase 12]: Aggregate rating recalculation happens synchronously after each CUD operation for immediate consistency
+- [Phase 12]: Batch queries for display names and verified purchases to avoid N+1 problems in review list endpoint
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 12-01-PLAN.md (Reviews backend foundation)
+Stopped at: Completed 12-02-PLAN.md (Reviews CQRS application layer)
 Resume file: None
-Next step: /gsd:execute-plan 12-02
+Next step: /gsd:execute-plan 12-03
