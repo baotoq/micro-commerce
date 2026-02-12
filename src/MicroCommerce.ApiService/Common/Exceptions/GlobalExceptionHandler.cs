@@ -37,6 +37,10 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
                 StatusCodes.Status409Conflict,
                 "Conflict",
                 conflictException.Message),
+            InvalidOperationException invalidOpException => (
+                StatusCodes.Status400BadRequest,
+                "Invalid Operation",
+                invalidOpException.Message),
             _ => (0, string.Empty, string.Empty)
         };
 
