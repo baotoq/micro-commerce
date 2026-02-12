@@ -10,9 +10,9 @@
 ## Current Position
 
 Phase: 10 of 10 (Testing & Polish)
-Plan: 2 of 8 in current phase
+Plan: 3 of 8 in current phase
 Status: In progress
-Last activity: 2026-02-12 - Completed 10-02-PLAN.md (Domain Unit Tests)
+Last activity: 2026-02-12 - Completed 10-03-PLAN.md (CheckoutStateMachine Saga Tests)
 
 Progress: ██████████████████░░ 96%
 
@@ -104,6 +104,7 @@ Progress: ██████████████████░░ 96%
 
 - [x] **10-01**: Test Infrastructure and Order Domain Tests - `c5834083`, `b10fb826`
 - [x] **10-02**: Domain Aggregate and Validator Unit Tests - `376751e8`, `b5276f52`
+- [x] **10-03**: CheckoutStateMachine Saga Tests - `91805510`
 
 ---
 
@@ -215,6 +216,9 @@ Progress: ██████████████████░░ 96%
 | 2026-02-12 | No webServer in Playwright config | MicroCommerce requires full Aspire stack (API, DB, Keycloak, Service Bus) |
 | 2026-02-12 | Flexible selector strategy with .or() fallbacks | Tests resilient to UI changes, won't break on class name changes |
 | 2026-02-12 | Accessibility-first E2E selectors | Prefer getByRole, getByPlaceholder over CSS classes |
+| 2026-02-12 | Message-based saga test assertions vs state-based | Published messages are contract; saga state is implementation detail |
+| 2026-02-12 | Fixed 200ms delays in saga tests | MassTransit in-memory harness fast but async, simpler than complex timeout logic |
+| 2026-02-12 | Message filtering by OrderId/BuyerId in saga tests | Ensures correct saga instance verification in concurrent tests |
 | 2026-02-12 | WebApplicationFactory with Testcontainers PostgreSQL | Integration tests require real database to verify SQL, migrations, and EF Core mappings |
 | 2026-02-12 | MassTransit test harness instead of real Service Bus | Integration tests focus on HTTP contract, not saga execution |
 | 2026-02-12 | Disable background services in tests | Data seeders and cleanup services interfere with test isolation |
@@ -236,7 +240,7 @@ Progress: ██████████████████░░ 96%
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 10-02-PLAN.md (Domain Aggregate and Validator Unit Tests)
+Stopped at: Completed 10-03-PLAN.md (CheckoutStateMachine Saga Tests)
 Resume file: None
 
 ---
