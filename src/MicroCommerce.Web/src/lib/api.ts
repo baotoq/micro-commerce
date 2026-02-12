@@ -592,3 +592,123 @@ export async function getOrderById(orderId: string): Promise<OrderDto> {
   return response.json();
 }
 
+// Order history & management types
+export interface OrderSummaryDto {
+  id: string;
+  orderNumber: string;
+  status: string;
+  total: number;
+  itemCount: number;
+  itemThumbnails: (string | null)[];
+  createdAt: string;
+  failureReason: string | null;
+}
+
+export interface OrderListDto {
+  items: OrderSummaryDto[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface OrderDashboardDto {
+  totalOrders: number;
+  revenue: number;
+  averageOrderValue: number;
+  pendingOrders: number;
+  ordersPerDay: { date: string; count: number }[];
+}
+
+export interface UpdateOrderStatusRequest {
+  newStatus: string;
+}
+
+// Order history & management API functions
+export async function getOrdersByBuyer(params: {
+  status?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<OrderListDto> {
+  const searchParams = new URLSearchParams();
+  if (params.status) searchParams.set("status", params.status);
+  if (params.page) searchParams.set("page", params.page.toString());
+  if (params.pageSize) searchParams.set("pageSize", params.pageSize.toString());
+
+  const response = await fetch(
+    `${API_BASE}/api/ordering/orders/my?${searchParams}`,
+    {
+      credentials: "include",
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch buyer orders");
+  }
+
+  return response.json();
+}
+
+export async function getAllOrders(params: {
+  status?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<OrderListDto> {
+  const searchParams = new URLSearchParams();
+  if (params.status) searchParams.set("status", params.status);
+  if (params.page) searchParams.set("page", params.page.toString());
+  if (params.pageSize) searchParams.set("pageSize", params.pageSize.toString());
+
+  const response = await fetch(
+    `${API_BASE}/api/ordering/orders?${searchParams}`,
+    {
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch orders");
+  }
+
+  return response.json();
+}
+
+export async function getOrderDashboard(
+  timeRange?: string
+): Promise<OrderDashboardDto> {
+  const searchParams = new URLSearchParams();
+  if (timeRange) searchParams.set("timeRange", timeRange);
+
+  const response = await fetch(
+    `${API_BASE}/api/ordering/dashboard?${searchParams}`,
+    {
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch order dashboard");
+  }
+
+  return response.json();
+}
+
+export async function updateOrderStatus(
+  orderId: string,
+  newStatus: string
+): Promise<void> {
+  const response = await fetch(
+    `${API_BASE}/api/ordering/orders/${orderId}/status`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ newStatus } satisfies UpdateOrderStatusRequest),
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to update order status");
+  }
+}
+
