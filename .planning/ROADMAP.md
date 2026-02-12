@@ -46,7 +46,7 @@ Plans:
 - [x] 11-04-PLAN.md -- Frontend account layout + profile page (sidebar, profile view/edit, avatar upload, hooks)
 - [x] 11-05-PLAN.md -- Frontend address book + header + cart merge wiring (address CRUD dialogs, header icon, middleware)
 
-#### Phase 12: Product Reviews & Ratings
+#### Phase 12: Product Reviews & Ratings ✅
 **Goal**: Users can submit star ratings and written reviews for purchased products with verified purchase badges, and all users can view aggregate ratings on product pages
 **Depends on**: Phase 11
 **Requirements**: REVW-01, REVW-02, REVW-03, REVW-04, REVW-05, REVW-06, REVW-07, REVW-08
@@ -56,12 +56,12 @@ Plans:
   3. User can see all reviews on product detail pages with average rating and review count
   4. User can edit or delete their own review (one review per product enforced)
   5. Review submission is blocked for products the user has not purchased
-**Plans**: 3 plans
+**Plans**: 3 plans — completed 2026-02-13
 
 Plans:
-- [ ] 12-01-PLAN.md -- Backend Reviews domain model + infrastructure (aggregate, value objects, DbContext, migration, Product rating fields)
-- [ ] 12-02-PLAN.md -- Backend Reviews CQRS + API endpoints (commands, queries, validators, endpoints, purchase verification, aggregate recalculation)
-- [ ] 12-03-PLAN.md -- Frontend review components, hooks, API + integration into product detail, product cards, order history
+- [x] 12-01-PLAN.md -- Backend Reviews domain model + infrastructure (aggregate, value objects, DbContext, migration, Product rating fields)
+- [x] 12-02-PLAN.md -- Backend Reviews CQRS + API endpoints (commands, queries, validators, endpoints, purchase verification, aggregate recalculation)
+- [x] 12-03-PLAN.md -- Frontend review components, hooks, API + integration into product detail, product cards, order history
 
 #### Phase 13: Wishlists & Saved Items
 **Goal**: Users can save products to a persistent wishlist and move items to cart
@@ -111,7 +111,7 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 9. API Gateway | v1.0 | 3/3 | Complete | 2026-02-12 |
 | 10. Testing & Polish | v1.0 | 6/6 | Complete | 2026-02-13 |
 | 11. User Profiles & Authentication Flow | v1.1 | 5/5 | Complete | 2026-02-13 |
-| 12. Product Reviews & Ratings | v1.1 | 0/TBD | Not started | - |
+| 12. Product Reviews & Ratings | v1.1 | 3/3 | Complete | 2026-02-13 |
 | 13. Wishlists & Saved Items | v1.1 | 0/TBD | Not started | - |
 | 14. Integration & Polish | v1.1 | 0/TBD | Not started | - |
 
