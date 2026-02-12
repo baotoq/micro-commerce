@@ -20,6 +20,7 @@ using MicroCommerce.ApiService.Features.Profiles;
 using MicroCommerce.ApiService.Features.Profiles.Infrastructure;
 using MicroCommerce.ApiService.Features.Reviews;
 using MicroCommerce.ApiService.Features.Reviews.Infrastructure;
+using MicroCommerce.ApiService.Features.Wishlists.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,6 +70,12 @@ builder.AddNpgsqlDbContext<ReviewsDbContext>("appdb", configureDbContextOptions:
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "reviews"));
+});
+
+builder.AddNpgsqlDbContext<WishlistsDbContext>("appdb", configureDbContextOptions: options =>
+{
+    options.UseNpgsql(npgsql =>
+        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "wishlists"));
 });
 
 // Azure Blob Storage for product images
