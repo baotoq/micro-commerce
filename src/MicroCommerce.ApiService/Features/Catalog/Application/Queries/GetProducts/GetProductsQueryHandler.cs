@@ -77,7 +77,9 @@ public sealed class GetProductsQueryHandler
                 p.CategoryId.Value,
                 p.Category!.Name.Value,
                 p.CreatedAt,
-                p.UpdatedAt))
+                p.UpdatedAt,
+                p.AverageRating,
+                p.ReviewCount))
             .ToListAsync(cancellationToken);
 
         return new ProductListDto(items, totalCount, request.Page, request.PageSize);

@@ -12,5 +12,7 @@ public sealed record ProductDto(
     Guid CategoryId,
     string CategoryName,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? UpdatedAt);
+    DateTimeOffset? UpdatedAt,
+    decimal? AverageRating,
+    int ReviewCount);
 
