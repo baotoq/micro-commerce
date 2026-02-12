@@ -10,11 +10,11 @@
 ## Current Position
 
 Phase: 10 of 10 (Testing & Polish)
-Plan: 1 of 8 in current phase
+Plan: 2 of 8 in current phase
 Status: In progress
-Last activity: 2026-02-12 - Completed 10-01-PLAN.md (Test Infrastructure and Order Domain Tests)
+Last activity: 2026-02-12 - Completed 10-05-PLAN.md (Playwright E2E Tests)
 
-Progress: ██████████████████░░ 95%
+Progress: ██████████████████░░ 96%
 
 ---
 
@@ -31,10 +31,10 @@ Progress: ██████████████████░░ 95%
 | 7 | Ordering Domain & Checkout | IN PROGRESS | 3/? |
 | 8 | Order History & Management | COMPLETE | 5/5 |
 | 9 | API Gateway | COMPLETE | 3/3 |
-| 10 | Testing & Polish | IN PROGRESS | 1/8 |
+| 10 | Testing & Polish | IN PROGRESS | 2/8 |
 
 **Phases Completed:** 6/10
-**Plans Completed (Phase 10):** 1/8
+**Plans Completed (Phase 10):** 2/8
 
 ---
 
@@ -103,6 +103,7 @@ Progress: ██████████████████░░ 95%
 ### Phase 10
 
 - [x] **10-01**: Test Infrastructure and Order Domain Tests - `c5834083`, `b10fb826`
+- [x] **10-05**: Playwright E2E Tests - `21cc2f6c`, `c17aec96`
 
 ---
 
@@ -210,6 +211,10 @@ Progress: ██████████████████░░ 95%
 | 2026-02-12 | Testcontainers.PostgreSql for integration tests | Real database testing without Docker Compose setup |
 | 2026-02-12 | Helper methods for test data creation | CreateValidOrder() and CreateOrderInStatus() reduce duplication |
 | 2026-02-12 | Trait Category=Unit for test categorization | Enable filtering unit vs integration tests |
+| 2026-02-12 | Chromium-only for local Playwright dev | Faster install (162MB vs 500MB+ all browsers), CI can install others |
+| 2026-02-12 | No webServer in Playwright config | MicroCommerce requires full Aspire stack (API, DB, Keycloak, Service Bus) |
+| 2026-02-12 | Flexible selector strategy with .or() fallbacks | Tests resilient to UI changes, won't break on class name changes |
+| 2026-02-12 | Accessibility-first E2E selectors | Prefer getByRole, getByPlaceholder over CSS classes |
 
 ---
 
@@ -226,14 +231,14 @@ Progress: ██████████████████░░ 95%
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 10-01-PLAN.md (Test Infrastructure and Order Domain Tests)
+Stopped at: Completed 10-05-PLAN.md (Playwright E2E Tests)
 Resume file: None
 
 ---
 
 ## Next Actions
 
-1. **Continue Phase 10** - Plans 10-02 through 10-08 remaining
+1. **Continue Phase 10** - Plans 10-02, 10-03, 10-04, 10-06, 10-07, 10-08 remaining
 
 ---
 *State file created: 2026-01-29*
