@@ -10,6 +10,12 @@ license: MIT
 metadata:
   author: vercel
   version: '1.0.0'
+  domain: frontend
+  triggers: React, composition patterns, compound components, render props, boolean props, component API, context provider, React composition, reusable components, component library
+  role: specialist
+  scope: implementation
+  output-format: code
+  related-skills: react-expert, vercel-react-best-practices
 ---
 
 # React Composition Patterns

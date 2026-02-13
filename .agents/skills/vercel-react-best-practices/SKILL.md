@@ -5,6 +5,12 @@ license: MIT
 metadata:
   author: vercel
   version: "1.0.0"
+  domain: frontend
+  triggers: React, React performance, Next.js optimization, bundle size, re-renders, data fetching, Suspense, server components, memoization, code splitting, waterfalls
+  role: specialist
+  scope: implementation
+  output-format: code
+  related-skills: react-expert, nextjs-developer, vercel-composition-patterns
 ---
 
 # Vercel React Best Practices
