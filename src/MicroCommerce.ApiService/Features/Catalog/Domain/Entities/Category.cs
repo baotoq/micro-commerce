@@ -13,7 +13,7 @@ namespace MicroCommerce.ApiService.Features.Catalog.Domain.Entities;
 /// </summary>
 public sealed class Category : BaseAggregateRoot<CategoryId>
 {
-    public CategoryName Name { get; private set; } = null!;
+    public CategoryName Name { get; private set; }
     public string? Description { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? UpdatedAt { get; private set; }
@@ -21,6 +21,7 @@ public sealed class Category : BaseAggregateRoot<CategoryId>
     // EF Core constructor
     private Category(CategoryId id) : base(id)
     {
+        Name = default;
     }
 
     /// <summary>

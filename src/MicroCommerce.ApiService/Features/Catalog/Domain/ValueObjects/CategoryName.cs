@@ -1,17 +1,16 @@
 using Ardalis.GuardClauses;
-using MicroCommerce.BuildingBlocks.Common;
 
 namespace MicroCommerce.ApiService.Features.Catalog.Domain.ValueObjects;
 
 /// <summary>
 /// Value object representing a category name with validation.
 /// </summary>
-public sealed class CategoryName : ValueObject
+public readonly record struct CategoryName
 {
     public const int MinLength = 2;
     public const int MaxLength = 100;
 
-    public string Value { get; }
+    public string Value { get; init; }
 
     private CategoryName(string value)
     {
@@ -25,11 +24,6 @@ public sealed class CategoryName : ValueObject
         Guard.Against.LengthOutOfRange(trimmed, MinLength, MaxLength, nameof(value));
 
         return new CategoryName(trimmed);
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
     }
 
     public override string ToString() => Value;

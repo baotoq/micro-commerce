@@ -1,8 +1,6 @@
-using MicroCommerce.BuildingBlocks.Common;
-
 namespace MicroCommerce.ApiService.Features.Profiles.Domain.ValueObjects;
 
-public sealed class Address : ValueObject
+public sealed class Address
 {
     public AddressId Id { get; private set; }
     public string Name { get; private set; }
@@ -59,14 +57,5 @@ public sealed class Address : ValueObject
     internal void ClearDefault()
     {
         IsDefault = false;
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Street;
-        yield return City;
-        yield return State;
-        yield return ZipCode;
-        yield return Country;
     }
 }

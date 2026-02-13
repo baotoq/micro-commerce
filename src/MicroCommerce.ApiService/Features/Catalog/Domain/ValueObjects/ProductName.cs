@@ -1,17 +1,16 @@
 using Ardalis.GuardClauses;
-using MicroCommerce.BuildingBlocks.Common;
 
 namespace MicroCommerce.ApiService.Features.Catalog.Domain.ValueObjects;
 
 /// <summary>
 /// Value object representing a product name with validation.
 /// </summary>
-public sealed class ProductName : ValueObject
+public readonly record struct ProductName
 {
     public const int MinLength = 2;
     public const int MaxLength = 200;
 
-    public string Value { get; }
+    public string Value { get; init; }
 
     private ProductName(string value)
     {
@@ -27,14 +26,8 @@ public sealed class ProductName : ValueObject
         return new ProductName(trimmed);
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
-    }
-
     public override string ToString() => Value;
 
     // Implicit conversion for convenience
     public static implicit operator string(ProductName name) => name.Value;
 }
-
