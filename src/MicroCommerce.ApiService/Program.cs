@@ -18,6 +18,7 @@ using MicroCommerce.ApiService.Features.Ordering.Application.Saga;
 using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
 using MicroCommerce.ApiService.Features.Profiles;
 using MicroCommerce.ApiService.Features.Profiles.Infrastructure;
+using MicroCommerce.ApiService.Features.Reviews.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,6 +62,12 @@ builder.AddNpgsqlDbContext<ProfilesDbContext>("appdb", configureDbContextOptions
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "profiles"));
+});
+
+builder.AddNpgsqlDbContext<ReviewsDbContext>("appdb", configureDbContextOptions: options =>
+{
+    options.UseNpgsql(npgsql =>
+        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "reviews"));
 });
 
 // Azure Blob Storage for product images
