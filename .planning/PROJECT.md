@@ -33,7 +33,14 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 
 ### Active
 
-(No active requirements — start next milestone with `/gsd:new-milestone`)
+#### Current Milestone: v1.1 User Features
+
+**Goal:** Add authenticated user experiences — profiles, verified purchase reviews, and wishlists — building on the existing Keycloak auth foundation.
+
+**Target features:**
+- User accounts & profiles (display name, avatar, saved addresses, linked orders/cart/history)
+- Product reviews & ratings (verified purchase only, star ratings + text)
+- Wishlists (single list per user, add/remove, move to cart)
 
 ### Out of Scope
 
@@ -90,4 +97,4 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 | Testcontainers for integration tests | Real database testing without Docker Compose | ✓ Good — catches real SQL/EF issues |
 
 ---
-*Last updated: 2026-02-13 after v1.0 milestone*
+*Last updated: 2026-02-13 after v1.1 milestone start*
