@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 13 of 14 (Wishlists & Saved Items)
-Plan: Ready to plan
-Status: Ready to plan
-Last activity: 2026-02-13 — Phase 12 verified and complete
+Plan: 2 of 3
+Status: In progress
+Last activity: 2026-02-13 — Completed plan 13-01
 
-Progress: [██████████░░░░] 81% (56/69 total plans across v1.0+v1.1)
+Progress: [██████████░░░░] 82% (57/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -60,6 +60,12 @@ Progress: [██████████░░░░] 81% (56/69 total plans ac
 | 12-02 | 3 min | 2 | 13 |
 | 12-03 | 3 min | 2 | 11 |
 
+**v1.1 Phase 13 Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| 13-01 | 2 min | 2 | 8 |
+
 ## Accumulated Context
 
 ### Decisions
@@ -87,6 +93,9 @@ Recent decisions affecting current work:
 - [Phase 12-03]: Compact list layout for reviews (no bordered cards, minimal dividers)
 - [Phase 12-03]: Modal dialog form for both creating and editing reviews
 - [Phase 12-03]: Load more button accumulates reviews across pages for seamless browsing
+- [Phase 13-01]: WishlistItem is a simple entity (not aggregate root) with no domain events
+- [Phase 13-01]: Composite unique index on (UserId, ProductId) enforces single entry per user-product pair
+- [Phase 13-01]: Three indexes: composite unique, UserId for listing, AddedAt descending for chronological sort
 
 ### Pending Todos
 
@@ -99,6 +108,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Phase 12 verified and marked complete in ROADMAP.md
+Stopped at: Completed plan 13-01 (Wishlists Domain Model & Database Infrastructure)
 Resume file: None
-Next step: /gsd:plan-phase 13
+Next step: Execute plan 13-02 (Wishlists CQRS handlers)
