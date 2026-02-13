@@ -80,7 +80,7 @@ Plans:
 - [x] 13-02-PLAN.md -- Backend Wishlists CQRS + API endpoints (add/remove commands, wishlist/count/product-ids queries, 5 endpoints)
 - [x] 13-03-PLAN.md -- Frontend wishlist components, hooks, API + integration into header, product cards, product detail, account sidebar
 
-#### Phase 14: Integration & Polish
+#### Phase 14: Integration & Polish ✅
 **Goal**: All user features work cohesively with seamless navigation and E2E testing coverage
 **Depends on**: Phase 13
 **Requirements**: None (enables all v1.1 features)
@@ -89,12 +89,12 @@ Plans:
   2. User can access wishlist from product cards, product pages, and account navigation
   3. E2E tests cover guest flow, authenticated flow, and guest-to-auth migration scenarios
   4. UI is visually cohesive across profile, reviews, and wishlist features
-**Plans**: 3 plans
+**Plans**: 3 plans — completed 2026-02-14
 
 Plans:
-- [ ] 14-01-PLAN.md -- Consolidate order review links into single "Review Products" page
-- [ ] 14-02-PLAN.md -- Visual consistency and polish across account pages and wishlist
-- [ ] 14-03-PLAN.md -- E2E tests for v1.1 user features (guest, authenticated, navigation)
+- [x] 14-01-PLAN.md -- Consolidate order review links into single "Review Products" page
+- [x] 14-02-PLAN.md -- Visual consistency and polish across account pages and wishlist
+- [x] 14-03-PLAN.md -- E2E tests for v1.1 user features (guest, authenticated, navigation)
 
 ## Progress
 
@@ -116,9 +116,18 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 11. User Profiles & Authentication Flow | v1.1 | 5/5 | Complete | 2026-02-13 |
 | 12. Product Reviews & Ratings | v1.1 | 3/3 | Complete | 2026-02-13 |
 | 13. Wishlists & Saved Items | v1.1 | 3/3 | Complete | 2026-02-13 |
-| 14. Integration & Polish | v1.1 | 0/3 | Planned | - |
+| 14. Integration & Polish | v1.1 | 3/3 | Complete | 2026-02-14 |
 
 ---
 *Roadmap created: 2026-01-29*
 *v1.0 shipped: 2026-02-13*
 *v1.1 started: 2026-02-13*
+
+### Phase 14.1: Check DDD approach correctness (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Depends on:** Phase 14
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 14.1 to break down)
