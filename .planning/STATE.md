@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 13 of 14 (Wishlists & Saved Items)
-Plan: 2 of 3
+Plan: 3 of 3
 Status: In progress
-Last activity: 2026-02-13 — Completed plan 13-01
+Last activity: 2026-02-13 — Completed plan 13-02
 
-Progress: [██████████░░░░] 82% (57/69 total plans across v1.0+v1.1)
+Progress: [██████████░░░░] 84% (58/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Progress: [██████████░░░░] 82% (57/69 total plans ac
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | 13-01 | 2 min | 2 | 8 |
+| 13-02 | 3 min | 2 | 7 |
 
 ## Accumulated Context
 
@@ -96,6 +97,9 @@ Recent decisions affecting current work:
 - [Phase 13-01]: WishlistItem is a simple entity (not aggregate root) with no domain events
 - [Phase 13-01]: Composite unique index on (UserId, ProductId) enforces single entry per user-product pair
 - [Phase 13-01]: Three indexes: composite unique, UserId for listing, AddedAt descending for chronological sort
+- [Phase 13-02]: Idempotent commands - AddToWishlist returns existing ID if already in wishlist, RemoveFromWishlist silently succeeds if not found
+- [Phase 13-02]: Cross-context batch queries in GetUserWishlistQuery prevent N+1 (batch-loads from CatalogDbContext and InventoryDbContext)
+- [Phase 13-02]: GetWishlistProductIdsQuery returns just product IDs for efficient heart icon state checking
 
 ### Pending Todos
 
@@ -108,6 +112,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed plan 13-01 (Wishlists Domain Model & Database Infrastructure)
+Stopped at: Completed plan 13-02 (Wishlists CQRS Handlers & REST API)
 Resume file: None
-Next step: Execute plan 13-02 (Wishlists CQRS handlers)
+Next step: Execute plan 13-03 (Wishlists Frontend Integration)
