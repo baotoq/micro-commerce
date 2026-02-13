@@ -1,7 +1,15 @@
 ---
 name: dotnet-aspire
 description: Adds .NET Aspire cloud-native orchestration to existing .NET solutions. Analyzes solution structure to identify services (APIs, web apps, workers), creates AppHost and ServiceDefaults projects, configures service discovery, adds NuGet packages, and sets up distributed application orchestration. Use when adding Aspire to .NET solutions or creating new cloud-ready distributed applications.
-version: 2.0
+license: MIT
+metadata:
+  version: "2.0"
+  domain: infrastructure
+  triggers: Aspire, .NET Aspire, AppHost, ServiceDefaults, service discovery, cloud-native, distributed application, orchestration, telemetry, observability
+  role: specialist
+  scope: implementation
+  output-format: code
+  related-skills: dotnet-core-expert, microservices-architect, kubernetes-specialist
 ---
 
 # .NET Aspire Integration Skill
