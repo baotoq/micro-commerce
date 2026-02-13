@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 11 of 14 (User Profiles & Authentication Flow)
-Plan: Ready to plan
-Status: Ready to plan
-Last activity: 2026-02-13 — v1.1 milestone started, roadmap created
+Plan: 2 of 5 complete
+Status: Executing
+Last activity: 2026-02-13 — Completed 11-02 cart merge plan
 
-Progress: [██████████░░░░] 71% (49/69 total plans across v1.0+v1.1)
+Progress: [██████████░░░░] 72% (50/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -43,6 +43,8 @@ Progress: [██████████░░░░] 71% (49/69 total plans ac
 - Trend: Stable execution pattern established
 
 *Note: v1.1 metrics will be tracked starting with Phase 11*
+| Phase 11 P02 | 2 | 2 tasks | 7 files |
+| Phase 11 P04 | 3 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -54,6 +56,10 @@ Recent decisions affecting current work:
 - Database-per-feature isolation: v1.1 will add 3 new DbContexts (Profiles, Reviews, Wishlists)
 - Guest checkout: Migration from guest to authenticated users is critical for Phase 11
 - Keycloak authentication: Foundation established, v1.1 extends with profile attributes
+- [Phase 11]: Profile form uses view/edit toggle pattern (not inline editing)
+- [Phase 11]: Security section links to Keycloak (no custom password form)
+- [Phase 11 P02]: Server-side cookie reading for cart merge (HttpOnly buyer_id cookie)
+- [Phase 11 P02]: isNewLogin session flag triggers merge from UI (Plan 04 integration)
 
 ### Pending Todos
 
@@ -66,6 +72,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Roadmap created for v1.1 User Features milestone
+Stopped at: Completed Phase 11 Plan 02 (cart merge)
 Resume file: None
-Next step: /gsd:plan-phase 11
+Next step: Continue Phase 11 execution
