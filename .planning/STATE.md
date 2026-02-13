@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 
 Phase: 13 of 14 (Wishlists & Saved Items)
 Plan: 3 of 3
-Status: In progress
-Last activity: 2026-02-13 — Completed plan 13-02
+Status: Complete
+Last activity: 2026-02-13 — Completed plan 13-03
 
-Progress: [██████████░░░░] 84% (58/69 total plans across v1.0+v1.1)
+Progress: [██████████░░░░] 86% (59/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Progress: [██████████░░░░] 84% (58/69 total plans ac
 |------|----------|-------|-------|
 | 13-01 | 2 min | 2 | 8 |
 | 13-02 | 3 min | 2 | 7 |
+| 13-03 | 3 min | 2 | 11 |
 
 ## Accumulated Context
 
@@ -100,6 +101,10 @@ Recent decisions affecting current work:
 - [Phase 13-02]: Idempotent commands - AddToWishlist returns existing ID if already in wishlist, RemoveFromWishlist silently succeeds if not found
 - [Phase 13-02]: Cross-context batch queries in GetUserWishlistQuery prevent N+1 (batch-loads from CatalogDbContext and InventoryDbContext)
 - [Phase 13-02]: GetWishlistProductIdsQuery returns just product IDs for efficient heart icon state checking
+- [Phase 13-03]: Set-based membership checking - useWishlistProductIds returns Set<string> for O(1) lookup when checking if product is in wishlist
+- [Phase 13-03]: Optimistic UI with rollback - heart icon toggles immediately with cache updates, rollback on error for instant feedback
+- [Phase 13-03]: Heart icon positioning - top-left on product cards (stock badge at top-right), next to product name on detail page
+- [Phase 13-03]: Guest redirect to login - clicking heart when not authenticated redirects via signIn('keycloak')
 
 ### Pending Todos
 
@@ -112,6 +117,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed plan 13-02 (Wishlists CQRS Handlers & REST API)
+Stopped at: Completed plan 13-03 (Wishlists Frontend Integration) - Phase 13 complete
 Resume file: None
-Next step: Execute plan 13-03 (Wishlists Frontend Integration)
+Next step: Execute Phase 14 (Admin Dashboard & Analytics)
