@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RelatedProducts } from "@/components/storefront/related-products";
+import { ReviewList } from "@/components/reviews/review-list";
+import { StarRatingDisplay } from "@/components/reviews/star-rating-display";
 import { useAddToCart } from "@/hooks/use-cart";
 import { getProductById, getStockByProductId, type ProductDto, type StockInfoDto } from "@/lib/api";
 
@@ -189,6 +191,20 @@ export function ProductDetail({ productId }: ProductDetailProps) {
             {product.name}
           </h1>
 
+          {product.reviewCount > 0 && product.averageRating !== null ? (
+            <div className="mt-3">
+              <StarRatingDisplay
+                rating={product.averageRating}
+                count={product.reviewCount}
+                showCount
+              />
+            </div>
+          ) : (
+            <div className="mt-3">
+              <span className="text-sm text-zinc-500">No reviews yet</span>
+            </div>
+          )}
+
           <p className="mt-4 text-2xl font-semibold text-zinc-900">
             {formatPrice(product.price, product.priceCurrency)}
           </p>
@@ -254,6 +270,18 @@ export function ProductDetail({ productId }: ProductDetailProps) {
         categoryName={product.categoryName}
         currentProductId={product.id}
       />
+
+      {/* Customer Reviews */}
+      <Separator className="my-16" />
+
+      <div id="reviews">
+        <h2 className="text-xl font-semibold text-zinc-900 mb-6">Customer Reviews</h2>
+        <ReviewList
+          productId={product.id}
+          averageRating={product.averageRating}
+          reviewCount={product.reviewCount}
+        />
+      </div>
     </div>
   );
 }
