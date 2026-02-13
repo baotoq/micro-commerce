@@ -27,8 +27,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMaxLength(200)
             .IsRequired();
 
-        // Money value object (owned entity)
-        builder.OwnsOne(p => p.Price, priceBuilder =>
+        // Money value object (complex property)
+        builder.ComplexProperty(p => p.Price, priceBuilder =>
         {
             priceBuilder.Property(m => m.Amount)
                 .HasColumnName("Price")

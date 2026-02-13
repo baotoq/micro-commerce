@@ -16,7 +16,7 @@ public sealed class Product : BaseAggregateRoot<ProductId>
 {
     public ProductName Name { get; private set; }
     public string Description { get; private set; } = null!;
-    public Money Price { get; private set; } = null!;
+    public Money Price { get; private set; }
     public string? ImageUrl { get; private set; }
     public string? Sku { get; private set; }
     public ProductStatus Status { get; private set; }
