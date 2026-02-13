@@ -25,6 +25,10 @@ public sealed class Product : BaseAggregateRoot<ProductId>
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? UpdatedAt { get; private set; }
 
+    // Review statistics (denormalized)
+    public decimal? AverageRating { get; private set; }
+    public int ReviewCount { get; private set; }
+
     // EF Core constructor
     private Product(ProductId id) : base(id)
     {
@@ -121,6 +125,16 @@ public sealed class Product : BaseAggregateRoot<ProductId>
         UpdatedAt = DateTimeOffset.UtcNow;
 
         AddDomainEvent(new ProductArchivedDomainEvent(Id));
+    }
+
+    /// <summary>
+    /// Updates the denormalized review statistics.
+    /// Called by review event handlers.
+    /// </summary>
+    public void UpdateReviewStats(decimal? averageRating, int reviewCount)
+    {
+        AverageRating = averageRating;
+        ReviewCount = reviewCount;
     }
 }
 

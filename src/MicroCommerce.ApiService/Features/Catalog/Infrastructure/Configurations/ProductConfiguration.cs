@@ -72,6 +72,13 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.Property(p => p.CreatedAt).IsRequired();
 
+        // Review statistics
+        builder.Property(p => p.AverageRating)
+            .HasPrecision(3, 2);  // e.g., 4.25
+
+        builder.Property(p => p.ReviewCount)
+            .HasDefaultValue(0);
+
         // Indexes
         builder.HasIndex(p => p.CategoryId);
         builder.HasIndex(p => p.Status);
