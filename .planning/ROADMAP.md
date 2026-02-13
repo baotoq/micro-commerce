@@ -73,11 +73,12 @@ Plans:
   3. User can move wishlist items to cart with proper stock validation
   4. Product cards display heart icon indicator when product is in wishlist
   5. Wishlist persists across sessions and devices
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 13-01: TBD
-- [ ] 13-02: TBD
+- [ ] 13-01-PLAN.md -- Backend Wishlists domain model + infrastructure (WishlistItem entity, WishlistsDbContext, migration, registration)
+- [ ] 13-02-PLAN.md -- Backend Wishlists CQRS + API endpoints (add/remove commands, wishlist/count/product-ids queries, 5 endpoints)
+- [ ] 13-03-PLAN.md -- Frontend wishlist components, hooks, API + integration into header, product cards, product detail, account sidebar
 
 #### Phase 14: Integration & Polish
 **Goal**: All user features work cohesively with seamless navigation and E2E testing coverage
@@ -112,7 +113,7 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 10. Testing & Polish | v1.0 | 6/6 | Complete | 2026-02-13 |
 | 11. User Profiles & Authentication Flow | v1.1 | 5/5 | Complete | 2026-02-13 |
 | 12. Product Reviews & Ratings | v1.1 | 3/3 | Complete | 2026-02-13 |
-| 13. Wishlists & Saved Items | v1.1 | 0/TBD | Not started | - |
+| 13. Wishlists & Saved Items | v1.1 | 0/3 | Planned | - |
 | 14. Integration & Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
