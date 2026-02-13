@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StarRatingDisplay } from "@/components/reviews/star-rating-display";
+import { WishlistToggleButton } from "@/components/wishlist/wishlist-toggle-button";
 import type { ProductDto, StockInfoDto } from "@/lib/api";
 
 interface ProductCardProps {
@@ -81,6 +82,11 @@ export function ProductCard({ product, stockInfo }: ProductCardProps) {
               </span>
             </div>
           )}
+
+          {/* Wishlist heart - top left of image */}
+          <div className="absolute left-2 top-2 z-10">
+            <WishlistToggleButton productId={product.id} />
+          </div>
 
           {/* Stock badge - top right of image */}
           {stockInfo && (
