@@ -22,11 +22,11 @@ export function AddressCard({ address }: AddressCardProps) {
   };
 
   return (
-    <Card>
+    <Card className="rounded-xl border-zinc-200">
       <CardContent className="pt-6">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">{address.name}</h3>
+            <h3 className="font-semibold text-zinc-900">{address.name}</h3>
             {address.isDefault && (
               <div className="flex items-center gap-1 text-sm text-amber-600">
                 <Star className="h-3.5 w-3.5 fill-amber-600" />
@@ -34,7 +34,7 @@ export function AddressCard({ address }: AddressCardProps) {
               </div>
             )}
           </div>
-          <div className="text-sm text-zinc-600">
+          <div className="text-sm text-zinc-500">
             <p>{address.street}</p>
             <p>
               {address.city}, {address.state} {address.zipCode}

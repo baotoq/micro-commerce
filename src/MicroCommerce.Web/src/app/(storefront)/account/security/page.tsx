@@ -13,7 +13,10 @@ export default function SecurityPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">Security</h2>
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Security</h2>
+        <p className="mt-1 text-sm text-zinc-500">Manage your password and security settings</p>
+      </div>
 
       <Card>
         <CardHeader>
@@ -27,7 +30,7 @@ export default function SecurityPage() {
             You can change your password, enable two-factor authentication, and manage
             your active sessions through the Keycloak account management console.
           </p>
-          <Button asChild>
+          <Button asChild className="rounded-full">
             <a
               href={keycloakAccountUrl}
               target="_blank"
