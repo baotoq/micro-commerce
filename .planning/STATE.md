@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 11 of 14 (User Profiles & Authentication Flow)
-Plan: 2 of 5 complete
+Plan: 3 of 5 complete (01, 02, 04 done)
 Status: Executing
-Last activity: 2026-02-13 — Completed 11-02 cart merge plan
+Last activity: 2026-02-13 — Completed 11-04 My Account Frontend Layout
 
 Progress: [██████████░░░░] 72% (50/69 total plans across v1.0+v1.1)
 
@@ -45,6 +45,7 @@ Progress: [██████████░░░░] 72% (50/69 total plans ac
 *Note: v1.1 metrics will be tracked starting with Phase 11*
 | Phase 11 P02 | 2 | 2 tasks | 7 files |
 | Phase 11 P04 | 3 | 2 tasks | 12 files |
+| Phase 11 P01 | 4 | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -60,6 +61,7 @@ Recent decisions affecting current work:
 - [Phase 11]: Security section links to Keycloak (no custom password form)
 - [Phase 11 P02]: Server-side cookie reading for cart merge (HttpOnly buyer_id cookie)
 - [Phase 11 P02]: isNewLogin session flag triggers merge from UI (Plan 04 integration)
+- [Phase 11]: ImageSharp 3.1.6 for avatar processing with crop-to-square and 400x400 resize
 
 ### Pending Todos
 
@@ -72,6 +74,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed Phase 11 Plan 02 (cart merge)
+Stopped at: Completed 11-04-PLAN.md
 Resume file: None
 Next step: Continue Phase 11 execution
