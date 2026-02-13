@@ -928,6 +928,20 @@ export async function setDefaultAddress(addressId: string, accessToken?: string)
   }
 }
 
+// Wishlist types
+export interface WishlistItemDto {
+  id: string;
+  productId: string;
+  productName: string;
+  price: number;
+  currency: string;
+  imageUrl: string | null;
+  averageRating: number | null;
+  reviewCount: number;
+  availableQuantity: number;
+  addedAt: string;
+}
+
 // Review types
 export interface ReviewDto {
   id: string;
@@ -1074,6 +1088,81 @@ export async function deleteReview(reviewId: string, token?: string): Promise<vo
 
   if (!response.ok) {
     throw new Error("Failed to delete review");
+  }
+}
+
+// Wishlist API functions
+export async function getUserWishlist(token: string): Promise<WishlistItemDto[]> {
+  const response = await fetch(`${API_BASE}/api/wishlist`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch wishlist");
+  }
+
+  return response.json();
+}
+
+export async function getWishlistCount(token: string): Promise<number> {
+  const response = await fetch(`${API_BASE}/api/wishlist/count`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch wishlist count");
+  }
+
+  return response.json();
+}
+
+export async function getWishlistProductIds(token: string): Promise<string[]> {
+  const response = await fetch(`${API_BASE}/api/wishlist/product-ids`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch wishlist product IDs");
+  }
+
+  return response.json();
+}
+
+export async function addToWishlist(token: string, productId: string): Promise<{ id: string }> {
+  const response = await fetch(`${API_BASE}/api/wishlist/${productId}`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to add to wishlist");
+  }
+
+  return response.json();
+}
+
+export async function removeFromWishlist(token: string, productId: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/wishlist/${productId}`, {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to remove from wishlist");
   }
 }
 
