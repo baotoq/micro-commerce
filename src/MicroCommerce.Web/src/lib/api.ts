@@ -12,6 +12,8 @@ export interface ProductDto {
   status: 'Draft' | 'Published' | 'Archived';
   categoryId: string;
   categoryName: string;
+  averageRating: number | null;
+  reviewCount: number;
   createdAt: string;
   updatedAt: string | null;
 }
@@ -923,6 +925,155 @@ export async function setDefaultAddress(addressId: string, accessToken?: string)
 
   if (!response.ok) {
     throw new Error("Failed to set default address");
+  }
+}
+
+// Review types
+export interface ReviewDto {
+  id: string;
+  userId: string;
+  displayName: string;
+  rating: number;
+  text: string;
+  createdAt: string;
+  isVerifiedPurchase: boolean;
+}
+
+export interface ReviewListDto {
+  items: ReviewDto[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface CanReviewDto {
+  hasPurchased: boolean;
+  hasReviewed: boolean;
+}
+
+export interface CreateReviewRequest {
+  rating: number;
+  text: string;
+}
+
+export interface UpdateReviewRequest {
+  rating: number;
+  text: string;
+}
+
+// Review API functions
+export async function getProductReviews(productId: string, page = 1, pageSize = 5): Promise<ReviewListDto> {
+  const searchParams = new URLSearchParams();
+  searchParams.set("page", page.toString());
+  searchParams.set("pageSize", pageSize.toString());
+
+  const response = await fetch(`${API_BASE}/api/reviews/products/${productId}?${searchParams}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch reviews");
+  }
+
+  return response.json();
+}
+
+export async function getMyReview(productId: string, token?: string): Promise<ReviewDto | null> {
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/reviews/products/${productId}/mine`, {
+    credentials: "include",
+    cache: "no-store",
+    headers,
+  });
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch my review");
+  }
+
+  return response.json();
+}
+
+export async function canReview(productId: string, token?: string): Promise<CanReviewDto> {
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/reviews/products/${productId}/can-review`, {
+    credentials: "include",
+    cache: "no-store",
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to check review eligibility");
+  }
+
+  return response.json();
+}
+
+export async function createReview(productId: string, data: CreateReviewRequest, token?: string): Promise<{ id: string }> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/reviews/products/${productId}`, {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to create review");
+  }
+
+  return response.json();
+}
+
+export async function updateReview(reviewId: string, data: UpdateReviewRequest, token?: string): Promise<void> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/reviews/${reviewId}`, {
+    method: "PUT",
+    headers,
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to update review");
+  }
+}
+
+export async function deleteReview(reviewId: string, token?: string): Promise<void> {
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE}/api/reviews/${reviewId}`, {
+    method: "DELETE",
+    headers,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete review");
   }
 }
 
