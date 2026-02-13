@@ -36,7 +36,9 @@ public sealed class GetProductByIdQueryHandler
                 p.CategoryId.Value,
                 p.Category!.Name.Value,
                 p.CreatedAt,
-                p.UpdatedAt))
+                p.UpdatedAt,
+                p.AverageRating,
+                p.ReviewCount))
             .FirstOrDefaultAsync(cancellationToken);
 
         return product;
