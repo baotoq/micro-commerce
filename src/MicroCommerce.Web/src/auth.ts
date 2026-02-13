@@ -17,12 +17,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.idToken = account.id_token;
         token.refreshToken = account.refresh_token;
         token.expiresAt = account.expires_at;
+        token.isNewLogin = true;  // Flag for cart merge
+      } else {
+        token.isNewLogin = false;
       }
       return token;
     },
     async session({ session, token }) {
       // Send access token to the client for API calls
       session.accessToken = token.accessToken as string;
+      session.isNewLogin = token.isNewLogin as boolean;
       return session;
     },
   },

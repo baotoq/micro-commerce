@@ -3,6 +3,7 @@ import "next-auth";
 declare module "next-auth" {
   interface Session {
     accessToken?: string;
+    isNewLogin?: boolean;
   }
 }
 
@@ -12,6 +13,7 @@ declare module "next-auth/jwt" {
     idToken?: string;
     refreshToken?: string;
     expiresAt?: number;
+    isNewLogin?: boolean;
   }
 }
 

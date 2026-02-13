@@ -414,6 +414,20 @@ export async function removeCartItem(itemId: string): Promise<void> {
   }
 }
 
+export async function mergeCart(accessToken: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/cart/merge`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+    },
+    credentials: "include",  // Send cookies (buyer_id)
+  });
+
+  if (!response.ok) {
+    console.error("Failed to merge cart:", response.status);
+  }
+}
+
 // Dead Letter Queue types
 export interface DeadLetterMessageDto {
   sequenceNumber: number;
