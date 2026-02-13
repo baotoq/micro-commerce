@@ -125,12 +125,14 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 
 ### Phase 14.2: Evaluate ValueObject base class vs record struct refactoring (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
+**Goal:** Migrate all value objects from the abstract ValueObject base class to C# readonly record structs, fix the Address DDD violation (entity masquerading as value object), and deprecate the ValueObject base class
 **Depends on:** Phase 14
-**Plans:** 0 plans
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 14.2 to break down)
+- [ ] 14.2-01-PLAN.md -- Fix Address DDD violation (promote to entity) + migrate DisplayName to readonly record struct
+- [ ] 14.2-02-PLAN.md -- Migrate Catalog value objects (ProductName, CategoryName, Money) to readonly record structs
+- [ ] 14.2-03-PLAN.md -- Migrate Quantity to readonly record struct + deprecate ValueObject base class + final verification
 
 ### Phase 14.1: Check DDD approach correctness (INSERTED) ✅
 
