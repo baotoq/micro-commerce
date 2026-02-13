@@ -89,10 +89,12 @@ Plans:
   2. User can access wishlist from product cards, product pages, and account navigation
   3. E2E tests cover guest flow, authenticated flow, and guest-to-auth migration scenarios
   4. UI is visually cohesive across profile, reviews, and wishlist features
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 14-01: TBD
+- [ ] 14-01-PLAN.md -- Consolidate order review links into single "Review Products" page
+- [ ] 14-02-PLAN.md -- Visual consistency and polish across account pages and wishlist
+- [ ] 14-03-PLAN.md -- E2E tests for v1.1 user features (guest, authenticated, navigation)
 
 ## Progress
 
@@ -114,7 +116,7 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 11. User Profiles & Authentication Flow | v1.1 | 5/5 | Complete | 2026-02-13 |
 | 12. Product Reviews & Ratings | v1.1 | 3/3 | Complete | 2026-02-13 |
 | 13. Wishlists & Saved Items | v1.1 | 3/3 | Complete | 2026-02-13 |
-| 14. Integration & Polish | v1.1 | 0/TBD | Not started | - |
+| 14. Integration & Polish | v1.1 | 0/3 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-29*
