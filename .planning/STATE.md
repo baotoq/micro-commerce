@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 14 of 14 (Integration & Polish)
-Plan: 2 of 3 completed
-Status: In progress
-Last activity: 2026-02-14 — Completed 14-02-PLAN.md
+Plan: 3 of 3 completed
+Status: Complete
+Last activity: 2026-02-14 — Completed 14-03-PLAN.md (E2E Tests for User Features)
 
-Progress: [████████████░░] 88% (61/69 total plans across v1.0+v1.1)
+Progress: [█████████████░] 90% (62/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -74,6 +74,7 @@ Progress: [████████████░░] 88% (61/69 total plans ac
 |------|----------|-------|-------|
 | 14-01 | 2 min | 2 | 3 |
 | 14-02 | 3 min | 2 | 8 |
+| 14-03 | 1 min | 1 | 1 |
 
 ## Accumulated Context
 
@@ -117,6 +118,10 @@ Recent decisions affecting current work:
 - [Phase 14-02]: Content-matching skeleton screens instead of generic spinners - shows structure of loading content for better UX
 - [Phase 14-02]: Standard empty state pattern - icon (size-12, text-zinc-300) + heading + message + CTA button (rounded-full, size lg)
 - [Phase 14-02]: Vercel/Linear aesthetic - rounded-full buttons, rounded-xl cards, border-zinc-200, clean spacing for modern polish
+- [Phase 14-03]: Flexible selectors pattern - getByRole, getByText, aria-label matching for resilient E2E tests
+- [Phase 14-03]: Soft assertions for data-dependent tests - reviews/wishlists may not exist, use soft checks to avoid false failures
+- [Phase 14-03]: Auth complexity in E2E - verify page structure and navigation rather than full Keycloak auth flows
+- [Phase 14-03]: 10-second timeout for initial loads - Aspire stack may be slow to respond
 
 ### Roadmap Evolution
 
@@ -133,6 +138,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: Completed 14-02-PLAN.md (UI Polish & Visual Consistency)
+Stopped at: Completed 14-03-PLAN.md (E2E Tests for User Features)
 Resume file: None
-Next step: Continue to 14-03-PLAN.md
+Next step: Phase 14 complete - all v1.1 integration and polish plans executed successfully
