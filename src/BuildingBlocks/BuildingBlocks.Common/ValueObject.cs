@@ -8,6 +8,7 @@ namespace MicroCommerce.BuildingBlocks.Common;
 /// See: https://enterprisecraftsmanship.com/posts/value-object-better-implementation/
 /// </summary>
 [Serializable]
+[Obsolete("Use 'readonly record struct' for simple value objects or 'record class' for value objects requiring custom equality. See 14.2-RESEARCH.md for migration patterns.")]
 public abstract class ValueObject : IComparable, IComparable<ValueObject>
 {
   private int? _cachedHashCode;
