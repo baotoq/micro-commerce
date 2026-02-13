@@ -1,17 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, Menu, X, ClipboardList } from 'lucide-react';
+import { ShoppingCart, Menu, X, ClipboardList, User } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
+import { useSession, signIn } from 'next-auth/react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useCartItemCount } from '@/hooks/use-cart';
 import { SearchBar } from './search-bar';
+import { mergeCart } from '@/lib/api';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: cartCount = 0 } = useCartItemCount();
   const [bounce, setBounce] = useState(false);
   const prevCount = useRef(cartCount);
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
+  const hasMerged = useRef(false);
 
   useEffect(() => {
     if (cartCount !== prevCount.current && cartCount > 0) {
@@ -22,6 +28,16 @@ export function Header() {
     }
     prevCount.current = cartCount;
   }, [cartCount]);
+
+  useEffect(() => {
+    if (session?.isNewLogin && session?.accessToken && !hasMerged.current) {
+      hasMerged.current = true;
+      mergeCart(session.accessToken).then(() => {
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+        queryClient.invalidateQueries({ queryKey: ["cartItemCount"] });
+      });
+    }
+  }, [session, queryClient]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/80 backdrop-blur-xl">
@@ -42,6 +58,23 @@ export function Header() {
 
         {/* Right: Icons */}
         <div className="flex shrink-0 items-center gap-4">
+          {session ? (
+            <Link
+              href="/account"
+              className="hidden text-zinc-500 transition-colors hover:text-zinc-900 sm:block"
+              aria-label="My account"
+            >
+              <User className="h-4 w-4" />
+            </Link>
+          ) : (
+            <button
+              onClick={() => signIn("keycloak")}
+              className="hidden text-zinc-500 transition-colors hover:text-zinc-900 sm:block"
+              aria-label="Sign in"
+            >
+              <User className="h-4 w-4" />
+            </button>
+          )}
           <Link
             href="/orders"
             className="hidden text-zinc-500 transition-colors hover:text-zinc-900 sm:block"
@@ -88,6 +121,25 @@ export function Header() {
             >
               Products
             </Link>
+            {session ? (
+              <Link
+                href="/account"
+                className="block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Account
+              </Link>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  signIn("keycloak");
+                }}
+                className="block w-full text-left text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+              >
+                Sign In
+              </button>
+            )}
             <Link
               href="/orders"
               className="block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
