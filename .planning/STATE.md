@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 
 ## Current Position
 
-Phase: 14.1 of 14.1 (Check DDD Approach Correctness)
-Plan: 2 of 2 completed
-Status: Complete
-Last activity: 2026-02-14 — Completed 14.1-02-PLAN.md (DDD Tactical Patterns Audit - Remaining Modules and Cross-Cutting Analysis)
+Phase: 14.2 of 14.2 (Evaluate ValueObject Base Class vs Record Struct Refactoring)
+Plan: 1 of 3 completed
+Status: In Progress
+Last activity: 2026-02-14 — Completed 14.2-01-PLAN.md (Fix Address DDD Violation and Migrate DisplayName)
 
-Progress: [█████████████░] 93% (64/69 total plans across v1.0+v1.1)
+Progress: [█████████████░] 94% (65/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -82,7 +82,12 @@ Progress: [█████████████░] 93% (64/69 total plans ac
 |------|----------|-------|-------|
 | 14.1-01 | 2 min | 2 | 1 |
 | 14.1-02 | 6 min | 2 | 2 |
-| Phase 14.1 P02 | 6 | 2 tasks | 2 files |
+
+**v1.1 Phase 14.2 Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| 14.2-01 | 3 min | 2 | 4 |
 
 ## Accumulated Context
 
@@ -138,11 +143,16 @@ Recent decisions affecting current work:
 - [Phase 14.1-02]: CQRS command return pattern inconsistent across modules (AddToCartResult, UpdateProduct bool, SubmitOrderResult)
 - [Phase 14.1-02]: Strongly-typed IDs inconsistently applied to cross-context references (primitive Guid at module boundaries)
 - [Phase 14.1-02]: Full DDD audit delivered with 71 findings (21 critical, 26 warning, 24 info) across 7 modules and cross-cutting analysis
+- [Phase 14.2-01]: Address is an owned entity, not a value object - has identity (AddressId) and mutators, no longer inherits from ValueObject
+- [Phase 14.2-01]: DisplayName migrated to readonly record struct for performance and modern C# semantics
+- [Phase 14.2-01]: ComplexProperty replaces OwnsOne for struct value objects - no hidden shadow key, cleaner EF Core 8+ semantics
+- [Phase 14.2-01]: Struct value objects use 'default' in EF Core constructors, not 'null!' (compiler enforcement)
 
 ### Roadmap Evolution
 
 - Phase 14.1 inserted after Phase 14: Check DDD approach correctness (URGENT)
 - Phase 14.2 inserted after Phase 14: Evaluate ValueObject base class vs record struct refactoring (URGENT)
+- Phase 14.3 inserted after Phase 14: Address issues in DDD audit report (URGENT)
 
 ### Pending Todos
 
@@ -155,6 +165,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: Completed 14.1-02-PLAN.md (DDD Tactical Patterns Audit - Remaining Modules and Cross-Cutting Analysis)
+Stopped at: Completed 14.2-01-PLAN.md (Fix Address DDD Violation and Migrate DisplayName)
 Resume file: None
-Next step: Phase 14.1 complete - full DDD audit delivered with 71 findings across 7 modules, cross-cutting bounded context isolation analysis, and actionable report for future remediation phase
+Next step: Continue Phase 14.2 - Plan 02: Migrate Catalog value objects (Money, ProductName, CategoryName, Quantity) from ValueObject base class to readonly record struct
