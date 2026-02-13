@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 12 of 14 (Product Reviews & Ratings)
-Plan: Ready to plan
-Status: Ready to plan
-Last activity: 2026-02-13 — Phase 11 verified and complete
+Plan: 1 of 3
+Status: Executing
+Last activity: 2026-02-13 — Completed 12-01-PLAN.md
 
-Progress: [██████████░░░░] 77% (53/69 total plans across v1.0+v1.1)
+Progress: [██████████░░░░] 78% (54/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -52,6 +52,12 @@ Progress: [██████████░░░░] 77% (53/69 total plans ac
 | 11-04 | 3 min | 2 | 12 |
 | 11-05 | 2 min | 2 | 6 |
 
+**v1.1 Phase 12 Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| 12-01 | 3 min | 2 | 14 |
+
 ## Accumulated Context
 
 ### Decisions
@@ -68,6 +74,9 @@ Recent decisions affecting current work:
 - [Phase 11-05]: Modal dialog form for both adding and editing addresses (not inline editing)
 - [Phase 11-05]: Login/register available via header account icon AND at checkout
 - [Phase 11-05]: Cart merge happens silently on login without user intervention
+- [Phase 12-01]: Composite unique index on (UserId, ProductId) enforces one review per user per product
+- [Phase 12-01]: Rating (1-5) and ReviewText (10-1000 chars) as value objects with validation
+- [Phase 12-01]: Product.AverageRating and ReviewCount denormalized for query performance
 
 ### Pending Todos
 
@@ -80,6 +89,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Phase 11 verified and marked complete in ROADMAP.md
+Stopped at: Completed 12-01-PLAN.md (Reviews backend foundation)
 Resume file: None
-Next step: /gsd:plan-phase 12
+Next step: /gsd:execute-plan 12-02
