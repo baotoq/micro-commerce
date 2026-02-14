@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AvatarUpload } from "./avatar-upload";
 import { useProfile, useUpdateProfile } from "@/hooks/use-profile";
 import { Loader2 } from "lucide-react";
@@ -35,8 +36,32 @@ export function ProfileForm() {
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+        <CardHeader>
+          <CardTitle>Profile Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex flex-col items-center">
+            <Skeleton className="size-24 rounded-full" />
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-6 w-48" />
+            </div>
+
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+
+            <Skeleton className="h-10 w-20 rounded-full" />
+          </div>
         </CardContent>
       </Card>
     );

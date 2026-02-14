@@ -110,53 +110,49 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
           <CardTitle className="text-base">Items</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {order.items.map((item) => {
-            const canReview = ["Paid", "Confirmed", "Shipped", "Delivered"].includes(order.status);
-            return (
-              <div key={item.id} className="space-y-2">
-                <div className="flex gap-4">
-                  <div className="relative size-16 shrink-0 overflow-hidden rounded-md border border-zinc-200 bg-zinc-100">
-                    {item.imageUrl ? (
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.productName}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                    ) : (
-                      <div className="flex size-full items-center justify-center text-xs text-zinc-400">
-                        N/A
-                      </div>
-                    )}
+          {order.items.map((item) => (
+            <div key={item.id} className="flex gap-4">
+              <div className="relative size-16 shrink-0 overflow-hidden rounded-md border border-zinc-200 bg-zinc-100">
+                {item.imageUrl ? (
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.productName}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                  />
+                ) : (
+                  <div className="flex size-full items-center justify-center text-xs text-zinc-400">
+                    N/A
                   </div>
-                  <div className="flex flex-1 items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-zinc-900">
-                        {item.productName}
-                      </p>
-                      <p className="text-sm text-zinc-500">
-                        {item.quantity} x {formatPrice(item.unitPrice)}
-                      </p>
-                    </div>
-                    <p className="shrink-0 text-sm font-medium text-zinc-900">
-                      {formatPrice(item.lineTotal)}
-                    </p>
-                  </div>
-                </div>
-                {canReview && (
-                  <Link
-                    href={`/products/${item.productId}#reviews`}
-                    className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline"
-                  >
-                    <MessageSquare className="size-4" />
-                    Write a Review
-                  </Link>
                 )}
               </div>
-            );
-          })}
+              <div className="flex flex-1 items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-zinc-900">
+                    {item.productName}
+                  </p>
+                  <p className="text-sm text-zinc-500">
+                    {item.quantity} x {formatPrice(item.unitPrice)}
+                  </p>
+                </div>
+                <p className="shrink-0 text-sm font-medium text-zinc-900">
+                  {formatPrice(item.lineTotal)}
+                </p>
+              </div>
+            </div>
+          ))}
         </CardContent>
+        {["Paid", "Confirmed", "Shipped", "Delivered"].includes(order.status) && (
+          <div className="border-t border-zinc-200 px-6 py-4">
+            <Button asChild variant="outline" className="w-full rounded-full">
+              <Link href={`/orders/${order.id}/review`}>
+                <MessageSquare className="mr-2 size-4" />
+                Review Products
+              </Link>
+            </Button>
+          </div>
+        )}
       </Card>
 
       {/* Shipping Address */}
