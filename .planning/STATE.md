@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 14.2 of 14.2 (Evaluate ValueObject Base Class vs Record Struct Refactoring)
-Plan: 1 of 3 completed
+Plan: 2 of 3 completed
 Status: In Progress
-Last activity: 2026-02-14 — Completed 14.2-01-PLAN.md (Fix Address DDD Violation and Migrate DisplayName)
+Last activity: 2026-02-14 — Completed 14.2-02-PLAN.md (Migrate Catalog Value Objects to Record Structs)
 
-Progress: [█████████████░] 94% (65/69 total plans across v1.0+v1.1)
+Progress: [█████████████░] 96% (66/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -88,6 +88,7 @@ Progress: [█████████████░] 94% (65/69 total plans ac
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | 14.2-01 | 3 min | 2 | 4 |
+| 14.2-02 | 3 min | 2 | 6 |
 
 ## Accumulated Context
 
@@ -147,6 +148,9 @@ Recent decisions affecting current work:
 - [Phase 14.2-01]: DisplayName migrated to readonly record struct for performance and modern C# semantics
 - [Phase 14.2-01]: ComplexProperty replaces OwnsOne for struct value objects - no hidden shadow key, cleaner EF Core 8+ semantics
 - [Phase 14.2-01]: Struct value objects use 'default' in EF Core constructors, not 'null!' (compiler enforcement)
+- [Phase 14.2-02]: ProductName, CategoryName, and Money migrated to readonly record structs with compiler-generated equality (20x faster than reflection-based ValueObject)
+- [Phase 14.2-02]: ComplexProperty EF Core mapping for Money replaces OwnsOne to avoid shadow primary key generation
+- [Phase 14.2-02]: Keep Ardalis.GuardClauses in value object factory methods for validation consistency across codebase
 
 ### Roadmap Evolution
 
