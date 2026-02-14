@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A showcase e-commerce platform demonstrating modern .NET microservices architecture with best practices. Users can browse products, add items to cart, and complete purchases through a polished Next.js storefront backed by a modular monolith with event-driven architecture, CQRS, and full admin management.
+A showcase e-commerce platform demonstrating modern .NET microservices architecture with best practices. Users can browse products, manage profiles, write verified reviews, save wishlists, add items to cart, and complete purchases through a polished Next.js storefront backed by a modular monolith with event-driven architecture, CQRS, and DDD tactical patterns.
 
 ## Core Value
 
@@ -30,17 +30,18 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - ✓ .NET Aspire orchestration — existing
 - ✓ DDD building blocks (aggregates, domain events, value objects) — existing
 - ✓ OpenTelemetry observability — existing
+- ✓ User profiles with display name, avatar, address book — v1.1
+- ✓ Guest-to-authenticated cart and order merge on login — v1.1
+- ✓ Product reviews with verified purchase enforcement (star ratings + text) — v1.1
+- ✓ Aggregate star ratings and review counts on product pages — v1.1
+- ✓ Wishlists with add/remove, move-to-cart, heart icon indicators — v1.1
+- ✓ E2E test coverage for user features (guest, authenticated, navigation) — v1.1
+- ✓ DDD audit (71 findings) with value object migration to record structs — v1.1
+- ✓ CQRS compliance fixes and aggregate boundary enforcement — v1.1
 
 ### Active
 
-#### Current Milestone: v1.1 User Features
-
-**Goal:** Add authenticated user experiences — profiles, verified purchase reviews, and wishlists — building on the existing Keycloak auth foundation.
-
-**Target features:**
-- User accounts & profiles (display name, avatar, saved addresses, linked orders/cart/history)
-- Product reviews & ratings (verified purchase only, star ratings + text)
-- Wishlists (single list per user, add/remove, move to cart)
+(No active milestone — planning next)
 
 ### Out of Scope
 
@@ -50,27 +51,33 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - Mobile app — web-first, responsive design covers mobile
 - Multi-tenancy — single store demonstration
 - Internationalization — English only for now
+- Anonymous reviews — trust collapse risk; verified purchase enforcement is core
+- Public user profiles — privacy concern; profiles are private to account owner
+- AI review summaries — requires LLM integration, cost analysis
+- Review image moderation — requires moderation service
 
 ## Context
 
-**Shipped v1.0 MVP** with 94,355 LOC across .NET 10 backend and Next.js 16 frontend.
+**Shipped v1.1 User Features** with ~585K LOC across .NET 10 backend and Next.js 16 frontend.
 
 **Tech stack:**
 - Backend: .NET 10, ASP.NET Core Minimal APIs, .NET Aspire 13.1.0
 - Frontend: Next.js 16, React 19, TypeScript 5, shadcn/ui
 - Auth: Keycloak (backend JWT + NextAuth.js frontend)
-- Database: PostgreSQL (per-feature isolation, 5 DbContexts)
+- Database: PostgreSQL (per-feature isolation, 8 DbContexts)
 - Messaging: Azure Service Bus (MassTransit) with emulator
 - Gateway: YARP reverse proxy with JWT, rate limiting, CORS
 - Patterns: CQRS (MediatR), DDD, Event-Driven, Vertical Slice Architecture
 - Testing: xUnit, FluentAssertions, Testcontainers, Playwright
 
-**Architecture:** Modular monolith with clear bounded contexts (Catalog, Cart, Ordering, Inventory, Messaging). Ready for gradual service extraction.
+**Architecture:** Modular monolith with clear bounded contexts (Catalog, Cart, Ordering, Inventory, Profiles, Reviews, Wishlists, Messaging). Ready for gradual service extraction.
 
-**Known tech debt (from v1.0 audit):**
+**Known tech debt:**
 - Hardcoded configuration (stock thresholds, shipping rates, CORS origins)
 - Placeholder images (placehold.co URLs)
-- Some missing SUMMARY.md and VERIFICATION.md files in planning docs
+- Cross-context DbContext injection in Reviews and Wishlists modules (bounded context isolation violation)
+- Strongly-typed IDs inconsistently applied at module boundaries (primitive Guid used cross-context)
+- ValueObject base class deprecated but not removed (zero consumers, marked [Obsolete])
 
 ## Constraints
 
@@ -85,7 +92,7 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Gradual service extraction | Real-world pattern, demonstrates monolith-to-microservices journey | ✓ Good — clean module boundaries established |
-| Database-per-feature | True microservices isolation, showcases data ownership | ✓ Good — 5 separate DbContexts working well |
+| Database-per-feature | True microservices isolation, showcases data ownership | ✓ Good — 8 separate DbContexts working well |
 | Guest checkout | Lower friction, simpler v1 scope | ✓ Good — cookie-based buyer identity works seamlessly |
 | Mock payments | Avoid payment processor complexity while demonstrating flow | ✓ Good — toggleable success/failure |
 | Cart in Postgres (not Redis) | Durability over speed, consistent with database-per-service | ✓ Good — reliable with TTL cleanup |
@@ -95,6 +102,16 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 | Checkout saga (MassTransit state machine) | Orchestrate multi-step checkout with compensation | ✓ Good — handles stock reservation, payment, cart clearing |
 | YARP API Gateway | Unified entry point, security centralization | ✓ Good — JWT + rate limiting at edge |
 | Testcontainers for integration tests | Real database testing without Docker Compose | ✓ Good — catches real SQL/EF issues |
+| ImageSharp for avatar processing | Crop-to-square and resize to 400x400 | ✓ Good — no external service needed |
+| Auto-create profile on first GET | Profile always exists for authenticated users | ✓ Good — eliminates null profile edge cases |
+| Silent cart merge on login | Guest cart transfers to authenticated user without intervention | ✓ Good — seamless UX |
+| Verified purchase reviews | Reviews require order with Paid/Confirmed/Shipped/Delivered status | ✓ Good — trust through enforcement |
+| Denormalized review stats | AverageRating and ReviewCount on Product entity | ✓ Good — fast queries, synchronous recalculation |
+| Optimistic wishlist UI | Heart icon toggles immediately with cache rollback on error | ✓ Good — instant feedback |
+| Readonly record structs for value objects | Compiler-generated equality, 20x faster than reflection-based ValueObject | ✓ Good — modern C# semantics |
+| ComplexProperty for struct value objects | Avoids EF Core shadow primary key generation from OwnsOne | ✓ Good — cleaner mapping |
+| Vernon's aggregate rules as audit standard | 4 rules for aggregate design validation | ✓ Good — caught 21 critical violations |
+| Reference by identity only (Vernon Rule 3) | Product references Category by CategoryId, not navigation property | ✓ Good — proper aggregate isolation |
 
 ---
-*Last updated: 2026-02-13 after v1.1 milestone start*
+*Last updated: 2026-02-14 after v1.1 milestone*
