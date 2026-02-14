@@ -1,14 +1,16 @@
 ---
 name: testcontainers-integration-tests
 description: Write integration tests using TestContainers for .NET with xUnit. Covers infrastructure testing with real databases, message queues, and caches in Docker containers instead of mocks.
+license: MIT
 invocable: false
 metadata:
   version: "1.0.0"
   domain: tests
-  triggers: C#, .NET, Integration Tests
+  triggers: C#, .NET, Integration Tests, TestContainers, xUnit, Docker, database testing, integration testing
   role: specialist
   scope: implementation
   output-format: code
+  related-skills: csharp-developer, efcore-patterns, dotnet-core-expert
 ---
 
 # Integration Testing with TestContainers
