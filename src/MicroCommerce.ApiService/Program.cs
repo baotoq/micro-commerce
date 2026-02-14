@@ -20,6 +20,7 @@ using MicroCommerce.ApiService.Features.Profiles;
 using MicroCommerce.ApiService.Features.Profiles.Infrastructure;
 using MicroCommerce.ApiService.Features.Reviews;
 using MicroCommerce.ApiService.Features.Reviews.Infrastructure;
+using MicroCommerce.ApiService.Features.Wishlists;
 using MicroCommerce.ApiService.Features.Wishlists.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -253,6 +254,7 @@ app.MapOrderingEndpoints();
 app.MapMessagingEndpoints();
 app.MapProfilesEndpoints();
 app.MapReviewsEndpoints();
+app.MapWishlistsEndpoints();
 
 app.Run();
 
