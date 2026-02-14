@@ -14,7 +14,7 @@ namespace MicroCommerce.ApiService.Features.Catalog.Domain.Entities;
 /// </summary>
 public sealed class Product : BaseAggregateRoot<ProductId>
 {
-    public ProductName Name { get; private set; } = null!;
+    public ProductName Name { get; private set; }
     public string Description { get; private set; } = null!;
     public Money Price { get; private set; } = null!;
     public string? ImageUrl { get; private set; }
