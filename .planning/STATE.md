@@ -97,6 +97,7 @@ Progress: [█████████████░] 100% (69/69 total plans a
 |------|----------|-------|-------|
 | 14.3-03 | 2 min | 1 | 4 |
 | 14.3-04 | 5 min | 2 | 4 |
+| Phase 14.3 P02 | 6 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -166,6 +167,9 @@ Recent decisions affecting current work:
 - [Phase 14.3-04]: EF Core HasOne<Category>() without navigation selector preserves FK constraint without domain coupling
 - [Phase 14.3-04]: Explicit LINQ Join in queries replaces Include navigation traversal for cross-aggregate data fetching
 - [Phase 14.3-03]: Deleted obsolete domain event dispatcher infrastructure to enforce single pattern (MassTransit transactional outbox)
+- [Phase 14.3-02]: UpdateProduct returns Unit (void) for CQRS compliance
+- [Phase 14.3-02]: AddToCart returns Guid (cart ID) instead of composite result with isUpdate flag
+- [Phase 14.3-02]: SubmitOrder returns Guid (order ID) instead of composite result with OrderNumber
 
 ### Roadmap Evolution
 
