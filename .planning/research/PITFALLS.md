@@ -1,314 +1,218 @@
 # Pitfalls Research
 
-**Domain:** E-commerce platform adding user profiles, product reviews, and wishlists to existing modular monolith
-**Researched:** 2026-02-13
-**Confidence:** MEDIUM
+**Domain:** DDD Building Blocks for Existing .NET 10 Modular Monolith
+**Researched:** 2026-02-14
+**Confidence:** HIGH
 
 ## Critical Pitfalls
 
-### Pitfall 1: Guest-to-Authenticated Cart/Order Migration Race Condition
+### Pitfall 1: Entity Base Class Breaking Existing EF Core Mappings
 
 **What goes wrong:**
-When a user logs in after browsing as a guest, their cookie-based cart (BuyerId = guest GUID) needs to merge with their authenticated account (BuyerId = Keycloak sub claim). Without proper synchronization, concurrent requests during login can result in:
-- Duplicate carts (guest cart retained, new empty authenticated cart created)
-- Lost cart items (guest cart deleted before merge completes)
-- Partial migrations (some items copied, then interrupted)
-- Order history orphaned (guest orders not linked to authenticated account)
-
-The existing `BuyerIdentity.GetOrCreateBuyerId()` immediately switches from cookie to claim on authentication, but there's no migration logic. Orders table stores `BuyerId` as raw GUID with no link to user profile.
+Adding an Entity base class with common properties (Id, CreatedAt, UpdatedAt) to existing aggregates causes EF Core to detect inheritance and attempt to apply TPH (Table-Per-Hierarchy) mapping. This breaks existing configurations, generates migrations that add discriminator columns, and makes existing columns nullable when they shouldn't be.
 
 **Why it happens:**
-The code switches identity sources (cookie → claim) without coordinating data ownership. The cart uses `Guid BuyerId` which is overloaded to mean both "guest session" and "authenticated user ID". When Keycloak sub claim appears, the system treats it as a new buyer, abandoning the guest session's data.
+EF Core automatically scans for inheritance hierarchies. When it detects `Order : Entity<OrderId>`, it assumes this is domain inheritance requiring TPH mapping with a discriminator column, not just a technical base class for code reuse. Developers don't explicitly opt out of inheritance mapping, assuming EF will "just work."
 
 **How to avoid:**
-1. Create a `MigrateGuestDataCommand` triggered on first authenticated request per session
-2. Use PostgreSQL advisory locks during migration (`pg_advisory_xact_lock(hashtext(guest_guid))`)
-3. Query both CartDbContext and OrderingDbContext for guest BuyerId records
-4. Update `BuyerId` atomically within a distributed transaction or saga
-5. Only delete guest cookie after successful migration verification
-6. Handle idempotency: if migration already happened (cart exists for authenticated ID), merge items instead of failing
+1. Mark the base Entity class as `public abstract class Entity<TId>` and explicitly configure it as **not mapped** using `modelBuilder.Ignore<Entity<TId>>()` in `OnModelCreating`
+2. Use property-based inheritance where base class properties are mapped individually per entity type
+3. Keep BaseAggregateRoot focused on domain events only, move audit fields to a separate IAuditable interface
+4. Document that any new base class must be tested with migration generation before committing
 
 **Warning signs:**
-- Authenticated users report empty carts after login
-- "Lost my cart" support tickets correlate with login events
-- Database contains multiple carts with same items but different BuyerIds
-- Order history page shows guest orders disappearing after account creation
+- New migration adds `Discriminator` column to existing tables
+- Previously non-nullable columns become nullable after adding base class
+- Migration wants to recreate existing tables
+- Build succeeds but `Add-Migration` generates unexpected schema changes
 
 **Phase to address:**
-Phase 1 (User Profiles & Authentication Flow) — must implement migration before user profiles launch, as this affects existing cart/order data.
+Phase 1 (Entity Base Class Design) - Include explicit EF Core inheritance configuration testing in acceptance criteria.
 
 ---
 
-### Pitfall 2: Cross-Context Query Hell for Verified Purchase Reviews
+### Pitfall 2: Audit Field Interceptor Double-Setting Timestamps
 
 **What goes wrong:**
-Displaying reviews requires joining data from 4 separate DbContexts:
-1. **ReviewDbContext**: Review text, rating, helpful votes
-2. **CatalogDbContext**: Product name, image (for review cards)
-3. **OrderingDbContext**: Verify purchase (is reviewer a real buyer?)
-4. **UserProfileDbContext**: Reviewer name, avatar, badge (new context)
-
-Naive approaches cause N+1 queries, cartesian explosion, or inconsistent data:
-- Load reviews, then loop fetching product/user/order data = 100+ queries for 20 reviews
-- Perform JOIN across contexts via in-memory LINQ = loads entire tables into memory
-- Use separate queries with eventual consistency = reviews show "Verified Buyer" before order confirmation event propagates
-
-CQRS pattern says "define a view database for queries," but [Microsoft's documentation warns](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/cqrs-microservice-reads) you can't enlist message brokers and databases into a single distributed transaction, creating synchronization challenges.
+When adding an audit interceptor to set CreatedAt/UpdatedAt fields, existing entities already set these fields in domain logic (e.g., `Order.Create()` sets `CreatedAt = DateTimeOffset.UtcNow`). The interceptor overwrites the domain-set value, causing timestamp mismatches, or both set it leading to inconsistent timing (domain sets at creation time, interceptor sets at SaveChanges time - potentially milliseconds apart).
 
 **Why it happens:**
-Database-per-feature isolation (correct DDD) collides with read-heavy UI requirements (product pages need aggregated review data). Developers reach for EF Core's familiar LINQ and accidentally query across boundaries. [Martin Fowler warns](https://www.martinfowler.com/bliki/CQRS.html) "CQRS should only be used on specific portions of a system (a BoundedContext in DDD lingo) and not the system as a whole," but reviews inherently need data from multiple contexts.
+Multiple SaveChangesInterceptors execute in registration order. The project already has `DomainEventInterceptor` (lines run after SaveChanges completes). Adding `AuditableEntitiesInterceptor` creates a second interceptor that runs during `SavingChanges`. Developers forget existing entities control their own timestamps and don't check if fields are already set before overwriting.
 
 **How to avoid:**
-1. Create a **read model projection** (`ProductReviewSummary` table in ReviewDbContext):
-   - Subscribe to `OrderConfirmedEvent`, `ProductCreatedEvent`, `UserProfileCreatedEvent`
-   - Denormalize: store product name, user display name, avatar URL, verified purchase flag
-   - Update via event handlers, not in review write path
-2. Query read model for display, use write model for mutations
-3. Accept eventual consistency: "Verified Buyer" badge appears ~100ms after order confirmation
-4. Implement health checks: alert if event lag exceeds 5 seconds
+1. Choose ONE strategy: either domain entities own timestamps OR interceptors own them, never both
+2. If using interceptor approach, remove all `CreatedAt = DateTimeOffset.UtcNow` from entity factory methods
+3. Use a marker interface `IAuditable` only on entities that DON'T manage their own timestamps
+4. In the interceptor, check `if (entry.Property(nameof(IAuditable.CreatedAt)).CurrentValue == default)` before setting
+5. Add integration tests that verify timestamp values match expectations
 
 **Warning signs:**
-- Product page load time scales linearly with review count (N+1 queries)
-- Database CPU spikes when users view popular products
-- EF Core query logs show `Include()` chains across multiple DbContexts
-- "Verified Buyer" badge disappears/reappears inconsistently
+- Timestamps in tests are off by milliseconds when using `DateTimeOffset.UtcNow` in assertions
+- CreatedAt and UpdatedAt are identical for new entities (should be different after first update)
+- Domain events contain different timestamps than persisted entity
+- Aggregate factory methods still set timestamps but interceptor also runs
 
 **Phase to address:**
-Phase 2 (Product Reviews & Ratings) — design read model upfront, before implementing review display.
+Phase 2 (Audit Fields & Interceptor) - First task: audit all existing entities, identify which set timestamps, plan migration strategy.
 
 ---
 
-### Pitfall 3: Keycloak Profile Data Duplication (Auth vs Application Domain)
+### Pitfall 3: PostgreSQL xmin Concurrency Token Loss on Backup/Restore
 
 **What goes wrong:**
-Developers duplicate user profile data across Keycloak custom attributes and application UserProfileDbContext:
-- **Keycloak**: `custom_attribute.display_name`, `custom_attribute.avatar_url`
-- **Application DB**: `user_profiles.display_name`, `user_profiles.avatar_url`
-
-Changes to one don't propagate to the other. Users update their name in the app, but JWTs still contain the old value (Keycloak hasn't synced). Worse, [Keycloak v24+ enforces declarative user profile schemas](https://medium.com/@saissv2398/keycloak-user-attributes-what-no-one-tells-you-about-version-differences-v21-1-1-vs-v24-876118a11a43), reducing flexibility for raw key-value attributes. [Security concerns](https://www.baeldung.com/keycloak-custom-user-attributes) mean only explicitly configured attributes are "manageable" by default.
-
-Avatar URLs stored in Keycloak custom attributes create another problem: Keycloak doesn't manage file storage, so the URL points to your application's blob storage, creating a circular dependency.
+The project uses `[Timestamp] public uint Version` mapped to PostgreSQL's `xmin` system column for optimistic concurrency (see OrderConfiguration.cs line 97-98). When the database is backed up and restored, all xmin values reset. Existing loaded entities in application memory have stale xmin values, causing **all subsequent updates to fail with concurrency exceptions** even though no actual concurrent modification occurred.
 
 **Why it happens:**
-Confusion between "identity claims" (authentication, in JWT) vs "application profile data" (business logic, in database). Developers see Keycloak has a user model and assume it should be the single source of truth for all user data, but [Keycloak's official guidance](https://www.keycloak.org/docs/latest/server_admin/index.html) shows custom attributes work best for identity-related data, not complex business objects.
+PostgreSQL's xmin is a transaction ID, not a persistent version number. Backup/restore tools don't preserve transaction IDs. In production, backup/restore operations for blue-green deployments or disaster recovery will reset xmin, but the application doesn't detect this scenario.
 
 **How to avoid:**
-1. **Keycloak stores**: Authentication-critical data only
-   - `sub` (user ID, immutable)
-   - `email`, `email_verified`
-   - `preferred_username` (login identifier)
-2. **UserProfileDbContext stores**: Application-specific data
-   - Display name, bio, avatar URL
-   - Preference flags (newsletter opt-in, theme)
-   - Business logic attributes (loyalty tier, seller status)
-3. **Profile sync strategy**:
-   - On first login, create UserProfile record with `sub` as foreign key
-   - Application queries UserProfileDbContext for display data
-   - If Keycloak user updates email via account console, sync to UserProfile via webhook
-4. **JWT claims**: Include only `sub` + `email` + `roles`. App fetches rest from database.
+1. Add an explicit `Version` column alongside xmin: `public long Version { get; private set; }` that increments manually
+2. Use the explicit Version for business logic, keep xmin only as DB-level safety net
+3. Document that xmin is unreliable across backup/restore boundaries
+4. For entities where concurrency is critical (Order, StockItem), migrate to explicit version column before adding new concurrency features
+5. Add alerting when concurrency exception rate spikes (may indicate backup/restore occurred)
 
 **Warning signs:**
-- User profile updates require restarting Keycloak or clearing sessions
-- Avatar images return 404 because URL in JWT is stale
-- Profile data differs between pages (some read Keycloak claims, some read database)
-- Unit tests mock 20+ claim values to simulate authenticated users
+- Sudden spike in `DbUpdateConcurrencyException` after database maintenance
+- All updates fail after restoring from backup, even with no concurrent users
+- Version property shows unexpected values in logs after environment promotion
+- Local dev database restore breaks all update operations
 
 **Phase to address:**
-Phase 1 (User Profiles & Authentication Flow) — establish the pattern before adding reviews/wishlists that reference user data.
+Phase 3 (Concurrency Base & Version Strategy) - First task must evaluate xmin reliability vs explicit versioning, include migration plan for existing Order entities.
 
 ---
 
-### Pitfall 4: Review Spam Without Verified Purchase Enforcement
+### Pitfall 4: Result Pattern Inconsistency with Existing Exception-Based Flow
 
 **What goes wrong:**
-Product reviews accept any authenticated user, without verifying they actually purchased the product. Result:
-- Competitors post fake 1-star reviews
-- Sellers create sockpuppet accounts for fake 5-star reviews
-- Users review products they've never used based on unboxing videos
-
-Research shows [30-35% of online reviews are spam](https://www.mdpi.com/2076-3417/9/5/987), and [fake reviews on dark web forums start at £4 per review](https://almcorp.com/blog/google-reviews-deleted-ai-legal-takedowns-2025/). Without moderation, automated detection is the only defense, but it's complex (behavioral patterns, ML models, real-time transaction verification).
+The project currently uses exceptions for error handling: `ValidationBehavior` throws `ValidationException`, domain methods throw `InvalidOperationException` (e.g., Order.MarkAsPaid line 102). Adding Result&lt;T&gt; to **some** operations creates inconsistent error handling where callers don't know if they should check `result.IsFailure` or catch exceptions, leading to uncaught exceptions or ignored Results.
 
 **Why it happens:**
-Developers implement the "write a review" feature first, deferring verification as "phase 2 hardening." By then, fake reviews pollute the dataset, making cleanup impossible (which are real?). The database schema lacks a foreign key between Reviews and Orders, so the verification query isn't enforced.
+Gradual adoption without a clear boundary. Developers add Result&lt;T&gt; to new features but existing code still throws. MediatR handlers return `Result<OrderDto>` but pipeline behaviors throw exceptions. Frontend expects consistent error response shape but gets mix of 400 (validation exception) and 200 with `{ success: false }`.
 
 **How to avoid:**
-1. **Database constraint**: Add `OrderId` foreign key to Reviews table (nullable for backwards compatibility, but require for new reviews)
-2. **Write operation**: `CreateReviewCommand` requires `OrderId`, validate via query:
-   ```csharp
-   var order = await orderingDbContext.Orders
-       .Where(o => o.BuyerId == userId && o.Items.Any(i => i.ProductId == productId) && o.Status == OrderStatus.Delivered)
-       .FirstOrDefaultAsync();
-   if (order == null) throw new ValidationException("Must purchase product before reviewing");
-   ```
-3. **Once-per-order**: `HasReviewedOrderItem(userId, productId, orderId)` check prevents duplicate reviews for same purchase
-4. **UI indicator**: "Verified Purchase" badge pulled from `Reviews.OrderId IS NOT NULL`
-5. **Delayed review window**: Allow reviews 24 hours after order delivery (prevents immediate competitor spam)
+1. **Document the boundary**: Commands that fail due to **business rule violations** return Result&lt;T&gt;. Commands that fail due to **invalid input** throw ValidationException (caught by middleware)
+2. Update ValidationBehavior to return `Result.Failure()` instead of throwing, or keep it as-is and never use Result for validation failures
+3. Create an architectural decision record (ADR): "When to use Result vs Exception"
+4. Provide code examples and generator templates for both patterns
+5. Add analyzer rule to detect methods that both throw exceptions AND return Result
 
 **Warning signs:**
-- Product rating distribution is "I-shaped" (all 5-star or all 1-star) instead of natural "J-shaped"
-- New products get 50+ reviews within hours of launch
-- Accounts with single purchase review 100+ other products
-- Review text is generic template ("Great product! Highly recommend!!!1!")
+- Method has `try-catch` block but also checks `if (result.IsFailure)` - redundant patterns
+- API endpoint returns 200 OK with error payload instead of 4xx status code
+- Some commands throw, some return Result, no clear pattern
+- Frontend has inconsistent error handling (`try-catch` in some places, `if (response.isSuccess)` in others)
 
 **Phase to address:**
-Phase 2 (Product Reviews & Ratings) — enforce on day 1, not "later." Schema must include OrderId from the start.
+Phase 4 (Result Pattern Introduction) - Phase 0 task: create ADR and error handling strategy before any Result&lt;T&gt; code is written.
 
 ---
 
-### Pitfall 5: Wishlist-to-Cart Bounded Context Violation
+### Pitfall 5: Enumeration Class Migration Breaking Existing Enum Serialization
 
 **What goes wrong:**
-"Add Wishlist to Cart" button requires moving items from WishlistDbContext to CartDbContext. Naive implementation:
-1. Load wishlist items (ProductId, quantity)
-2. Loop: call `AddToCartCommand` for each item
-3. Delete wishlist
-
-Problems:
-- **Partial failure**: Item 3 fails (out of stock), but items 1-2 already added to cart, wishlist fully deleted
-- **Inconsistent pricing**: Wishlist stores snapshot price, cart fetches current price from Catalog — user sees different total
-- **Inventory race**: Between wishlist load and cart add, last item is purchased by another user
-- **No rollback**: Cart commands succeed, then wishlist delete fails — items duplicated
-
-[DDD integration patterns](https://medium.com/ssense-tech/ddd-beyond-the-basics-mastering-multi-bounded-context-integration-ca0c7cec6561) recommend anti-corruption layers, but [Reformed Programmer warns](https://www.thereformedprogrammer.net/evolving-modular-monoliths-3-passing-data-between-bounded-contexts/) "too many tight interactions may be a sign of high coupling."
+The project uses C# enums stored as strings (OrderStatus, ProductStatus - see OrderConfiguration line 73-76 `HasConversion<string>()`). Migrating to Enumeration classes requires changing JSON serialization, EF Core value converters, and potentially database values. **Existing API consumers break** because JSON shape changes from `"status": "Submitted"` to `"status": { "value": 1, "name": "Submitted" }`.
 
 **Why it happens:**
-Wishlist and Cart feel like related features, so developers reuse commands/queries across boundaries. The shared `ProductId` tempts direct coupling instead of event-driven coordination.
+Enumeration classes are objects, not primitives. Default JSON serialization produces object graph. Developers write the Enumeration class, update EF Core mappings, but forget to add custom JsonConverter. Frontend and external integrations expect string/int, not object.
 
 **How to avoid:**
-1. **Saga pattern**: `MoveWishlistToCartSaga` coordinates the workflow
-   ```
-   Start → ValidateInventory → AddItemsToCart → ClearWishlist → Complete
-   ```
-2. **Compensating transactions**: If cart add fails, saga doesn't reach delete step
-3. **UI feedback**: Partial success states
-   - "3 of 5 items added (2 out of stock)"
-   - "Added to cart, keeping in wishlist until checkout"
-4. **Alternative design**: Wishlist items stay in wishlist, cart has "from wishlist" flag — delete wishlist items on order confirmation, not on cart add
+1. **Before writing any Enumeration class**: implement and test custom `JsonConverter<Enumeration>` that serializes to string value matching current enum behavior
+2. Add integration tests that verify API response JSON shape doesn't change after migration
+3. Migrate one enum at a time with full test coverage, don't bulk-replace
+4. For each enum, check: domain usage, EF Core mapping, JSON contracts, OpenAPI schema
+5. Keep old enum for one release cycle with `[Obsolete]` attribute while Enumeration class runs in parallel
 
 **Warning signs:**
-- Users report "wishlist disappeared but cart is empty"
-- Cart total doesn't match wishlist subtotal shown before migration
-- Database logs show orphaned wishlist records with no corresponding items
-- Error logs show `AddToCartCommand` failures but no rollback of wishlist deletions
+- Frontend displays `[object Object]` instead of status name
+- OpenAPI schema shows Enumeration as object type instead of string enum
+- API response JSON structure changes after "internal refactoring"
+- Swagger UI can't send test requests because enum dropdown is gone
+- Database migration wants to change column type from text to composite
 
 **Phase to address:**
-Phase 3 (Wishlists & Saved Items) — design the integration pattern before implementing the "add all to cart" feature.
+Phase 5 (Enumeration Class) - Phase 0: create JsonConverter base class and test with one enum. Phase 1+: migrate enums one at a time, not bulk.
 
 ---
 
-### Pitfall 6: Avatar Storage in Ephemeral Container Filesystem
+### Pitfall 6: Specification Pattern N+1 Queries from IsSatisfiedBy in Loops
 
 **What goes wrong:**
-User uploads avatar image, code saves to `/app/uploads/avatars/{userId}.jpg` inside the container. File persists until:
-- Container restarts (lost on deploy)
-- Horizontal scaling adds second instance (avatar only exists on instance A, requests to instance B return 404)
-- Aspire `docker compose down` (development data lost)
-
-Database stores `avatar_url = "/uploads/avatars/123.jpg"`, but file is gone. All profile images break.
+Specification pattern implements `IsSatisfiedBy(TEntity entity)` for in-memory evaluation and `ToExpression()` for database queries. Developers use Specifications correctly in queries (`dbContext.Where(spec.ToExpression())`), but then in business logic call `if (spec.IsSatisfiedBy(entity))` inside a loop over a collection, causing N database roundtrips when entities have lazy-loaded navigation properties accessed by the spec.
 
 **Why it happens:**
-Developers familiar with traditional web hosting (persistent `/var/www/html`) assume containerized apps work the same way. [Container data typically disappears once the instance shuts down](https://www.aquasec.com/cloud-native-academy/docker-container/microservices-and-containerization/), requiring external storage mechanisms.
+Specification reads navigation properties (e.g., `ActiveProductSpecification` checks `product.Category.IsActive`). If entity is loaded without includes, accessing `.Category` triggers lazy load. Calling spec on 100 products = 100 lazy loads. Developer doesn't realize `IsSatisfiedBy` triggers database access because it "looks like" in-memory code.
 
 **How to avoid:**
-1. **External blob storage**: Azure Blob Storage, AWS S3, MinIO (self-hosted S3-compatible)
-2. **Development**: Add MinIO service to Aspire AppHost
-   ```csharp
-   builder.AddContainer("minio", "minio/minio")
-       .WithEnvironment("MINIO_ROOT_USER", "minioadmin")
-       .WithEnvironment("MINIO_ROOT_PASSWORD", "minioadmin")
-       .WithBindMount("./data/minio", "/data")
-       .WithArgs("server", "/data");
-   ```
-3. **Production**: Use managed blob storage with CDN
-4. **Database**: Store full URL including bucket (`avatar_url = "https://cdn.example.com/avatars/123.jpg"`)
-5. **Cleanup policy**: Delete orphaned images when user account is deleted
+1. Disable lazy loading globally: `options.UseLazyLoadingProxies(false)` (recommended for CQRS + DDD)
+2. Document that Specifications must work on **fully loaded** entities or only be used in query expressions
+3. Add analyzer rule: flag `IsSatisfiedBy` called inside loops
+4. Provide Specification base class that logs warning when navigation property is null
+5. Prefer using Specification only at query boundaries, not in domain logic
 
 **Warning signs:**
-- Avatar images break after deployment
-- "File not found" errors in production logs
-- `/app/uploads` directory grows unbounded (no cleanup)
-- Different users see different avatars (load balancer round-robin to different instances)
+- Slow endpoint that loads collections and applies Specifications
+- Database profiler shows N identical queries for navigation properties
+- Fixing one N+1 issue reveals another in Specification evaluation
+- Unit tests pass but integration tests are slow (test DB doesn't reveal N+1 with small datasets)
 
 **Phase to address:**
-Phase 1 (User Profiles & Authentication Flow) — set up blob storage before implementing avatar uploads.
+Phase 6 (Specification Pattern) - Include explicit performance testing with 100+ entity collections in acceptance criteria.
 
 ---
 
-### Pitfall 7: Review Helpfulness Ranking Creates Recency Bias
+### Pitfall 7: Source Generator Build Failures After Multi-Target Framework Change
 
 **What goes wrong:**
-Reviews are sorted by "helpful votes" (descending). Older reviews accumulate votes over months, newer reviews stay buried at the bottom even if more relevant. Example:
-- Review from 2023: "Great product" (150 helpful votes) — product version changed since
-- Review from 2026: "Improved version fixes main issue" (2 helpful votes) — actually more useful, but invisible
-
-[Research shows](https://arxiv.org/pdf/1901.06274) "older reviews have an advantage because they accumulated helpfulness votes over time, while recent reviews may not be considered good for not having enough votes." Additionally, [non-voted reviews are often overlooked](https://www.sciencedirect.com/science/article/abs/pii/S0952197623012599), even though they might be highly relevant.
+Source generators for StronglyTypedId improvements work perfectly in single-target .NET 10 project. Later, when BuildingBlocks.Common is changed to multi-target (`<TargetFrameworks>net10.0;net8.0</TargetFrameworks>`) for compatibility with external tools, the generator runs twice (once per TFM), produces duplicate types, or only runs for one TFM causing build errors in consuming projects.
 
 **Why it happens:**
-Sorting by raw vote count is simple but time-biased. Algorithms that account for review age, vote velocity, and verified purchase status are complex, so MVPs skip them.
+Source generators execute per target framework. Multi-targeting means generator runs in multiple contexts. If generator isn't idempotent or doesn't check for existing types, it produces conflicts. MSBuild restores and builds for each TFM, but source generator output may not be isolated per TFM.
 
 **How to avoid:**
-1. **Composite score** instead of raw votes:
-   ```
-   Score = (helpful_votes / (helpful_votes + unhelpful_votes + 1))
-         × log(1 + total_votes)
-         × recency_multiplier
-         × verified_purchase_bonus
-   ```
-   - **Wilson score** for vote ratio (handles small sample sizes)
-   - **Log scale** prevents old reviews from dominating
-   - **Recency multiplier**: Reviews <30 days get 1.5x, 30-90 days 1.2x, >90 days 1.0x
-   - **Verified purchase bonus**: +0.2 to score
-2. **Default sort**: "Most Relevant" (composite score), with manual sort options (newest, highest rated, most helpful)
-3. **Highlighted**: Auto-promote "helpful recent reviews" to top (score >X, created <60 days)
+1. Keep source generator projects single-target .NET 10.0 (they compile to roslyn analyzers, don't need multi-target)
+2. If BuildingBlocks.Common must multi-target, move source generators to separate single-target project
+3. Add `<IsRoslynComponent>true</IsRoslynComponent>` to generator project to ensure proper isolation
+4. Test generators in multi-target scenario **before** production use
+5. Document: "Source generator projects must remain single-target"
 
 **Warning signs:**
-- All top reviews are >6 months old
-- Product update released, but top reviews reference old version
-- Conversion rate drops (users reading outdated negative reviews)
-- New reviewers complain "no one votes on my review"
+- Build succeeds locally but fails in CI with "type defined in multiple places"
+- Changing TFM order in `<TargetFrameworks>` changes build outcome
+- Generated files appear in obj/net10.0/ but not obj/net8.0/ (or vice versa)
+- IDE shows red squigglies but build succeeds (or opposite)
+- `dotnet build` succeeds but `dotnet build -f net8.0` fails
 
 **Phase to address:**
-Phase 2 (Product Reviews & Ratings) — implement in initial ranking query, not post-launch fix.
+Phase 7 (Source Generator Setup) - Phase 0: define project structure and TFM strategy before generator implementation.
 
 ---
 
-### Pitfall 8: Domain Event Eventual Consistency UX Breakdown
+### Pitfall 8: StronglyTypedId JSON Serialization Breaks OpenAPI Schema
 
 **What goes wrong:**
-User submits review. Review write succeeds, but the read model projection lags:
-1. ReviewWriteDbContext commits review (tx committed)
-2. Browser redirects to product page
-3. ProductReviewSummaryQuery executes against read model (still processing)
-4. User sees "No reviews yet" or old review count
-5. User refreshes → review appears
-
-Same problem with verified purchase verification:
-1. Order status changes to Delivered
-2. `OrderDeliveredEvent` published
-3. Review service subscribes, updates `can_review` flag
-4. User immediately tries to review → "Must purchase product first" error
-5. 2 seconds later, works
-
-[Microsoft's CQRS docs](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/domain-events-design-implementation) note "if you commit changes to the original aggregate and afterwards, when the events are being dispatched, if there's an issue, you'll have inconsistencies between aggregates."
+Current StronglyTypedId works in domain (`record ProductId(Guid Value) : StronglyTypedId<Guid>(Value)`). After adding source generator to create custom JsonConverters for StronglyTypedId types, OpenAPI/Swagger schema shows `ProductId` as object `{ value: "guid" }` instead of simple string, breaking auto-generated frontend clients (they generate `ProductId` interface instead of using string alias).
 
 **Why it happens:**
-Eventual consistency is inherent to CQRS + event-driven architecture, but UX doesn't account for lag. Developers test locally (events process in <10ms) and ship, production has 200ms+ lag under load.
+Swashbuckle reads JsonConverter to generate OpenAPI schema. Custom converter doesn't implement `ISchemaFilter` to tell Swashbuckle "serialize as underlying primitive type in schema." Generated TypeScript/C# clients create unnecessary wrapper types.
 
 **How to avoid:**
-1. **Optimistic UI updates**: After review submit, inject new review into client-side state before API response
-2. **Polling fallback**: If review not visible after 3s, poll read model every 500ms (max 5 attempts)
-3. **Event lag monitoring**: Alert if `DomainEventPublisher` lag >1 second
-4. **Inline read for write user**: `CreateReviewCommand` returns full `ReviewDto`, UI renders that instead of querying read model
-5. **Health check**: Canary event published every 10s, alarm if not consumed within 2s
+1. Implement `ISchemaFilter` alongside JsonConverter to map StronglyTypedId to underlying type in OpenAPI
+2. Register schema filter: `services.AddSwaggerGen(c => c.SchemaFilter<StronglyTypedIdSchemaFilter>())`
+3. Test OpenAPI schema output explicitly: `openapi.json` should show `productId: { type: "string", format: "uuid" }`, not object
+4. Test generated client code from OpenAPI schema before releasing
+5. Document pattern: all custom serializers need corresponding schema filters
 
 **Warning signs:**
-- "My review disappeared" support tickets spike
-- Users refresh page multiple times after posting review
-- Metrics show high "view product immediately after review" rate with no review visible
-- MassTransit dead letter queue accumulates events
+- OpenAPI schema shows nested objects for what should be primitives
+- Generated frontend client has `ProductId.value.value` nested access
+- Swagger UI requires entering JSON object instead of simple string for ID parameters
+- Frontend developers complain about TypeScript types being overly complex
+- API accepts `{"value":"..."}` but rejects simple string values
 
 **Phase to address:**
-Phase 2 (Product Reviews & Ratings) — test with artificial event delay (Thread.Sleep(2000)) during development.
+Phase 8 (StronglyTypedId Enhancements) - Task 2 must include OpenAPI schema validation, not just JSON serialization.
 
 ---
 
@@ -318,16 +222,14 @@ Shortcuts that seem reasonable but create long-term problems.
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| Store avatar as base64 in database | No blob storage setup | Database bloat, slow queries, no CDN caching | Never — avatar images 50KB-5MB each |
-| Allow unverified reviews "for now" | Faster MVP launch | Fake review pollution, impossible cleanup, reputation damage | Never — schema must include OrderId from day 1 |
-| Use Keycloak custom attributes for profile data | Single source of truth | Sync nightmares, schema inflexibility, JWT bloat | Only for `email`, `preferred_username` — everything else in app DB |
-| Skip guest-to-auth migration | Simpler login flow | Lost carts, orphaned orders, angry users | Never — migration required before user profiles launch |
-| Sort reviews by newest first | No algorithm needed | Buries helpful reviews, reduces conversion | Acceptable for <50 reviews per product, fix before scaling |
-| Synchronous cross-context queries (JOIN) | Familiar LINQ patterns | N+1 queries, memory explosion, coupling | Never in production — use read model projections |
-| Store wishlist item prices | Faster subtotal display | Stale prices confuse users | Acceptable if UI shows "Price may have changed" warning |
-| Manual review moderation | No ML infrastructure | Doesn't scale, spam overwhelms moderators | Acceptable for <100 reviews/day, automate before growth |
-
----
+| Skip explicit EF Core inheritance config | Base class "just works" | Migrations break production, discriminator columns added | Never - always test migration generation |
+| Mix Result and Exception error handling | Faster to add Result to one feature | Inconsistent error handling, confusing for team | Only during controlled migration phase with clear end date |
+| Use IsSatisfiedBy in loops | Code reads naturally | N+1 queries, performance degradation | Only on in-memory collections, never on DB entities |
+| Single audit interceptor for all entities | One place to manage timestamps | Conflicts with entities that own their timestamps | Only if NO existing entities set their own timestamps |
+| Keep xmin without explicit version | Minimal code, uses PostgreSQL feature | Breaks on backup/restore, debugging nightmare | Local dev only, never production |
+| Lazy load in Specifications | Specifications work without manual includes | N+1 queries, slow at scale | Never - disable lazy loading globally |
+| Multi-target BuildingBlocks early | "Future proofs" the library | Source generator issues, build complexity | Only when external .NET 8 integration confirmed |
+| Default JsonConverter without SchemaFilter | JSON serialization works | OpenAPI clients broken, API consumer pain | Local dev only, never for public API |
 
 ## Integration Gotchas
 
@@ -335,14 +237,13 @@ Common mistakes when connecting to external services.
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| **Keycloak JWT** | Trusting claims without validation | Verify signature, issuer, audience, expiration — use `Microsoft.AspNetCore.Authentication.JwtBearer` built-in validation |
-| **Keycloak user sync** | Polling `/admin/users` API every 5 min | Subscribe to Keycloak event webhooks (`USER_UPDATED`, `USER_DELETED`) via custom Event Listener SPI |
-| **Blob storage URLs** | Storing relative paths (`/avatars/123.jpg`) | Store absolute URLs with CDN (`https://cdn.example.com/avatars/123.jpg`), support URL migration when CDN changes |
-| **MassTransit events** | Fire-and-forget publish without correlation ID | Always include `CorrelationId`, enable OpenTelemetry tracing, use Inbox/Outbox pattern for transactional guarantees |
-| **PostgreSQL locks** | Use table-level locks for cart migration | Use advisory locks `pg_advisory_xact_lock()` scoped to specific BuyerId GUID hash |
-| **EF Core migrations** | Share DbContext across features | Each feature owns its DbContext, migrations run independently, use separate connection strings or schemas |
-
----
+| EF Core + DomainEventInterceptor | Adding second interceptor without testing execution order | Document interceptor execution order, test that both run |
+| MediatR + ValidationBehavior + Result | Behavior throws, handler returns Result - inconsistent | Choose: throw everywhere OR return Result everywhere |
+| PostgreSQL xmin + EF Core migrations | Assuming xmin persists across backup/restore | Document limitations, add explicit version column for critical entities |
+| MassTransit + Domain Events | Publishing before SaveChanges commits (existing interceptor uses SavedChangesAsync correctly) | Keep using SavedChangesAsync, never SavingChanges for publish |
+| Swashbuckle + JsonConverter | Converter works but schema breaks | Always add ISchemaFilter when adding custom JsonConverter |
+| Source Generators + Multi-TFM | Generator runs per TFM, creates duplicates | Keep generator projects single-target .NET 10 |
+| Npgsql + Enumeration classes | Trying to use MapEnum with Enumeration class (not supported) | Use HasConversion<string> for Enumeration, MapEnum only for C# enums |
 
 ## Performance Traps
 
@@ -350,62 +251,28 @@ Patterns that work at small scale but fail as usage grows.
 
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| **Loading full wishlist in single query** | Query time scales linearly with items | Paginate: load 10 items, lazy-load rest on scroll | >50 items per wishlist |
-| **Counting review helpful votes on every page load** | `COUNT(*)` query on reviews_helpful_votes table | Denormalize: store `helpful_count` column, update via event | >500 votes per review |
-| **Fetching user avatars in foreach loop** | N+1 queries for 20 reviews = 21 DB queries | Batch query: `userIds.ToList()` → `IN (...)` query, or use read model with denormalized avatars | >10 reviews per page |
-| **Synchronous blob upload during avatar change** | HTTP request blocks for 2-5 seconds | Background job: save to temp storage, enqueue upload, return immediately | Files >500KB |
-| **Broadcasting domain events to all subscribers** | MassTransit overhead scales with subscriber count | Topic-based routing: reviews only subscribe to `OrderDeliveredEvent`, not all order events | >5 subscribers per event type |
-| **Recalculating "Top Reviewed Products" on every dashboard load** | Full table scan of reviews, GROUP BY product | Materialized view or scheduled cache refresh (every 5 min) | >10,000 reviews |
-
----
-
-## Security Mistakes
-
-Domain-specific security issues beyond general web security.
-
-| Mistake | Risk | Prevention |
-|---------|------|------------|
-| **Exposing internal BuyerId GUIDs in review APIs** | Attacker correlates anonymous reviews to users, de-anonymizes buyers | Return `reviewer_display_name` and `avatar_url`, never BuyerId |
-| **No rate limiting on review submission** | Single user spams 1000 fake reviews | Rate limit: 1 review per product per user, 5 reviews per day per user, CAPTCHA after 3 |
-| **Trusting client-side OrderId in `CreateReviewCommand`** | Attacker claims fake purchase, forges "Verified Buyer" badge | Server validates `OrderId` ownership: `order.BuyerId == currentUserId && order.Status == Delivered` |
-| **Avatar upload accepts all file types** | User uploads `avatar.php`, executes code | Validate MIME type (image/jpeg, image/png), strip EXIF metadata, resize to fixed dimensions, rename with GUID |
-| **Review helpful votes allow unlimited votes** | Bots upvote fake reviews to front page | 1 vote per user per review (unique constraint on `user_id + review_id`), rate limit 10 votes/hour per user |
-| **Guest cart cookie not HttpOnly** | XSS attack steals buyer_id cookie, hijacks cart | Use `HttpOnly = true, Secure = true, SameSite = Lax` (already implemented in BuyerIdentity.cs) |
-
----
-
-## UX Pitfalls
-
-Common user experience mistakes in this domain.
-
-| Pitfall | User Impact | Better Approach |
-|---------|-------------|-----------------|
-| **Silent guest cart abandonment on login** | "Where did my cart go?" confusion | Show migration progress toast: "Moving 3 items from guest cart..." |
-| **Review submitted → redirected to product page → review not visible** | "Did it work? Should I submit again?" | Show success banner: "Review submitted, may take a few seconds to appear" OR optimistically inject review into page |
-| **Wishlist "Add All to Cart" fails on item 5 of 20** | User doesn't know which items failed, manually re-adds all 20 | Show partial success: "Added 4 items. 1 item out of stock: [Product Name]" with retry button |
-| **Avatar upload fails silently** | User thinks avatar changed, but still sees old one | Show upload progress bar, validation errors ("File too large"), preview before save |
-| **"Verified Purchase" badge with no explanation** | Users don't trust it (what does it mean?) | Tooltip: "This reviewer purchased this product" |
-| **Review sorting defaults to "Newest"** | Least helpful reviews shown first | Default to "Most Relevant" (composite score), allow manual sort |
-| **Wishlist items show stale prices** | User adds to cart, shocked by real price | Show "Price may have changed" if wishlist item >7 days old, refresh prices on "Add to Cart" |
-
----
+| IsSatisfiedBy in loops over lazy entities | Slow endpoints, N SELECT queries | Disable lazy loading, use AsNoTracking | 100+ entities |
+| Loading all entities then applying Specification | Works in dev, slow in prod | Use ToExpression() in Where clause | 1000+ rows |
+| Multiple SaveChangesInterceptors doing queries | SaveChanges becomes slow | Interceptors should only modify tracked entities | 10+ interceptors |
+| Enumeration.GetAll() called repeatedly | No caching, recreates instances | Cache in static field or use source generator | Called in tight loops |
+| Result.Failure() with stack trace capture | Useful for debugging, allocates | Disable in production or make opt-in | High-frequency operations |
+| Specification.And() chains creating complex SQL | Readable code, terrible query plans | Limit And chains to 3-4, prefer specialized specs | 5+ And chains |
+| Domain events published individually | Works with 1-2 events, slow with many | Batch publish (existing interceptor does this correctly) | 10+ events per aggregate |
 
 ## "Looks Done But Isn't" Checklist
 
 Things that appear complete but are missing critical pieces.
 
-- [ ] **Guest-to-Auth Migration:** Often missing race condition handling — verify advisory locks implemented, test with concurrent login requests
-- [ ] **Review Verified Purchase:** Often missing OrderId foreign key — verify database schema includes non-nullable OrderId, query validates order ownership
-- [ ] **Avatar Upload:** Often missing blob storage — verify files NOT saved to container filesystem, test avatar persistence after container restart
-- [ ] **Review Read Model:** Often missing event subscription setup — verify MassTransit consumers registered, test projection updates when order delivered
-- [ ] **Wishlist to Cart:** Often missing partial failure handling — verify saga compensating transactions, test with intentionally failed inventory check
-- [ ] **Review Helpfulness:** Often missing recency weighting — verify score algorithm includes time decay, test that new reviews can outrank old ones
-- [ ] **User Profile Sync:** Often missing Keycloak webhook handlers — verify email changes in Keycloak propagate to UserProfileDbContext
-- [ ] **Cross-Context Queries:** Often missing read model — verify no direct JOINs between CatalogDbContext and ReviewDbContext in production queries
-- [ ] **Avatar Security:** Often missing file type validation — verify MIME type checks, test upload of .exe renamed to .jpg
-- [ ] **Event Lag Monitoring:** Often missing health checks — verify alerts configured for domain event processing delays >2 seconds
-
----
+- [ ] **Entity Base Class:** Added class and updated entities, but forgot to test `Add-Migration` - will break in CI
+- [ ] **Audit Interceptor:** Interceptor registered, but existing entities still set timestamps - creates conflicts
+- [ ] **Result Pattern:** Returned Result from handler, but pipeline behavior still throws - inconsistent
+- [ ] **Enumeration Class:** Created class and EF mapping, but no JsonConverter - API JSON breaks
+- [ ] **Specification:** Implemented IsSatisfiedBy, but used in loop over DB entities - N+1 queries
+- [ ] **Source Generator:** Works locally, but not tested with multi-target - CI fails
+- [ ] **StronglyTypedId JsonConverter:** JSON works, but OpenAPI schema wrong - client generation breaks
+- [ ] **Concurrency:** Added Version property, but didn't populate from xmin - all updates fail
+- [ ] **Migration:** Created migration, but didn't test on copy of production data - data loss on deploy
+- [ ] **Integration Test:** Tests pass, but use in-memory collection not real DB - Specification N+1 not caught
 
 ## Recovery Strategies
 
@@ -413,16 +280,15 @@ When pitfalls occur despite prevention, how to recover.
 
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| **Lost guest carts on login** | LOW | Query orphaned carts (BuyerId = cookie not in user_profiles), match by session timestamps, manual migration script |
-| **Fake unverified reviews** | MEDIUM | Add nullable OrderId column, backfill from order history where possible, mark rest as "Legacy Review (Unverified)", implement verification going forward |
-| **Avatars stored in container** | MEDIUM | Batch migration: enumerate /app/uploads, upload to blob storage, update avatar_url in database, add blob cleanup cron job |
-| **Review read model out of sync** | LOW | Rebuild projection: query ReviewWriteDbContext, denormalize product/user/order data, bulk insert to read model, resume event subscription |
-| **Wishlist items duplicated in cart** | LOW | Deduplication query: `DELETE FROM cart_items WHERE id NOT IN (SELECT MIN(id) FROM cart_items GROUP BY cart_id, product_id)` |
-| **Keycloak profile data out of sync with app DB** | MEDIUM | One-time sync job: query Keycloak /admin/users, upsert to UserProfileDbContext, establish webhook for future changes |
-| **Review rankings stuck with old algorithm** | LOW | Recalculate scores: update `helpful_score = NewAlgorithm(votes, created_at)`, rebuild product review summary, redeploy frontend |
-| **Event processing lag accumulation** | HIGH | Scale out MassTransit consumers (add instances), increase partition count if using Azure Service Bus, investigate slow event handlers, add database indexes |
-
----
+| Entity base added discriminator column | HIGH | Revert migration, add `modelBuilder.Ignore<Entity>()`, generate new migration |
+| Audit interceptor overwrites domain timestamps | MEDIUM | Change interceptor to check for default value before setting, OR remove domain logic |
+| xmin lost after backup/restore | HIGH | Add explicit Version column, backfill from xmin, update all concurrency checks |
+| Result/Exception mixing breaks error handling | MEDIUM | Create ADR, choose one approach, refactor over 2-3 sprints |
+| Enumeration breaks JSON serialization | LOW | Add JsonConverter, test API contracts, deploy hotfix |
+| Specification causes N+1 | LOW | Add .Include() to query or disable lazy loading |
+| Source generator build breaks | HIGH | Move to single-target project, regenerate, test all consuming projects |
+| StronglyTypedId breaks OpenAPI | MEDIUM | Add SchemaFilter, regenerate OpenAPI, update client SDKs |
+| Multi-interceptor execution order wrong | MEDIUM | Document order, reorder registrations, test with integration test |
 
 ## Pitfall-to-Phase Mapping
 
@@ -430,60 +296,65 @@ How roadmap phases should address these pitfalls.
 
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| Guest-to-Auth Migration Race | Phase 1: User Profiles | Integration test: simulate concurrent login + cart add, verify no duplicate/lost carts |
-| Cross-Context Query Hell | Phase 2: Reviews | Query profiling: max 3 DB queries per product page load, no N+1 patterns |
-| Keycloak Data Duplication | Phase 1: User Profiles | Schema review: UserProfile table exists, Keycloak custom attributes limited to identity data |
-| Review Spam (Unverified) | Phase 2: Reviews | Schema constraint: reviews.order_id NOT NULL, validation test rejects fake OrderId |
-| Wishlist-to-Cart Violation | Phase 3: Wishlists | Saga test: simulate AddToCart failure, verify wishlist not deleted |
-| Avatar Container Storage | Phase 1: User Profiles | Deployment test: restart AppHost, verify avatars still load |
-| Review Recency Bias | Phase 2: Reviews | Algorithm test: new review with 5 votes outranks old review with 50 votes |
-| Event Consistency UX | Phase 2: Reviews | UX test: submit review, measure time until visible, verify <3 seconds or loading state shown |
-
----
+| Entity base discriminator columns | Phase 1 Task 0 | Generate migration after base class, ensure no discriminator |
+| Audit interceptor timestamp conflicts | Phase 2 Task 0 | Audit existing entities, decide single strategy |
+| xmin backup/restore failure | Phase 3 Task 0 | Test backup/restore cycle, verify version still works |
+| Result/Exception inconsistency | Phase 4 Task 0 | Create ADR before any Result code |
+| Enumeration JSON serialization | Phase 5 Task 0 | Create JsonConverter base, test one enum |
+| Specification N+1 queries | Phase 6 Task Final | Load test with 100+ entities, check query count |
+| Source generator multi-TFM duplication | Phase 7 Task 0 | Define single-target strategy before generator code |
+| StronglyTypedId OpenAPI schema | Phase 8 Task 2 | Validate openapi.json schema, test client generation |
 
 ## Sources
 
-**Guest-to-Authenticated Migration:**
-- [E-Commerce Authentication: 2026 Benchmark + Best Practice](https://www.corbado.com/blog/ecommerce-authentication)
-- [Passwordless Authentication: The Most Important Ecommerce Upgrade for Secure, High-Converting Stores in 2026](https://www.nopaccelerate.com/passwordless-authentication-ecommerce-2026/)
-- [Preventing Postgres SQL Race Conditions with SELECT FOR UPDATE](https://on-systems.tech/blog/128-preventing-read-committed-sql-concurrency-errors/)
-- [Using PostgreSQL advisory locks to avoid race conditions](https://firehydrant.com/blog/using-advisory-locks-to-avoid-race-conditions-in-rails/)
+### EF Core Inheritance & Mapping
+- [Inheritance - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/inheritance)
+- [EF Core Inheritance - Learn About TPC, TPH, and TPT Pattern](https://entityframeworkcore.com/model-inheritance)
+- [Working with Inheritance in Entity Framework Core](https://blog.devart.com/how-to-work-with-inheritance-in-entity-framework-core.html)
 
-**Cross-Context Queries & CQRS:**
-- [Implementing reads/queries in a CQRS microservice - .NET | Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/cqrs-microservice-reads)
-- [CQRS - Martin Fowler](https://www.martinfowler.com/bliki/CQRS.html)
-- [CQRS Design Pattern in Microservices - GeeksforGeeks](https://www.geeksforgeeks.org/system-design/cqrs-design-pattern-in-microservices/)
+### SaveChangesInterceptor & Audit
+- [Interceptors - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/interceptors)
+- [EF Core Interceptors: SaveChangesInterceptor for Auditing Entities in .NET 8 Microservices](https://mehmetozkaya.medium.com/ef-core-interceptors-savechangesinterceptor-for-auditing-entities-in-net-8-microservices-6923190a03b9)
+- [How To Use EF Core Interceptors](https://www.milanjovanovic.tech/blog/how-to-use-ef-core-interceptors)
 
-**Keycloak Profile Management:**
-- [Keycloak User Attributes – What No One Tells You About Version Differences (v21.1.1 vs v24+)](https://medium.com/@saissv2398/keycloak-user-attributes-what-no-one-tells-you-about-version-differences-v21-1-1-vs-v24-876118a11a43)
-- [Custom User Attributes with Keycloak | Baeldung](https://www.baeldung.com/keycloak-custom-user-attributes)
-- [Managing Keycloak user metadata and custom attributes - Mastertheboss](https://www.mastertheboss.com/keycloak/managing-keycloak-user-metadata-and-custom-attributes/)
+### PostgreSQL xmin Concurrency
+- [Concurrency Tokens | Npgsql Documentation](https://www.npgsql.org/efcore/modeling/concurrency.html)
+- [Handling Concurrency Conflicts - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/saving/concurrency)
+- [How to use xmin as version control for records · Issue #2778 · npgsql/efcore.pg](https://github.com/npgsql/efcore.pg/issues/2778)
 
-**Review Spam Prevention:**
-- [The Global Wave of Google Reviews Being Deleted: AI Detection, Legal Takedowns, and What Businesses Must Know Going Into 2026](https://almcorp.com/blog/google-reviews-deleted-ai-legal-takedowns-2025/)
-- [Spam Review Detection Techniques: A Systematic Literature Review](https://www.mdpi.com/2076-3417/9/5/987)
-- [Optional purchase verification in e-commerce platforms](https://onlinelibrary.wiley.com/doi/abs/10.1111/poms.13731)
+### Result Pattern
+- [Is the result pattern worth it?: Working with the result pattern - Part 4](https://andrewlock.net/working-with-the-result-pattern-part-4-is-the-result-pattern-worth-it/)
+- [The Result Pattern in C#: A comprehensive guide](https://www.linkedin.com/pulse/result-pattern-c-comprehensive-guide-andre-baltieri-wieuf)
 
-**Review Ranking & Helpfulness:**
-- [A Survey on E-Commerce Learning to Rank](https://arxiv.org/html/2412.03581v1)
-- [Ranking Online Consumer Reviews](https://arxiv.org/pdf/1901.06274)
-- [Review helpfulness prediction on e-commerce websites: A comprehensive survey](https://www.sciencedirect.com/science/article/abs/pii/S0952197623012599)
+### Enumeration Classes
+- [Enum Type Mapping | Npgsql Documentation](https://www.npgsql.org/efcore/mapping/enum.html)
+- [Enum mapping with v9 and ordering · Issue #3390 · npgsql/efcore.pg](https://github.com/npgsql/efcore.pg/issues/3390)
+- [Value Conversions - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions)
 
-**Bounded Context Integration:**
-- [Integrating Bounded Context for DDD Beginners](https://medium.com/@dangeabunea/integrating-bounded-context-for-ddd-beginners-63c21af875fb)
-- [DDD Beyond the Basics: Mastering Multi-Bounded Context Integration](https://medium.com/ssense-tech/ddd-beyond-the-basics-mastering-multi-bounded-context-integration-ca0c7cec6561)
-- [Evolving modular monoliths: 3. Passing data between bounded contexts](https://www.thereformedprogrammer.net/evolving-modular-monoliths-3-passing-data-between-bounded-contexts/)
+### Specification Pattern
+- [Specification pattern: C# implementation · Enterprise Craftsmanship](https://enterprisecraftsmanship.com/posts/specification-pattern-c-implementation/)
+- [Specification Pattern in Java: Enhancing Business Rules with Decoupled Logic](https://java-design-patterns.com/patterns/specification/)
 
-**Container Storage:**
-- [Microservices and Containerization: Challenges and Best Practices](https://www.aquasec.com/cloud-native-academy/docker-container/microservices-and-containerization/)
-- [Mastering Microservices: Top Best Practices for 2026](https://www.imaginarycloud.com/blog/microservices-best-practices)
+### Source Generators
+- [.NET Handbook | Best Practices / Source Generators](https://infinum.com/handbook/dotnet/best-practices/source-generators)
+- [Errors and warnings associated with source generators - C# reference | Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/source-generator-errors)
+- [.NET 10 based source generator and false IDE unresolved symbol errors · Issue #81475 · dotnet/roslyn](https://github.com/dotnet/roslyn/issues/81475)
 
-**Domain Events & Eventual Consistency:**
-- [Domain events: Design and implementation - .NET | Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/domain-events-design-implementation)
-- [CQRS and Event Sourcing in Event Driven Architecture of Ordering Microservices](https://medium.com/aspnetrun/cqrs-and-event-sourcing-in-event-driven-architecture-of-ordering-microservices-fb67dc44da7a)
+### StronglyTypedId
+- [CS0436 Warning · Issue #38 · andrewlock/StronglyTypedId](https://github.com/andrewlock/StronglyTypedId/issues/38)
+- [Exception is thrown when deserializing nullable strongly-typed id · Issue #36 · andrewlock/StronglyTypedId](https://github.com/andrewlock/StronglyTypedId/issues/36)
+- [GitHub - andrewlock/StronglyTypedId](https://github.com/andrewlock/StronglyTypedId)
+
+### MediatR Error Handling
+- [Improving Error Handling with the Result Pattern in MediatR](https://goatreview.com/improving-error-handling-result-pattern-mediatr/)
+- [MediatR Response: Should the Request Handler Return Exceptions?](https://medium.com/sharpassembly/mediatr-response-should-the-request-handler-return-exceptions-8a7928a7c572)
+- [Global Exception Handling for MediatR Requests - Code Maze](https://code-maze.com/csharp-global-exception-handling-for-mediatr-requests/)
+
+### DDD Patterns
+- [DDD Modelling - Aggregates vs Entities: A Practical Guide](https://www.dandoescode.com/blog/ddd-modelling-aggregates-vs-entities)
+- [Modeling Aggregates with DDD and Entity Framework](https://kalele.io/modeling-aggregates-with-ddd-and-entity-framework/)
+- [Creating Domain-Driven Design entity classes with Entity Framework Core](https://www.thereformedprogrammer.net/creating-domain-driven-design-entity-classes-with-entity-framework-core/)
 
 ---
-
-*Pitfalls research for: MicroCommerce v1.1 — User Profiles, Reviews, Wishlists*
-*Researched: 2026-02-13*
-*Confidence: MEDIUM — Web search findings verified against official Microsoft/.NET documentation where possible, some e-commerce-specific patterns based on industry research without direct technical verification*
+*Pitfalls research for: DDD Building Blocks in .NET 10 Modular Monolith*
+*Researched: 2026-02-14*

@@ -1,349 +1,293 @@
-# Feature Research
+# Feature Landscape: DDD Building Blocks
 
-**Domain:** E-commerce User Accounts, Product Reviews, and Wishlists
-**Researched:** 2026-02-13
-**Confidence:** MEDIUM
+**Domain:** .NET 10 modular monolith e-commerce platform - DDD infrastructure improvements
+**Researched:** 2026-02-14
+**Confidence:** HIGH (verified with official docs, EF Core patterns, OSS library standards)
 
-## Feature Landscape
+## Table Stakes
 
-### Table Stakes (Users Expect These)
+Features expected in a comprehensive DDD building blocks library. Missing = developers write boilerplate manually or inconsistently.
 
-Features users assume exist. Missing these = product feels incomplete.
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| **Entity Base Class** | Standardizes ID handling, equality, child entity patterns | Low | Existing BaseAggregateRoot | Already have for aggregates, need for child entities (CartItem, OrderItem) |
+| **Audit Field Interfaces** | Automatic CreatedAt/ModifiedAt/CreatedBy/ModifiedBy tracking across all entities | Medium | Entity base, SaveChangesInterceptor | Currently manual per aggregate, industry standard is interface-based automation |
+| **Optimistic Concurrency Base** | Standardizes RowVersion pattern for aggregates needing concurrency control | Low | Entity base | Currently manual [Timestamp] on Order.Version, should be opt-in base class/interface |
+| **StronglyTypedId Converters** | EF Core, System.Text.Json, TypeConverter support for all ID types | Medium | Source generators | Currently manual inheritance from StronglyTypedId<Guid>, need auto TypeConverter/JsonConverter |
+| **Specification Pattern** | Reusable, composable query logic instead of repository method explosion | High | None (standalone pattern) | Complex queries manually coded, Specification enables IRepository.Get(spec) |
+| **Enumeration/SmartEnum** | Enums with behavior, encapsulation, type safety, EF Core persistence | Low | Ardalis.SmartEnum or custom base | Currently plain enums (OrderStatus, ProductStatus), no behavior or centralized logic |
 
-#### User Profiles & Accounts
+## Differentiators
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Display name & avatar | Users expect personalized identity in modern apps | LOW | Simple profile metadata, image upload/storage |
-| Saved shipping addresses (address book) | Checkout friction killer—users expect to save addresses | MEDIUM | Need CRUD UI, default address selection, validation |
-| Order history linkage | "My orders" requires account—users expect permanent record | LOW | Link existing orders to authenticated user ID |
-| Account settings page | Self-service profile management is standard UX | LOW | Form with validation, update endpoints already exist pattern |
-| Guest-to-authenticated migration | Users expect cart/orders to persist after login/signup | MEDIUM | Merge guest BuyerId with authenticated user, data migration |
+Features not universally expected but provide significant value when building domain-rich applications.
 
-#### Product Reviews & Ratings
+| Feature | Value Proposition | Complexity | Dependencies | Notes |
+|---------|-------------------|------------|--------------|-------|
+| **Result<T> Monad** | Railway-oriented error handling, eliminates exception-driven flow for business logic failures | Medium | None (standalone) | Replaces `throw DomainException`, enables `Result.Success(order)` or `Result.Failure("Stock unavailable")` |
+| **Guard Clauses Library** | Fluent, expressive input validation (already using Ardalis.GuardClauses) | Low | Already in use | KEEP existing usage, table stake for domain validation |
+| **Domain Event Dispatcher** | Automatic in-process event handling before SaveChanges (MediatR notifications) | Medium | MediatR, DomainEventInterceptor | Already have DomainEventInterceptor + MassTransit for out-of-process, could add in-process handlers |
+| **Soft Delete Interface** | ISoftDeletable + interceptor for logical deletion pattern | Low | SaveChangesInterceptor | Product.Archive() is manual, could be interface-driven with global query filter |
+| **Tenant ID Interface** | Multi-tenancy support via IHasTenant + global query filters | Medium | SaveChangesInterceptor, EF query filters | Not needed for current single-tenant e-commerce, but common in SaaS DDD apps |
+| **Outbox Pattern Support** | Transactional outbox for reliable domain event publishing | High | Dedicated outbox table, background processor | MassTransit handles this, would duplicate, mark as ANTI-FEATURE unless replacing MassTransit |
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Star rating (1-5) | Universal e-commerce standard | LOW | Aggregate rating calculation, display on product cards |
-| Written review text | Users expect detailed feedback beyond stars | LOW | Text field with length limits (e.g., 500-5000 chars) |
-| Verified purchase badge | Trust signal—60% of users filter to verified only | MEDIUM | Cross-reference order history, badge display logic |
-| Review display on product page | Reviews influence 93% of purchase decisions | LOW | Query reviews by ProductId, pagination, sorting |
-| Average rating summary | Users scan rating before reading reviews | LOW | Aggregate calculation, cache for performance |
-| Review submission form | Standard expectation after purchase | MEDIUM | Validation, one-review-per-product-per-user enforcement |
+## Anti-Features
 
-#### Wishlists
+Features to explicitly NOT build, with rationale.
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Add/remove products | Core wishlist functionality | LOW | Simple CRUD on wishlist items |
-| Persistent across sessions | Users expect saved lists, not ephemeral | LOW | Database storage, user association |
-| Move to cart | Conversion path—users expect quick checkout from wishlist | LOW | Copy wishlist item to cart, remove from wishlist |
-| Visual indicator on product cards | "Already wishlisted" feedback prevents duplicates | LOW | Check existence, show filled/unfilled heart icon |
-| Wishlist page/view | Dedicated UI to manage saved items | MEDIUM | List view with product details, bulk actions |
-
-### Differentiators (Competitive Advantage)
-
-Features that set the product apart. Not required, but valuable.
-
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| Review helpfulness voting | Surfaces quality reviews, reduces noise | MEDIUM | Upvote/downvote counts, sort by helpfulness, prevent self-voting |
-| Review images/media upload | Visual proof increases trust 3x vs text-only | HIGH | Image storage, moderation, thumbnail generation |
-| Review response from admin | Shows brand engagement, builds trust | MEDIUM | Admin reply to reviews, notification to reviewer |
-| Wishlist price drop alerts | Re-engagement tool—30% conversion on price drops | HIGH | Price tracking, background job, email/notification |
-| Wishlist stock alerts | Notify when out-of-stock items return | MEDIUM | Inventory event subscriber, notification system |
-| Review summary with AI | Quick insights without reading all reviews | HIGH | LLM integration, cost per summary, caching |
-| Multiple wishlists | Power users organize by category (birthday, holiday, etc.) | MEDIUM | List CRUD, name/description, default list |
-| Wishlist sharing (read-only link) | Gift registry use case, viral growth | MEDIUM | Public/private toggle, share token generation |
-| Review sorting/filtering | By date, rating, verified, helpfulness | LOW | Query parameterization, index optimization |
-| Review photos in lightbox | Enhanced UX for image reviews | LOW | Frontend component, already common pattern |
-
-### Anti-Features (Commonly Requested, Often Problematic)
-
-Features that seem good but create problems.
-
-| Feature | Why Requested | Why Problematic | Alternative |
-|---------|---------------|-----------------|-------------|
-| Anonymous reviews | "Increases participation" claim | Fake reviews explode, trust collapses, Amazon/Walmart ban them | Require verified purchase, simple signup |
-| Incentivized reviews (discount for review) | Boosts review volume fast | FTC compliance nightmare, biases ratings upward, damages trust | Post-purchase email campaigns, patience |
-| Real-time review moderation UI | "Catch bad reviews instantly" | Human moderation doesn't scale, creates bottleneck, legal risks if selective | Automated profanity filter + flag/report system |
-| Public wishlist by default | "Social proof drives sales" | Privacy violation perception—users think it's "greedy" (NN/g research) | Private by default, opt-in sharing |
-| Unlimited review length | "Let customers express fully" | Review spam, SEO manipulation, poor UX (no one reads novels) | 500 min, 5000 max characters with validation |
-| Review editing after submission | "Users make typos" | Review manipulation after purchase disputes, trust issues | Show "edited" badge if allowed, or disallow entirely |
-| Wishlist notification spam | "Keep users engaged" | Unsubscribes spike, brand damage, every price fluctuation triggers email | Smart throttling: max 1 alert/week per item, batch notifications |
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **Generic Repository** | Leaky abstraction, EF Core DbContext already is unit-of-work + repository | Use DbContext directly per feature (already doing this) |
+| **Auto-mapper for Aggregates** | Domain logic should be explicit, automapping hides business rules | Keep explicit factory methods (Order.Create, Product.Update) |
+| **Specification Builder UI** | Over-engineering, adds indirection without value | Write Specifications manually for complex queries only |
+| **Custom ORM Wrapper** | EF Core is mature, wrapping adds complexity without benefit | Use EF Core directly with building block extensions |
+| **Domain Services Base Class** | Domain services are stateless application patterns, no shared base needed | Keep as standalone classes (already doing this) |
+| **Transaction Script Helpers** | DDD is about rich domain models, transaction scripts are procedural anti-pattern | Enforce aggregate encapsulation instead |
 
 ## Feature Dependencies
 
 ```
-[User Profile]
-    └──requires──> [Authentication] (✓ exists: Keycloak)
-    └──enables──> [Product Reviews]
-                      └──requires──> [Order History] (✓ exists)
-                      └──enables──> [Verified Purchase Badge]
-    └──enables──> [Wishlists]
-                      └──enhances──> [Shopping Cart] (✓ exists)
-
-[Address Book]
-    └──requires──> [User Profile]
-    └──enhances──> [Checkout] (✓ exists)
-    └──reduces──> [Cart Abandonment]
-
-[Guest-to-Auth Migration]
-    └──requires──> [User Profile]
-    └──requires──> [Guest Cart] (✓ exists: BuyerIdentity)
-    └──requires──> [Order History] (✓ exists)
-
-[Verified Purchase Badge]
-    └──requires──> [Order History] (✓ exists)
-    └──requires──> [Product Reviews]
-    └──conflicts──> [Anonymous Reviews] (anti-feature)
-
-[Review Helpfulness Voting]
-    └──requires──> [Product Reviews]
-    └──optional──> [User Profile] (can allow guest voting, but prevents manipulation if required)
-
-[Wishlist Stock Alerts]
-    └──requires──> [Wishlists]
-    └──requires──> [Inventory Events] (✓ exists: stock reservation system)
-    └──requires──> [Notification System] (new)
-
-[Wishlist Price Drop Alerts]
-    └──requires──> [Wishlists]
-    └──requires──> [Price History Tracking] (new)
-    └──requires──> [Background Jobs] (new)
-    └──requires──> [Notification System] (new)
+Audit Interfaces → Entity Base Class → SaveChangesInterceptor (already exists)
+StronglyTypedId Converters → StronglyTypedId<T> (already exists)
+Specification Pattern → (standalone, no dependencies)
+SmartEnum → (standalone OR Ardalis.SmartEnum library)
+Result<T> → (standalone, no dependencies)
+Soft Delete → Entity Base OR Interface → SaveChangesInterceptor
+Optimistic Concurrency → Entity Base OR Interface
 ```
 
-### Dependency Notes
+## MVP Recommendation
 
-- **User Profile requires Authentication:** Already satisfied—Keycloak integrated, JWT validation working.
-- **Product Reviews require Order History:** Verified purchase badge needs order-product association check.
-- **Guest-to-Auth Migration is critical path:** Users signing up after guest checkout expect data persistence—UX failure if cart/orders vanish.
-- **Wishlists enhance Shopping Cart:** "Move to cart" is primary conversion path from wishlist.
-- **Review voting optional auth:** Guest voting increases participation but enables manipulation; require auth for quality.
-- **Notification system is cross-cutting:** Needed for review responses, wishlist alerts, future features—build once, reuse.
-- **Price alerts are complex:** Require background job infrastructure (Hangfire/Quartz), price history table, throttling logic.
+**Phase 1: Foundations (Low-hanging fruit, high impact)**
+1. **Audit Field Interfaces** - ICreatable, IModifiable, IUserCreatable, IUserModifiable with SaveChangesInterceptor
+   - Eliminates repetitive `CreatedAt = DateTimeOffset.UtcNow` in every factory method
+   - Enables user tracking (CreatedBy/ModifiedBy) via IHttpContextAccessor
+   - Complexity: Medium (interceptor already exists, need interfaces + user resolution)
 
-## MVP Definition
+2. **Optimistic Concurrency Interface** - IConcurrent with RowVersion property + EF config helper
+   - Currently only Order has Version, but Cart, Product, StockItem also need concurrency
+   - Complexity: Low (just standardize existing pattern)
 
-### Launch With (v1.1)
+3. **StronglyTypedId Source Generators** - Add Meziantou.Framework.StronglyTypedId or andrewlock/StronglyTypedId
+   - Auto-generates TypeConverter, JsonConverter, EF ValueConverter per ID type
+   - Eliminates manual EF configuration for 15+ strongly typed IDs
+   - Complexity: Medium (NuGet + attribute decoration)
 
-Minimum viable product for user accounts, reviews, and wishlists.
+**Phase 2: Behavior Enrichment**
+4. **Enumeration Classes** - Replace plain enums with Ardalis.SmartEnum
+   - OrderStatus becomes SmartEnum with behavior: `OrderStatus.Submitted.CanTransitionTo(OrderStatus.Paid)`
+   - ProductStatus gets display names, descriptions, transition rules
+   - Complexity: Low (library handles persistence, just define enums)
 
-- **User Profile Management**
-  - [ ] Display name & avatar upload — Identity foundation
-  - [ ] Address book CRUD (add, edit, delete, set default) — Reduces checkout friction
-  - [ ] Link existing orders to authenticated users — "My account" completeness
-  - [ ] Guest-to-auth migration on signup/login — Preserve cart & order history
+5. **Result<T> Pattern** - Add Ardalis.Result or FluentResults
+   - Replace exceptions in commands: `Result<Order> PlaceOrder(...)` instead of throwing
+   - Enables `return Result.Invalid(validationErrors)` at application layer
+   - Complexity: Medium (refactor command handlers to return Result)
 
-- **Product Reviews**
-  - [ ] Star rating (1-5) + written review submission — Core review functionality
-  - [ ] One review per product per user enforcement — Prevents spam
-  - [ ] Verified purchase badge — Trust signal (Amazon weights 10x heavier)
-  - [ ] Review display on product pages — Influences 93% of purchases
-  - [ ] Average rating calculation & display — Quick trust signal
-  - [ ] Basic profanity filter — Automated moderation
+**Phase 3: Query Patterns**
+6. **Specification Pattern** - Custom implementation based on Ardalis.Specification patterns
+   - Complex catalog queries: `ProductsInCategoryWithReviewsSpec`, `PublishedProductsWithStockSpec`
+   - Reusable across queries and tests
+   - Complexity: High (requires generic repository abstraction or DbSet extensions)
 
-- **Wishlists**
-  - [ ] Single wishlist per user — Simplicity over power-user features
-  - [ ] Add/remove products — Core CRUD
-  - [ ] Wishlist page with product grid — Dedicated view
-  - [ ] Move to cart action — Primary conversion path
-  - [ ] Visual indicator on product cards — Prevent duplicate adds
-
-### Add After Validation (v1.2+)
-
-Features to add once core is working and usage patterns emerge.
-
-- [ ] Review helpfulness voting — Add when review volume > 10/product (signal-to-noise issue)
-- [ ] Review sorting/filtering (date, rating, verified) — Add when reviews > 20/product
-- [ ] Review image uploads — Add after moderation workflow validated
-- [ ] Wishlist sharing (read-only link) — Add if gift registry requests appear
-- [ ] Multiple wishlists — Add if user research shows organization need
-- [ ] Admin review response — Add when support team requests engagement tool
-
-### Future Consideration (v2+)
-
-Features to defer until product-market fit and resource availability.
-
-- [ ] Wishlist price drop alerts — Requires background job infrastructure, notification system, price history
-- [ ] Wishlist stock alerts — Requires notification infrastructure
-- [ ] AI review summary — Requires LLM integration, cost analysis, caching strategy
-- [ ] Review media lightbox — Nice-to-have UX polish
-- [ ] Review question/answer section — Separate feature, large scope
-
-## Feature Prioritization Matrix
-
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| User profile (name, avatar) | HIGH | LOW | P1 |
-| Address book | HIGH | MEDIUM | P1 |
-| Guest-to-auth migration | HIGH | MEDIUM | P1 |
-| Star rating + review text | HIGH | LOW | P1 |
-| Verified purchase badge | HIGH | MEDIUM | P1 |
-| Review display on product page | HIGH | LOW | P1 |
-| Average rating summary | HIGH | LOW | P1 |
-| Wishlist add/remove | HIGH | LOW | P1 |
-| Wishlist page | HIGH | MEDIUM | P1 |
-| Move to cart | HIGH | LOW | P1 |
-| Review helpfulness voting | MEDIUM | MEDIUM | P2 |
-| Review image upload | MEDIUM | HIGH | P2 |
-| Review sorting/filtering | MEDIUM | LOW | P2 |
-| Admin review response | MEDIUM | MEDIUM | P2 |
-| Multiple wishlists | LOW | MEDIUM | P2 |
-| Wishlist sharing | MEDIUM | MEDIUM | P2 |
-| Wishlist price alerts | MEDIUM | HIGH | P3 |
-| Wishlist stock alerts | MEDIUM | MEDIUM | P3 |
-| AI review summary | LOW | HIGH | P3 |
-
-**Priority key:**
-- P1: Must have for v1.1 launch — core functionality, table stakes
-- P2: Should have, add in v1.2+ — enhances core, user requests validate
-- P3: Nice to have, future consideration — complex, requires infrastructure
-
-## Competitor Feature Analysis
-
-| Feature | Amazon | Shopify (default) | Our Approach (v1.1) |
-|---------|--------|-------------------|---------------------|
-| User profiles | Name, avatar, payment methods | Basic account info | Name, avatar, address book (focused scope) |
-| Address book | Full CRUD, default, nicknames | Saved addresses | Full CRUD, default address, no nicknames (v1) |
-| Verified purchase | Verified badge, weighted 10x | Varies by app (Yotpo, Judge.me) | Verified badge, order history cross-check |
-| Review submission | Star + text + images | Star + text (apps add images) | Star + text (images deferred to v1.2) |
-| Review voting | Helpful/Not helpful | Plugin-dependent | Defer to v1.2 (needs review volume first) |
-| Review moderation | Automated + manual | Plugin-dependent | Automated profanity filter only (v1) |
-| Wishlists | Single list, shareable | App-based (multiple lists common) | Single list, private (sharing v1.2+) |
-| Wishlist alerts | Stock alerts, Lightning Deals | App-based (price/stock) | Defer to v2 (needs notification infra) |
-| Guest migration | Seamless on login | Account merge prompts | Automatic merge on first auth after guest session |
+**Defer (Not needed for current scope)**
+- Soft Delete Interface: Product.Archive() is explicit domain logic, not infrastructure concern
+- Tenant ID: Single-tenant application, premature
+- Outbox Pattern: MassTransit handles this
+- Domain Event Dispatcher (in-process): Domain events already work via interceptor + MassTransit
 
 ## Implementation Notes
 
-### Existing Assets to Leverage
-
-**Already Built (v1.0):**
-- Keycloak authentication (backend JWT + NextAuth.js frontend)
-- Guest cart with BuyerIdentity cookie system
-- Order history with status tracking
-- Product catalog with images
-- Inventory system with stock tracking
-- MassTransit messaging infrastructure
-- PostgreSQL per-feature databases
-
-**Integration Points:**
-- **User Profile DB:** New `Users` feature with `UserProfile`, `Address` entities
-- **Reviews DB:** New `Reviews` feature with `ProductReview`, `ReviewVote` entities (vote deferred)
-- **Wishlist DB:** New `Wishlists` feature with `Wishlist`, `WishlistItem` entities
-- **Link to existing:** Orders (via UserId), Products (via ProductId), Inventory (for stock checks)
-
-### Technical Considerations
-
-**User Profile:**
-- **Avatar storage:** Azure Blob Storage or local file system (dev), size limits (2MB), format validation (jpg, png, webp)
-- **Address validation:** Consider address verification API (SmartyStreets, Google) or basic format validation
-- **Guest migration:** On signup/login, check for guest BuyerId cookie → migrate cart + orders → clear cookie
-
-**Product Reviews:**
-- **Verified purchase logic:** `SELECT COUNT(*) FROM Orders WHERE UserId = @UserId AND OrderItems.ProductId = @ProductId AND Status = 'Completed'`
-- **One review per user-product:** Unique index on `(UserId, ProductId)`
-- **Rating aggregation:** Cached computed column or materialized view, recalculate on review add/update/delete
-- **Profanity filter:** Library like `ProfanityFilter.NET` or simple regex blacklist
-
-**Wishlists:**
-- **Single list simplification:** `Wishlist` table with `UserId` (1:1), `WishlistItems` join table (many-to-many with Products)
-- **Stock check on display:** Join with Inventory to show "Out of Stock" on wishlist page
-- **Move to cart:** Copy `WishlistItem.ProductId` to `CartItem`, delete from wishlist
-
-### Data Model Sketch
-
+### Audit Fields
+**Interfaces:**
 ```csharp
-// Users feature
-public class UserProfile : Entity<UserId>
-{
-    public string DisplayName { get; private set; }
-    public string? AvatarUrl { get; private set; }
-    public string Email { get; private set; } // from Keycloak
-    public DateTime CreatedAt { get; private set; }
-    private readonly List<Address> _addresses = [];
-    public IReadOnlyCollection<Address> Addresses => _addresses.AsReadOnly();
-}
+public interface ICreatable { DateTimeOffset CreatedAt { get; set; } }
+public interface IModifiable { DateTimeOffset ModifiedAt { get; set; } }
+public interface IUserCreatable : ICreatable { string CreatedBy { get; set; } }
+public interface IUserModifiable : IModifiable { string ModifiedBy { get; set; } }
+```
 
-public class Address : Entity<AddressId>
+**Interceptor pattern (SaveChangesInterceptor):**
+```csharp
+public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
 {
-    public UserId UserId { get; private set; }
-    public string FullName { get; private set; }
-    public string Line1 { get; private set; }
-    public string? Line2 { get; private set; }
-    public string City { get; private set; }
-    public string State { get; private set; }
-    public string PostalCode { get; private set; }
-    public string Country { get; private set; }
-    public bool IsDefault { get; private set; }
-}
+    var entries = eventData.Context.ChangeTracker.Entries()
+        .Where(e => e.State is EntityState.Added or EntityState.Modified);
 
-// Reviews feature
-public class ProductReview : Entity<ReviewId>
-{
-    public ProductId ProductId { get; private set; }
-    public UserId UserId { get; private set; }
-    public int Rating { get; private set; } // 1-5
-    public string ReviewText { get; private set; }
-    public bool IsVerifiedPurchase { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
-    // Future: HelpfulVotes, UnhelpfulVotes, AdminResponse
-}
+    foreach (var entry in entries)
+    {
+        if (entry.State == EntityState.Added && entry.Entity is ICreatable creatable)
+            creatable.CreatedAt = DateTimeOffset.UtcNow;
 
-// Wishlists feature
-public class Wishlist : Entity<WishlistId>
-{
-    public UserId UserId { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    private readonly List<WishlistItem> _items = [];
-    public IReadOnlyCollection<WishlistItem> Items => _items.AsReadOnly();
-}
-
-public class WishlistItem : Entity<WishlistItemId>
-{
-    public WishlistId WishlistId { get; private set; }
-    public ProductId ProductId { get; private set; }
-    public DateTime AddedAt { get; private set; }
+        if (entry.State == EntityState.Modified && entry.Entity is IModifiable modifiable)
+            modifiable.ModifiedAt = DateTimeOffset.UtcNow;
+    }
 }
 ```
 
+### Optimistic Concurrency
+**Option 1: Interface-based**
+```csharp
+public interface IConcurrent { uint Version { get; set; } }
+```
+Then use EF model configuration convention to apply [Timestamp] globally.
+
+**Option 2: Base class** (for aggregates already extending BaseAggregateRoot)
+```csharp
+public abstract class ConcurrentAggregateRoot<TId> : BaseAggregateRoot<TId>, IConcurrent
+{
+    [Timestamp] public uint Version { get; set; }
+}
+```
+
+### StronglyTypedId Converters
+**Library choice:** Meziantou.Framework.StronglyTypedId (active, .NET 10 compatible)
+
+**Usage:**
+```csharp
+[StronglyTypedId(jsonConverter: StronglyTypedIdJsonConverter.SystemTextJson, converters: StronglyTypedIdConverter.TypeConverter | StronglyTypedIdConverter.EfCoreValueConverter)]
+public readonly partial record struct ProductId(Guid Value);
+```
+
+Source generator creates TypeConverter, JsonConverter, EF ValueConverter automatically.
+
+### Enumeration Classes
+**Library choice:** Ardalis.SmartEnum (8.2.0+, industry standard)
+
+**Migration example:**
+```csharp
+// Before: plain enum
+public enum OrderStatus { Submitted, Paid, Confirmed }
+
+// After: SmartEnum with behavior
+public class OrderStatus : SmartEnum<OrderStatus>
+{
+    public static readonly OrderStatus Submitted = new(nameof(Submitted), 1);
+    public static readonly OrderStatus Paid = new(nameof(Paid), 2);
+    public static readonly OrderStatus Confirmed = new(nameof(Confirmed), 3);
+
+    private OrderStatus(string name, int value) : base(name, value) {}
+
+    public bool CanTransitionTo(OrderStatus next) => next.Value == Value + 1; // Domain logic
+}
+```
+
+EF Core persistence via `Ardalis.SmartEnum.EFCore` package (value converter).
+
+### Result Pattern
+**Library choice:** Ardalis.Result (for consistency with Ardalis.GuardClauses, Ardalis.SmartEnum)
+
+**Usage in command handlers:**
+```csharp
+// Before: throw exception
+public async Task<Order> Handle(PlaceOrderCommand request, CancellationToken ct)
+{
+    if (cart.Items.Count == 0)
+        throw new InvalidOperationException("Cart is empty");
+    return order;
+}
+
+// After: Result<T>
+public async Task<Result<Order>> Handle(PlaceOrderCommand request, CancellationToken ct)
+{
+    if (cart.Items.Count == 0)
+        return Result.Invalid(new ValidationError("Cart cannot be empty"));
+    return Result.Success(order);
+}
+```
+
+ASP.NET Core integration via `Ardalis.Result.AspNetCore` (auto-maps to IResult/IActionResult).
+
+### Specification Pattern
+**Custom implementation** based on Ardalis.Specification patterns but adapted for EF Core DbSet extensions.
+
+**Interface:**
+```csharp
+public interface ISpecification<T>
+{
+    Expression<Func<T, bool>>? Criteria { get; }
+    List<Expression<Func<T, object>>> Includes { get; }
+    List<string> IncludeStrings { get; }
+    Expression<Func<T, object>>? OrderBy { get; }
+    Expression<Func<T, object>>? OrderByDescending { get; }
+    int? Take { get; }
+    int? Skip { get; }
+}
+```
+
+**Usage:**
+```csharp
+public class PublishedProductsInCategorySpec : Specification<Product>
+{
+    public PublishedProductsInCategorySpec(CategoryId categoryId)
+    {
+        Query.Where(p => p.CategoryId == categoryId && p.Status == ProductStatus.Published)
+             .OrderByDescending(p => p.CreatedAt);
+    }
+}
+
+// In query handler
+var products = await dbContext.Products.ApplySpecification(spec).ToListAsync();
+```
+
+## Complexity Assessment
+
+| Feature | Lines of Code | Integration Points | Risk Level |
+|---------|--------------|-------------------|------------|
+| Audit Interfaces | ~50 (interfaces + interceptor) | SaveChangesInterceptor, all aggregates | Low (existing pattern) |
+| Concurrency Base | ~20 (interface + config) | EF model builder | Low (existing pattern) |
+| StronglyTypedId Generators | ~10 (attributes) | All 15+ ID types | Low (library-driven) |
+| SmartEnum | ~200 (2 enum migrations) | OrderStatus, ProductStatus, EF configs | Medium (data migration) |
+| Result<T> | ~300 (command handler refactor) | MediatR pipeline, ASP.NET endpoints | Medium (changes error handling) |
+| Specification Pattern | ~150 (base + extensions) | Catalog/Ordering queries | High (new abstraction) |
+
+## Migration Strategy
+
+**Backward Compatibility:**
+- Audit interfaces: Add to aggregates progressively, old aggregates keep manual CreatedAt until migrated
+- Concurrency: Opt-in interface, existing Order.Version unchanged
+- StronglyTypedId: Backward compatible (same record struct, just adds converters)
+- SmartEnum: Breaking change for enums, requires data migration + frontend DTO updates
+- Result<T>: Opt-in per command, existing exception-based handlers unchanged
+- Specification: Additive, existing LINQ queries unchanged
+
+**Rollout Order:**
+1. Non-breaking (StronglyTypedId generators, Audit interfaces, Concurrency interface)
+2. Opt-in additions (Result<T> for new commands, Specifications for new complex queries)
+3. Breaking migrations (SmartEnum replacing plain enums - coordinate with frontend)
+
 ## Sources
 
-**E-commerce User Profile Best Practices:**
-- [60+ Best Profile page Top 2026 Design Patterns | Muzli](https://muz.li/inspiration/profile-page/)
-- [The Ultimate Ecommerce Website Checklist For 2026 | Limely](https://www.limely.co.uk/blog/the-ultimate-ecommerce-website-checklist-for-2026)
-- [15 Must-Have E-commerce Features for 2026 (and How to Build Them)](https://www.sctinfo.com/blog/build-a-e-commerce-website/)
-- [Ecommerce User Experience: Complete Guide (2025)](https://www.parallelhq.com/blog/ecommerce-user-experience)
+### Official Documentation
+- [Microsoft - Seedwork DDD base classes](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/seedwork-domain-model-base-classes-interfaces)
+- [Microsoft - Enumeration classes over enum types](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types)
+- [Microsoft - EF Core Concurrency Handling](https://learn.microsoft.com/en-us/ef/core/saving/concurrency)
+- [Microsoft - EF Core Interceptors](https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/interceptors)
 
-**Product Review Systems:**
-- [11 Best Product Review Software for Ecommerce (2026)](https://wiserreview.com/blog/product-review-software/)
-- [Amazon Customer Reviews & Ratings](https://www.amazon.com/gp/help/customer/display.html?nodeId=G8UYX7LALQC8V9KA)
-- [Verified Purchaser | Bazaarvoice](https://developers.bazaarvoice.com/v1.0-ConversationsAPI/docs/verified-purchaser)
-- [Do Verified Badges on Reviews Boost Shopper Confidence?](https://en.verified-reviews.com/blog/verified-badges-reviews/)
+### DDD Patterns
+- [Enterprise Craftsmanship - Entity Base Class](https://enterprisecraftsmanship.com/posts/entity-base-class/)
+- [Enterprise Craftsmanship - Specification Pattern C# Implementation](https://enterprisecraftsmanship.com/posts/specification-pattern-c-implementation/)
+- [Medium - Clean DDD Lessons: Audit Metadata](https://medium.com/unil-ci-software-engineering/clean-ddd-lessons-audit-metadata-for-domain-entities-5935a5c6db5b)
+- [ByteAether - Automated Auditing with EF Core](https://byteaether.github.io/2025/building-an-enterprise-data-access-layer-automated-auditing/)
+- [Milan Jovanovic - EF Core Interceptors](https://www.milanjovanovic.tech/blog/how-to-use-ef-core-interceptors)
 
-**Review Moderation & Voting:**
-- [Moderating content: Why it matters and how to do it | Bazaarvoice](https://www.bazaarvoice.com/blog/moderating-content-tips-and-best-practices/)
-- [What Is Product Review Moderation? | Yotpo](https://www.yotpo.com/glossary/product-review-moderation/)
-- [How product review voting is influenced | ScienceDirect](https://www.sciencedirect.com/science/article/abs/pii/S0167923623000568)
+### Libraries & Implementations
+- [Ardalis SmartEnum GitHub](https://github.com/ardalis/SmartEnum)
+- [Ardalis Result GitHub](https://github.com/ardalis/Result)
+- [Andrew Lock - StronglyTypedId Source Generator](https://github.com/andrewlock/StronglyTypedId)
+- [Meziantou StronglyTypedId NuGet](https://www.nuget.org/packages/Meziantou.Framework.StronglyTypedId)
+- [FluentResults GitHub](https://github.com/altmann/FluentResults)
 
-**Wishlist Features:**
-- [15 Ways a Wishlist Can Boost Your E-commerce Strategy](https://www.getswym.com/blog/15-ways-a-wishlist-can-boost-your-e-commerce-strategy)
-- [Use These E-Commerce Wishlist Examples to Increase Revenue](https://www.drip.com/blog/e-commerce-wishlist-examples)
-- [Wishlist or shopping cart? Saving products for later | NN/G](https://www.nngroup.com/articles/wishlist-or-cart/)
-- [What is a WishList and Why It is an Important in Ecommerce?](https://devrims.com/blog/ecommerce-wishlist/)
-- [Understand wish list features - Oracle Commerce](https://docs.oracle.com/en/cloud/saas/cx-commerce/uoccs/understand-wish-list-features.html)
+### Result Pattern Comparisons
+- [NikolaTech - Result Pattern in .NET](https://www.nikolatech.net/blogs/result-pattern-manage-errors-in-dotnet)
+- [Anton DevTips - Replace Exceptions with Result Pattern](https://antondevtips.com/blog/how-to-replace-exceptions-with-result-pattern-in-dotnet)
 
-**Address Book UX:**
-- [713 'Address Book' Design Examples | Baymard](https://baymard.com/ecommerce-design-examples/59-address-book)
-- [Commerce Addressbook | Drupal.org](https://www.drupal.org/project/commerce_addressbook)
+### Specification Pattern
+- [DevIQ - Specification Pattern](https://deviq.com/design-patterns/specification-pattern/)
+- [Ardalis Specification - Use with Repository Pattern](https://specification.ardalis.com/usage/use-specification-repository-pattern.html)
+- [Medium - Specification Pattern in DDD .NET Core](https://medium.com/@cizu64/the-query-specification-pattern-in-ddd-net-core-25f1ec580f32)
 
-**Review & Rating System Pitfalls:**
-- [Ratings and Reviews in E-Commerce: A Guide for Brands](https://metricscart.com/insights/ratings-and-reviews-in-e-commerce/)
-- [A Complete Guide to eCommerce Reviews Management | Sendlane](https://www.sendlane.com/blog/manage-ecommerce-reviews)
-- [What's Really Causing Bad Reviews for Ecommerce Businesses? | Veeqo](https://www.veeqo.com/blog/bad-reviews-ecommerce-businesses)
-
----
-*Feature research for: E-commerce User Accounts, Product Reviews, and Wishlists*
-*Researched: 2026-02-13*
+### Concurrency & Audit
+- [Learn EF Core - Concurrency Management](https://www.learnentityframeworkcore.com/concurrency)
+- [Medium - Optimistic Locking in .NET](https://medium.com/@imaanmzr/optimistic-locking-in-net-bd677916ef60)
+- [Medium - Audit Automation with EF Core](https://medium.com/@bananicabananica/audit-automation-with-ef-core-2f629fb77523)
+- [Digital Drummer - EF Core Audit Fields](https://digitaldrummerj.me/ef-core-audit-columns/)
