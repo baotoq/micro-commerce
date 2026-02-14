@@ -5,16 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Planning next milestone
+**Current focus:** Milestone v2.0 DDD Foundation
 
 ## Current Position
 
-Phase: All complete through v1.1
-Plan: N/A
-Status: Milestone v1.1 shipped
-Last activity: 2026-02-14 — Completed v1.1 User Features milestone
-
-Progress: [██████████████] 100% (72/72 total plans across v1.0+v1.1)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-14 — Milestone v2.0 started
 
 ## Performance Metrics
 
@@ -53,6 +51,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: v1.1 milestone completed and archived
+Stopped at: Starting v2.0 DDD Foundation milestone
 Resume file: None
-Next step: /gsd:new-milestone to start next milestone
+Next step: Define requirements

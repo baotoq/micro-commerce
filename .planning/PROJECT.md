@@ -41,7 +41,15 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 
 ### Active
 
-(No active milestone — planning next)
+## Current Milestone: v2.0 DDD Foundation
+
+**Goal:** Strengthen and modernize DDD building blocks with full adoption across all features
+
+**Target features:**
+- Extract common patterns (Entity base, audit fields, concurrency) into BuildingBlocks
+- Add new DDD building blocks (Result type, Enumeration class, Specification pattern)
+- Clean up and modernize (remove obsolete ValueObject, improve StronglyTypedId with converters, add source generators)
+- Adopt all new building blocks across every existing feature
 
 ### Out of Scope
 
@@ -114,4 +122,4 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 | Reference by identity only (Vernon Rule 3) | Product references Category by CategoryId, not navigation property | ✓ Good — proper aggregate isolation |
 
 ---
-*Last updated: 2026-02-14 after v1.1 milestone*
+*Last updated: 2026-02-14 after v2.0 milestone started*
