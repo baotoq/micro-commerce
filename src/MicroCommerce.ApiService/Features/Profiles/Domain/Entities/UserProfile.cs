@@ -38,7 +38,7 @@ public sealed class UserProfile : BaseAggregateRoot<UserProfileId>
     // EF Core constructor
     private UserProfile(UserProfileId id) : base(id)
     {
-        DisplayName = null!;
+        DisplayName = default;
     }
 
     /// <summary>

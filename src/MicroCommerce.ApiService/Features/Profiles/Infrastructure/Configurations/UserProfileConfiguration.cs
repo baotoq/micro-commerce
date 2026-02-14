@@ -22,8 +22,8 @@ public class UserProfileConfiguration : IEntityTypeConfiguration<UserProfile>
         builder.HasIndex(p => p.UserId)
             .IsUnique();
 
-        // DisplayName owned value object
-        builder.OwnsOne(p => p.DisplayName, displayName =>
+        // DisplayName complex type (readonly record struct)
+        builder.ComplexProperty(p => p.DisplayName, displayName =>
         {
             displayName.Property(d => d.Value)
                 .HasColumnName("DisplayName")

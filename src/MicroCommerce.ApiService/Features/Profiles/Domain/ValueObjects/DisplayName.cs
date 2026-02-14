@@ -1,10 +1,11 @@
-using MicroCommerce.BuildingBlocks.Common;
-
 namespace MicroCommerce.ApiService.Features.Profiles.Domain.ValueObjects;
 
-public sealed class DisplayName : ValueObject
+/// <summary>
+/// Value object representing a user's display name with validation.
+/// </summary>
+public readonly record struct DisplayName
 {
-    public string Value { get; private set; }
+    public string Value { get; init; }
 
     private DisplayName(string value)
     {
@@ -24,8 +25,5 @@ public sealed class DisplayName : ValueObject
         return new DisplayName(trimmed);
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
-    }
+    public override string ToString() => Value;
 }
