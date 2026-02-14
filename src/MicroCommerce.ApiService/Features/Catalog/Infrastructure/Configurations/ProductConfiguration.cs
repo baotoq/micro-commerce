@@ -64,8 +64,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
                 value => new CategoryId(value))
             .IsRequired();
 
-        // Relationship to Category
-        builder.HasOne(p => p.Category)
+        // Relationship to Category (reference by identity only, per Vernon Rule 3)
+        builder.HasOne<Category>()
             .WithMany()
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);

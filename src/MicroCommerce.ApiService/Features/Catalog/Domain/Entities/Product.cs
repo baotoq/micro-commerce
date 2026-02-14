@@ -21,7 +21,6 @@ public sealed class Product : BaseAggregateRoot<ProductId>
     public string? Sku { get; private set; }
     public ProductStatus Status { get; private set; }
     public CategoryId CategoryId { get; private set; } = null!;
-    public Category? Category { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? UpdatedAt { get; private set; }
 
