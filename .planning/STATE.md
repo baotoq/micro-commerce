@@ -142,6 +142,7 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 14.1 inserted after Phase 14: Check DDD approach correctness (URGENT)
+- Phase 14.2 inserted after Phase 14: Evaluate ValueObject base class vs record struct refactoring (URGENT)
 
 ### Pending Todos
 

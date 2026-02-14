@@ -132,12 +132,12 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 Plans:
 - [ ] TBD (run /gsd:plan-phase 14.2 to break down)
 
-### Phase 14.1: Check DDD approach correctness (INSERTED)
+### Phase 14.1: Check DDD approach correctness (INSERTED) ✅
 
 **Goal:** Audit all DDD tactical patterns across the entire codebase and produce a structured findings report with severity-tagged issues, citing DDD principles and reference materials
 **Depends on:** Phase 14
-**Plans:** 2 plans
+**Plans:** 2 plans — completed 2026-02-14
 
 Plans:
-- [ ] 14.1-01-PLAN.md -- Audit BuildingBlocks/Common foundation + Catalog + Ordering modules
-- [ ] 14.1-02-PLAN.md -- Audit Cart, Inventory, Profiles, Reviews, Wishlists + cross-cutting analysis + final report
+- [x] 14.1-01-PLAN.md -- Audit BuildingBlocks/Common foundation + Catalog + Ordering modules
+- [x] 14.1-02-PLAN.md -- Audit Cart, Inventory, Profiles, Reviews, Wishlists + cross-cutting analysis + final report
