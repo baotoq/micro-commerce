@@ -123,6 +123,15 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 *v1.0 shipped: 2026-02-13*
 *v1.1 started: 2026-02-13*
 
+### Phase 14.2: Evaluate ValueObject base class vs record struct refactoring (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Depends on:** Phase 14
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 14.2 to break down)
+
 ### Phase 14.1: Check DDD approach correctness (INSERTED)
 
 **Goal:** Audit all DDD tactical patterns across the entire codebase and produce a structured findings report with severity-tagged issues, citing DDD principles and reference materials
