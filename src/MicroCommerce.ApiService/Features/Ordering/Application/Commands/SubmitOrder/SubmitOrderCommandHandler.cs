@@ -6,7 +6,7 @@ using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
 namespace MicroCommerce.ApiService.Features.Ordering.Application.Commands.SubmitOrder;
 
 public sealed class SubmitOrderCommandHandler
-    : IRequestHandler<SubmitOrderCommand, SubmitOrderResult>
+    : IRequestHandler<SubmitOrderCommand, Guid>
 {
     private readonly OrderingDbContext _context;
 
@@ -15,7 +15,7 @@ public sealed class SubmitOrderCommandHandler
         _context = context;
     }
 
-    public async Task<SubmitOrderResult> Handle(
+    public async Task<Guid> Handle(
         SubmitOrderCommand request,
         CancellationToken cancellationToken)
     {
@@ -35,6 +35,6 @@ public sealed class SubmitOrderCommandHandler
         _context.Orders.Add(order);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return new SubmitOrderResult(order.Id.Value, order.OrderNumber.Value);
+        return order.Id.Value;
     }
 }

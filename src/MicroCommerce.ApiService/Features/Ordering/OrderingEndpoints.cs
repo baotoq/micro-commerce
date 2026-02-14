@@ -24,7 +24,7 @@ public static class OrderingEndpoints
         group.MapPost("/checkout", Checkout)
             .WithName("Checkout")
             .WithSummary("Submit a new order from cart items")
-            .Produces<SubmitOrderResult>(StatusCodes.Status201Created)
+            .Produces<Guid>(StatusCodes.Status201Created)
             .ProducesValidationProblem();
 
         group.MapPost("/orders/{id:guid}/pay", SimulatePayment)
@@ -78,9 +78,9 @@ public static class OrderingEndpoints
             request.ShippingAddress,
             request.Items);
 
-        SubmitOrderResult result = await sender.Send(command, cancellationToken);
+        Guid orderId = await sender.Send(command, cancellationToken);
 
-        return Results.Created($"/api/ordering/orders/{result.OrderId}", result);
+        return Results.Created($"/api/ordering/orders/{orderId}", orderId);
     }
 
     private static async Task<IResult> SimulatePayment(
