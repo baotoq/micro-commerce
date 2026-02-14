@@ -545,11 +545,6 @@ export interface SubmitOrderRequest {
   }[];
 }
 
-export interface SubmitOrderResult {
-  orderId: string;
-  orderNumber: string;
-}
-
 export interface SimulatePaymentRequest {
   shouldSucceed: boolean;
 }
@@ -560,7 +555,7 @@ export interface SimulatePaymentResult {
 }
 
 // Ordering API functions
-export async function submitOrder(data: SubmitOrderRequest): Promise<SubmitOrderResult> {
+export async function submitOrder(data: SubmitOrderRequest): Promise<string> {
   const response = await fetch(`${API_BASE}/api/ordering/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
