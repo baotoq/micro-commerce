@@ -24,7 +24,7 @@
       "WebFetch(domain:microsoft.github.io)"
     ]
   },
-    "enabledPlugins": {
+  "enabledPlugins": {
     "context7@claude-plugins-official": true,
 
     "claude-code-setup@claude-plugins-official": true,
