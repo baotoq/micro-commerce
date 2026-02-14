@@ -142,6 +142,9 @@ builder.Services.AddMassTransit(x =>
 });
 
 builder.Services.AddScoped<DomainEventInterceptor>();
+builder.Services.AddScoped<SoftDeleteInterceptor>();
+builder.Services.AddScoped<ConcurrencyInterceptor>();
+builder.Services.AddScoped<AuditInterceptor>();
 
 // Add services to the container.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

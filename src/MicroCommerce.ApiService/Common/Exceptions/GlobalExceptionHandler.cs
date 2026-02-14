@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Common.Exceptions;
 
@@ -37,6 +38,10 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
                 StatusCodes.Status409Conflict,
                 "Conflict",
                 conflictException.Message),
+            DbUpdateConcurrencyException dbConcurrencyEx => (
+                StatusCodes.Status409Conflict,
+                "Concurrency Conflict",
+                $"The resource was modified by another request. {FormatConcurrencyDetail(dbConcurrencyEx)}"),
             InvalidOperationException invalidOpException => (
                 StatusCodes.Status400BadRequest,
                 "Invalid Operation",
@@ -70,5 +75,15 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
         return true;
+    }
+
+    private static string FormatConcurrencyDetail(DbUpdateConcurrencyException ex)
+    {
+        var entry = ex.Entries.FirstOrDefault();
+        if (entry is not null)
+        {
+            return $"Entity: {entry.Entity.GetType().Name}. Please refresh and retry.";
+        }
+        return "Please refresh and retry.";
     }
 }
