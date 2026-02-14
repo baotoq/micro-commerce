@@ -51,22 +51,4 @@ public sealed class Category : BaseAggregateRoot<CategoryId>
         Description = description?.Trim();
         UpdatedAt = DateTimeOffset.UtcNow;
     }
-
-    /// <summary>
-    /// Updates the category name.
-    /// </summary>
-    public void UpdateName(CategoryName name)
-    {
-        Name = name;
-        UpdatedAt = DateTimeOffset.UtcNow;
-    }
-
-    /// <summary>
-    /// Updates the category description.
-    /// </summary>
-    public void UpdateDescription(string? description)
-    {
-        Description = description?.Trim();
-        UpdatedAt = DateTimeOffset.UtcNow;
-    }
 }
