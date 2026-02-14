@@ -63,7 +63,7 @@ Plans:
 - [x] 12-02-PLAN.md -- Backend Reviews CQRS + API endpoints (commands, queries, validators, endpoints, purchase verification, aggregate recalculation)
 - [x] 12-03-PLAN.md -- Frontend review components, hooks, API + integration into product detail, product cards, order history
 
-#### Phase 13: Wishlists & Saved Items
+#### Phase 13: Wishlists & Saved Items ✅
 **Goal**: Users can save products to a persistent wishlist and move items to cart
 **Depends on**: Phase 12
 **Requirements**: WISH-01, WISH-02, WISH-03, WISH-04, WISH-05
@@ -73,12 +73,12 @@ Plans:
   3. User can move wishlist items to cart with proper stock validation
   4. Product cards display heart icon indicator when product is in wishlist
   5. Wishlist persists across sessions and devices
-**Plans**: 3 plans
+**Plans**: 3 plans — completed 2026-02-13
 
 Plans:
-- [ ] 13-01-PLAN.md -- Backend Wishlists domain model + infrastructure (WishlistItem entity, WishlistsDbContext, migration, registration)
-- [ ] 13-02-PLAN.md -- Backend Wishlists CQRS + API endpoints (add/remove commands, wishlist/count/product-ids queries, 5 endpoints)
-- [ ] 13-03-PLAN.md -- Frontend wishlist components, hooks, API + integration into header, product cards, product detail, account sidebar
+- [x] 13-01-PLAN.md -- Backend Wishlists domain model + infrastructure (WishlistItem entity, WishlistsDbContext, migration, registration)
+- [x] 13-02-PLAN.md -- Backend Wishlists CQRS + API endpoints (add/remove commands, wishlist/count/product-ids queries, 5 endpoints)
+- [x] 13-03-PLAN.md -- Frontend wishlist components, hooks, API + integration into header, product cards, product detail, account sidebar
 
 #### Phase 14: Integration & Polish
 **Goal**: All user features work cohesively with seamless navigation and E2E testing coverage
@@ -113,7 +113,7 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 10. Testing & Polish | v1.0 | 6/6 | Complete | 2026-02-13 |
 | 11. User Profiles & Authentication Flow | v1.1 | 5/5 | Complete | 2026-02-13 |
 | 12. Product Reviews & Ratings | v1.1 | 3/3 | Complete | 2026-02-13 |
-| 13. Wishlists & Saved Items | v1.1 | 0/3 | Planned | - |
+| 13. Wishlists & Saved Items | v1.1 | 3/3 | Complete | 2026-02-13 |
 | 14. Integration & Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
