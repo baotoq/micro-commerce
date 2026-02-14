@@ -22,7 +22,7 @@ public sealed class StockReservation
     {
     }
 
-    public static StockReservation Create(StockItemId stockItemId, int quantity, TimeSpan ttl)
+    internal static StockReservation Create(StockItemId stockItemId, int quantity, TimeSpan ttl)
     {
         return new StockReservation
         {
