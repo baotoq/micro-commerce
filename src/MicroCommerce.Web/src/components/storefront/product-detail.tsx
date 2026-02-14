@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RelatedProducts } from "@/components/storefront/related-products";
 import { ReviewList } from "@/components/reviews/review-list";
 import { StarRatingDisplay } from "@/components/reviews/star-rating-display";
+import { WishlistToggleButton } from "@/components/wishlist/wishlist-toggle-button";
 import { useAddToCart } from "@/hooks/use-cart";
 import { getProductById, getStockByProductId, type ProductDto, type StockInfoDto } from "@/lib/api";
 
@@ -187,9 +188,14 @@ export function ProductDetail({ productId }: ProductDetailProps) {
             </Badge>
           </Link>
 
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
-            {product.name}
-          </h1>
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+              {product.name}
+            </h1>
+            <div className="flex-shrink-0 rounded-full p-2 transition-colors hover:bg-zinc-100">
+              <WishlistToggleButton productId={product.id} />
+            </div>
+          </div>
 
           {product.reviewCount > 0 && product.averageRating !== null ? (
             <div className="mt-3">

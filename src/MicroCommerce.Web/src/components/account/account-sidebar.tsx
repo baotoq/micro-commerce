@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, MapPin, Package, Shield } from "lucide-react";
+import { User, MapPin, Package, Shield, Heart } from "lucide-react";
 
 const sections = [
   {
@@ -19,6 +19,11 @@ const sections = [
     name: "Orders",
     href: "/account/orders",
     icon: Package,
+  },
+  {
+    name: "Wishlist",
+    href: "/wishlist",
+    icon: Heart,
   },
   {
     name: "Security",

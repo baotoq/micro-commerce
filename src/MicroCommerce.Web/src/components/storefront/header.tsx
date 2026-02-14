@@ -1,18 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, Menu, X, ClipboardList, User } from 'lucide-react';
+import { ShoppingCart, Menu, X, ClipboardList, User, Heart } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useCartItemCount } from '@/hooks/use-cart';
+import { useWishlistCount } from '@/hooks/use-wishlist';
 import { SearchBar } from './search-bar';
 import { mergeCart } from '@/lib/api';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: cartCount = 0 } = useCartItemCount();
+  const { data: wishlistCount = 0 } = useWishlistCount();
   const [bounce, setBounce] = useState(false);
   const prevCount = useRef(cartCount);
   const { data: session } = useSession();
@@ -83,6 +85,18 @@ export function Header() {
             <ClipboardList className="h-4 w-4" />
           </Link>
           <Link
+            href="/wishlist"
+            className="hidden text-zinc-500 transition-colors hover:text-zinc-900 sm:block relative"
+            aria-label="Wishlist"
+          >
+            <Heart className="h-4 w-4" />
+            {wishlistCount > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-zinc-900 text-[9px] font-medium text-white">
+                {wishlistCount > 99 ? '99+' : wishlistCount}
+              </span>
+            )}
+          </Link>
+          <Link
             href="/cart"
             className="relative text-zinc-500 transition-colors hover:text-zinc-900"
             aria-label="Shopping cart"
@@ -140,6 +154,13 @@ export function Header() {
                 Sign In
               </button>
             )}
+            <Link
+              href="/wishlist"
+              className="block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Wishlist
+            </Link>
             <Link
               href="/orders"
               className="block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
