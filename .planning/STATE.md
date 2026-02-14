@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 14 of 14 (Integration & Polish)
-Plan: Ready to plan
-Status: Ready to plan
-Last activity: 2026-02-13 — Phase 13 verified and complete
+Plan: 1 of 3 completed
+Status: In progress
+Last activity: 2026-02-13 — Completed 14-01-PLAN.md
 
-Progress: [████████████░░] 86% (59/69 total plans across v1.0+v1.1)
+Progress: [████████████░░] 87% (60/69 total plans across v1.0+v1.1)
 
 ## Performance Metrics
 
@@ -68,6 +68,12 @@ Progress: [████████████░░] 86% (59/69 total plans ac
 | 13-02 | 3 min | 2 | 7 |
 | 13-03 | 3 min | 2 | 11 |
 
+**v1.1 Phase 14 Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| 14-01 | 2 min | 2 | 3 |
+
 ## Accumulated Context
 
 ### Decisions
@@ -105,6 +111,12 @@ Recent decisions affecting current work:
 - [Phase 13-03]: Optimistic UI with rollback - heart icon toggles immediately with cache updates, rollback on error for instant feedback
 - [Phase 13-03]: Heart icon positioning - top-left on product cards (stock badge at top-right), next to product name on detail page
 - [Phase 13-03]: Guest redirect to login - clicking heart when not authenticated redirects via signIn('keycloak')
+- [Phase 14-01]: OrderItemReviewRow sub-component pattern allows per-item hook calls (React hooks rules compliance)
+- [Phase 14-01]: CanReviewDto logic: hasPurchased && !hasReviewed determines review eligibility
+
+### Roadmap Evolution
+
+- Phase 14.1 inserted after Phase 14: Check DDD approach correctness (URGENT)
 
 ### Pending Todos
 
