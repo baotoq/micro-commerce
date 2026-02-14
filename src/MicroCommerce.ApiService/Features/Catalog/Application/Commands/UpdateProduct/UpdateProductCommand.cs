@@ -9,5 +9,4 @@ public sealed record UpdateProductCommand(
     decimal Price,
     Guid CategoryId,
     string? ImageUrl = null,
-    string? Sku = null) : IRequest<bool>;
-
+    string? Sku = null) : IRequest;

@@ -21,7 +21,6 @@ public sealed class GetProductsQueryHandler
     {
         var query = _context.Products
             .AsNoTracking()
-            .Include(p => p.Category)
             .AsQueryable();
 
         // Apply filters
@@ -65,24 +64,27 @@ public sealed class GetProductsQueryHandler
         var items = await query
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(p => new ProductDto(
-                p.Id.Value,
-                p.Name.Value,
-                p.Description,
-                p.Price.Amount,
-                p.Price.Currency,
-                p.ImageUrl,
-                p.Sku,
-                p.Status.ToString(),
-                p.CategoryId.Value,
-                p.Category!.Name.Value,
-                p.CreatedAt,
-                p.UpdatedAt,
-                p.AverageRating,
-                p.ReviewCount))
+            .Join(
+                _context.Categories.AsNoTracking(),
+                p => p.CategoryId,
+                c => c.Id,
+                (p, c) => new ProductDto(
+                    p.Id.Value,
+                    p.Name.Value,
+                    p.Description,
+                    p.Price.Amount,
+                    p.Price.Currency,
+                    p.ImageUrl,
+                    p.Sku,
+                    p.Status.ToString(),
+                    p.CategoryId.Value,
+                    c.Name.Value,
+                    p.CreatedAt,
+                    p.UpdatedAt,
+                    p.AverageRating,
+                    p.ReviewCount))
             .ToListAsync(cancellationToken);
 
         return new ProductListDto(items, totalCount, request.Page, request.PageSize);
     }
 }
-
