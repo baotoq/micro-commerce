@@ -78,37 +78,37 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ENTITY-01 | — | Pending |
-| ENTITY-02 | — | Pending |
-| ENTITY-03 | — | Pending |
-| ENTITY-04 | — | Pending |
-| ENTITY-05 | — | Pending |
-| PRIM-01 | — | Pending |
-| PRIM-02 | — | Pending |
-| PRIM-03 | — | Pending |
-| PRIM-04 | — | Pending |
-| PRIM-05 | — | Pending |
-| PRIM-06 | — | Pending |
-| QUERY-01 | — | Pending |
-| QUERY-02 | — | Pending |
-| QUERY-03 | — | Pending |
-| MOD-01 | — | Pending |
-| MOD-02 | — | Pending |
-| MOD-03 | — | Pending |
-| MOD-04 | — | Pending |
-| ADOPT-01 | — | Pending |
-| ADOPT-02 | — | Pending |
-| ADOPT-03 | — | Pending |
-| ADOPT-04 | — | Pending |
-| ADOPT-05 | — | Pending |
-| ADOPT-06 | — | Pending |
-| ADOPT-07 | — | Pending |
+| ENTITY-01 | Phase 15 | Pending |
+| ENTITY-02 | Phase 15 | Pending |
+| ENTITY-03 | Phase 15 | Pending |
+| ENTITY-04 | Phase 15 | Pending |
+| ENTITY-05 | Phase 15 | Pending |
+| PRIM-01 | Phase 20 | Pending |
+| PRIM-02 | Phase 18 | Pending |
+| PRIM-03 | Phase 18 | Pending |
+| PRIM-04 | Phase 18 | Pending |
+| PRIM-05 | Phase 17 | Pending |
+| PRIM-06 | Phase 17 | Pending |
+| QUERY-01 | Phase 19 | Pending |
+| QUERY-02 | Phase 19 | Pending |
+| QUERY-03 | Phase 19 | Pending |
+| MOD-01 | Phase 16 | Pending |
+| MOD-02 | Phase 16 | Pending |
+| MOD-03 | Phase 16 | Pending |
+| MOD-04 | Phase 20 | Pending |
+| ADOPT-01 | Phase 21 | Pending |
+| ADOPT-02 | Phase 21 | Pending |
+| ADOPT-03 | Phase 21 | Pending |
+| ADOPT-04 | Phase 21 | Pending |
+| ADOPT-05 | Phase 21 | Pending |
+| ADOPT-06 | Phase 21 | Pending |
+| ADOPT-07 | Phase 21 | Pending |
 
 **Coverage:**
 - v2.0 requirements: 25 total
-- Mapped to phases: 0
-- Unmapped: 25 ⚠️
+- Mapped to phases: 25 (100%)
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after initial definition*
+*Last updated: 2026-02-14 after v2.0 roadmap creation*
