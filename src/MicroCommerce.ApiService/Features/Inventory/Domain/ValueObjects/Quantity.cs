@@ -1,13 +1,11 @@
-using MicroCommerce.BuildingBlocks.Common;
-
 namespace MicroCommerce.ApiService.Features.Inventory.Domain.ValueObjects;
 
 /// <summary>
 /// Value object representing a non-negative quantity.
 /// </summary>
-public sealed class Quantity : ValueObject
+public readonly record struct Quantity
 {
-    public int Value { get; }
+    public int Value { get; init; }
 
     private Quantity(int value)
     {
@@ -20,10 +18,5 @@ public sealed class Quantity : ValueObject
             throw new ArgumentException("Quantity cannot be negative.", nameof(value));
 
         return new Quantity(value);
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
     }
 }
