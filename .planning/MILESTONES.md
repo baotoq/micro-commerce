@@ -25,3 +25,25 @@
 
 ---
 
+
+## v1.1 User Features (Shipped: 2026-02-14)
+
+**Phases completed:** 7 phases, 23 plans
+**Timeline:** 2 days (2026-02-13 → 2026-02-14)
+**Stats:** 98 commits, 349 files, +46,500 / -8,523 lines
+**Requirements:** 21/21 satisfied (100%)
+
+**Key accomplishments:**
+- User profiles with display name, avatar upload (ImageSharp), address book, and guest-to-auth cart merge
+- Product reviews with verified purchase enforcement, star ratings, and denormalized aggregate ratings
+- Wishlists with add/remove, move-to-cart, and optimistic heart icon indicators
+- Integration polish with consolidated review UX, content-matching skeletons, and E2E Playwright tests
+- Full DDD audit (71 findings across 7 modules) with severity-tagged report
+- Value objects migrated to readonly record structs (20x faster equality), CQRS compliance fixes, obsolete infrastructure removal
+
+**Archives:**
+- [v1.1 Roadmap](.planning/milestones/v1.1-ROADMAP.md)
+- [v1.1 Requirements](.planning/milestones/v1.1-REQUIREMENTS.md)
+
+---
+

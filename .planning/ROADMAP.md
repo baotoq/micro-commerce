@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-10 (shipped 2026-02-13) — [archive](milestones/v1.0-ROADMAP.md)
-- 🚧 **v1.1 User Features** — Phases 11-14 (in progress)
+- ✅ **v1.1 User Features** — Phases 11-14 (shipped 2026-02-14) — [archive](milestones/v1.1-ROADMAP.md)
 
 ## Phases
 
@@ -23,83 +23,20 @@
 
 </details>
 
-### 🚧 v1.1 User Features (In Progress)
+<details>
+<summary>✅ v1.1 User Features (Phases 11-14) — SHIPPED 2026-02-14</summary>
 
-**Milestone Goal:** Add authenticated user experiences — profiles, verified purchase reviews, and wishlists — building on the existing Keycloak auth foundation.
+- [x] Phase 11: User Profiles & Authentication Flow (5/5 plans) — completed 2026-02-13
+- [x] Phase 12: Product Reviews & Ratings (3/3 plans) — completed 2026-02-13
+- [x] Phase 13: Wishlists & Saved Items (3/3 plans) — completed 2026-02-13
+- [x] Phase 14: Integration & Polish (3/3 plans) — completed 2026-02-14
+- [x] Phase 14.1: Check DDD Approach Correctness (2/2 plans) — completed 2026-02-14
+- [x] Phase 14.2: ValueObject Record Struct Migration (3/3 plans) — completed 2026-02-14
+- [x] Phase 14.3: DDD Audit Issue Fixes (4/4 plans) — completed 2026-02-14
 
-#### Phase 11: User Profiles & Authentication Flow ✅
-**Goal**: Users can manage their profiles with display name, avatar, address book, and seamlessly transition from guest to authenticated with preserved cart and order history
-**Depends on**: Phase 10 (v1.0 foundation)
-**Requirements**: PROF-01, PROF-02, PROF-03, PROF-04, PROF-05, PROF-06, PROF-07, PROF-08
-**Success Criteria** (what must be TRUE):
-  1. User can set display name and upload avatar image on their profile
-  2. User can add, edit, delete, and set default shipping address in address book
-  3. User can view "My Account" page showing profile info and order history
-  4. Guest cart and orders automatically merge to user account on login without data loss
-  5. Avatar images persist across deployments (Azure Blob Storage, not container filesystem)
-**Plans**: 5 plans — completed 2026-02-13
-
-Plans:
-- [x] 11-01-PLAN.md -- Backend Profiles domain model + infrastructure (aggregate, value objects, DbContext, AvatarImageService)
-- [x] 11-02-PLAN.md -- Cart merge backend + frontend auth integration (MergeCartsCommand, endpoint, NextAuth callback)
-- [x] 11-03-PLAN.md -- Backend Profile CQRS handlers + API endpoints (commands, queries, validators, ProfilesEndpoints)
-- [x] 11-04-PLAN.md -- Frontend account layout + profile page (sidebar, profile view/edit, avatar upload, hooks)
-- [x] 11-05-PLAN.md -- Frontend address book + header + cart merge wiring (address CRUD dialogs, header icon, middleware)
-
-#### Phase 12: Product Reviews & Ratings ✅
-**Goal**: Users can submit star ratings and written reviews for purchased products with verified purchase badges, and all users can view aggregate ratings on product pages
-**Depends on**: Phase 11
-**Requirements**: REVW-01, REVW-02, REVW-03, REVW-04, REVW-05, REVW-06, REVW-07, REVW-08
-**Success Criteria** (what must be TRUE):
-  1. User can submit a star rating (1-5) and text review for products they have purchased
-  2. Reviews display "verified purchase" badge when user purchased the product
-  3. User can see all reviews on product detail pages with average rating and review count
-  4. User can edit or delete their own review (one review per product enforced)
-  5. Review submission is blocked for products the user has not purchased
-**Plans**: 3 plans — completed 2026-02-13
-
-Plans:
-- [x] 12-01-PLAN.md -- Backend Reviews domain model + infrastructure (aggregate, value objects, DbContext, migration, Product rating fields)
-- [x] 12-02-PLAN.md -- Backend Reviews CQRS + API endpoints (commands, queries, validators, endpoints, purchase verification, aggregate recalculation)
-- [x] 12-03-PLAN.md -- Frontend review components, hooks, API + integration into product detail, product cards, order history
-
-#### Phase 13: Wishlists & Saved Items ✅
-**Goal**: Users can save products to a persistent wishlist and move items to cart
-**Depends on**: Phase 12
-**Requirements**: WISH-01, WISH-02, WISH-03, WISH-04, WISH-05
-**Success Criteria** (what must be TRUE):
-  1. User can add and remove products from their wishlist
-  2. User can view wishlist page showing all saved products
-  3. User can move wishlist items to cart with proper stock validation
-  4. Product cards display heart icon indicator when product is in wishlist
-  5. Wishlist persists across sessions and devices
-**Plans**: 3 plans — completed 2026-02-13
-
-Plans:
-- [x] 13-01-PLAN.md -- Backend Wishlists domain model + infrastructure (WishlistItem entity, WishlistsDbContext, migration, registration)
-- [x] 13-02-PLAN.md -- Backend Wishlists CQRS + API endpoints (add/remove commands, wishlist/count/product-ids queries, 5 endpoints)
-- [x] 13-03-PLAN.md -- Frontend wishlist components, hooks, API + integration into header, product cards, product detail, account sidebar
-
-#### Phase 14: Integration & Polish ✅
-**Goal**: All user features work cohesively with seamless navigation and E2E testing coverage
-**Depends on**: Phase 13
-**Requirements**: None (enables all v1.1 features)
-**Success Criteria** (what must be TRUE):
-  1. User can navigate from profile → order history → review submission without friction
-  2. User can access wishlist from product cards, product pages, and account navigation
-  3. E2E tests cover guest flow, authenticated flow, and guest-to-auth migration scenarios
-  4. UI is visually cohesive across profile, reviews, and wishlist features
-**Plans**: 3 plans — completed 2026-02-14
-
-Plans:
-- [x] 14-01-PLAN.md -- Consolidate order review links into single "Review Products" page
-- [x] 14-02-PLAN.md -- Visual consistency and polish across account pages and wishlist
-- [x] 14-03-PLAN.md -- E2E tests for v1.1 user features (guest, authenticated, navigation)
+</details>
 
 ## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 11 → 12 → 13 → 14
 
 | Phase | Milestone | Plans | Status | Completed |
 |-------|-----------|-------|--------|-----------|
@@ -113,45 +50,15 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 8. Order History & Management | v1.0 | 5/5 | Complete | 2026-02-12 |
 | 9. API Gateway | v1.0 | 3/3 | Complete | 2026-02-12 |
 | 10. Testing & Polish | v1.0 | 6/6 | Complete | 2026-02-13 |
-| 11. User Profiles & Authentication Flow | v1.1 | 5/5 | Complete | 2026-02-13 |
+| 11. User Profiles & Auth Flow | v1.1 | 5/5 | Complete | 2026-02-13 |
 | 12. Product Reviews & Ratings | v1.1 | 3/3 | Complete | 2026-02-13 |
 | 13. Wishlists & Saved Items | v1.1 | 3/3 | Complete | 2026-02-13 |
 | 14. Integration & Polish | v1.1 | 3/3 | Complete | 2026-02-14 |
+| 14.1 DDD Audit | v1.1 | 2/2 | Complete | 2026-02-14 |
+| 14.2 ValueObject Migration | v1.1 | 3/3 | Complete | 2026-02-14 |
+| 14.3 DDD Issue Fixes | v1.1 | 4/4 | Complete | 2026-02-14 |
 
 ---
 *Roadmap created: 2026-01-29*
 *v1.0 shipped: 2026-02-13*
-*v1.1 started: 2026-02-13*
-
-### Phase 14.3: Address issues in DDD audit report (INSERTED) ✅
-
-**Goal:** Fix critical and warning DDD violations: enforce aggregate boundaries (internal child entity factories), fix CQRS command returns, remove obsolete domain event infrastructure, and eliminate Product-to-Category navigation property
-**Depends on:** Phase 14
-**Plans:** 4 plans — completed 2026-02-14
-
-Plans:
-- [x] 14.3-01-PLAN.md -- Enforce aggregate boundaries (internal factory methods, restrict Order.MarkStockReserved, remove redundant Category methods, fix DomainEvent immutability)
-- [x] 14.3-02-PLAN.md -- Fix CQRS command return violations (UpdateProduct, AddToCart, SubmitOrder) + frontend updates
-- [x] 14.3-03-PLAN.md -- Remove obsolete domain event dispatcher infrastructure (IDomainEventDispatcher, MediatorDomainEventDispatcher, IDomainEventHandler)
-- [x] 14.3-04-PLAN.md -- Remove Product-to-Category navigation property (Vernon Rule 3: reference by identity only)
-
-### Phase 14.2: Evaluate ValueObject base class vs record struct refactoring (INSERTED) ✅
-
-**Goal:** Migrate all value objects from the abstract ValueObject base class to C# readonly record structs, fix the Address DDD violation (entity masquerading as value object), and deprecate the ValueObject base class
-**Depends on:** Phase 14
-**Plans:** 3 plans — completed 2026-02-14
-
-Plans:
-- [x] 14.2-01-PLAN.md -- Fix Address DDD violation (promote to entity) + migrate DisplayName to readonly record struct
-- [x] 14.2-02-PLAN.md -- Migrate Catalog value objects (ProductName, CategoryName, Money) to readonly record structs
-- [x] 14.2-03-PLAN.md -- Migrate Quantity to readonly record struct + deprecate ValueObject base class + final verification
-
-### Phase 14.1: Check DDD approach correctness (INSERTED) ✅
-
-**Goal:** Audit all DDD tactical patterns across the entire codebase and produce a structured findings report with severity-tagged issues, citing DDD principles and reference materials
-**Depends on:** Phase 14
-**Plans:** 2 plans — completed 2026-02-14
-
-Plans:
-- [x] 14.1-01-PLAN.md -- Audit BuildingBlocks/Common foundation + Catalog + Ordering modules
-- [x] 14.1-02-PLAN.md -- Audit Cart, Inventory, Profiles, Reviews, Wishlists + cross-cutting analysis + final report
+*v1.1 shipped: 2026-02-14*
