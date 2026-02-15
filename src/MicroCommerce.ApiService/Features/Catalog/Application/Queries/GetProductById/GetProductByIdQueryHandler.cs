@@ -22,23 +22,26 @@ public sealed class GetProductByIdQueryHandler
     {
         var product = await _context.Products
             .AsNoTracking()
-            .Include(p => p.Category)
             .Where(p => p.Id == new ProductId(request.Id))
-            .Select(p => new ProductDto(
-                p.Id.Value,
-                p.Name.Value,
-                p.Description,
-                p.Price.Amount,
-                p.Price.Currency,
-                p.ImageUrl,
-                p.Sku,
-                p.Status.ToString(),
-                p.CategoryId.Value,
-                p.Category!.Name.Value,
-                p.CreatedAt,
-                p.UpdatedAt,
-                p.AverageRating,
-                p.ReviewCount))
+            .Join(
+                _context.Categories.AsNoTracking(),
+                p => p.CategoryId,
+                c => c.Id,
+                (p, c) => new ProductDto(
+                    p.Id.Value,
+                    p.Name.Value,
+                    p.Description,
+                    p.Price.Amount,
+                    p.Price.Currency,
+                    p.ImageUrl,
+                    p.Sku,
+                    p.Status.ToString(),
+                    p.CategoryId.Value,
+                    c.Name.Value,
+                    p.CreatedAt,
+                    p.UpdatedAt,
+                    p.AverageRating,
+                    p.ReviewCount))
             .FirstOrDefaultAsync(cancellationToken);
 
         return product;
