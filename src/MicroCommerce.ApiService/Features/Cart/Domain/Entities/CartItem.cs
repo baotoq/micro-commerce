@@ -23,7 +23,7 @@ public sealed class CartItem
     {
     }
 
-    public static CartItem Create(CartId cartId, Guid productId, string productName, decimal unitPrice, string? imageUrl, int quantity)
+    internal static CartItem Create(CartId cartId, Guid productId, string productName, decimal unitPrice, string? imageUrl, int quantity)
     {
         if (quantity < 1 || quantity > MaxQuantity)
             throw new ArgumentOutOfRangeException(nameof(quantity), $"Quantity must be between 1 and {MaxQuantity}.");

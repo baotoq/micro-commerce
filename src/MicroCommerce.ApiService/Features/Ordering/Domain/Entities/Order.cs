@@ -157,9 +157,9 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     }
 
     /// <summary>
-    /// Marks that stock has been reserved for this order (saga internal transition).
+    /// Marks that stock has been reserved for this order (saga-internal transition only callable by saga consumers in same assembly).
     /// </summary>
-    public void MarkStockReserved()
+    internal void MarkStockReserved()
     {
         if (Status != OrderStatus.Submitted)
             throw new InvalidOperationException($"Cannot mark stock reserved when status is '{Status}'.");

@@ -22,7 +22,7 @@ public sealed class OrderItem
     {
     }
 
-    public static OrderItem Create(OrderId orderId, Guid productId, string productName, decimal unitPrice, string? imageUrl, int quantity)
+    internal static OrderItem Create(OrderId orderId, Guid productId, string productName, decimal unitPrice, string? imageUrl, int quantity)
     {
         if (quantity < 1)
             throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be at least 1.");
