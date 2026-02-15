@@ -66,11 +66,11 @@ Plans:
   2. IConcurrencyToken entities automatically get IsConcurrencyToken configuration without manual [Timestamp] attributes
   3. Obsolete ValueObject base class removed from codebase with no remaining references
   4. Entity configuration files across 8 DbContexts are simpler with reduced boilerplate
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 16-01: TBD
-- [ ] 16-02: TBD
+- [ ] 16-01-PLAN.md — Conventions (StronglyTypedId, IAuditable, IConcurrencyToken, ISoftDeletable) + BaseDbContext + snake_case naming + migrate all 8 DbContexts
+- [ ] 16-02-PLAN.md — Configuration cleanup (remove redundant HasConversion/IsRowVersion/ToTable) + ValueObject removal + EF Core migrations
 
 #### Phase 17: Result Pattern - Explicit Error Handling
 **Goal**: Introduce Result type for railway-oriented programming with pilot adoption in command handlers
@@ -165,7 +165,7 @@ Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21
 | 1-10 | v1.0 MVP | 49/49 | Complete | 2026-02-13 |
 | 11-14.3 | v1.1 User Features | 23/23 | Complete | 2026-02-14 |
 | 15. Foundation | v2.0 DDD Foundation | 2/2 | Complete | 2026-02-14 |
-| 16. Conventions | v2.0 DDD Foundation | 0/TBD | Not started | - |
+| 16. Conventions | v2.0 DDD Foundation | 0/2 | Not started | - |
 | 17. Result Pattern | v2.0 DDD Foundation | 0/TBD | Not started | - |
 | 18. Enumeration | v2.0 DDD Foundation | 0/TBD | Not started | - |
 | 19. Specification | v2.0 DDD Foundation | 0/TBD | Not started | - |
