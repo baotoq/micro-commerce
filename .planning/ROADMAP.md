@@ -51,11 +51,11 @@
   3. AuditableAggregateRoot provides combined base class for aggregates needing both domain events and timestamps
   4. Entities implementing IConcurrencyToken have explicit Version column configured by conventions
   5. Soft-deletable entities using ISoftDeletable are automatically filtered from queries and marked deleted via interceptor
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 15-01: TBD
-- [ ] 15-02: TBD
+- [ ] 15-01-PLAN.md — Entity hierarchy + interfaces in BuildingBlocks (Entity<TId>, BaseAggregateRoot refactor, IAuditable, IConcurrencyToken, ISoftDeletable, AuditableAggregateRoot)
+- [ ] 15-02-PLAN.md — Interceptors (Audit, Concurrency, SoftDelete) + convention helpers + registration + DbUpdateConcurrencyException handling
 
 #### Phase 16: Conventions - DRY Configuration
 **Goal**: Eliminate repetitive manual EF Core configuration through model conventions
