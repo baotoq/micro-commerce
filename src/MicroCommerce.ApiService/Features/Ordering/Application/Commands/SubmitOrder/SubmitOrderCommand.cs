@@ -6,7 +6,7 @@ public sealed record SubmitOrderCommand(
     Guid BuyerId,
     string Email,
     ShippingAddressRequest ShippingAddress,
-    List<OrderItemRequest> Items) : IRequest<SubmitOrderResult>;
+    List<OrderItemRequest> Items) : IRequest<Guid>;
 
 public sealed record ShippingAddressRequest(
     string Name,
@@ -22,5 +22,3 @@ public sealed record OrderItemRequest(
     decimal UnitPrice,
     string? ImageUrl,
     int Quantity);
-
-public sealed record SubmitOrderResult(Guid OrderId, string OrderNumber);
