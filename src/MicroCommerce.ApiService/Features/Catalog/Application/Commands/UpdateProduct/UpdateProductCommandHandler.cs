@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MicroCommerce.ApiService.Features.Catalog.Application.Commands.UpdateProduct;
 
 public sealed class UpdateProductCommandHandler
-    : IRequestHandler<UpdateProductCommand, bool>
+    : IRequestHandler<UpdateProductCommand>
 {
     private readonly CatalogDbContext _context;
 
@@ -16,7 +16,7 @@ public sealed class UpdateProductCommandHandler
         _context = context;
     }
 
-    public async Task<bool> Handle(
+    public async Task Handle(
         UpdateProductCommand request,
         CancellationToken cancellationToken)
     {
@@ -49,8 +49,5 @@ public sealed class UpdateProductCommandHandler
             request.Sku);
 
         await _context.SaveChangesAsync(cancellationToken);
-
-        return true;
     }
 }
-

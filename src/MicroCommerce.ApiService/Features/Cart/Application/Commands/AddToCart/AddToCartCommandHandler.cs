@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MicroCommerce.ApiService.Features.Cart.Application.Commands.AddToCart;
 
 public sealed class AddToCartCommandHandler
-    : IRequestHandler<AddToCartCommand, AddToCartResult>
+    : IRequestHandler<AddToCartCommand, Guid>
 {
     private readonly CartDbContext _context;
 
@@ -14,7 +14,7 @@ public sealed class AddToCartCommandHandler
         _context = context;
     }
 
-    public async Task<AddToCartResult> Handle(
+    public async Task<Guid> Handle(
         AddToCartCommand request,
         CancellationToken cancellationToken)
     {
@@ -22,23 +22,16 @@ public sealed class AddToCartCommandHandler
             .Include(c => c.Items)
             .FirstOrDefaultAsync(c => c.BuyerId == request.BuyerId, cancellationToken);
 
-        var isUpdate = false;
-
         if (cart is null)
         {
             cart = Domain.Entities.Cart.Create(request.BuyerId);
             _context.Carts.Add(cart);
-        }
-        else
-        {
-            // Check if product already exists in cart (will increment quantity)
-            isUpdate = cart.Items.Any(i => i.ProductId == request.ProductId);
         }
 
         cart.AddItem(request.ProductId, request.ProductName, request.UnitPrice, request.ImageUrl, request.Quantity);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return new AddToCartResult(isUpdate);
+        return cart.Id.Value;
     }
 }

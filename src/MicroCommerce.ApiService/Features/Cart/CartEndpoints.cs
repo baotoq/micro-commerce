@@ -29,7 +29,7 @@ public static class CartEndpoints
         group.MapPost("/items", AddToCart)
             .WithName("AddToCart")
             .WithSummary("Add item to cart (creates cart if needed)")
-            .Produces<AddToCartResult>()
+            .Produces<Guid>()
             .ProducesValidationProblem();
 
         group.MapPut("/items/{itemId:guid}", UpdateCartItem)

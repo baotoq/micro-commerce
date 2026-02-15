@@ -8,6 +8,4 @@ public sealed record AddToCartCommand(
     string ProductName,
     decimal UnitPrice,
     string? ImageUrl,
-    int Quantity = 1) : IRequest<AddToCartResult>;
-
-public sealed record AddToCartResult(bool IsUpdate);
+    int Quantity = 1) : IRequest<Guid>;
