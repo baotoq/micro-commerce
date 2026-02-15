@@ -1,728 +1,1279 @@
-# Architecture Integration: User Profiles, Reviews & Wishlists
+# Architecture Research: DDD Building Blocks Integration
 
-**Domain:** E-commerce modular monolith with bounded contexts
-**Researched:** 2026-02-13
+**Domain:** DDD Building Blocks Integration with Existing .NET 10 Modular Monolith
+**Researched:** 2026-02-14
 **Confidence:** HIGH
 
 ## Executive Summary
 
-User profiles, product reviews, and wishlists should be **three separate bounded contexts** that integrate with the existing modular monolith via domain events, cross-context queries through MediatR, and data migration patterns at authentication boundaries.
+MicroCommerce has an existing DDD foundation with BaseAggregateRoot, StronglyTypedId, DomainEvent, and DomainEventInterceptor. The new building blocks (Entity base, audit interfaces, concurrency, Result type, Enumeration class, Specification pattern, source generators) integrate by extending this foundation, not replacing it. Integration happens at three key points: EF Core configurations, MediatR pipeline behaviors, and domain entity inheritance hierarchy.
 
-**Key findings:**
-1. **Profiles** is a new bounded context (not extension of existing) — owns user identity enrichment, addresses, avatar storage
-2. **Reviews** is a new bounded context with cross-context references via ProductId and UserId (NOT foreign keys) — verified purchase validation via domain events
-3. **Wishlists** is separate from Cart (different lifecycle, behavior, persistence needs) — similar structure but distinct aggregate
-4. **Guest-to-user migration** follows WooCommerce 2026 pattern — filter-based merge strategy on authentication events
-5. **Avatar storage** uses Azure Blob Storage (already integrated for product images) with database URL references
+**Key Integration Principle:** Additive, not disruptive. Existing aggregates continue working unchanged while new building blocks provide opt-in capabilities.
 
-This preserves database-per-feature isolation, leverages existing event-driven infrastructure (MassTransit + DomainEventInterceptor), and maintains clear bounded context boundaries for future service extraction.
+## Existing Architecture Snapshot
 
-## Recommended Architecture
-
-### Bounded Context Boundaries
+### Current Building Blocks
 
 ```
-Features/
-  ├── Catalog/          [EXISTING] Products, categories, images
-  ├── Cart/             [EXISTING] Shopping cart (guest + auth)
-  ├── Ordering/         [EXISTING] Checkout, orders, payment
-  ├── Inventory/        [EXISTING] Stock management
-  ├── Messaging/        [EXISTING] Dead letter queue UI
-  ├── Profiles/         [NEW] User identity enrichment, addresses, avatar
-  ├── Reviews/          [NEW] Product reviews with verified purchase
-  └── Wishlists/        [NEW] User wishlists (single list per user)
+BuildingBlocks.Common/
+├── BaseAggregateRoot<TId>        # Aggregate root base with domain events
+├── IAggregateRoot                # Marker interface
+├── StronglyTypedId<T>            # Base record for typed IDs
+├── ValueObject                   # OBSOLETE class-based value objects
+├── Events/
+│   ├── DomainEvent               # Event base with EventId
+│   ├── IDomainEvent              # Event marker interface
+│   └── EventId                   # StronglyTypedId<Guid> for events
 ```
 
-**Rationale for three new contexts:**
-- **Profiles**: User identity is a distinct subdomain from ordering/cart. Different lifecycle (created once, updated rarely vs transactional cart/order operations). Potential future extraction to identity service.
-- **Reviews**: Product feedback is a separate concern from catalog (products exist without reviews). Cross-cuts Users and Products but owns review-specific rules (verified purchase, moderation state, helpful votes).
-- **Wishlists**: Similar to cart structurally but fundamentally different behavior: no expiration, no checkout flow, purely aspirational vs transactional. Separate lifecycle warrants separate aggregate.
+### Current Domain Model Pattern
 
-### Component Boundaries
-
-| Component | Responsibility | Communicates With |
-|-----------|---------------|-------------------|
-| **Profiles** | User profile CRUD, avatar upload, address management, link BuyerId to auth user | Ordering (via events: user created → link existing orders), Cart (via events: merge guest cart) |
-| **Reviews** | Review CRUD, rating aggregation, verified purchase validation, moderation | Catalog (read ProductId for validation), Ordering (consume OrderConfirmed event for verified flag), Profiles (read UserId for display name) |
-| **Wishlists** | Wishlist item CRUD, move to cart | Catalog (read product data), Cart (publish AddToCart command when moving items) |
-| **Cart** [MODIFIED] | Add guest-to-user merge on authentication event | Profiles (consume UserAuthenticated event) |
-| **Ordering** [MODIFIED] | Add UserId denormalization for profile linking | Profiles (consume UserCreated event to backfill BuyerId→UserId mapping) |
-
-### Data Flow
-
-#### 1. User Profile Creation
-```
-[NextAuth.js login] → [Keycloak JWT with sub claim]
-  → [POST /api/profiles] (CreateProfile command)
-  → [UserCreatedDomainEvent published]
-  → [OrderingContext: UserCreatedConsumer updates Orders.UserId from BuyerId mapping]
-  → [CartContext: UserCreatedConsumer merges guest cart if BuyerId matches]
-```
-
-#### 2. Product Review Submission
-```
-[User clicks "Write Review" on product page]
-  → [POST /api/reviews] (SubmitReview command with ProductId, UserId, Rating, Text)
-  → [ReviewContext validates: ProductId exists? User purchased product?]
-  → [Query OrderingContext via MediatR: GetOrdersByBuyerQuery filtered by ProductId]
-  → [If order found + status Delivered → IsVerifiedPurchase = true]
-  → [ReviewSubmittedDomainEvent published]
-  → [CatalogContext: ReviewSubmittedConsumer increments product review count, updates average rating]
-```
-
-**Cross-context query pattern (NOT foreign keys):**
 ```csharp
-// In ReviewsContext SubmitReviewCommandHandler
-public async Task<SubmitReviewResult> Handle(SubmitReviewCommand request, CancellationToken ct)
+// Aggregate Root
+public sealed class Order : BaseAggregateRoot<OrderId>
 {
-    // Validate product exists (cross-context query)
-    var productExists = await _mediator.Send(new ProductExistsQuery(request.ProductId), ct);
-    if (!productExists) throw new DomainException("Product not found");
+    [Timestamp]
+    public uint Version { get; private set; }  // PostgreSQL xmin concurrency
 
-    // Check verified purchase (cross-context query)
-    var hasPurchased = await _mediator.Send(
-        new HasUserPurchasedProductQuery(request.UserId, request.ProductId), ct);
+    private readonly List<OrderItem> _items = [];
+    public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
-    var review = Review.Create(
-        request.ProductId,
-        request.UserId,
-        request.Rating,
-        request.ReviewText,
-        isVerifiedPurchase: hasPurchased);
+    private Order(OrderId id) : base(id) { }
 
-    _context.Reviews.Add(review);
-    await _context.SaveChangesAsync(ct);
+    public static Order Create(...)
+    {
+        var order = new Order(OrderId.New()) { ... };
+        order.AddDomainEvent(new OrderSubmittedDomainEvent(...));
+        return order;
+    }
+}
 
-    return new SubmitReviewResult(review.Id.Value);
+// Child Entity (No base class currently)
+public sealed class OrderItem
+{
+    public OrderItemId Id { get; private set; }
+    public OrderId OrderId { get; private set; }
+    private OrderItem() { }
+    internal static OrderItem Create(...) => new OrderItem { ... };
+}
+
+// StronglyTypedId
+public sealed record OrderId(Guid Value) : StronglyTypedId<Guid>(Value)
+{
+    public static OrderId New() => new(Guid.NewGuid());
+    public static OrderId From(Guid value) => new(value);
+}
+
+// Value Object (readonly record struct pattern)
+public readonly record struct ProductName
+{
+    public string Value { get; init; }
+    private ProductName(string value) => Value = value;
+    public static ProductName Create(string value) { ... }
 }
 ```
 
-#### 3. Wishlist to Cart Migration
-```
-[User clicks "Move to Cart" on wishlist item]
-  → [POST /api/wishlists/{id}/move-to-cart] (MoveWishlistItemToCart command)
-  → [WishlistContext: Load wishlist item, get product data]
-  → [CartContext: AddToCart command published as domain event]
-  → [WishlistContext: Remove item after cart confirmation]
-```
+### Current EF Core Integration
 
-#### 4. Guest Cart to Authenticated User Migration
-```
-[User logs in with existing guest cart]
-  → [NextAuth.js callback → POST /api/profiles/authenticate]
-  → [ProfilesContext: UserAuthenticatedDomainEvent published with BuyerId from cookie + UserId from JWT]
-  → [CartContext: UserAuthenticatedConsumer]
-  → [Load guest cart by BuyerId, load user cart by UserId]
-  → [Merge strategy: Combine items, deduplicate by ProductId, sum quantities (capped at MaxQuantity)]
-  → [Delete guest cart after merge]
-  → [Update cookie to use UserId instead of BuyerId]
-```
-
-**Migration filter (inspired by WooCommerce 2026 pattern):**
+**DbContext per Feature Module:**
 ```csharp
-public class UserAuthenticatedConsumer : IConsumer<UserAuthenticatedDomainEvent>
+public class OrderingDbContext : DbContext
 {
-    public async Task Consume(ConsumeContext<UserAuthenticatedDomainEvent> context)
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var guestCart = await _context.Carts
-            .Include(c => c.Items)
-            .FirstOrDefaultAsync(c => c.BuyerId == context.Message.GuestBuyerId);
-
-        var userCart = await _context.Carts
-            .Include(c => c.Items)
-            .FirstOrDefaultAsync(c => c.BuyerId == context.Message.UserId);
-
-        if (guestCart is null) return;
-
-        if (userCart is null)
-        {
-            // No existing user cart: transfer ownership of guest cart
-            guestCart.TransferOwnership(context.Message.UserId);
-        }
-        else
-        {
-            // Merge: add guest items to user cart, then delete guest cart
-            foreach (var guestItem in guestCart.Items)
-            {
-                userCart.AddItem(
-                    guestItem.ProductId,
-                    guestItem.ProductName,
-                    guestItem.UnitPrice,
-                    guestItem.ImageUrl,
-                    guestItem.Quantity);
-            }
-            _context.Carts.Remove(guestCart);
-        }
-
-        await _context.SaveChangesAsync();
+        modelBuilder.HasDefaultSchema("ordering");
+        modelBuilder.ApplyConfigurationsFromAssembly(...);
     }
 }
 ```
 
-### Database Schema Isolation
-
-Each new bounded context gets its own schema in PostgreSQL:
-
-```sql
--- ProfilesDbContext
-CREATE SCHEMA profiles;
-CREATE TABLE profiles.user_profiles (...);
-CREATE TABLE profiles.user_addresses (...);
-
--- ReviewsDbContext
-CREATE SCHEMA reviews;
-CREATE TABLE reviews.product_reviews (...);
-
--- WishlistsDbContext
-CREATE SCHEMA wishlists;
-CREATE TABLE wishlists.wishlists (...);
-CREATE TABLE wishlists.wishlist_items (...);
+**Value Converters for StronglyTypedId:**
+```csharp
+builder.Property(o => o.Id)
+    .HasConversion(
+        id => id.Value,
+        value => OrderId.From(value));
 ```
 
-**Migration history isolation:**
+**Complex Properties for Value Objects:**
 ```csharp
-builder.AddNpgsqlDbContext<ProfilesDbContext>("appdb", configureDbContextOptions: options =>
+builder.ComplexProperty(p => p.Price, priceBuilder =>
 {
-    options.UseNpgsql(npgsql =>
-        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "profiles"));
+    priceBuilder.Property(m => m.Amount)
+        .HasColumnName("Price")
+        .HasPrecision(18, 2);
 });
 ```
 
-### Cross-Context Reference Pattern
-
-**DO NOT use foreign keys across contexts.** Use Guid references with validation via MediatR queries.
-
+**PostgreSQL xmin for Concurrency:**
 ```csharp
-// In ReviewsContext
-public sealed class Review : BaseAggregateRoot<ReviewId>
-{
-    public Guid ProductId { get; private set; }  // NOT ProductId foreign key
-    public Guid UserId { get; private set; }     // NOT UserId foreign key
-    public Rating Rating { get; private set; }
-    public string ReviewText { get; private set; }
-    public bool IsVerifiedPurchase { get; private set; }
-    public ReviewStatus Status { get; private set; }
-    public DateTimeOffset CreatedAt { get; private set; }
-}
+builder.Property(o => o.Version).IsRowVersion();  // Maps to xmin
 ```
 
-**Validation happens in application layer:**
+### Current MediatR Pipeline
+
+**Single Pipeline Behavior:**
 ```csharp
-// In Application/Commands/SubmitReview/SubmitReviewCommandHandler.cs
-var productExists = await _mediator.Send(new ProductExistsQuery(request.ProductId), ct);
-var userExists = await _mediator.Send(new UserExistsQuery(request.UserId), ct);
-```
-
-**Denormalization for display (eventual consistency acceptable):**
-```csharp
-// In ReviewsContext for display purposes
-public sealed class Review
+// ValidationBehavior<TRequest, TResponse>
+public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
 {
-    // Denormalized for read performance
-    public string ProductName { get; private set; }  // Updated via ProductUpdated event
-    public string UserDisplayName { get; private set; }  // Updated via ProfileUpdated event
-}
-```
-
-### Avatar Storage Pattern
-
-**Use Azure Blob Storage (already integrated for product images).**
-
-```csharp
-// In ProfilesContext Infrastructure
-public interface IAvatarStorageService
-{
-    Task<string> UploadAvatarAsync(Guid userId, Stream fileStream, string contentType, CancellationToken ct);
-    Task DeleteAvatarAsync(string avatarUrl, CancellationToken ct);
-}
-
-public class AvatarStorageService : IAvatarStorageService
-{
-    private readonly BlobServiceClient _blobServiceClient;
-    private const string ContainerName = "avatars";
-
-    public async Task<string> UploadAvatarAsync(Guid userId, Stream fileStream, string contentType, CancellationToken ct)
+    public async Task<TResponse> Handle(...)
     {
-        var containerClient = _blobServiceClient.GetBlobContainerClient(ContainerName);
-        await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob, cancellationToken: ct);
+        if (!_validators.Any()) return await next();
 
-        // Use random filename (security best practice)
-        var fileName = $"{userId}/{Path.GetRandomFileName()}.jpg";
-        var blobClient = containerClient.GetBlobClient(fileName);
+        var failures = await ValidateAsync(request);
+        if (failures.Any()) throw new ValidationException(failures);
 
-        await blobClient.UploadAsync(fileStream, new BlobHttpHeaders { ContentType = contentType }, cancellationToken: ct);
-
-        return blobClient.Uri.ToString();
+        return await next();
     }
 }
 ```
 
-**Security considerations (from Microsoft Learn):**
-- Never use client-supplied filename (use `Path.GetRandomFileName()`)
-- Disable execute permission on upload folder
-- Scan with anti-virus API immediately after upload (production)
-- Validate file type and size before upload
-- Store URL in database, not file contents
-
-**UserProfile entity:**
+**Handler Pattern (Exception-based):**
 ```csharp
-public sealed class UserProfile : BaseAggregateRoot<UserProfileId>
+public record SubmitOrderCommand(...) : IRequest<Guid>;
+
+public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Guid>
 {
-    public Guid UserId { get; private set; }  // From Keycloak sub claim
-    public string DisplayName { get; private set; }
-    public string? AvatarUrl { get; private set; }  // Blob Storage URL
-    public string Email { get; private set; }
-
-    public void UpdateAvatar(string newAvatarUrl, string? previousAvatarUrl)
+    public async Task<Guid> Handle(SubmitOrderCommand request, CancellationToken ct)
     {
-        AvatarUrl = newAvatarUrl;
-        AddDomainEvent(new AvatarUpdatedDomainEvent(Id, previousAvatarUrl)); // For cleanup
-    }
-}
-```
-
-## Integration Points Summary
-
-### New Bounded Contexts
-
-| Context | DbContext | Schema | Aggregate Roots | Domain Events Published | Domain Events Consumed |
-|---------|-----------|--------|-----------------|------------------------|----------------------|
-| **Profiles** | `ProfilesDbContext` | `profiles` | `UserProfile`, `UserAddress` | `UserCreatedDomainEvent`, `UserAuthenticatedDomainEvent`, `ProfileUpdatedDomainEvent`, `AvatarUpdatedDomainEvent` | None |
-| **Reviews** | `ReviewsDbContext` | `reviews` | `Review` | `ReviewSubmittedDomainEvent`, `ReviewApprovedDomainEvent` | `OrderConfirmedDomainEvent` (from Ordering), `ProductArchivedDomainEvent` (from Catalog) |
-| **Wishlists** | `WishlistsDbContext` | `wishlists` | `Wishlist`, `WishlistItem` | `WishlistItemAddedDomainEvent`, `WishlistItemRemovedDomainEvent` | None |
-
-### Modified Bounded Contexts
-
-| Context | Changes | New Consumers | New Queries |
-|---------|---------|---------------|-------------|
-| **Cart** | Add `TransferOwnership` method on Cart aggregate | `UserAuthenticatedConsumer` (merge guest cart) | None |
-| **Ordering** | Add optional `UserId` field to Order entity (nullable, backfilled) | `UserCreatedConsumer` (backfill BuyerId→UserId) | `HasUserPurchasedProductQuery` (for verified purchase) |
-| **Catalog** | Add review count and average rating (denormalized) | `ReviewSubmittedConsumer`, `ReviewApprovedConsumer` | `ProductExistsQuery` |
-
-### Cross-Context Queries (MediatR)
-
-| Query | Source Context | Target Context | Purpose |
-|-------|----------------|----------------|---------|
-| `ProductExistsQuery` | Reviews, Wishlists | Catalog | Validate product reference |
-| `UserExistsQuery` | Reviews, Wishlists | Profiles | Validate user reference |
-| `HasUserPurchasedProductQuery` | Reviews | Ordering | Verified purchase check |
-| `GetProductQuery` | Wishlists | Catalog | Fetch product details for wishlist display |
-| `GetUserProfileQuery` | Reviews (display) | Profiles | Fetch display name for review UI |
-
-**Implementation pattern:**
-```csharp
-// In Catalog/Application/Queries/ProductExistsQuery.cs
-public sealed record ProductExistsQuery(Guid ProductId) : IRequest<bool>;
-
-public sealed class ProductExistsQueryHandler : IRequestHandler<ProductExistsQuery, bool>
-{
-    private readonly CatalogDbContext _context;
-
-    public async Task<bool> Handle(ProductExistsQuery request, CancellationToken ct)
-    {
-        return await _context.Products
-            .AnyAsync(p => p.Id == ProductId.From(request.ProductId) && p.Status != ProductStatus.Archived, ct);
-    }
-}
-```
-
-### Event Flow Diagram
-
-```
-┌─────────────┐
-│  NextAuth   │ Login → JWT with sub claim
-└──────┬──────┘
-       │
-       ↓
-┌──────────────────────────────────────────────────────────┐
-│ ProfilesContext: CreateProfile (if first login)          │
-│ ├─ UserProfile.Create(userId from sub, email, name)      │
-│ └─ Publish: UserCreatedDomainEvent                       │
-└──────┬───────────────────────────────────────────────────┘
-       │
-       ├───→ OrderingContext: UserCreatedConsumer
-       │     └─ Backfill Order.UserId from BuyerId
-       │
-       └───→ CartContext: UserAuthenticatedConsumer
-             └─ Merge guest cart (BuyerId) → user cart (UserId)
-
-┌─────────────┐
-│   Ordering  │ Order Confirmed
-└──────┬──────┘
-       │
-       ↓
-┌──────────────────────────────────────────────────────────┐
-│ ReviewsContext: OrderConfirmedConsumer                   │
-│ └─ Cache eligible products for verified purchase reviews │
-└──────────────────────────────────────────────────────────┘
-
-┌─────────────┐
-│   Reviews   │ Review Submitted
-└──────┬──────┘
-       │
-       ↓
-┌──────────────────────────────────────────────────────────┐
-│ CatalogContext: ReviewSubmittedConsumer                  │
-│ ├─ Increment Product.ReviewCount                         │
-│ └─ Recalculate Product.AverageRating                     │
-└──────────────────────────────────────────────────────────┘
-```
-
-## Patterns to Follow
-
-### Pattern 1: Cross-Context Validation via MediatR
-
-**What:** Validate references to entities in other bounded contexts using MediatR queries, not foreign keys.
-
-**When:** Any command that references an entity owned by another context (ProductId in Review, UserId in Wishlist).
-
-**Example:**
-```csharp
-// In Reviews/Application/Commands/SubmitReview/SubmitReviewCommandHandler.cs
-public sealed class SubmitReviewCommandHandler : IRequestHandler<SubmitReviewCommand, SubmitReviewResult>
-{
-    private readonly ReviewsDbContext _context;
-    private readonly ISender _mediator;
-
-    public async Task<SubmitReviewResult> Handle(SubmitReviewCommand request, CancellationToken ct)
-    {
-        // Cross-context validation via MediatR
-        bool productExists = await _mediator.Send(new ProductExistsQuery(request.ProductId), ct);
-        if (!productExists)
-            throw new DomainException("Product not found");
-
-        bool userExists = await _mediator.Send(new UserExistsQuery(request.UserId), ct);
-        if (!userExists)
-            throw new DomainException("User not found");
-
-        // Verified purchase check (cross-context business rule)
-        bool hasPurchased = await _mediator.Send(
-            new HasUserPurchasedProductQuery(request.UserId, request.ProductId), ct);
-
-        Review review = Review.Create(
-            ProductId.From(request.ProductId),
-            UserId.From(request.UserId),
-            Rating.Create(request.Rating),
-            request.ReviewText,
-            isVerifiedPurchase: hasPurchased);
-
-        _context.Reviews.Add(review);
+        var order = Order.Create(...);
+        _context.Orders.Add(order);
         await _context.SaveChangesAsync(ct);
-
-        return new SubmitReviewResult(review.Id.Value);
+        return order.Id.Value;  // Direct Guid return
     }
 }
 ```
 
-### Pattern 2: Denormalization for Display via Event Consumers
+**Exception Handling:**
+- GlobalExceptionHandler maps ValidationException, NotFoundException, ConflictException to ProblemDetails
+- Exceptions propagate up through MediatR pipeline
 
-**What:** Cache display-only data from other contexts by consuming domain events and updating denormalized fields.
+### Current Domain Event Publishing
 
-**When:** Read-heavy operations that would otherwise require cross-context joins (e.g., showing reviewer name on product page).
-
-**Example:**
+**DomainEventInterceptor:**
 ```csharp
-// In Reviews/Domain/Entities/Review.cs
-public sealed class Review : BaseAggregateRoot<ReviewId>
+public class DomainEventInterceptor : SaveChangesInterceptor
 {
-    // Owned data
-    public Guid ProductId { get; private set; }
-    public Guid UserId { get; private set; }
-    public Rating Rating { get; private set; }
-
-    // Denormalized for display (eventual consistency acceptable)
-    public string ProductName { get; private set; }  // From Catalog
-    public string UserDisplayName { get; private set; }  // From Profiles
-
-    public void UpdateDenormalizedProductName(string productName)
+    public override async ValueTask<int> SavedChangesAsync(...)
     {
-        ProductName = productName;  // No domain event needed (display-only)
-    }
-}
+        // After SaveChanges completes:
+        var aggregates = context.ChangeTracker.Entries<IAggregateRoot>();
+        var events = aggregates.SelectMany(a => a.DomainEvents);
 
-// In Reviews/Application/Consumers/ProductUpdatedConsumer.cs
-public sealed class ProductUpdatedConsumer : IConsumer<ProductUpdatedDomainEvent>
-{
-    public async Task Consume(ConsumeContext<ProductUpdatedDomainEvent> context)
-    {
-        var productId = context.Message.ProductId;
+        foreach (var aggregate in aggregates)
+            aggregate.ClearDomainEvents();
 
-        // Fetch updated product name (cross-context query)
-        var product = await _mediator.Send(new GetProductQuery(productId));
-        if (product is null) return;
-
-        // Update all reviews for this product
-        var reviews = await _context.Reviews
-            .Where(r => r.ProductId == productId)
-            .ToListAsync();
-
-        foreach (var review in reviews)
-        {
-            review.UpdateDenormalizedProductName(product.Name);
-        }
-
-        await _context.SaveChangesAsync();
+        foreach (var @event in events)
+            await _publishEndpoint.Publish(@event, @event.GetType(), ct);
     }
 }
 ```
 
-### Pattern 3: Guest-to-User Data Migration on Authentication
+## New Building Blocks Integration
 
-**What:** Merge or transfer ownership of guest data (cart, orders) when user authenticates.
+### 1. Entity Base Class with Audit
 
-**When:** User logs in with existing guest session (BuyerId cookie + UserId from JWT sub claim don't match).
-
-**Example:**
+**New Component:**
 ```csharp
-// In Cart/Application/Consumers/UserAuthenticatedConsumer.cs
-public sealed class UserAuthenticatedConsumer : IConsumer<UserAuthenticatedDomainEvent>
+// BuildingBlocks.Common/Entity.cs
+public abstract class Entity<TId> : IEntity<TId>, IAuditable
 {
-    private readonly CartDbContext _context;
+    public TId Id { get; protected init; }
+    public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset? UpdatedAt { get; private set; }
 
-    public async Task Consume(ConsumeContext<UserAuthenticatedDomainEvent> context)
+    protected Entity(TId id) => Id = id;
+}
+
+// Interfaces
+public interface IEntity<TId> { TId Id { get; } }
+public interface IAuditable
+{
+    DateTimeOffset CreatedAt { get; }
+    DateTimeOffset? UpdatedAt { get; }
+}
+```
+
+**Integration Point: Aggregate Hierarchy**
+
+**EXISTING (unchanged):**
+```csharp
+public sealed class Order : BaseAggregateRoot<OrderId>  // Still works
+{
+    // No audit properties — teams choose when to add
+}
+```
+
+**NEW (opt-in audit):**
+```csharp
+public abstract class AuditableAggregateRoot<TId> : BaseAggregateRoot<TId>, IAuditable
+{
+    public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset? UpdatedAt { get; private set; }
+
+    protected AuditableAggregateRoot(TId id) : base(id) { }
+}
+
+// Opt-in usage
+public sealed class Product : AuditableAggregateRoot<ProductId>
+{
+    private Product(ProductId id) : base(id) { }
+}
+```
+
+**Integration Point: Child Entities**
+
+**BEFORE (no base class):**
+```csharp
+public sealed class OrderItem
+{
+    public OrderItemId Id { get; private set; }
+    private OrderItem() { }
+}
+```
+
+**AFTER (opt-in Entity base):**
+```csharp
+public sealed class OrderItem : Entity<OrderItemId>
+{
+    private OrderItem(OrderItemId id) : base(id) { }
+}
+```
+
+**Integration Point: EF Core AuditInterceptor**
+
+**New Component:**
+```csharp
+// ApiService/Common/Persistence/AuditInterceptor.cs
+public class AuditInterceptor : SaveChangesInterceptor
+{
+    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, ...)
     {
-        Guid guestBuyerId = context.Message.GuestBuyerId;
-        Guid userId = context.Message.UserId;
+        var entries = eventData.Context?.ChangeTracker
+            .Entries<IAuditable>()
+            .Where(e => e.State is EntityState.Added or EntityState.Modified);
 
-        if (guestBuyerId == userId) return;  // Already same user
-
-        Cart? guestCart = await _context.Carts
-            .Include(c => c.Items)
-            .FirstOrDefaultAsync(c => c.BuyerId == guestBuyerId);
-
-        Cart? userCart = await _context.Carts
-            .Include(c => c.Items)
-            .FirstOrDefaultAsync(c => c.BuyerId == userId);
-
-        if (guestCart is null) return;
-
-        if (userCart is null)
+        foreach (var entry in entries)
         {
-            // Strategy 1: Transfer ownership (guest cart becomes user cart)
-            guestCart.TransferOwnership(userId);
+            if (entry.State == EntityState.Added)
+                entry.Property(nameof(IAuditable.CreatedAt)).CurrentValue = DateTimeOffset.UtcNow;
+
+            if (entry.State == EntityState.Modified)
+                entry.Property(nameof(IAuditable.UpdatedAt)).CurrentValue = DateTimeOffset.UtcNow;
         }
-        else
+
+        return base.SavingChanges(eventData, result);
+    }
+}
+```
+
+**DbContext Registration (per-module):**
+```csharp
+services.AddDbContext<OrderingDbContext>((sp, options) =>
+{
+    options.UseNpgsql(connectionString)
+        .AddInterceptors(
+            sp.GetRequiredService<DomainEventInterceptor>(),  // Existing
+            sp.GetRequiredService<AuditInterceptor>());       // NEW
+});
+```
+
+**Data Flow:**
+```
+SaveChangesAsync()
+    ↓
+AuditInterceptor.SavingChanges()          // Sets CreatedAt/UpdatedAt
+    ↓
+[Database write]
+    ↓
+DomainEventInterceptor.SavedChangesAsync() // Publishes domain events
+```
+
+### 2. Concurrency Handling
+
+**Current Approach:** Direct PostgreSQL xmin mapping
+```csharp
+[Timestamp]
+public uint Version { get; private set; }
+```
+
+**New Building Block (optional pattern):**
+```csharp
+// BuildingBlocks.Common/IConcurrencyToken.cs
+public interface IConcurrencyToken { uint Version { get; } }
+
+// Opt-in usage in aggregates
+public sealed class Order : BaseAggregateRoot<OrderId>, IConcurrencyToken
+{
+    [Timestamp]
+    public uint Version { get; private set; }
+}
+```
+
+**Integration Point: EF Core Configuration Convention**
+
+**New Convention (applied globally):**
+```csharp
+// ApiService/Common/Persistence/ConcurrencyTokenConvention.cs
+public class ConcurrencyTokenConvention : IModelFinalizingConvention
+{
+    public void ProcessModelFinalizing(IConventionModelBuilder modelBuilder, ...)
+    {
+        foreach (var entityType in modelBuilder.Metadata.GetEntityTypes())
         {
-            // Strategy 2: Merge items (combine guest + user carts)
-            foreach (CartItem guestItem in guestCart.Items)
+            if (typeof(IConcurrencyToken).IsAssignableFrom(entityType.ClrType))
             {
-                userCart.AddItem(
-                    guestItem.ProductId,
-                    guestItem.ProductName,
-                    guestItem.UnitPrice,
-                    guestItem.ImageUrl,
-                    guestItem.Quantity);
+                entityType.FindProperty(nameof(IConcurrencyToken.Version))
+                    ?.SetIsRowVersion(true);
             }
-            _context.Carts.Remove(guestCart);
         }
-
-        await _context.SaveChangesAsync();
     }
 }
 
-// In Cart/Domain/Entities/Cart.cs
-public void TransferOwnership(Guid newBuyerId)
+// DbContext
+protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
 {
-    BuyerId = newBuyerId;
-    Touch();  // Reset TTL
+    configurationBuilder.Conventions.Add(_ => new ConcurrencyTokenConvention());
 }
 ```
 
-### Pattern 4: Strongly Typed IDs Across Contexts
+**Benefit:** Removes repetitive `builder.Property(o => o.Version).IsRowVersion()` in every configuration.
 
-**What:** Use strongly typed IDs (record wrappers around Guid) for type safety, but store raw Guids for cross-context references.
-
-**When:** Always for entities within a context, but cross-context references use raw Guid for simplicity.
-
-**Example:**
+**Conflict Handling (unchanged):**
 ```csharp
-// In Reviews/Domain/ValueObjects/ReviewId.cs
-public sealed record ReviewId(Guid Value) : StronglyTypedId<Guid>(Value)
+try
 {
-    public static ReviewId New() => new(Guid.NewGuid());
-    public static ReviewId From(Guid value) => new(value);
+    await _context.SaveChangesAsync();
 }
-
-// In Reviews/Domain/Entities/Review.cs
-public sealed class Review : BaseAggregateRoot<ReviewId>
+catch (DbUpdateConcurrencyException ex)
 {
-    // Own ID: strongly typed
-    // Cross-context references: raw Guid for simplicity
-    public Guid ProductId { get; private set; }
-    public Guid UserId { get; private set; }
+    throw new ConflictException("Order was modified by another transaction.");
 }
 ```
 
-**Rationale:** Strongly typed IDs prevent mixing up entity types within a context (e.g., passing ProductId where CategoryId expected). Cross-context references use raw Guid because they're validated via MediatR queries anyway, and Guid is universally understood.
+### 3. Result Type Pattern
+
+**New Component:**
+```csharp
+// BuildingBlocks.Common/Result.cs
+public class Result
+{
+    public bool IsSuccess { get; }
+    public Error Error { get; }
+
+    protected Result(bool isSuccess, Error error)
+    {
+        IsSuccess = isSuccess;
+        Error = error;
+    }
+
+    public static Result Success() => new(true, Error.None);
+    public static Result Failure(Error error) => new(false, error);
+}
+
+public class Result<TValue> : Result
+{
+    private readonly TValue? _value;
+
+    public TValue Value => IsSuccess
+        ? _value!
+        : throw new InvalidOperationException("Cannot access value of failed result.");
+
+    private Result(TValue value) : base(true, Error.None) => _value = value;
+    private Result(Error error) : base(false, error) => _value = default;
+
+    public static Result<TValue> Success(TValue value) => new(value);
+    public static new Result<TValue> Failure(Error error) => new(error);
+}
+
+public record Error(string Code, string Message)
+{
+    public static readonly Error None = new(string.Empty, string.Empty);
+}
+```
+
+**Integration Point: MediatR Commands/Queries**
+
+**BEFORE (exception-based):**
+```csharp
+public record SubmitOrderCommand(...) : IRequest<Guid>;
+
+public class Handler : IRequestHandler<SubmitOrderCommand, Guid>
+{
+    public async Task<Guid> Handle(...)
+    {
+        if (cart.Items.Count == 0)
+            throw new ValidationException("Cart is empty");  // Exception path
+
+        var order = Order.Create(...);
+        await _context.SaveChangesAsync();
+        return order.Id.Value;
+    }
+}
+```
+
+**AFTER (Result-based, opt-in):**
+```csharp
+public record SubmitOrderCommand(...) : IRequest<Result<Guid>>;
+
+public class Handler : IRequestHandler<SubmitOrderCommand, Result<Guid>>
+{
+    public async Task<Result<Guid>> Handle(...)
+    {
+        if (cart.Items.Count == 0)
+            return Result<Guid>.Failure(new Error("Cart.Empty", "Cart is empty"));
+
+        var order = Order.Create(...);
+        await _context.SaveChangesAsync();
+        return Result<Guid>.Success(order.Id.Value);
+    }
+}
+```
+
+**Integration Point: Endpoint Mapping**
+
+**BEFORE:**
+```csharp
+app.MapPost("/orders", async (SubmitOrderCommand cmd, ISender sender) =>
+{
+    try
+    {
+        var orderId = await sender.Send(cmd);
+        return Results.Ok(orderId);
+    }
+    catch (ValidationException ex)
+    {
+        return Results.BadRequest(ex.Errors);
+    }
+});
+```
+
+**AFTER (with Result extension):**
+```csharp
+// ApiService/Common/Extensions/ResultExtensions.cs
+public static class ResultExtensions
+{
+    public static IResult ToHttpResult<T>(this Result<T> result)
+    {
+        return result.IsSuccess
+            ? Results.Ok(result.Value)
+            : Results.BadRequest(new { error = result.Error.Code, message = result.Error.Message });
+    }
+}
+
+// Endpoint
+app.MapPost("/orders", async (SubmitOrderCommand cmd, ISender sender) =>
+{
+    var result = await sender.Send(cmd);
+    return result.ToHttpResult();
+});
+```
+
+**Integration Point: Pipeline Behavior (optional)**
+
+**New ValidationBehavior for Result:**
+```csharp
+public class ResultValidationBehavior<TRequest, TResponse>
+    : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : notnull
+    where TResponse : Result
+{
+    private readonly IEnumerable<IValidator<TRequest>> _validators;
+
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, ...)
+    {
+        if (!_validators.Any()) return await next();
+
+        var failures = await ValidateAsync(request);
+        if (failures.Any())
+        {
+            var error = new Error("Validation.Failed", string.Join(", ", failures.Select(f => f.ErrorMessage)));
+            return (TResponse)(object)Result.Failure(error);  // No exception thrown
+        }
+
+        return await next();
+    }
+}
+```
+
+**Coexistence Strategy:**
+- **Exception-based:** `IRequest<T>` handlers continue using ValidationBehavior (throws exception)
+- **Result-based:** `IRequest<Result<T>>` handlers use ResultValidationBehavior (returns failure)
+- Register both behaviors, MediatR resolves based on TResponse constraint
+
+### 4. Enumeration Class (Smart Enums)
+
+**Current State:** Using primitive enums
+```csharp
+public enum OrderStatus
+{
+    Submitted,
+    StockReserved,
+    Paid,
+    // ...
+}
+```
+
+**New Building Block:**
+```csharp
+// BuildingBlocks.Common/Enumeration.cs
+public abstract class Enumeration<TEnum> : IComparable<TEnum>
+    where TEnum : Enumeration<TEnum>
+{
+    private static readonly Lazy<Dictionary<int, TEnum>> _allValues = new(() =>
+        typeof(TEnum)
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .Where(f => f.FieldType == typeof(TEnum))
+            .Select(f => (TEnum)f.GetValue(null)!)
+            .ToDictionary(e => e.Value));
+
+    public string Name { get; }
+    public int Value { get; }
+
+    protected Enumeration(int value, string name)
+    {
+        Value = value;
+        Name = name;
+    }
+
+    public static IReadOnlyCollection<TEnum> GetAll() => _allValues.Value.Values.ToList();
+    public static TEnum FromValue(int value) => _allValues.Value[value];
+    public static TEnum? FromName(string name) => GetAll().FirstOrDefault(e => e.Name == name);
+
+    public override string ToString() => Name;
+    public int CompareTo(TEnum? other) => Value.CompareTo(other?.Value);
+}
+```
+
+**Integration Point: Domain Model**
+
+**Migration Path (backward compatible):**
+```csharp
+// Step 1: Create enumeration class (enum stays for now)
+public sealed class OrderStatus : Enumeration<OrderStatus>
+{
+    public static readonly OrderStatus Submitted = new(0, nameof(Submitted));
+    public static readonly OrderStatus StockReserved = new(1, nameof(StockReserved));
+    public static readonly OrderStatus Paid = new(2, nameof(Paid));
+    public static readonly OrderStatus Confirmed = new(3, nameof(Confirmed));
+
+    private OrderStatus(int value, string name) : base(value, name) { }
+
+    // Business logic methods
+    public bool CanTransitionTo(OrderStatus targetStatus) => (this, targetStatus) switch
+    {
+        (var s, var t) when s == Submitted && t == StockReserved => true,
+        (var s, var t) when s == StockReserved && t == Paid => true,
+        (var s, var t) when s == Paid && t == Confirmed => true,
+        _ => false
+    };
+
+    public bool IsTerminal() => this == Delivered || this == Failed || this == Cancelled;
+}
+```
+
+**Integration Point: EF Core Value Converter**
+
+**New Converter:**
+```csharp
+// ApiService/Common/Persistence/EnumerationValueConverter.cs
+public class EnumerationValueConverter<TEnum> : ValueConverter<TEnum, int>
+    where TEnum : Enumeration<TEnum>
+{
+    public EnumerationValueConverter()
+        : base(
+            enumeration => enumeration.Value,
+            value => Enumeration<TEnum>.FromValue(value))
+    {
+    }
+}
+
+// Configuration
+builder.Property(o => o.Status)
+    .HasConversion(new EnumerationValueConverter<OrderStatus>())
+    .HasMaxLength(32)
+    .IsRequired();
+```
+
+**Integration Point: API Serialization**
+
+**JSON Converter:**
+```csharp
+public class EnumerationJsonConverter<TEnum> : JsonConverter<TEnum>
+    where TEnum : Enumeration<TEnum>
+{
+    public override TEnum Read(ref Utf8JsonReader reader, Type typeToConvert, ...)
+    {
+        var value = reader.GetString();
+        return Enumeration<TEnum>.FromName(value)
+            ?? throw new JsonException($"Unknown {typeof(TEnum).Name}: {value}");
+    }
+
+    public override void Write(Utf8JsonWriter writer, TEnum value, ...)
+    {
+        writer.WriteStringValue(value.Name);
+    }
+}
+
+// Register globally
+services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new EnumerationJsonConverter<OrderStatus>());
+});
+```
+
+### 5. Specification Pattern
+
+**New Component:**
+```csharp
+// BuildingBlocks.Common/Specification/ISpecification.cs
+public interface ISpecification<T>
+{
+    Expression<Func<T, bool>>? Criteria { get; }
+    List<Expression<Func<T, object>>> Includes { get; }
+    List<string> IncludeStrings { get; }
+    Expression<Func<T, object>>? OrderBy { get; }
+    Expression<Func<T, object>>? OrderByDescending { get; }
+    int Take { get; }
+    int Skip { get; }
+    bool IsPagingEnabled { get; }
+}
+
+// Base specification
+public abstract class Specification<T> : ISpecification<T>
+{
+    public Expression<Func<T, bool>>? Criteria { get; private set; }
+    public List<Expression<Func<T, object>>> Includes { get; } = [];
+    // ... other properties
+
+    protected void AddCriteria(Expression<Func<T, bool>> criteria) => Criteria = criteria;
+    protected void AddInclude(Expression<Func<T, object>> includeExpression) => Includes.Add(includeExpression);
+    protected void ApplyPaging(int skip, int take) { Skip = skip; Take = take; IsPagingEnabled = true; }
+    protected void ApplyOrderBy(Expression<Func<T, object>> orderByExpression) => OrderBy = orderByExpression;
+}
+```
+
+**Integration Point: Query Handlers**
+
+**BEFORE (ad-hoc LINQ):**
+```csharp
+public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, List<ProductDto>>
+{
+    public async Task<List<ProductDto>> Handle(...)
+    {
+        var query = _context.Products
+            .Where(p => p.Status == ProductStatus.Published);
+
+        if (request.CategoryId.HasValue)
+            query = query.Where(p => p.CategoryId == new CategoryId(request.CategoryId.Value));
+
+        if (!string.IsNullOrEmpty(request.Search))
+            query = query.Where(p => p.Name.Value.Contains(request.Search));
+
+        return await query
+            .OrderByDescending(p => p.CreatedAt)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(p => new ProductDto(...))
+            .ToListAsync();
+    }
+}
+```
+
+**AFTER (with Specification):**
+```csharp
+// Specification
+public class PublishedProductsSpec : Specification<Product>
+{
+    public PublishedProductsSpec(Guid? categoryId, string? search, int page, int pageSize)
+    {
+        AddCriteria(p => p.Status == ProductStatus.Published);
+
+        if (categoryId.HasValue)
+            AddCriteria(p => p.CategoryId == new CategoryId(categoryId.Value));
+
+        if (!string.IsNullOrEmpty(search))
+            AddCriteria(p => p.Name.Value.Contains(search));
+
+        ApplyOrderByDescending(p => p.CreatedAt);
+        ApplyPaging((page - 1) * pageSize, pageSize);
+    }
+}
+
+// Specification Evaluator
+public static class SpecificationEvaluator
+{
+    public static IQueryable<T> GetQuery<T>(IQueryable<T> inputQuery, ISpecification<T> spec)
+        where T : class
+    {
+        var query = inputQuery;
+
+        if (spec.Criteria != null)
+            query = query.Where(spec.Criteria);
+
+        query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
+        query = spec.IncludeStrings.Aggregate(query, (current, include) => current.Include(include));
+
+        if (spec.OrderBy != null)
+            query = query.OrderBy(spec.OrderBy);
+        else if (spec.OrderByDescending != null)
+            query = query.OrderByDescending(spec.OrderByDescending);
+
+        if (spec.IsPagingEnabled)
+            query = query.Skip(spec.Skip).Take(spec.Take);
+
+        return query;
+    }
+}
+
+// Handler
+public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, List<ProductDto>>
+{
+    public async Task<List<ProductDto>> Handle(...)
+    {
+        var spec = new PublishedProductsSpec(request.CategoryId, request.Search, request.Page, request.PageSize);
+
+        return await SpecificationEvaluator
+            .GetQuery(_context.Products, spec)
+            .Select(p => new ProductDto(...))
+            .ToListAsync();
+    }
+}
+```
+
+**Benefits:**
+- Specifications are testable in isolation (unit tests without database)
+- Reusable across queries
+- Complex business rules encapsulated
+- Easier to understand than scattered LINQ
+
+**Integration Point: Repository Pattern (optional)**
+
+MicroCommerce currently uses DbContext directly in handlers (no repository layer). If adding repositories later:
+
+```csharp
+public interface IRepository<T> where T : class
+{
+    Task<List<T>> ListAsync(ISpecification<T> spec);
+    Task<T?> FirstOrDefaultAsync(ISpecification<T> spec);
+    Task<int> CountAsync(ISpecification<T> spec);
+}
+
+public class EfRepository<T> : IRepository<T> where T : class
+{
+    private readonly DbContext _context;
+
+    public async Task<List<T>> ListAsync(ISpecification<T> spec)
+    {
+        return await SpecificationEvaluator.GetQuery(_context.Set<T>(), spec).ToListAsync();
+    }
+}
+```
+
+### 6. Source Generators for StronglyTypedId
+
+**Current Pattern (manual):**
+```csharp
+public sealed record OrderId(Guid Value) : StronglyTypedId<Guid>(Value)
+{
+    public static OrderId New() => new(Guid.NewGuid());
+    public static OrderId From(Guid value) => new(value);
+}
+
+// EF Core configuration (manual in every entity configuration)
+builder.Property(o => o.Id)
+    .HasConversion(
+        id => id.Value,
+        value => OrderId.From(value));
+```
+
+**New Building Block: Source Generator Integration**
+
+**Option 1: StronglyTypedId Library**
+```csharp
+// Add NuGet: StronglyTypedId
+// BuildingBlocks.Common/StronglyTypedIdConfig.cs
+
+[assembly: StronglyTypedIdDefaults(
+    backingType: StronglyTypedIdBackingType.Guid,
+    converters: StronglyTypedIdConverter.EfCoreValueConverter | StronglyTypedIdConverter.SystemTextJson)]
+
+// Usage
+[StronglyTypedId]
+public partial struct OrderId { }
+
+// Generated code includes:
+// - OrderId(Guid value) constructor
+// - Guid Value property
+// - static OrderId New()
+// - EF Core ValueConverter
+// - System.Text.Json JsonConverter
+```
+
+**Option 2: Custom Source Generator (more control)**
+
+**Integration Point: EF Core Convention**
+
+**Problem:** Even with source-generated ValueConverters, still need to apply them:
+```csharp
+builder.Property(o => o.Id).HasConversion(new OrderIdValueConverter());  // Repetitive
+```
+
+**Solution: Global ValueConverter Convention**
+```csharp
+// ApiService/Common/Persistence/StronglyTypedIdConvention.cs
+public class StronglyTypedIdConvention : IModelFinalizingConvention
+{
+    public void ProcessModelFinalizing(IConventionModelBuilder modelBuilder, ...)
+    {
+        foreach (var entityType in modelBuilder.Metadata.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (IsStronglyTypedId(property.ClrType))
+                {
+                    var converterType = typeof(StronglyTypedIdValueConverter<>).MakeGenericType(property.ClrType);
+                    var converter = (ValueConverter)Activator.CreateInstance(converterType)!;
+                    property.SetValueConverter(converter);
+                }
+            }
+        }
+    }
+
+    private static bool IsStronglyTypedId(Type type)
+    {
+        return type.BaseType is { IsGenericType: true }
+            && type.BaseType.GetGenericTypeDefinition() == typeof(StronglyTypedId<>);
+    }
+}
+
+// DbContext
+protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+{
+    configurationBuilder.Conventions.Add(_ => new StronglyTypedIdConvention());
+}
+```
+
+**Result:** No more manual `.HasConversion()` calls. Convention auto-applies converters to all StronglyTypedId properties.
+
+**Integration Point: JSON Serialization**
+
+**Problem:** StronglyTypedId serializes as object by default:
+```json
+{ "orderId": { "value": "123e4567-e89b-12d3-a456-426614174000" } }
+```
+
+**Solution: Custom JsonConverter**
+```csharp
+// BuildingBlocks.Common/StronglyTypedIdJsonConverter.cs
+public class StronglyTypedIdJsonConverterFactory : JsonConverterFactory
+{
+    public override bool CanConvert(Type typeToConvert)
+    {
+        return typeToConvert.BaseType is { IsGenericType: true }
+            && typeToConvert.BaseType.GetGenericTypeDefinition() == typeof(StronglyTypedId<>);
+    }
+
+    public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+    {
+        var valueType = typeToConvert.BaseType!.GetGenericArguments()[0];
+        var converterType = typeof(StronglyTypedIdJsonConverter<,>).MakeGenericType(typeToConvert, valueType);
+        return (JsonConverter)Activator.CreateInstance(converterType)!;
+    }
+}
+
+public class StronglyTypedIdJsonConverter<TId, TValue> : JsonConverter<TId>
+    where TId : StronglyTypedId<TValue>
+{
+    public override TId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var value = JsonSerializer.Deserialize<TValue>(ref reader, options)!;
+        return (TId)Activator.CreateInstance(typeToConvert, value)!;
+    }
+
+    public override void Write(Utf8JsonWriter writer, TId value, JsonSerializerOptions options)
+    {
+        JsonSerializer.Serialize(writer, value.Value, options);
+    }
+}
+
+// Registration
+services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new StronglyTypedIdJsonConverterFactory());
+});
+```
+
+**Result:**
+```json
+{ "orderId": "123e4567-e89b-12d3-a456-426614174000" }
+```
+
+## Recommended Project Structure
+
+### BuildingBlocks.Common (New Components)
+
+```
+BuildingBlocks.Common/
+├── BaseAggregateRoot.cs              # EXISTING (unchanged)
+├── AuditableAggregateRoot.cs         # NEW (inherits BaseAggregateRoot)
+├── Entity.cs                         # NEW (base for child entities)
+├── IAuditable.cs                     # NEW (audit interface)
+├── IConcurrencyToken.cs              # NEW (concurrency marker)
+├── StronglyTypedId.cs                # EXISTING (unchanged)
+├── ValueObject.cs                    # EXISTING (obsolete, keep for migration)
+├── Result/
+│   ├── Result.cs                     # NEW (success/failure result)
+│   ├── Result{T}.cs                  # NEW (generic result)
+│   └── Error.cs                      # NEW (error record)
+├── Enumeration/
+│   └── Enumeration{TEnum}.cs         # NEW (smart enum base)
+├── Specification/
+│   ├── ISpecification{T}.cs          # NEW (specification interface)
+│   ├── Specification{T}.cs           # NEW (specification base)
+│   └── SpecificationEvaluator.cs     # NEW (EF Core query builder)
+├── Events/                           # EXISTING (unchanged)
+│   ├── DomainEvent.cs
+│   ├── IDomainEvent.cs
+│   └── EventId.cs
+└── Converters/
+    ├── StronglyTypedIdJsonConverterFactory.cs    # NEW
+    └── EnumerationJsonConverter{TEnum}.cs        # NEW
+```
+
+### ApiService/Common (New Infrastructure)
+
+```
+ApiService/Common/
+├── Behaviors/
+│   ├── ValidationBehavior.cs                     # EXISTING (exception-based)
+│   └── ResultValidationBehavior.cs               # NEW (Result-based)
+├── Persistence/
+│   ├── DomainEventInterceptor.cs                 # EXISTING (unchanged)
+│   ├── AuditInterceptor.cs                       # NEW
+│   ├── Conventions/
+│   │   ├── StronglyTypedIdConvention.cs          # NEW (auto value converters)
+│   │   └── ConcurrencyTokenConvention.cs         # NEW (auto concurrency)
+│   └── Converters/
+│       └── EnumerationValueConverter{TEnum}.cs   # NEW
+├── Extensions/
+│   └── ResultExtensions.cs                       # NEW (Result → IResult)
+└── Exceptions/                                   # EXISTING (unchanged)
+    ├── ValidationException.cs
+    ├── NotFoundException.cs
+    └── GlobalExceptionHandler.cs
+```
+
+### Feature Module Integration
+
+```
+Features/Ordering/
+├── Domain/
+│   ├── Entities/
+│   │   ├── Order.cs                 # BEFORE: BaseAggregateRoot<OrderId>
+│   │   │                            # AFTER:  AuditableAggregateRoot<OrderId> (opt-in)
+│   │   └── OrderItem.cs             # BEFORE: No base class
+│   │                                # AFTER:  Entity<OrderItemId> (opt-in)
+│   ├── ValueObjects/
+│   │   ├── OrderStatus.cs           # BEFORE: enum
+│   │   │                            # AFTER:  Enumeration<OrderStatus> (migration)
+│   │   └── OrderId.cs               # BEFORE: Manual record
+│   │                                # AFTER:  [StronglyTypedId] partial struct (opt-in)
+│   └── Specifications/              # NEW
+│       └── ActiveOrdersSpec.cs      # Reusable query logic
+├── Application/
+│   ├── Commands/
+│   │   └── SubmitOrder/
+│   │       ├── SubmitOrderCommand.cs    # BEFORE: IRequest<Guid>
+│   │       │                            # AFTER:  IRequest<Result<Guid>> (opt-in)
+│   │       └── SubmitOrderHandler.cs    # Returns Result<Guid>
+│   └── Queries/
+│       └── GetOrders/
+│           ├── GetOrdersQuery.cs        # Uses specifications
+│           └── GetOrdersHandler.cs      # SpecificationEvaluator integration
+└── Infrastructure/
+    ├── OrderingDbContext.cs         # Adds AuditInterceptor, conventions
+    └── Configurations/
+        └── OrderConfiguration.cs    # BEFORE: Manual .HasConversion()
+                                     # AFTER:  Convention auto-applies (cleaner)
+```
+
+## Data Flow Changes
+
+### Before: Exception-Based Flow
+
+```
+HTTP Request
+    ↓
+Endpoint → MediatR.Send(Command)
+    ↓
+ValidationBehavior
+    ├─ Validation fails → throw ValidationException
+    └─ Validation passes → next()
+         ↓
+    CommandHandler
+         ├─ Business rule fails → throw InvalidOperationException
+         └─ Success → return TResponse
+              ↓
+         DbContext.SaveChangesAsync()
+              ↓
+         DomainEventInterceptor (publishes events)
+              ↓
+    Endpoint returns Results.Ok(response)
+
+[On Exception]
+    GlobalExceptionHandler catches → ProblemDetails → HTTP 4xx
+```
+
+### After: Result-Based Flow (Opt-In)
+
+```
+HTTP Request
+    ↓
+Endpoint → MediatR.Send(Command)
+    ↓
+ResultValidationBehavior
+    ├─ Validation fails → return Result.Failure(error)  [NO EXCEPTION]
+    └─ Validation passes → next()
+         ↓
+    CommandHandler
+         ├─ Business rule fails → return Result.Failure(error)  [NO EXCEPTION]
+         └─ Success → return Result.Success(value)
+              ↓
+         DbContext.SaveChangesAsync()
+              ↓
+         AuditInterceptor (sets CreatedAt/UpdatedAt)  [NEW]
+              ↓
+         [Database write]
+              ↓
+         DomainEventInterceptor (publishes events)
+              ↓
+    Endpoint → result.ToHttpResult() → HTTP 200/400
+
+[Exceptions only for infrastructure failures]
+```
+
+### Audit Timestamps Flow
+
+```
+Entity implements IAuditable
+    ↓
+SaveChangesAsync() called
+    ↓
+AuditInterceptor.SavingChanges()
+    ├─ EntityState.Added → Set CreatedAt = UtcNow
+    └─ EntityState.Modified → Set UpdatedAt = UtcNow
+         ↓
+[Database write with timestamps]
+```
+
+### StronglyTypedId Conversion Flow
+
+```
+Domain Layer: Order { OrderId Id }
+    ↓
+EF Core Write: StronglyTypedIdConvention
+    ├─ Detects StronglyTypedId<Guid>
+    └─ Auto-applies ValueConverter → Guid column
+         ↓
+Database: orders.id (uuid column)
+         ↓
+EF Core Read: ValueConverter
+    ├─ Guid from DB → OrderId.From(guid)
+    └─ Returns OrderId
+         ↓
+JSON Serialization: StronglyTypedIdJsonConverter
+    └─ OrderId → "uuid-string" (not {"value": "uuid-string"})
+```
 
 ## Anti-Patterns to Avoid
 
-### Anti-Pattern 1: Foreign Keys Across Bounded Contexts
+### Anti-Pattern 1: Forcing Result on All Handlers
 
-**What goes wrong:** Adding foreign key constraints from ReviewsContext to CatalogContext or ProfilesContext.
+**What teams do:** Mandate `IRequest<Result<T>>` for all commands/queries immediately.
 
-**Why bad:** Violates database-per-feature isolation. Prevents independent deployment, schema evolution, and future service extraction. Creates coupling at database level.
+**Why it's wrong:**
+- Breaking change for existing handlers
+- Not all operations benefit from Result pattern (simple CRUD doesn't need it)
+- Increases boilerplate where exceptions are fine
 
-**Instead:** Use raw Guid references with validation via MediatR queries in application layer. Accept eventual consistency for denormalized display data.
+**Do this instead:**
+- Use Result for complex business operations with expected failures (checkout, payment)
+- Keep exceptions for unexpected errors (database down, network timeout)
+- Migrate incrementally, starting with high-value scenarios
 
-**Detection:** Look for migrations that create foreign keys referencing tables in different schemas.
+### Anti-Pattern 2: Audit All The Things
 
-### Anti-Pattern 2: Shared DbContext Across Features
+**What teams do:** Make every entity inherit `AuditableAggregateRoot` or `Entity<TId>`.
 
-**What goes wrong:** Creating a single `AppDbContext` with `DbSet<Product>`, `DbSet<Review>`, `DbSet<UserProfile>`.
+**Why it's wrong:**
+- Child entities owned by aggregates don't need audit trails (OrderItem audit = Order audit)
+- Creates database bloat (CreatedAt/UpdatedAt on every table)
+- Performance overhead in interceptors
 
-**Why bad:** Breaks bounded context boundaries. All contexts share same database transaction scope, migration history, and schema. Prevents gradual service extraction.
+**Do this instead:**
+- Audit aggregate roots only (Order, Product, not OrderItem)
+- Use event sourcing for true audit trails if compliance requires every change
+- Shadow properties for audit if domain shouldn't know about timestamps
 
-**Instead:** One `DbContext` per bounded context with separate schema and migration history. Cross-context queries via MediatR.
+### Anti-Pattern 3: Specification Everywhere
 
-**Detection:** Single DbContext with multiple feature entities, shared migration history.
+**What teams do:** Wrap every LINQ query in a Specification class.
 
-### Anti-Pattern 3: Synchronous Cross-Context Calls in Domain Events
+**Why it's wrong:**
+- Overkill for simple queries (`_context.Products.FindAsync(id)`)
+- Adds indirection without value
+- Harder to debug than inline LINQ
 
-**What goes wrong:** In `ReviewSubmittedDomainEvent` handler, directly call `CatalogDbContext.SaveChangesAsync()`.
+**Do this instead:**
+- Use specifications for complex, reusable business queries (filtering, sorting, paging)
+- Keep simple queries inline in handlers
+- Introduce specifications when query logic repeats across handlers
 
-**Why bad:** Couples contexts at transaction level. Domain events should be handled asynchronously via message bus (MassTransit).
+### Anti-Pattern 4: Premature Source Generator Adoption
 
-**Instead:** Publish domain events to MassTransit after `SaveChangesAsync` (via `DomainEventInterceptor`). Consumers in other contexts handle events asynchronously.
+**What teams do:** Replace all StronglyTypedId records with `[StronglyTypedId] partial struct` immediately.
 
-**Detection:** Domain event handlers that inject multiple DbContexts or call `SaveChangesAsync` on contexts outside their boundary.
+**Why it's wrong:**
+- Source generators add build complexity (diagnostics, IntelliSense lag)
+- Existing record pattern works fine
+- Migration effort doesn't justify benefits for small codebases
 
-### Anti-Pattern 4: User Profile as Extension of Ordering Context
+**Do this instead:**
+- Start with manual records
+- Add source generator when you have 20+ StronglyTypedId types
+- Use for new modules, migrate old ones gradually
 
-**What goes wrong:** Adding `UserProfile` entity to `OrderingDbContext` because orders reference users.
+### Anti-Pattern 5: Enumeration Without Behavior
 
-**Why bad:** Mixes two subdomains with different lifecycles and responsibilities. User profiles evolve independently from orders. Future identity service extraction becomes harder.
+**What teams do:** Convert all enums to Enumeration classes "because DDD."
 
-**Instead:** Create separate `ProfilesDbContext`. Link orders to users via optional `UserId` field (nullable, backfilled on first profile creation).
+**Why it's wrong:**
+- If enum has no behavior (just labels), primitive enum is simpler
+- Enumeration adds overhead (reflection, dictionary lookup)
+- JSON serialization complexity
 
-**Detection:** User profile tables in `ordering` schema, or `OrderingDbContext` with `DbSet<UserProfile>`.
+**Do this instead:**
+- Keep primitive enums for simple states (ProductStatus.Draft/Published)
+- Use Enumeration when adding behavior (OrderStatus.CanTransitionTo(), IsTerminal())
+- Migrate when enum logic scatters across handlers
 
-### Anti-Pattern 5: Wishlist as Extension of Cart
+## Integration Checklist
 
-**What goes wrong:** Adding `IsWishlist` boolean flag to Cart aggregate and reusing cart logic.
+### Phase 1: Foundation (Non-Breaking)
 
-**Why bad:** Wishlist and cart have fundamentally different behaviors: wishlist never expires, can't checkout, supports "move to cart" operation. Mixing concerns creates confusing aggregate with dual responsibility.
+- [ ] Add `IAuditable`, `IConcurrencyToken` interfaces to BuildingBlocks.Common
+- [ ] Add `Entity<TId>` base class to BuildingBlocks.Common
+- [ ] Add `AuditableAggregateRoot<TId>` to BuildingBlocks.Common
+- [ ] Implement `AuditInterceptor` in ApiService/Common/Persistence
+- [ ] Register `AuditInterceptor` in all DbContexts (opt-out via interface check)
+- [ ] Existing aggregates unchanged, continue working
 
-**Instead:** Separate `Wishlist` aggregate in `WishlistsDbContext` with its own lifecycle and rules. Similar structure but distinct entity.
+### Phase 2: Result Pattern (Opt-In)
 
-**Detection:** Cart entity with `IsWishlist` flag, or cart endpoints handling both cart and wishlist operations.
+- [ ] Add `Result`, `Result<T>`, `Error` to BuildingBlocks.Common
+- [ ] Add `ResultExtensions.ToHttpResult()` to ApiService/Common/Extensions
+- [ ] Implement `ResultValidationBehavior<TRequest, TResponse>` where TResponse : Result
+- [ ] Register ResultValidationBehavior in DI (coexists with ValidationBehavior)
+- [ ] Migrate 1-2 complex command handlers to Result pattern (pilot)
+- [ ] Evaluate developer experience, adjust before broader rollout
 
-### Anti-Pattern 6: Avatar Blob Content in Database
+### Phase 3: Conventions (DRY Improvements)
 
-**What goes wrong:** Storing avatar image bytes in `UserProfile.AvatarBlob` BYTEA column.
+- [ ] Implement `StronglyTypedIdConvention` for auto value converters
+- [ ] Implement `ConcurrencyTokenConvention` for auto row versioning
+- [ ] Add conventions to DbContext.ConfigureConventions in each module
+- [ ] Remove manual `.HasConversion()` calls from entity configurations
+- [ ] Test migrations to ensure no schema changes
 
-**Why bad:** Database bloat, poor scalability, no CDN support, backup overhead.
+### Phase 4: Enumeration (Selective Migration)
 
-**Instead:** Azure Blob Storage with URL reference in database (`UserProfile.AvatarUrl`). Leverage existing blob storage integration for product images.
+- [ ] Add `Enumeration<TEnum>` base class to BuildingBlocks.Common
+- [ ] Implement `EnumerationValueConverter<TEnum>` for EF Core
+- [ ] Implement `EnumerationJsonConverter<TEnum>` for JSON
+- [ ] Identify enums with behavior (OrderStatus, PaymentStatus)
+- [ ] Migrate enums to Enumeration classes one at a time
+- [ ] Keep primitive enums for simple labels (ProductStatus can stay enum)
 
-**Detection:** BYTEA or VARBINARY columns for avatar storage, large database size from profile table.
+### Phase 5: Specifications (Targeted Adoption)
 
-## Scalability Considerations
+- [ ] Add `ISpecification<T>`, `Specification<T>`, `SpecificationEvaluator` to BuildingBlocks.Common
+- [ ] Identify complex queries with repeated logic (product filtering, order search)
+- [ ] Create specification classes for reusable queries
+- [ ] Update handlers to use SpecificationEvaluator
+- [ ] Leave simple queries inline (no specifications)
 
-| Concern | At 100 users | At 10K users | At 1M users |
-|---------|--------------|--------------|-------------|
-| **User profiles** | PostgreSQL profiles schema | Same (profiles are small, infrequent writes) | Consider read replicas for profile queries |
-| **Reviews** | PostgreSQL reviews schema | Add database index on `ProductId` for aggregation queries | Consider materialized view for average ratings, separate read model (CQRS) |
-| **Wishlists** | PostgreSQL wishlists schema | Same (wishlist operations are lightweight) | Partition by UserId if tables grow very large |
-| **Avatar storage** | Azure Blob Storage with Aspire integration | Add CDN (Azure Front Door) for avatar delivery | Same (blob storage scales automatically) |
-| **Guest cart merge** | Synchronous on login | Queue migration via background job if merge takes >500ms | Async migration with callback notification |
-| **Cross-context queries** | Direct MediatR queries | Cache ProductExistsQuery results (Redis) | Extract Reviews to separate service with API gateway |
+### Phase 6: Source Generators (Optional)
 
-**Critical at 10K users:**
-- Add composite index on `reviews.product_id, reviews.status, reviews.created_at` for product detail page queries
-- Add index on `wishlists.user_id` for my-wishlist page
-- Enable blob storage CDN for avatar delivery
-
-**Critical at 1M users:**
-- Extract Reviews to separate service (most cross-context queries, independent scaling need)
-- Introduce read model for product review aggregations (average rating, count) — publish to Redis on ReviewSubmitted
-- Consider separate authentication service for Profiles (aligns with Keycloak as identity provider)
+- [ ] Evaluate StronglyTypedId NuGet package vs. custom generator
+- [ ] Add source generator to BuildingBlocks.Common project
+- [ ] Configure assembly-level defaults for converters
+- [ ] Add `StronglyTypedIdJsonConverterFactory` to JSON options
+- [ ] Pilot with new feature module (e.g., Payments)
+- [ ] Gradual migration of existing StronglyTypedId records
 
 ## Build Order Recommendations
 
-### Phase Sequence
+**Safe Migration Path (Minimal Risk):**
 
-**Phase 1: Profiles Context (Foundation)**
-- Rationale: Other features depend on UserId from profiles. Establishes guest-to-user migration pattern that Reviews and Wishlists will use.
-- Deliverables: ProfilesDbContext, UserProfile aggregate, avatar upload, address management, UserCreatedDomainEvent, UserAuthenticatedDomainEvent
+1. **Phase 1 (Foundation)** — Audit interfaces and Entity base classes are additive. Deploy with confidence.
+2. **Phase 3 (Conventions)** — DRY improvements with no behavior changes. Low risk.
+3. **Phase 2 (Result Pattern)** — Pilot with 1-2 handlers, evaluate, then scale if beneficial.
+4. **Phase 4 (Enumeration)** — Migrate enums with behavior first (OrderStatus), leave simple enums alone.
+5. **Phase 5 (Specifications)** — Adopt for complex queries only, leave simple queries unchanged.
+6. **Phase 6 (Source Generators)** — Optional optimization after 20+ StronglyTypedId types.
 
-**Phase 2: Reviews Context**
-- Rationale: Requires Profiles for UserId. Most complex cross-context integration (validates ProductId, checks verified purchase, denormalizes user/product names). Tests event-driven architecture thoroughly.
-- Deliverables: ReviewsDbContext, Review aggregate, verified purchase validation, rating aggregation, ReviewSubmittedDomainEvent consumers in Catalog
+**Critical Dependencies:**
 
-**Phase 3: Wishlists Context**
-- Rationale: Simplest of three features. Similar to Cart structure (proven pattern). Depends on Profiles for UserId.
-- Deliverables: WishlistsDbContext, Wishlist aggregate, move-to-cart integration with Cart context
+- **AuditInterceptor** depends on `IAuditable` interface
+- **ResultValidationBehavior** depends on `Result` type
+- **Conventions** depend on marker interfaces (`IConcurrencyToken`, `StronglyTypedId<T>`)
+- **Enumeration EF Core support** depends on `EnumerationValueConverter<TEnum>`
 
-**Phase 4: Integration & Polish**
-- Rationale: Connect all features via frontend, add navigation between profile/reviews/wishlists, end-to-end testing
-- Deliverables: Frontend profile page, review submission UI, wishlist management UI, E2E tests
-
-### Dependency Graph
-
-```
-Phase 1: Profiles
-  ├─ No dependencies (foundation)
-  └─ Establishes: UserId, avatar storage pattern, guest migration pattern
-
-Phase 2: Reviews
-  ├─ Depends on: Profiles (UserId)
-  ├─ Depends on: Ordering (verified purchase check)
-  └─ Depends on: Catalog (ProductId validation)
-
-Phase 3: Wishlists
-  ├─ Depends on: Profiles (UserId)
-  ├─ Depends on: Catalog (ProductId validation)
-  └─ Depends on: Cart (move-to-cart integration)
-
-Phase 4: Integration
-  └─ Depends on: Phases 1-3 complete
-```
-
-### Critical Path Items
-
-1. **UserAuthenticatedDomainEvent** (Phase 1) — Enables cart merge, order linking
-2. **Cross-context MediatR query pattern** (Phase 1) — Used by Reviews and Wishlists for validation
-3. **Avatar storage service** (Phase 1) — Reusable pattern for future file uploads
-4. **Verified purchase validation** (Phase 2) — Core business rule for review credibility
-5. **Denormalized rating aggregation** (Phase 2) — Product detail page performance
+**No Breaking Changes:** All new building blocks are opt-in. Existing code continues working unchanged.
 
 ## Sources
 
-### Modular Monolith Architecture
-- [Refactoring Overgrown Bounded Contexts in Modular Monoliths](https://www.milanjovanovic.tech/blog/refactoring-overgrown-bounded-contexts-in-modular-monoliths) — Milan Jovanović on bounded context boundaries
-- [Evolving modular monoliths: Passing data between bounded contexts](https://www.thereformedprogrammer.net/evolving-modular-monoliths-3-passing-data-between-bounded-contexts/) — Cross-context query patterns
-- [GitHub: modular-monolith-with-ddd](https://github.com/kgrzybek/modular-monolith-with-ddd) — Reference implementation
-- [GitHub: booking-modular-monolith](https://github.com/meysamhadeli/booking-modular-monolith) — .NET 9 with Vertical Slice, CQRS, MassTransit
+**DDD Building Blocks:**
+- [Seedwork (reusable base classes and interfaces for your domain model) - Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/seedwork-domain-model-base-classes-interfaces)
+- [Entity Base Class - Enterprise Craftsmanship](https://enterprisecraftsmanship.com/posts/entity-base-class/)
+- [Clean DDD lessons: audit metadata for domain entities - Medium](https://medium.com/unil-ci-software-engineering/clean-ddd-lessons-audit-metadata-for-domain-entities-5935a5c6db5b)
 
-### Cross-Context Queries & CQRS
-- [Modular Monolith: 42% Ditch Microservices in 2026](https://byteiota.com/modular-monolith-42-ditch-microservices-in-2026/) — CNCF survey on architecture consolidation
-- [Modern Application Architecture Trends](https://www.cerbos.dev/blog/modern-application-architecture-trends) — Hybrid modular monolith + targeted microservices
+**EF Core Audit:**
+- [How to Implement Audit Logs with EF Core Interceptors](https://oneuptime.com/blog/post/2026-01-25-audit-logs-ef-core-interceptors/view)
+- [EF Core Interceptors: SaveChangesInterceptor for Auditing Entities - Medium](https://mehmetozkaya.medium.com/ef-core-interceptors-savechangesinterceptor-for-auditing-entities-in-net-8-microservices-6923190a03b9)
+- [Tracking Every Change: Using SaveChanges Interception for EF Core Auditing](https://www.woodruff.dev/tracking-every-change-using-savechanges-interception-for-ef-core-auditing/)
+- [How to Build Custom EF Core Conventions](https://oneuptime.com/blog/post/2026-01-30-build-custom-ef-core-conventions/view)
 
-### Domain-Driven Design Bounded Contexts
-- [Implementing Cart Service with DDD & Hexagonal Architecture](https://medium.com/walmartglobaltech/implementing-cart-service-with-ddd-hexagonal-port-adapter-architecture-part-1-4dab93b3fa9f) — Cart as aggregate root
-- [Service boundaries identification example in e-commerce](https://hackernoon.com/service-boundaries-identification-example-in-e-commerce-a2c01a1b8ee9) — Separating Wishlist, Cart, Inventory contexts
-- [Bounded Context - DDD in Ruby on Rails](https://www.visuality.pl/posts/bounded-context-ddd-in-ruby-on-rails) — Why wishlist and cart should be separate
+**Result Pattern:**
+- [Improving Error Handling with the Result Pattern in MediatR](https://goatreview.com/improving-error-handling-result-pattern-mediatr/)
+- [GitHub - altmann/FluentResults](https://github.com/altmann/FluentResults)
 
-### File Upload & Avatar Storage
-- [Upload files in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-10.0) — Microsoft official docs
-- [Upload a blob with .NET - Azure Storage](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-upload) — Azure Blob Storage integration
-- [A Developer's Guide to Uploading Images: Best Practices](https://medium.com/@digveshparab123/a-developers-guide-to-uploading-images-best-practices-and-methods-2ecb20133928) — Security considerations
+**MediatR Pipeline:**
+- [CQRS Validation with MediatR Pipeline and FluentValidation](https://www.milanjovanovic.tech/blog/cqrs-validation-with-mediatr-pipeline-and-fluentvalidation)
+- [Validation without Exceptions using a MediatR Pipeline Behavior - Medium](https://medium.com/the-cloud-builders-guild/validation-without-exceptions-using-a-mediatr-pipeline-behavior-278f124836dc)
+- [Rethinking MediatR Validation: Moving from Pipeline to Domain Objects](https://goatreview.com/rethinking-mediatr-pipeline-validation-pattern/)
 
-### Guest Data Migration
-- [WooCommerce Cart Merge & Sessions: Major June 2025 Changes](https://www.businessbloomer.com/woocommerce-cart-merge-sessions-changes/) — `woocommerce_migrate_guest_session_to_user_session` filter pattern
-- [How to merge cart items of guest user to logged in user](https://github.com/woocommerce/woocommerce/discussions/49448) — Community discussion on merge strategies
-- [Update Cart Customer - Craft Commerce](https://craftcms.com/docs/commerce/3.x/update-cart-customer) — Cart ownership transfer on login
+**Enumeration Classes:**
+- [Using Enumeration classes instead of enum types - Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types)
+- [Smart Enums: Beyond Traditional Enumerations in .NET - Thinktecture AG](https://www.thinktecture.com/en/net/smart-enums-beyond-traditional-enumerations-in-dotnet/)
 
-### Keycloak & JWT Claims
-- [Integrate Keycloak with ASP.NET Core Using OAuth 2.0](https://www.milanjovanovic.tech/blog/integrate-keycloak-with-aspnetcore-using-oauth-2) — JWT bearer authentication setup
-- [How to Access Roles in JWT Token in .NET Core After Keycloak Update](https://www.codegenes.net/blog/can-t-access-roles-in-jwt-token-net-core/) — realm_access and resource_access claims
-- [Configure Authentication - Keycloak.AuthServices](https://nikiforovall.blog/keycloak-authorization-services-dotnet/configuration/configuration-authentication.html) — Claims transformation for .NET
+**Specification Pattern:**
+- [How to use Specifications with the Repository Pattern](https://specification.ardalis.com/usage/use-specification-repository-pattern.html)
+- [Specification Pattern in EF Core: Flexible Data Access Without Repositories](https://antondevtips.com/blog/specification-pattern-in-ef-core-flexible-data-access-without-repositories)
+- [GitHub - ardalis/Specification](https://github.com/ardalis/Specification)
 
-### Product Reviews & Verified Purchase
-- [Hands-on DDD and Event Sourcing - Domain events](https://falberthen.github.io/posts/ecommerceddd-pt3/) — Event sourcing patterns for e-commerce
-- [Review Snippet (AggregateRating) - Google Search](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) — Schema.org aggregateRating structure
+**Strongly Typed IDs:**
+- [GitHub - andrewlock/StronglyTypedId](https://github.com/andrewlock/StronglyTypedId)
+- [A Better Way to Handle Entity Identification in .NET with Strongly Typed IDs](https://antondevtips.com/blog/a-better-way-to-handle-entity-identification-in-dotnet-with-strongly-typed-ids)
+- [Rebuilding StronglyTypedId as a source generator](https://andrewlock.net/rebuilding-stongly-typed-id-as-a-source-generator-1-0-0-beta-release/)
+- [Using strongly-typed entity IDs with EF Core](https://andrewlock.net/using-strongly-typed-entity-ids-to-avoid-primitive-obsession-part-3/)
+- [Value Conversions - EF Core - Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions)
 
 ---
-*Architecture research for v1.1 User Features*
-*Researched: 2026-02-13*
+*Architecture research for: DDD Building Blocks Integration*
+*Researched: 2026-02-14*
