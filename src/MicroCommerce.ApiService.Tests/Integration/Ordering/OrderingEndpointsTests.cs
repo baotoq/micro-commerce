@@ -51,10 +51,9 @@ public sealed class OrderingEndpointsTests
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        SubmitOrderResult? result = await response.Content.ReadFromJsonAsync<SubmitOrderResult>();
-        result.Should().NotBeNull();
-        result!.OrderId.Should().NotBeEmpty();
-        result.OrderNumber.Should().StartWith("MC-");
+        Guid? orderId = await response.Content.ReadFromJsonAsync<Guid>();
+        orderId.Should().NotBeNull();
+        orderId.Should().NotBe(Guid.Empty);
     }
 
     [Fact]
@@ -101,14 +100,14 @@ public sealed class OrderingEndpointsTests
             });
 
         HttpResponseMessage checkoutResponse = await _client.PostAsJsonAsync("/api/ordering/checkout", checkoutRequest);
-        SubmitOrderResult? checkout = await checkoutResponse.Content.ReadFromJsonAsync<SubmitOrderResult>();
+        Guid? orderId = await checkoutResponse.Content.ReadFromJsonAsync<Guid>();
 
         // Act
-        OrderDto? order = await _client.GetFromJsonAsync<OrderDto>($"/api/ordering/orders/{checkout!.OrderId}");
+        OrderDto? order = await _client.GetFromJsonAsync<OrderDto>($"/api/ordering/orders/{orderId!.Value}");
 
         // Assert
         order.Should().NotBeNull();
-        order!.OrderNumber.Should().Be(checkout.OrderNumber);
+        order!.OrderNumber.Should().StartWith("MC-");
         order.BuyerEmail.Should().Be("customer@example.com");
         order.Items.Should().HaveCount(1);
         order.Status.Should().Be(OrderStatus.Submitted);
@@ -233,7 +232,7 @@ public sealed class OrderingEndpointsTests
             });
 
         HttpResponseMessage checkoutResponse = await _client.PostAsJsonAsync("/api/ordering/checkout", checkoutRequest);
-        SubmitOrderResult? checkout = await checkoutResponse.Content.ReadFromJsonAsync<SubmitOrderResult>();
+        Guid? orderId = await checkoutResponse.Content.ReadFromJsonAsync<Guid>();
 
         // Note: The order starts in "Submitted" status
         // We need to transition through the saga states to reach "Confirmed" before we can ship
@@ -242,7 +241,7 @@ public sealed class OrderingEndpointsTests
         UpdateOrderStatusRequest request = new("Shipped");
 
         // Act
-        HttpResponseMessage response = await _client.PatchAsJsonAsync($"/api/ordering/orders/{checkout!.OrderId}/status", request);
+        HttpResponseMessage response = await _client.PatchAsJsonAsync($"/api/ordering/orders/{orderId!.Value}/status", request);
 
         // Assert - This may return 400 if order is not in correct state for shipping
         // The test verifies the endpoint exists and accepts requests

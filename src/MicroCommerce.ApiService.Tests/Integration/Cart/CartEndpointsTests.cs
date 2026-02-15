@@ -50,8 +50,9 @@ public sealed class CartEndpointsTests
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        AddToCartResult? result = await response.Content.ReadFromJsonAsync<AddToCartResult>();
-        result.Should().NotBeNull();
+        Guid? cartId = await response.Content.ReadFromJsonAsync<Guid>();
+        cartId.Should().NotBeNull();
+        cartId.Should().NotBe(Guid.Empty);
     }
 
     [Fact]
