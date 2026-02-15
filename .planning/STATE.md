@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 15 of 21 (Foundation - Entity Base & Audit Infrastructure)
-Plan: 1 of 2 completed
-Status: In progress
-Last activity: 2026-02-14 — Completed 15-01: Entity Base & Audit Infrastructure
+Plan: 2 of 2 completed
+Status: Completed
+Last activity: 2026-02-14 — Completed 15-02: EF Core Interceptors & Conventions
 
-Progress: [■■■■■■■■■■■■■■■■■■■■░░░░░░░░░░] 73% (73/95 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■░░░░░░░░░░] 74% (74/95 plans completed)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 73 (v1.0: 49, v1.1: 23, v2.0: 1)
-- Average duration: 23 min
-- Total execution time: 27.6 hours
+- Total plans completed: 74 (v1.0: 49, v1.1: 23, v2.0: 2)
+- Average duration: 22 min
+- Total execution time: 27.7 hours
 
 **By Milestone:**
 
@@ -29,13 +29,14 @@ Progress: [■■■■■■■■■■■■■■■■■■■■░░░
 |-----------|--------|-------|----------|----------|
 | v1.0 MVP | 10 | 49 | 18.8h | 16 days |
 | v1.1 User Features | 7 | 23 | 8.8h | 2 days |
-| v2.0 DDD Foundation | 7 | 1 | 1 min | In progress |
+| v2.0 DDD Foundation | 7 | 2 | 3 min | In progress |
 
 **Recent Trend:**
-- Last 5 plans: v2.0 started with entity foundation (15-01)
-- Trend: DDD refactoring phase begun
+- Last 5 plans: v2.0 foundation infrastructure (15-01, 15-02)
+- Trend: DDD foundation layer complete
 
-*Updated after 15-01 completion*
+*Updated after 15-02 completion*
+| Phase 15 P02 | 2 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -51,6 +52,9 @@ Recent decisions affecting v2.0:
 - **Settable marker interfaces** (15-01): IAuditable/IConcurrencyToken/ISoftDeletable use { get; set; } for interceptor modification
 - **IAuditable timestamps only** (15-01): CreatedAt/UpdatedAt only for now, extensible to user tracking later
 - **IConcurrencyToken uses int** (15-01): int Version for portability and simplicity over uint
+- [Phase 15-02]: Interceptor order: SoftDelete, Concurrency, Audit, DomainEvent (critical for correct behavior)
+- [Phase 15-02]: SoftDeleteInterceptor also updates IAuditable.UpdatedAt on soft delete
+- [Phase 15-02]: DbUpdateConcurrencyException returns HTTP 409 with entity type name
 
 ### Roadmap Evolution
 
@@ -69,6 +73,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: Completed 15-01-PLAN.md (Entity Base & Audit Infrastructure)
+Stopped at: Completed 15-02-PLAN.md (EF Core interceptors and conventions)
 Resume file: None
-Next step: Execute 15-02-PLAN.md (EF Core interceptors for audit/concurrency/soft-delete)
+Next step: Phase 15 complete. Ready for next phase in v2.0 roadmap.
