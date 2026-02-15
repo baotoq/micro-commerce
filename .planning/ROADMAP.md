@@ -54,8 +54,8 @@
 **Plans**: 2 plans
 
 Plans:
-- [ ] 15-01-PLAN.md — Entity hierarchy + interfaces in BuildingBlocks (Entity<TId>, BaseAggregateRoot refactor, IAuditable, IConcurrencyToken, ISoftDeletable, AuditableAggregateRoot)
-- [ ] 15-02-PLAN.md — Interceptors (Audit, Concurrency, SoftDelete) + convention helpers + registration + DbUpdateConcurrencyException handling
+- [x] 15-01-PLAN.md — Entity hierarchy + interfaces in BuildingBlocks (Entity<TId>, BaseAggregateRoot refactor, IAuditable, IConcurrencyToken, ISoftDeletable, AuditableAggregateRoot)
+- [x] 15-02-PLAN.md — Interceptors (Audit, Concurrency, SoftDelete) + convention helpers + registration + DbUpdateConcurrencyException handling
 
 #### Phase 16: Conventions - DRY Configuration
 **Goal**: Eliminate repetitive manual EF Core configuration through model conventions
@@ -164,7 +164,7 @@ Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21
 |-------|-----------|----------------|--------|-----------|
 | 1-10 | v1.0 MVP | 49/49 | Complete | 2026-02-13 |
 | 11-14.3 | v1.1 User Features | 23/23 | Complete | 2026-02-14 |
-| 15. Foundation | v2.0 DDD Foundation | 0/TBD | Not started | - |
+| 15. Foundation | v2.0 DDD Foundation | 2/2 | Complete | 2026-02-14 |
 | 16. Conventions | v2.0 DDD Foundation | 0/TBD | Not started | - |
 | 17. Result Pattern | v2.0 DDD Foundation | 0/TBD | Not started | - |
 | 18. Enumeration | v2.0 DDD Foundation | 0/TBD | Not started | - |
