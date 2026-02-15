@@ -43,7 +43,7 @@ export function PaymentSection({ shippingData, onSuccess }: PaymentSectionProps)
     setError(null);
 
     try {
-      const orderResult = await submitOrder.mutateAsync({
+      const orderId = await submitOrder.mutateAsync({
         email: shippingData.email,
         shippingAddress: shippingData,
         items: items.map((item) => ({
@@ -59,12 +59,12 @@ export function PaymentSection({ shippingData, onSuccess }: PaymentSectionProps)
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const paymentResult = await simulatePayment.mutateAsync({
-        orderId: orderResult.orderId,
+        orderId,
         data: { shouldSucceed },
       });
 
       if (paymentResult.success) {
-        onSuccess(orderResult.orderId);
+        onSuccess(orderId);
       } else {
         setError(
           paymentResult.failureReason || "Payment was declined. Please try again."
