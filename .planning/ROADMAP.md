@@ -123,17 +123,17 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 *v1.0 shipped: 2026-02-13*
 *v1.1 started: 2026-02-13*
 
-### Phase 14.3: Address issues in DDD audit report (INSERTED)
+### Phase 14.3: Address issues in DDD audit report (INSERTED) ✅
 
 **Goal:** Fix critical and warning DDD violations: enforce aggregate boundaries (internal child entity factories), fix CQRS command returns, remove obsolete domain event infrastructure, and eliminate Product-to-Category navigation property
 **Depends on:** Phase 14
-**Plans:** 4 plans
+**Plans:** 4 plans — completed 2026-02-14
 
 Plans:
-- [ ] 14.3-01-PLAN.md -- Enforce aggregate boundaries (internal factory methods, restrict Order.MarkStockReserved, remove redundant Category methods, fix DomainEvent immutability)
-- [ ] 14.3-02-PLAN.md -- Fix CQRS command return violations (UpdateProduct, AddToCart, SubmitOrder) + frontend updates
-- [ ] 14.3-03-PLAN.md -- Remove obsolete domain event dispatcher infrastructure (IDomainEventDispatcher, MediatorDomainEventDispatcher, IDomainEventHandler)
-- [ ] 14.3-04-PLAN.md -- Remove Product-to-Category navigation property (Vernon Rule 3: reference by identity only)
+- [x] 14.3-01-PLAN.md -- Enforce aggregate boundaries (internal factory methods, restrict Order.MarkStockReserved, remove redundant Category methods, fix DomainEvent immutability)
+- [x] 14.3-02-PLAN.md -- Fix CQRS command return violations (UpdateProduct, AddToCart, SubmitOrder) + frontend updates
+- [x] 14.3-03-PLAN.md -- Remove obsolete domain event dispatcher infrastructure (IDomainEventDispatcher, MediatorDomainEventDispatcher, IDomainEventHandler)
+- [x] 14.3-04-PLAN.md -- Remove Product-to-Category navigation property (Vernon Rule 3: reference by identity only)
 
 ### Phase 14.2: Evaluate ValueObject base class vs record struct refactoring (INSERTED) ✅
 
