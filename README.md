@@ -7,7 +7,7 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 >
 > Before 2026, I wrote code like a normal person. Then [Claude Code](https://docs.anthropic.com/en/docs/claude-code) happened.
 >
-> Now I mass-type `y` to approve tool permissions while Claude Code does all the actual work.
+> Now I mass-type `y` to approve tool permissions while Claude Code does all the actual work.  
 >
 > **My contributions (2026–present):**
 > - Mass-typing `y`
