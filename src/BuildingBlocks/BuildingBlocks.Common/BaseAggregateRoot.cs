@@ -3,12 +3,22 @@ using MicroCommerce.BuildingBlocks.Common.Events;
 
 namespace MicroCommerce.BuildingBlocks.Common;
 
-public abstract class BaseAggregateRoot<TId>(TId id) : IAggregateRoot
+public abstract class BaseAggregateRoot<TId> : Entity<TId>, IAggregateRoot
 {
     private readonly List<DomainEvent> _domainEvents = [];
+
+    protected BaseAggregateRoot() : base()
+    {
+    }
+
+    protected BaseAggregateRoot(TId id) : base(id)
+    {
+    }
+
     protected void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+
     [NotMapped]
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-    public TId Id { get; init; } = id ?? throw new ArgumentNullException(nameof(id));
+
     public void ClearDomainEvents() => _domainEvents.Clear();
 }
