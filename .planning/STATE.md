@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 18 complete (2 of 2 plans done)
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 19 in progress (1 of 2 plans done)
 
 ## Current Position
 
-Phase: 18 of 21 (Enumeration — Enums with Behavior) — Complete
-Plan: 2 of 2 completed
-Status: Plan 18-02 Complete — SmartEnum entity method migrations (PRIM-03, PRIM-04) done; Phase 18 fully complete
-Last activity: 2026-02-24 — Completed 18-02: Order/Product entity method migrations, ChangeProductStatus handler extended
+Phase: 19 of 21 (Specification Pattern — Complex Query Logic) — In Progress
+Plan: 1 of 2 completed
+Status: Plan 19-01 Complete — Ardalis.Specification packages installed, 6 catalog spec classes created, GetProductsQueryHandler refactored (QUERY-01, QUERY-02) done
+Last activity: 2026-02-24 — Completed 19-01: Ardalis.Specification packages + catalog spec classes + GetProductsQueryHandler refactored
 
-Progress: [■■■■■■■■■■■■■■■■■■■■■■■░░░░░░░] 83% (81/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■■■░░░░░░░] 84% (82/96 plans completed)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 77 (v1.0: 49, v1.1: 23, v2.0: 5)
+- Total plans completed: 78 (v1.0: 49, v1.1: 23, v2.0: 6)
 - Average duration: 22 min
-- Total execution time: 27.95 hours
+- Total execution time: 27.97 hours
 
 **By Milestone:**
 
@@ -29,11 +29,11 @@ Progress: [■■■■■■■■■■■■■■■■■■■■■■■
 |-----------|--------|-------|----------|----------|
 | v1.0 MVP | 10 | 49 | 18.8h | 16 days |
 | v1.1 User Features | 7 | 23 | 8.8h | 2 days |
-| v2.0 DDD Foundation | 7 | 8 | 37 min | In progress |
+| v2.0 DDD Foundation | 7 | 9 | 40 min | In progress |
 
 **Recent Trend:**
-- Last 5 plans: v2.0 foundation infrastructure (17-01, 17-02, 18-01, 18-02)
-- Trend: DDD foundation layer + EF Core conventions complete, Vogen adoption complete, FluentResults Result pattern complete (Phase 17), SmartEnum full migration complete (Phase 18)
+- Last 5 plans: v2.0 foundation infrastructure (17-01, 17-02, 18-01, 18-02, 19-01)
+- Trend: DDD foundation layer + EF Core conventions complete, Vogen adoption complete, FluentResults Result pattern complete (Phase 17), SmartEnum full migration complete (Phase 18), Ardalis.Specification pattern started (Phase 19)
 
 *Updated after 18-02 completion*
 | Phase 15 P02 | 2 | 2 tasks | 7 files |
@@ -45,6 +45,7 @@ Progress: [■■■■■■■■■■■■■■■■■■■■■■■
 | Phase 17-result-pattern P02 | 4 | 2 tasks | 6 files |
 | Phase 18-enumeration-enums-with-behavior P01 | 3 | 2 tasks | 13 files |
 | Phase 18-enumeration-enums-with-behavior P02 | 3 | 2 tasks | 6 files |
+| Phase 19-specification-pattern P01 | 3 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,8 @@ Recent decisions affecting v2.0:
 - [Phase 18-02]: Product entity methods keep idempotent same-state guard before TransitionTo() — callers may invoke without pre-checking state; silent no-op preferred over throwing for same-state calls
 - [Phase 18-02]: Order entity methods have no idempotent guard — state changes are always meaningful and should not repeat
 - [Phase 18-02]: ChangeProductStatusCommandHandler uses switch on ToLowerInvariant() over SmartEnum.TryFromName — validator already guarantees valid input
+- [Phase 19-specification-pattern]: Ardalis.Specification 9.3.1 does not expose And() — composite spec with multiple Query.Where() calls achieves equivalent AND semantics
+- [Phase 19-specification-pattern]: Sorting kept in handler (request-specific SortBy/SortDirection params); pagination kept in handler for reusable count queries
 
 ### Roadmap Evolution
 
@@ -102,6 +105,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 18-02-PLAN.md (SmartEnum entity method migrations — Order/Product TransitionTo() + ChangeProductStatus handler extended for all 3 statuses)
+Stopped at: Completed 19-01-PLAN.md (Ardalis.Specification packages, 6 catalog spec classes, GetProductsQueryHandler refactored to WithSpecification)
 Resume file: None
-Next step: Phase 19 — next phase in v2.0 DDD Foundation roadmap
+Next step: Phase 19 Plan 02 — Ordering specifications (GetAllOrdersQueryHandler and GetOrdersByBuyerQueryHandler)
