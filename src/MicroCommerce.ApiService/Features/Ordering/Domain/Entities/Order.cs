@@ -99,9 +99,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     /// </summary>
     public void MarkAsPaid()
     {
-        if (Status != OrderStatus.Submitted && Status != OrderStatus.StockReserved)
-            throw new InvalidOperationException($"Cannot mark order as paid when status is '{Status}'.");
-
+        Status.TransitionTo(OrderStatus.Paid);
         Status = OrderStatus.Paid;
         PaidAt = DateTimeOffset.UtcNow;
         AddDomainEvent(new OrderPaidDomainEvent(Id.Value));
@@ -113,10 +111,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     public void MarkAsFailed(string reason)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(reason);
-
-        if (Status == OrderStatus.Confirmed || Status == OrderStatus.Shipped || Status == OrderStatus.Delivered || Status == OrderStatus.Failed)
-            throw new InvalidOperationException($"Cannot mark order as failed when status is '{Status}'.");
-
+        Status.TransitionTo(OrderStatus.Failed);
         Status = OrderStatus.Failed;
         FailureReason = reason;
         AddDomainEvent(new OrderFailedDomainEvent(Id.Value));
@@ -127,9 +122,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     /// </summary>
     public void Confirm()
     {
-        if (Status != OrderStatus.Paid)
-            throw new InvalidOperationException($"Cannot confirm order when status is '{Status}'.");
-
+        Status.TransitionTo(OrderStatus.Confirmed);
         Status = OrderStatus.Confirmed;
     }
 
@@ -139,9 +132,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     /// </summary>
     public void Ship()
     {
-        if (Status != OrderStatus.Confirmed)
-            throw new InvalidOperationException($"Cannot ship order when status is '{Status}'. Order must be Confirmed.");
-
+        Status.TransitionTo(OrderStatus.Shipped);
         Status = OrderStatus.Shipped;
     }
 
@@ -151,9 +142,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     /// </summary>
     public void Deliver()
     {
-        if (Status != OrderStatus.Shipped)
-            throw new InvalidOperationException($"Cannot deliver order when status is '{Status}'. Order must be Shipped.");
-
+        Status.TransitionTo(OrderStatus.Delivered);
         Status = OrderStatus.Delivered;
     }
 
@@ -162,9 +151,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     /// </summary>
     internal void MarkStockReserved()
     {
-        if (Status != OrderStatus.Submitted)
-            throw new InvalidOperationException($"Cannot mark stock reserved when status is '{Status}'.");
-
+        Status.TransitionTo(OrderStatus.StockReserved);
         Status = OrderStatus.StockReserved;
     }
 }
