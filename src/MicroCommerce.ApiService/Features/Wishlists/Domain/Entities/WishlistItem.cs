@@ -13,7 +13,7 @@ public sealed class WishlistItem
     /// <summary>
     /// Unique identifier for the wishlist item.
     /// </summary>
-    public WishlistItemId Id { get; private set; } = null!;
+    public WishlistItemId Id { get; private set; }
 
     /// <summary>
     /// User who saved the item (Keycloak user ID from 'sub' claim).

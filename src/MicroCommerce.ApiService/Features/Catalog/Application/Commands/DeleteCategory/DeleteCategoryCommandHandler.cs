@@ -21,7 +21,7 @@ public sealed class DeleteCategoryCommandHandler
         CancellationToken cancellationToken)
     {
         var category = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Id == new CategoryId(request.Id), cancellationToken);
+            .FirstOrDefaultAsync(c => c.Id == CategoryId.From(request.Id), cancellationToken);
 
         if (category is null)
         {
@@ -30,7 +30,7 @@ public sealed class DeleteCategoryCommandHandler
 
         // Check if any products use this category
         var hasProducts = await _context.Products
-            .AnyAsync(p => p.CategoryId == new CategoryId(request.Id), cancellationToken);
+            .AnyAsync(p => p.CategoryId == CategoryId.From(request.Id), cancellationToken);
 
         if (hasProducts)
         {

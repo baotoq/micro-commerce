@@ -9,8 +9,8 @@ namespace MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 /// </summary>
 public sealed class StockReservation
 {
-    public ReservationId Id { get; private set; } = null!;
-    public StockItemId StockItemId { get; private set; } = null!;
+    public ReservationId Id { get; private set; }
+    public StockItemId StockItemId { get; private set; }
     public int Quantity { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset ExpiresAt { get; private set; }

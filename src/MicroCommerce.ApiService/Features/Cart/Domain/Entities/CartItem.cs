@@ -10,8 +10,8 @@ public sealed class CartItem
 {
     private const int MaxQuantity = 99;
 
-    public CartItemId Id { get; private set; } = null!;
-    public CartId CartId { get; private set; } = null!;
+    public CartItemId Id { get; private set; }
+    public CartId CartId { get; private set; }
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; } = null!;
     public decimal UnitPrice { get; private set; }

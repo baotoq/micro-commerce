@@ -30,7 +30,7 @@ public sealed class SetDefaultAddressCommandHandler : IRequestHandler<SetDefault
             throw new NotFoundException($"Profile for user '{request.UserId}' not found.");
         }
 
-        profile.SetDefaultAddress(new AddressId(request.AddressId));
+        profile.SetDefaultAddress(AddressId.From(request.AddressId));
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

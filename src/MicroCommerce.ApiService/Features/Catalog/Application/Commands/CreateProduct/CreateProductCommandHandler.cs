@@ -23,7 +23,7 @@ public sealed class CreateProductCommandHandler
     {
         // Verify category exists
         var categoryExists = await _context.Categories
-            .AnyAsync(c => c.Id == new CategoryId(request.CategoryId), cancellationToken);
+            .AnyAsync(c => c.Id == CategoryId.From(request.CategoryId), cancellationToken);
 
         if (!categoryExists)
         {
@@ -37,7 +37,7 @@ public sealed class CreateProductCommandHandler
             name,
             request.Description,
             price,
-            new CategoryId(request.CategoryId),
+            CategoryId.From(request.CategoryId),
             request.ImageUrl,
             request.Sku);
 

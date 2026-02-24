@@ -8,8 +8,8 @@ namespace MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 /// </summary>
 public sealed class StockAdjustment
 {
-    public AdjustmentId Id { get; private set; } = null!;
-    public StockItemId StockItemId { get; private set; } = null!;
+    public AdjustmentId Id { get; private set; }
+    public StockItemId StockItemId { get; private set; }
     public int Adjustment { get; private set; }
     public int QuantityAfter { get; private set; }
     public string? Reason { get; private set; }

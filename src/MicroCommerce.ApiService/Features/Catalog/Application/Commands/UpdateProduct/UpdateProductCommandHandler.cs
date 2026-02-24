@@ -21,7 +21,7 @@ public sealed class UpdateProductCommandHandler
         CancellationToken cancellationToken)
     {
         var product = await _context.Products
-            .FirstOrDefaultAsync(p => p.Id == new ProductId(request.Id), cancellationToken);
+            .FirstOrDefaultAsync(p => p.Id == ProductId.From(request.Id), cancellationToken);
 
         if (product is null)
         {
@@ -30,7 +30,7 @@ public sealed class UpdateProductCommandHandler
 
         // Verify category exists
         var categoryExists = await _context.Categories
-            .AnyAsync(c => c.Id == new CategoryId(request.CategoryId), cancellationToken);
+            .AnyAsync(c => c.Id == CategoryId.From(request.CategoryId), cancellationToken);
 
         if (!categoryExists)
         {
@@ -44,7 +44,7 @@ public sealed class UpdateProductCommandHandler
             name,
             request.Description,
             price,
-            new CategoryId(request.CategoryId),
+            CategoryId.From(request.CategoryId),
             request.ImageUrl,
             request.Sku);
 

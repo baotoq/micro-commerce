@@ -8,8 +8,8 @@ namespace MicroCommerce.ApiService.Features.Ordering.Domain.Entities;
 /// </summary>
 public sealed class OrderItem
 {
-    public OrderItemId Id { get; private set; } = null!;
-    public OrderId OrderId { get; private set; } = null!;
+    public OrderItemId Id { get; private set; }
+    public OrderId OrderId { get; private set; }
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; } = null!;
     public decimal UnitPrice { get; private set; }

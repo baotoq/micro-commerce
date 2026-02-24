@@ -1,4 +1,3 @@
-using MicroCommerce.ApiService.Common.Persistence.Conventions;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Common.Persistence;
@@ -13,9 +12,9 @@ public abstract class BaseDbContext : DbContext
     {
         base.ConfigureConventions(configurationBuilder);
 
-        configurationBuilder.Conventions.Add(_ => new StronglyTypedIdConvention());
-        configurationBuilder.Conventions.Add(_ => new AuditableConvention());
+        configurationBuilder.RegisterAllInVogenEfCoreConverters();
+        configurationBuilder.Conventions.Add(_ => new Conventions.AuditableConvention());
         configurationBuilder.Conventions.Add(_ => new Conventions.ConcurrencyTokenConvention());
-        configurationBuilder.Conventions.Add(_ => new SoftDeletableConvention());
+        configurationBuilder.Conventions.Add(_ => new Conventions.SoftDeletableConvention());
     }
 }

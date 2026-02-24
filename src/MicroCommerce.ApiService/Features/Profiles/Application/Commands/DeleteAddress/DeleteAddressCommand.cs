@@ -30,7 +30,7 @@ public sealed class DeleteAddressCommandHandler : IRequestHandler<DeleteAddressC
             throw new NotFoundException($"Profile for user '{request.UserId}' not found.");
         }
 
-        profile.DeleteAddress(new AddressId(request.AddressId));
+        profile.DeleteAddress(AddressId.From(request.AddressId));
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

@@ -22,7 +22,7 @@ public sealed class GetProductByIdQueryHandler
     {
         var product = await _context.Products
             .AsNoTracking()
-            .Where(p => p.Id == new ProductId(request.Id))
+            .Where(p => p.Id == ProductId.From(request.Id))
             .Join(
                 _context.Categories.AsNoTracking(),
                 p => p.CategoryId,

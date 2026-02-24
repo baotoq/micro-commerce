@@ -22,14 +22,14 @@ public sealed class ReleaseReservationCommandHandler
     {
         var stockItem = await _context.StockItems
             .Include(s => s.Reservations)
-            .FirstOrDefaultAsync(s => s.Id == new StockItemId(request.StockItemId), cancellationToken);
+            .FirstOrDefaultAsync(s => s.Id == StockItemId.From(request.StockItemId), cancellationToken);
 
         if (stockItem is null)
         {
             throw new NotFoundException($"Stock item {request.StockItemId} not found.");
         }
 
-        stockItem.ReleaseReservation(new ReservationId(request.ReservationId));
+        stockItem.ReleaseReservation(ReservationId.From(request.ReservationId));
 
         await _context.SaveChangesAsync(cancellationToken);
 

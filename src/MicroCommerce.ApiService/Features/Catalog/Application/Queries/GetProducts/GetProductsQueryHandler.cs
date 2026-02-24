@@ -26,7 +26,7 @@ public sealed class GetProductsQueryHandler
         // Apply filters
         if (request.CategoryId.HasValue)
         {
-            query = query.Where(p => p.CategoryId == new CategoryId(request.CategoryId.Value));
+            query = query.Where(p => p.CategoryId == CategoryId.From(request.CategoryId.Value));
         }
 
         if (!string.IsNullOrWhiteSpace(request.Status) &&

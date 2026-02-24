@@ -21,7 +21,7 @@ public sealed class ArchiveProductCommandHandler
         CancellationToken cancellationToken)
     {
         var product = await _context.Products
-            .FirstOrDefaultAsync(p => p.Id == new ProductId(request.Id), cancellationToken);
+            .FirstOrDefaultAsync(p => p.Id == ProductId.From(request.Id), cancellationToken);
 
         if (product is null)
         {

@@ -91,7 +91,7 @@ public sealed class CreateReviewCommandHandler : IRequestHandler<CreateReviewCom
 
         // Load product and update stats
         var product = await _catalogContext.Products
-            .FirstOrDefaultAsync(p => p.Id == new ProductId(productId), cancellationToken);
+            .FirstOrDefaultAsync(p => p.Id == ProductId.From(productId), cancellationToken);
 
         if (product is not null)
         {

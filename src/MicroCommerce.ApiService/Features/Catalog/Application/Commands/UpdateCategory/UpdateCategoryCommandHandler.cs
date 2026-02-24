@@ -21,7 +21,7 @@ public sealed class UpdateCategoryCommandHandler
         CancellationToken cancellationToken)
     {
         var category = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Id == new CategoryId(request.Id), cancellationToken);
+            .FirstOrDefaultAsync(c => c.Id == CategoryId.From(request.Id), cancellationToken);
 
         if (category is null)
         {

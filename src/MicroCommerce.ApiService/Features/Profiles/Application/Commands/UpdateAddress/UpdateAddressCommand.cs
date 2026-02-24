@@ -39,7 +39,7 @@ public sealed class UpdateAddressCommandHandler : IRequestHandler<UpdateAddressC
         }
 
         profile.UpdateAddress(
-            new AddressId(request.AddressId),
+            AddressId.From(request.AddressId),
             request.Name,
             request.Street,
             request.City,

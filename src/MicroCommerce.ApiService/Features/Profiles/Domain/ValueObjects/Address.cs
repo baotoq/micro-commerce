@@ -14,7 +14,6 @@ public sealed class Address
     // EF Core constructor
     private Address()
     {
-        Id = null!;
         Name = string.Empty;
         Street = string.Empty;
         City = string.Empty;
