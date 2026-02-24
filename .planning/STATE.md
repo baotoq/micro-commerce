@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 16: Conventions & DRY Configuration
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 17 (next)
 
 ## Current Position
 
-Phase: 16 of 21 (Conventions DRY Configuration)
-Plan: 1 of 2 completed
-Status: In Progress
-Last activity: 2026-02-24 — Completed 16-01: EF Core Conventions and BaseDbContext
+Phase: 16 of 21 (Conventions DRY Configuration) — COMPLETE
+Plan: 2 of 2 completed
+Status: Phase 16 Complete
+Last activity: 2026-02-24 — Completed 16-02: DRY configuration cleanup, ValueObject deletion, EF Core migrations
 
-Progress: [■■■■■■■■■■■■■■■■■■■■░░░░░░░░░░] 74% (75/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■░░░░░░░░░] 76% (76/96 plans completed)
 
 ## Performance Metrics
 
@@ -29,15 +29,16 @@ Progress: [■■■■■■■■■■■■■■■■■■■■░░░
 |-----------|--------|-------|----------|----------|
 | v1.0 MVP | 10 | 49 | 18.8h | 16 days |
 | v1.1 User Features | 7 | 23 | 8.8h | 2 days |
-| v2.0 DDD Foundation | 7 | 2 | 3 min | In progress |
+| v2.0 DDD Foundation | 7 | 4 | 23 min | In progress |
 
 **Recent Trend:**
-- Last 5 plans: v2.0 foundation infrastructure (15-01, 15-02, 16-01)
-- Trend: DDD foundation layer + EF Core conventions complete
+- Last 5 plans: v2.0 foundation infrastructure (15-01, 15-02, 16-01, 16-02)
+- Trend: DDD foundation layer + EF Core conventions complete, configuration DRY complete
 
 *Updated after 15-02 completion*
 | Phase 15 P02 | 2 | 2 tasks | 7 files |
 | Phase 16-conventions-dry-configuration P01 | 7 | 2 tasks | 14 files |
+| Phase 16 P02 | 13 | 2 tasks | 45 files |
 
 ## Accumulated Context
 
@@ -58,6 +59,9 @@ Recent decisions affecting v2.0:
 - [Phase 15-02]: DbUpdateConcurrencyException returns HTTP 409 with entity type name
 - [Phase 16-01]: IModelFinalizingConvention over static ModelBuilder extension methods for proper EF Core convention API
 - [Phase 16-01]: BaseDbContext abstract class as single registration point for all EF Core conventions and snake_case naming
+- [Phase 16]: StronglyTypedIdConvention fix: use typed generic method CreateTypedConverter<TId,TUnderlying> for ValueConverter constructor compatibility
+- [Phase 16]: UseSnakeCaseNamingConvention moved to Program.cs configureDbContextOptions (not OnConfiguring) for DbContext pooling compatibility
+- [Phase 16]: CheckoutState IsRowVersion and ToTable kept explicit (MassTransit saga - not IConcurrencyToken)
 
 ### Roadmap Evolution
 
@@ -76,6 +80,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 16-01-PLAN.md (EF Core conventions and BaseDbContext)
+Stopped at: Completed 16-02-PLAN.md (DRY configuration cleanup, ValueObject deletion, EF Core migrations)
 Resume file: None
-Next step: Phase 16 Plan 02 — DRY configuration cleanup (remove manual HasConversion calls from entity configurations)
+Next step: Phase 17 — next phase in v2.0 DDD Foundation milestone
