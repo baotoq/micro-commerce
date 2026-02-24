@@ -72,6 +72,17 @@ Plans:
 - [ ] 16-01-PLAN.md — Conventions (StronglyTypedId, IAuditable, IConcurrencyToken, ISoftDeletable) + BaseDbContext + snake_case naming + migrate all 8 DbContexts
 - [ ] 16-02-PLAN.md — Configuration cleanup (remove redundant HasConversion/IsRowVersion/ToTable) + ValueObject removal + EF Core migrations
 
+### Phase 16.1: Adopt Vogen for value object (INSERTED)
+
+**Goal:** Replace hand-rolled StronglyTypedId<T> base class and 14 ID types with Vogen source-generated record structs, gaining validation, EF Core converters, and JSON serialization with zero runtime overhead
+**Depends on:** Phase 16
+**Requirements**: PRIM-01
+**Plans:** 2 plans
+
+Plans:
+- [ ] 16.1-01-PLAN.md — Install Vogen, rewrite 14 ID types, update EF Core infrastructure, fix all call sites
+- [ ] 16.1-02-PLAN.md — Generate EF Core migrations for all 8 DbContexts
+
 #### Phase 17: Result Pattern - Explicit Error Handling
 **Goal**: Introduce Result type for railway-oriented programming with pilot adoption in command handlers
 **Depends on**: Phase 15 (foundation stable)
