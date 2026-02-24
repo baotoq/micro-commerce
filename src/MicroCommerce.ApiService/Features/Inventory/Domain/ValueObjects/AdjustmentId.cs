@@ -1,11 +1,14 @@
-using System.Diagnostics;
-using MicroCommerce.BuildingBlocks.Common;
+using Vogen;
 
 namespace MicroCommerce.ApiService.Features.Inventory.Domain.ValueObjects;
 
-[DebuggerStepThrough]
-public sealed record AdjustmentId(Guid Value) : StronglyTypedId<Guid>(Value)
+[ValueObject<Guid>(conversions: Conversions.EfCoreValueConverter | Conversions.SystemTextJson)]
+public partial record struct AdjustmentId
 {
-    public static AdjustmentId New() => new(Guid.NewGuid());
-    public static AdjustmentId From(Guid value) => new(value);
+    public static Validation Validate(Guid value) =>
+        value != Guid.Empty
+            ? Validation.Ok
+            : Validation.Invalid("AdjustmentId cannot be empty.");
+
+    public static AdjustmentId New() => From(Guid.CreateVersion7());
 }

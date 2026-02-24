@@ -1,11 +1,14 @@
-using System.Diagnostics;
-using MicroCommerce.BuildingBlocks.Common;
+using Vogen;
 
 namespace MicroCommerce.ApiService.Features.Ordering.Domain.ValueObjects;
 
-[DebuggerStepThrough]
-public sealed record OrderItemId(Guid Value) : StronglyTypedId<Guid>(Value)
+[ValueObject<Guid>(conversions: Conversions.EfCoreValueConverter | Conversions.SystemTextJson)]
+public partial record struct OrderItemId
 {
-    public static OrderItemId New() => new(Guid.NewGuid());
-    public static OrderItemId From(Guid value) => new(value);
+    public static Validation Validate(Guid value) =>
+        value != Guid.Empty
+            ? Validation.Ok
+            : Validation.Invalid("OrderItemId cannot be empty.");
+
+    public static OrderItemId New() => From(Guid.CreateVersion7());
 }

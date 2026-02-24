@@ -1,8 +1,14 @@
-using MicroCommerce.BuildingBlocks.Common;
+using Vogen;
 
 namespace MicroCommerce.ApiService.Features.Wishlists.Domain.ValueObjects;
 
-public sealed record WishlistItemId(Guid Value) : StronglyTypedId<Guid>(Value)
+[ValueObject<Guid>(conversions: Conversions.EfCoreValueConverter | Conversions.SystemTextJson)]
+public partial record struct WishlistItemId
 {
-    public static WishlistItemId New() => new(Guid.NewGuid());
+    public static Validation Validate(Guid value) =>
+        value != Guid.Empty
+            ? Validation.Ok
+            : Validation.Invalid("WishlistItemId cannot be empty.");
+
+    public static WishlistItemId New() => From(Guid.CreateVersion7());
 }

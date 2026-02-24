@@ -1,8 +1,14 @@
-using MicroCommerce.BuildingBlocks.Common;
+using Vogen;
 
 namespace MicroCommerce.ApiService.Features.Profiles.Domain.ValueObjects;
 
-public sealed record UserProfileId(Guid Value) : StronglyTypedId<Guid>(Value)
+[ValueObject<Guid>(conversions: Conversions.EfCoreValueConverter | Conversions.SystemTextJson)]
+public partial record struct UserProfileId
 {
-    public static UserProfileId New() => new(Guid.NewGuid());
+    public static Validation Validate(Guid value) =>
+        value != Guid.Empty
+            ? Validation.Ok
+            : Validation.Invalid("UserProfileId cannot be empty.");
+
+    public static UserProfileId New() => From(Guid.CreateVersion7());
 }

@@ -1,11 +1,14 @@
-using System.Diagnostics;
-using MicroCommerce.BuildingBlocks.Common;
+using Vogen;
 
 namespace MicroCommerce.ApiService.Features.Cart.Domain.ValueObjects;
 
-[DebuggerStepThrough]
-public sealed record CartId(Guid Value) : StronglyTypedId<Guid>(Value)
+[ValueObject<Guid>(conversions: Conversions.EfCoreValueConverter | Conversions.SystemTextJson)]
+public partial record struct CartId
 {
-    public static CartId New() => new(Guid.CreateVersion7());
-    public static CartId From(Guid value) => new(value);
+    public static Validation Validate(Guid value) =>
+        value != Guid.Empty
+            ? Validation.Ok
+            : Validation.Invalid("CartId cannot be empty.");
+
+    public static CartId New() => From(Guid.CreateVersion7());
 }

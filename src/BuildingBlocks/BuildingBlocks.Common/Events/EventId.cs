@@ -1,10 +1,14 @@
-using System.Diagnostics;
+using Vogen;
 
 namespace MicroCommerce.BuildingBlocks.Common.Events;
 
-[DebuggerStepThrough]
-public record EventId(Guid Value) : StronglyTypedId<Guid>(Value)
+[ValueObject<Guid>(conversions: Conversions.SystemTextJson)]
+public partial record struct EventId
 {
-    public static EventId New() => new(Guid.NewGuid());
-    public static EventId From(Guid value) => new(value);
+    public static Validation Validate(Guid value) =>
+        value != Guid.Empty
+            ? Validation.Ok
+            : Validation.Invalid("EventId cannot be empty.");
+
+    public static EventId New() => From(Guid.CreateVersion7());
 }
