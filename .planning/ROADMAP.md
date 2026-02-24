@@ -109,11 +109,11 @@ Plans:
   3. ProductStatus migrated to SmartEnum with publish/archive behavior encapsulated in type
   4. Frontend API contracts unchanged (still receive "Pending" string, not object)
   5. All existing order status transitions validated at compile-time through SmartEnum methods
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 18-01: TBD
-- [ ] 18-02: TBD
+- [ ] 18-01-PLAN.md — SmartEnum infrastructure: install Ardalis.SmartEnum packages, create generic EF Core string converter, replace OrderStatus and ProductStatus enums with SmartEnum types with transition rules, register EF Core + JSON converters
+- [ ] 18-02-PLAN.md — SmartEnum migration: migrate Order/Product entity methods to TransitionTo(), update query handlers to TryFromName(), remove HasConversion<string>() from configs, update ChangeProductStatus handler for all transitions
 
 #### Phase 19: Specification Pattern - Complex Query Logic
 **Goal**: Extract complex query logic into reusable, testable Specification objects
