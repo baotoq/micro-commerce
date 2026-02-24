@@ -1,4 +1,7 @@
+using Ardalis.Specification.EntityFrameworkCore;
 using MediatR;
+using MicroCommerce.ApiService.Features.Catalog.Application.Specifications;
+using MicroCommerce.ApiService.Features.Catalog.Domain.Entities;
 using MicroCommerce.ApiService.Features.Catalog.Domain.ValueObjects;
 using MicroCommerce.ApiService.Features.Catalog.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -19,49 +22,44 @@ public sealed class GetProductsQueryHandler
         GetProductsQuery request,
         CancellationToken cancellationToken)
     {
-        var query = _context.Products
+        // Resolve optional filter values
+        CategoryId? categoryId = request.CategoryId.HasValue
+            ? CategoryId.From(request.CategoryId.Value)
+            : null;
+
+        ProductStatus? productStatus = !string.IsNullOrWhiteSpace(request.Status) &&
+            ProductStatus.TryFromName(request.Status, ignoreCase: true, out ProductStatus? parsed)
+            ? parsed
+            : null;
+
+        // Build composed filter spec (category AND status AND search)
+        GetProductsFilterSpec spec = new(categoryId, productStatus, request.Search);
+
+        int totalCount = await _context.Products
             .AsNoTracking()
-            .AsQueryable();
+            .WithSpecification(spec)
+            .CountAsync(cancellationToken);
 
-        // Apply filters
-        if (request.CategoryId.HasValue)
-        {
-            query = query.Where(p => p.CategoryId == CategoryId.From(request.CategoryId.Value));
-        }
+        // Apply spec for filtering, then sort in handler (request-specific ordering)
+        IQueryable<Product> sortedQuery = _context.Products
+            .AsNoTracking()
+            .WithSpecification(spec);
 
-        if (!string.IsNullOrWhiteSpace(request.Status) &&
-            ProductStatus.TryFromName(request.Status, ignoreCase: true, out ProductStatus? status))
-        {
-            query = query.Where(p => p.Status == status);
-        }
+        bool isDescending = string.Equals(request.SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
 
-        if (!string.IsNullOrWhiteSpace(request.Search))
-        {
-            var searchLower = request.Search.ToLower();
-            query = query.Where(p =>
-                p.Name.Value.ToLower().Contains(searchLower) ||
-                p.Description.ToLower().Contains(searchLower) ||
-                (p.Sku != null && p.Sku.ToLower().Contains(searchLower)));
-        }
-
-        var totalCount = await query.CountAsync(cancellationToken);
-
-        // Apply sorting
-        var isDescending = string.Equals(request.SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
-
-        query = request.SortBy?.ToLowerInvariant() switch
+        sortedQuery = request.SortBy?.ToLowerInvariant() switch
         {
             "price" => isDescending
-                ? query.OrderByDescending(p => p.Price.Amount)
-                : query.OrderBy(p => p.Price.Amount),
+                ? sortedQuery.OrderByDescending(p => p.Price.Amount)
+                : sortedQuery.OrderBy(p => p.Price.Amount),
             "name" => isDescending
-                ? query.OrderByDescending(p => p.Name.Value)
-                : query.OrderBy(p => p.Name.Value),
-            "newest" => query.OrderByDescending(p => p.CreatedAt),
-            _ => query.OrderByDescending(p => p.CreatedAt)
+                ? sortedQuery.OrderByDescending(p => p.Name.Value)
+                : sortedQuery.OrderBy(p => p.Name.Value),
+            "newest" => sortedQuery.OrderByDescending(p => p.CreatedAt),
+            _ => sortedQuery.OrderByDescending(p => p.CreatedAt)
         };
 
-        var items = await query
+        List<ProductDto> items = await sortedQuery
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Join(
