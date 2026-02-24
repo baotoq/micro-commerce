@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 18 in progress (Plan 1 of 2 complete)
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 18 complete (2 of 2 plans done)
 
 ## Current Position
 
-Phase: 18 of 21 (Enumeration — Enums with Behavior) — In Progress
-Plan: 1 of 2 completed
-Status: Plan 18-01 Complete — SmartEnum infrastructure (PRIM-02) in place
-Last activity: 2026-02-24 — Completed 18-01: SmartEnum packages, OrderStatus/ProductStatus types, EF Core + JSON converters
+Phase: 18 of 21 (Enumeration — Enums with Behavior) — Complete
+Plan: 2 of 2 completed
+Status: Plan 18-02 Complete — SmartEnum entity method migrations (PRIM-03, PRIM-04) done; Phase 18 fully complete
+Last activity: 2026-02-24 — Completed 18-02: Order/Product entity method migrations, ChangeProductStatus handler extended
 
-Progress: [■■■■■■■■■■■■■■■■■■■■■■░░░░░░░░] 82% (80/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■■■░░░░░░░] 83% (81/96 plans completed)
 
 ## Performance Metrics
 
@@ -32,10 +32,10 @@ Progress: [■■■■■■■■■■■■■■■■■■■■■■░
 | v2.0 DDD Foundation | 7 | 8 | 37 min | In progress |
 
 **Recent Trend:**
-- Last 5 plans: v2.0 foundation infrastructure (16.1-01, 16.1-02, 17-01, 17-02, 18-01)
-- Trend: DDD foundation layer + EF Core conventions complete, Vogen adoption complete, FluentResults Result pattern complete (Phase 17), SmartEnum infrastructure complete (Phase 18 Plan 01)
+- Last 5 plans: v2.0 foundation infrastructure (17-01, 17-02, 18-01, 18-02)
+- Trend: DDD foundation layer + EF Core conventions complete, Vogen adoption complete, FluentResults Result pattern complete (Phase 17), SmartEnum full migration complete (Phase 18)
 
-*Updated after 18-01 completion*
+*Updated after 18-02 completion*
 | Phase 15 P02 | 2 | 2 tasks | 7 files |
 | Phase 16-conventions-dry-configuration P01 | 7 | 2 tasks | 14 files |
 | Phase 16 P02 | 13 | 2 tasks | 45 files |
@@ -44,6 +44,7 @@ Progress: [■■■■■■■■■■■■■■■■■■■■■■░
 | Phase 17-result-pattern P01 | 3 | 2 tasks | 5 files |
 | Phase 17-result-pattern P02 | 4 | 2 tasks | 6 files |
 | Phase 18-enumeration-enums-with-behavior P01 | 3 | 2 tasks | 13 files |
+| Phase 18-enumeration-enums-with-behavior P02 | 3 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Recent decisions affecting v2.0:
 - [Phase 18-01]: Per-type HaveConversion<SmartEnumStringConverter<T>>() registration in BaseDbContext ConfigureConventions (simpler than IModelFinalizingConvention for 2 types)
 - [Phase 18-01]: SmartEnum types are abstract (not sealed) to allow subclassing per CONTEXT.md
 - [Phase 18-01]: HasConversion<string>() removed from entity configurations — base convention handles it
+- [Phase 18-02]: Product entity methods keep idempotent same-state guard before TransitionTo() — callers may invoke without pre-checking state; silent no-op preferred over throwing for same-state calls
+- [Phase 18-02]: Order entity methods have no idempotent guard — state changes are always meaningful and should not repeat
+- [Phase 18-02]: ChangeProductStatusCommandHandler uses switch on ToLowerInvariant() over SmartEnum.TryFromName — validator already guarantees valid input
 
 ### Roadmap Evolution
 
@@ -98,6 +102,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 18-01-PLAN.md (SmartEnum infrastructure — OrderStatus/ProductStatus types, EF Core + JSON converters)
+Stopped at: Completed 18-02-PLAN.md (SmartEnum entity method migrations — Order/Product TransitionTo() + ChangeProductStatus handler extended for all 3 statuses)
 Resume file: None
-Next step: Phase 18 Plan 02 — migrate entity methods and query handlers to use SmartEnum transition rules
+Next step: Phase 19 — next phase in v2.0 DDD Foundation roadmap
