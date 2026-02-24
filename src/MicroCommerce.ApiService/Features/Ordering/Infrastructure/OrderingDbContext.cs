@@ -1,10 +1,11 @@
+using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Ordering.Application.Saga;
 using MicroCommerce.ApiService.Features.Ordering.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Ordering.Infrastructure;
 
-public class OrderingDbContext : DbContext
+public class OrderingDbContext : BaseDbContext
 {
     public OrderingDbContext(DbContextOptions<OrderingDbContext> options)
         : base(options)

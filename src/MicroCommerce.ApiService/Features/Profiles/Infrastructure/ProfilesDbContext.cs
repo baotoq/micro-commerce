@@ -1,9 +1,10 @@
+using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Profiles.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Profiles.Infrastructure;
 
-public class ProfilesDbContext : DbContext
+public class ProfilesDbContext : BaseDbContext
 {
     public ProfilesDbContext(DbContextOptions<ProfilesDbContext> options)
         : base(options)

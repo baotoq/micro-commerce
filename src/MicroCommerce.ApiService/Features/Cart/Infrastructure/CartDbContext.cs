@@ -1,9 +1,10 @@
+using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Cart.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Cart.Infrastructure;
 
-public class CartDbContext : DbContext
+public class CartDbContext : BaseDbContext
 {
     public CartDbContext(DbContextOptions<CartDbContext> options)
         : base(options)

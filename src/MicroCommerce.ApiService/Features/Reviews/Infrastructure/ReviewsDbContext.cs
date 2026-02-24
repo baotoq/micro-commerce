@@ -1,9 +1,10 @@
+using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Reviews.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Reviews.Infrastructure;
 
-public class ReviewsDbContext : DbContext
+public class ReviewsDbContext : BaseDbContext
 {
     public ReviewsDbContext(DbContextOptions<ReviewsDbContext> options)
         : base(options)

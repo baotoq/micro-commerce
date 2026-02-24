@@ -1,9 +1,10 @@
+using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Catalog.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Catalog.Infrastructure;
 
-public class CatalogDbContext : DbContext
+public class CatalogDbContext : BaseDbContext
 {
     public CatalogDbContext(DbContextOptions<CatalogDbContext> options)
         : base(options)

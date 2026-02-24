@@ -1,9 +1,10 @@
+using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Inventory.Infrastructure;
 
-public class InventoryDbContext : DbContext
+public class InventoryDbContext : BaseDbContext
 {
     public InventoryDbContext(DbContextOptions<InventoryDbContext> options)
         : base(options)

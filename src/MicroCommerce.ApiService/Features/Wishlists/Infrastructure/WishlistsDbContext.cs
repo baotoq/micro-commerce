@@ -1,9 +1,10 @@
+using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Wishlists.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Wishlists.Infrastructure;
 
-public class WishlistsDbContext : DbContext
+public class WishlistsDbContext : BaseDbContext
 {
     public WishlistsDbContext(DbContextOptions<WishlistsDbContext> options)
         : base(options)

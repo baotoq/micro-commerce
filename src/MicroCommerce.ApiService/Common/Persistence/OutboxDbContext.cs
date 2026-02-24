@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Common.Persistence;
 
-public class OutboxDbContext : DbContext
+public class OutboxDbContext : BaseDbContext
 {
     public OutboxDbContext(DbContextOptions<OutboxDbContext> options)
         : base(options)
