@@ -1,3 +1,4 @@
+using FluentResults;
 using MediatR;
 using MicroCommerce.ApiService.Common.Exceptions;
 using MicroCommerce.ApiService.Features.Ordering.Domain.ValueObjects;
@@ -7,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace MicroCommerce.ApiService.Features.Ordering.Application.Commands.UpdateOrderStatus;
 
 public sealed class UpdateOrderStatusCommandHandler(OrderingDbContext context)
-    : IRequestHandler<UpdateOrderStatusCommand>
+    : IRequestHandler<UpdateOrderStatusCommand, Result>
 {
-    public async Task Handle(
+    public async Task<Result> Handle(
         UpdateOrderStatusCommand request,
         CancellationToken cancellationToken)
     {
@@ -22,16 +23,32 @@ public sealed class UpdateOrderStatusCommandHandler(OrderingDbContext context)
         switch (request.NewStatus.ToLowerInvariant())
         {
             case "shipped":
-                order.Ship();
+                try
+                {
+                    order.Ship();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Result.Fail(ex.Message);
+                }
                 break;
             case "delivered":
-                order.Deliver();
+                try
+                {
+                    order.Deliver();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Result.Fail(ex.Message);
+                }
                 break;
             default:
-                throw new InvalidOperationException(
+                return Result.Fail(
                     $"Status '{request.NewStatus}' is not a valid admin transition. Allowed: Shipped, Delivered.");
         }
 
         await context.SaveChangesAsync(cancellationToken);
+
+        return Result.Ok();
     }
 }

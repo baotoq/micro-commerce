@@ -1,4 +1,6 @@
+using FluentResults;
 using MediatR;
+using MicroCommerce.ApiService.Common.Extensions;
 using MicroCommerce.ApiService.Features.Cart;
 using MicroCommerce.ApiService.Features.Ordering.Application.Commands.SimulatePayment;
 using MicroCommerce.ApiService.Features.Ordering.Application.Commands.SubmitOrder;
@@ -59,6 +61,7 @@ public static class OrderingEndpoints
             .WithSummary("Update order status (admin: Ship or Deliver)")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem();
 
         return endpoints;
@@ -146,8 +149,8 @@ public static class OrderingEndpoints
         CancellationToken cancellationToken)
     {
         UpdateOrderStatusCommand command = new(id, request.NewStatus);
-        await sender.Send(command, cancellationToken);
-        return Results.NoContent();
+        Result result = await sender.Send(command, cancellationToken);
+        return result.ToHttpResult();
     }
 }
 
