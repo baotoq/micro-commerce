@@ -122,9 +122,9 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Specification pattern base classes (ISpecification, Specification) integrated with EF Core via SpecificationEvaluator
   2. Complex catalog queries (PublishedProductsSpec, ProductsByCategorySpec, ProductSearchSpec) extracted from handlers into specifications
-  3. Ordering queries (ActiveOrdersSpec, OrdersByBuyerSpec) use specifications for filtering and pagination
+  3. Ordering queries (ActiveOrdersSpec, OrdersByBuyerSpec) use specifications for filtering
   4. Specifications are unit-testable in isolation from EF Core and database
-  5. Query handlers demonstrate specification composition via And/Or for complex filters
+  5. Query handlers demonstrate specification composition for complex filters (multiple Query.Where calls or chained WithSpecification)
 **Plans**: 2 plans
 
 Plans:
@@ -179,7 +179,7 @@ Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21
 | 16. Conventions | 2/2 | Complete    | 2026-02-24 | - |
 | 17. Result Pattern | 2/2 | Complete    | 2026-02-24 | - |
 | 18. Enumeration | 2/2 | Complete    | 2026-02-24 | - |
-| 19. Specification | 2/2 | Complete   | 2026-02-24 | - |
+| 19. Specification | 2/2 | Complete    | 2026-02-24 | - |
 | 20. Source Generators | v2.0 DDD Foundation | 0/TBD | Not started | - |
 | 21. Adoption | v2.0 DDD Foundation | 0/TBD | Not started | - |
 
