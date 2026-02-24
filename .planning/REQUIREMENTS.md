@@ -18,7 +18,7 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 ### Domain Primitives
 
 - [x] **PRIM-01**: StronglyTypedId source generator (Meziantou) with auto JSON, EF Core, and TypeConverter converters for all 15+ ID types
-- [ ] **PRIM-02**: Enumeration/SmartEnum base (Ardalis.SmartEnum) with EF Core value converter and custom JsonConverter
+- [x] **PRIM-02**: Enumeration/SmartEnum base (Ardalis.SmartEnum) with EF Core value converter and custom JsonConverter
 - [ ] **PRIM-03**: Migrate OrderStatus to SmartEnum with state transition behavior (CanTransitionTo)
 - [ ] **PRIM-04**: Migrate ProductStatus to SmartEnum with publish/archive behavior
 - [x] **PRIM-05**: Result type (FluentResults) integrated into BuildingBlocks with Result extensions for HTTP responses
@@ -84,7 +84,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ENTITY-04 | Phase 15 | Pending |
 | ENTITY-05 | Phase 15 | Pending |
 | PRIM-01 | Phase 20 | Complete |
-| PRIM-02 | Phase 18 | Pending |
+| PRIM-02 | Phase 18 | Complete |
 | PRIM-03 | Phase 18 | Pending |
 | PRIM-04 | Phase 18 | Pending |
 | PRIM-05 | Phase 17 | Complete |
