@@ -28,13 +28,19 @@ public sealed class ChangeProductStatusCommandHandler
             throw new NotFoundException($"Product with ID {request.Id} not found.");
         }
 
-        if (request.Status.Equals("Published", StringComparison.OrdinalIgnoreCase))
+        switch (request.Status.ToLowerInvariant())
         {
-            product.Publish();
-        }
-        else
-        {
-            product.Unpublish();
+            case "published":
+                product.Publish();
+                break;
+            case "draft":
+                product.Unpublish();
+                break;
+            case "archived":
+                product.Archive();
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown status: {request.Status}");
         }
 
         await _context.SaveChangesAsync(cancellationToken);

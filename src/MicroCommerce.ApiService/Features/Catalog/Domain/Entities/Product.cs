@@ -92,8 +92,8 @@ public sealed class Product : BaseAggregateRoot<ProductId>
     /// </summary>
     public void Publish()
     {
-        if (Status == ProductStatus.Published) return;
-
+        if (Status == ProductStatus.Published) return; // idempotent
+        Status.TransitionTo(ProductStatus.Published);
         Status = ProductStatus.Published;
         UpdatedAt = DateTimeOffset.UtcNow;
 
@@ -105,8 +105,8 @@ public sealed class Product : BaseAggregateRoot<ProductId>
     /// </summary>
     public void Unpublish()
     {
-        if (Status == ProductStatus.Draft) return;
-
+        if (Status == ProductStatus.Draft) return; // idempotent
+        Status.TransitionTo(ProductStatus.Draft);
         Status = ProductStatus.Draft;
         UpdatedAt = DateTimeOffset.UtcNow;
 
@@ -119,8 +119,8 @@ public sealed class Product : BaseAggregateRoot<ProductId>
     /// </summary>
     public void Archive()
     {
-        if (Status == ProductStatus.Archived) return;
-
+        if (Status == ProductStatus.Archived) return; // idempotent
+        Status.TransitionTo(ProductStatus.Archived);
         Status = ProductStatus.Archived;
         UpdatedAt = DateTimeOffset.UtcNow;
 

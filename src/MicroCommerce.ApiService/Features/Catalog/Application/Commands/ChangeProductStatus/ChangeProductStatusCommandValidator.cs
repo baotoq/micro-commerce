@@ -12,13 +12,14 @@ public sealed class ChangeProductStatusCommandValidator
 
         RuleFor(x => x.Status)
             .NotEmpty().WithMessage("Status is required.")
-            .Must(BeAValidStatus).WithMessage("Status must be 'Draft' or 'Published'.");
+            .Must(BeAValidStatus).WithMessage("Status must be 'Draft', 'Published', or 'Archived'.");
     }
 
     private static bool BeAValidStatus(string status)
     {
         return status.Equals("Draft", StringComparison.OrdinalIgnoreCase) ||
-               status.Equals("Published", StringComparison.OrdinalIgnoreCase);
+               status.Equals("Published", StringComparison.OrdinalIgnoreCase) ||
+               status.Equals("Archived", StringComparison.OrdinalIgnoreCase);
     }
 }
 

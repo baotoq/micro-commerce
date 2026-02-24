@@ -14,7 +14,7 @@ public sealed record ProductStatusChangedDomainEvent : DomainEvent
     public ProductStatusChangedDomainEvent(ProductId productId, ProductStatus newStatus)
     {
         ProductId = productId.Value;
-        NewStatus = newStatus.ToString();
+        NewStatus = newStatus.Name;
     }
 }
 

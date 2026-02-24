@@ -76,7 +76,7 @@ public sealed class GetProductsQueryHandler
                     p.Price.Currency,
                     p.ImageUrl,
                     p.Sku,
-                    p.Status.ToString(),
+                    p.Status.Name,
                     p.CategoryId.Value,
                     c.Name.Value,
                     p.CreatedAt,
