@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 15: Foundation
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 16: Conventions & DRY Configuration
 
 ## Current Position
 
-Phase: 15 of 21 (Foundation - Entity Base & Audit Infrastructure)
-Plan: 2 of 2 completed
-Status: Completed
-Last activity: 2026-02-14 — Completed 15-02: EF Core Interceptors & Conventions
+Phase: 16 of 21 (Conventions DRY Configuration)
+Plan: 1 of 2 completed
+Status: In Progress
+Last activity: 2026-02-24 — Completed 16-01: EF Core Conventions and BaseDbContext
 
-Progress: [■■■■■■■■■■■■■■■■■■■■░░░░░░░░░░] 74% (74/95 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■░░░░░░░░░░] 74% (75/96 plans completed)
 
 ## Performance Metrics
 
@@ -32,11 +32,12 @@ Progress: [■■■■■■■■■■■■■■■■■■■■░░░
 | v2.0 DDD Foundation | 7 | 2 | 3 min | In progress |
 
 **Recent Trend:**
-- Last 5 plans: v2.0 foundation infrastructure (15-01, 15-02)
-- Trend: DDD foundation layer complete
+- Last 5 plans: v2.0 foundation infrastructure (15-01, 15-02, 16-01)
+- Trend: DDD foundation layer + EF Core conventions complete
 
 *Updated after 15-02 completion*
 | Phase 15 P02 | 2 | 2 tasks | 7 files |
+| Phase 16-conventions-dry-configuration P01 | 7 | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -55,6 +56,8 @@ Recent decisions affecting v2.0:
 - [Phase 15-02]: Interceptor order: SoftDelete, Concurrency, Audit, DomainEvent (critical for correct behavior)
 - [Phase 15-02]: SoftDeleteInterceptor also updates IAuditable.UpdatedAt on soft delete
 - [Phase 15-02]: DbUpdateConcurrencyException returns HTTP 409 with entity type name
+- [Phase 16-01]: IModelFinalizingConvention over static ModelBuilder extension methods for proper EF Core convention API
+- [Phase 16-01]: BaseDbContext abstract class as single registration point for all EF Core conventions and snake_case naming
 
 ### Roadmap Evolution
 
@@ -72,7 +75,7 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 
 ## Session Continuity
 
-Last session: 2026-02-14
-Stopped at: Completed 15-02-PLAN.md (EF Core interceptors and conventions)
+Last session: 2026-02-24
+Stopped at: Completed 16-01-PLAN.md (EF Core conventions and BaseDbContext)
 Resume file: None
-Next step: Phase 15 complete. Ready for next phase in v2.0 roadmap.
+Next step: Phase 16 Plan 02 — DRY configuration cleanup (remove manual HasConversion calls from entity configurations)
