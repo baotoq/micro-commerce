@@ -68,6 +68,7 @@ Recent decisions affecting v2.0:
 - v1.0 MVP: Phases 1-10 (shipped 2026-02-13)
 - v1.1 User Features: Phases 11-14.3 (shipped 2026-02-14)
 - v2.0 DDD Foundation: Phases 15-21 (current, roadmap created 2026-02-14)
+- Phase 16.1 inserted after Phase 16: Adopt Vogen for value object (URGENT)
 
 ### Pending Todos
 
