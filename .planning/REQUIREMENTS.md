@@ -21,8 +21,8 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 - [ ] **PRIM-02**: Enumeration/SmartEnum base (Ardalis.SmartEnum) with EF Core value converter and custom JsonConverter
 - [ ] **PRIM-03**: Migrate OrderStatus to SmartEnum with state transition behavior (CanTransitionTo)
 - [ ] **PRIM-04**: Migrate ProductStatus to SmartEnum with publish/archive behavior
-- [ ] **PRIM-05**: Result type (FluentResults) integrated into BuildingBlocks with Result extensions for HTTP responses
-- [ ] **PRIM-06**: ResultValidationBehavior for MediatR pipeline coexisting with existing ValidationBehavior
+- [x] **PRIM-05**: Result type (FluentResults) integrated into BuildingBlocks with Result extensions for HTTP responses
+- [x] **PRIM-06**: ResultValidationBehavior for MediatR pipeline coexisting with existing ValidationBehavior
 
 ### Query Patterns
 
@@ -87,8 +87,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PRIM-02 | Phase 18 | Pending |
 | PRIM-03 | Phase 18 | Pending |
 | PRIM-04 | Phase 18 | Pending |
-| PRIM-05 | Phase 17 | Pending |
-| PRIM-06 | Phase 17 | Pending |
+| PRIM-05 | Phase 17 | Complete |
+| PRIM-06 | Phase 17 | Complete |
 | QUERY-01 | Phase 19 | Pending |
 | QUERY-02 | Phase 19 | Pending |
 | QUERY-03 | Phase 19 | Pending |
