@@ -1,5 +1,7 @@
+using Ardalis.Specification.EntityFrameworkCore;
 using MediatR;
-using MicroCommerce.ApiService.Features.Ordering.Domain.ValueObjects;
+using MicroCommerce.ApiService.Features.Ordering.Application.Specifications;
+using MicroCommerce.ApiService.Features.Ordering.Domain.Entities;
 using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,15 +14,13 @@ public sealed class GetOrdersByBuyerQueryHandler(OrderingDbContext context)
         GetOrdersByBuyerQuery request,
         CancellationToken cancellationToken)
     {
-        IQueryable<Domain.Entities.Order> query = context.Orders
-            .AsNoTracking()
-            .Where(o => o.BuyerId == request.BuyerId);
+        OrdersByBuyerSpec buyerSpec = new(request.BuyerId);
+        ActiveOrdersSpec activeSpec = new(request.Status);
 
-        if (!string.IsNullOrWhiteSpace(request.Status)
-            && OrderStatus.TryFromName(request.Status, ignoreCase: true, out OrderStatus? statusFilter))
-        {
-            query = query.Where(o => o.Status == statusFilter);
-        }
+        IQueryable<Order> query = context.Orders
+            .AsNoTracking()
+            .WithSpecification(buyerSpec)
+            .WithSpecification(activeSpec);
 
         int totalCount = await query.CountAsync(cancellationToken);
 
