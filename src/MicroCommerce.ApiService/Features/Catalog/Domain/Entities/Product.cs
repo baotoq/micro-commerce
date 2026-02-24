@@ -31,6 +31,7 @@ public sealed class Product : BaseAggregateRoot<ProductId>
     // EF Core constructor
     private Product(ProductId id) : base(id)
     {
+        Status = ProductStatus.Draft;
     }
 
     /// <summary>

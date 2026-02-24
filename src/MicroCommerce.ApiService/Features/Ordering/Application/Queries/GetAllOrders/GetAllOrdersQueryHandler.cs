@@ -17,7 +17,7 @@ public sealed class GetAllOrdersQueryHandler(OrderingDbContext context)
             .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.Status)
-            && Enum.TryParse<OrderStatus>(request.Status, ignoreCase: true, out OrderStatus statusFilter))
+            && OrderStatus.TryFromName(request.Status, ignoreCase: true, out OrderStatus? statusFilter))
         {
             query = query.Where(o => o.Status == statusFilter);
         }

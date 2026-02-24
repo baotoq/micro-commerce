@@ -41,6 +41,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     // EF Core constructor
     private Order(OrderId id) : base(id)
     {
+        Status = OrderStatus.Submitted;
     }
 
     /// <summary>
@@ -98,7 +99,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     /// </summary>
     public void MarkAsPaid()
     {
-        if (Status is not (OrderStatus.Submitted or OrderStatus.StockReserved))
+        if (Status != OrderStatus.Submitted && Status != OrderStatus.StockReserved)
             throw new InvalidOperationException($"Cannot mark order as paid when status is '{Status}'.");
 
         Status = OrderStatus.Paid;
@@ -113,7 +114,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(reason);
 
-        if (Status is OrderStatus.Confirmed or OrderStatus.Shipped or OrderStatus.Delivered or OrderStatus.Failed)
+        if (Status == OrderStatus.Confirmed || Status == OrderStatus.Shipped || Status == OrderStatus.Delivered || Status == OrderStatus.Failed)
             throw new InvalidOperationException($"Cannot mark order as failed when status is '{Status}'.");
 
         Status = OrderStatus.Failed;

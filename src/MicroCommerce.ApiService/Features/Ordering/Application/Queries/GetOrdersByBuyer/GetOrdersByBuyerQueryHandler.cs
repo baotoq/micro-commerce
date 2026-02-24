@@ -17,7 +17,7 @@ public sealed class GetOrdersByBuyerQueryHandler(OrderingDbContext context)
             .Where(o => o.BuyerId == request.BuyerId);
 
         if (!string.IsNullOrWhiteSpace(request.Status)
-            && Enum.TryParse<OrderStatus>(request.Status, ignoreCase: true, out OrderStatus statusFilter))
+            && OrderStatus.TryFromName(request.Status, ignoreCase: true, out OrderStatus? statusFilter))
         {
             query = query.Where(o => o.Status == statusFilter);
         }

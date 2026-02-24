@@ -30,7 +30,7 @@ public sealed class GetProductsQueryHandler
         }
 
         if (!string.IsNullOrWhiteSpace(request.Status) &&
-            Enum.TryParse<ProductStatus>(request.Status, true, out var status))
+            ProductStatus.TryFromName(request.Status, ignoreCase: true, out ProductStatus? status))
         {
             query = query.Where(p => p.Status == status);
         }
