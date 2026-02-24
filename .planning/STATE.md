@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 ## Current Position
 
-Phase: 16 of 21 (Conventions DRY Configuration) — COMPLETE
-Plan: 2 of 2 completed
-Status: Phase 16 Complete
-Last activity: 2026-02-24 — Completed 16-02: DRY configuration cleanup, ValueObject deletion, EF Core migrations
+Phase: 16.1 of 21 (Adopt Vogen for Value Object) — COMPLETE
+Plan: 1 of 1 completed
+Status: Phase 16.1 Complete
+Last activity: 2026-02-24 — Completed 16.1-01: Vogen adoption for all 14 strongly-typed ID types
 
-Progress: [■■■■■■■■■■■■■■■■■■■■■░░░░░░░░░] 76% (76/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■░░░░░░░░░] 77% (77/96 plans completed)
 
 ## Performance Metrics
 
@@ -39,6 +39,7 @@ Progress: [■■■■■■■■■■■■■■■■■■■■■░░
 | Phase 15 P02 | 2 | 2 tasks | 7 files |
 | Phase 16-conventions-dry-configuration P01 | 7 | 2 tasks | 14 files |
 | Phase 16 P02 | 13 | 2 tasks | 45 files |
+| Phase 16.1-adopt-vogen-for-value-object P01 | 4 | 2 tasks | 43 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,9 @@ Recent decisions affecting v2.0:
 - [Phase 16]: StronglyTypedIdConvention fix: use typed generic method CreateTypedConverter<TId,TUnderlying> for ValueConverter constructor compatibility
 - [Phase 16]: UseSnakeCaseNamingConvention moved to Program.cs configureDbContextOptions (not OnConfiguring) for DbContext pooling compatibility
 - [Phase 16]: CheckoutState IsRowVersion and ToTable kept explicit (MassTransit saga - not IConcurrencyToken)
+- [Phase 16.1-01]: Vogen 8.0.4 partial record structs with [ValueObject<Guid>] replace hand-rolled StronglyTypedId<T> class hierarchy
+- [Phase 16.1-01]: VogenEfCoreConverters marker class with [EfCoreConverter<T>] attributes replaces reflection-based StronglyTypedIdConvention
+- [Phase 16.1-01]: EventId uses Conversions.SystemTextJson only (no EfCoreValueConverter) as it is not an EF entity property
 
 ### Roadmap Evolution
 
@@ -81,6 +85,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 16-02-PLAN.md (DRY configuration cleanup, ValueObject deletion, EF Core migrations)
+Stopped at: Completed 16.1-01-PLAN.md (Vogen adoption for all 14 strongly-typed ID types)
 Resume file: None
 Next step: Phase 17 — next phase in v2.0 DDD Foundation milestone

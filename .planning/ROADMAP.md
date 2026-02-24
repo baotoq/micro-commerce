@@ -77,7 +77,7 @@ Plans:
 **Goal:** Replace hand-rolled StronglyTypedId<T> base class and 14 ID types with Vogen source-generated record structs, gaining validation, EF Core converters, and JSON serialization with zero runtime overhead
 **Depends on:** Phase 16
 **Requirements**: PRIM-01
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 16.1-01-PLAN.md — Install Vogen, rewrite 14 ID types, update EF Core infrastructure, fix all call sites
