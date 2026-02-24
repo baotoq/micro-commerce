@@ -93,11 +93,11 @@ Plans:
   3. Two command handlers (pilot) return Result instead of throwing exceptions for business rule violations
   4. ADR documents Result/Exception boundary: business rules return Result, invalid input throws exception
   5. Pilot handlers demonstrate clear error aggregation with multiple Result.Failure reasons
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 17-01: TBD
-- [ ] 17-02: TBD
+- [ ] 17-01-PLAN.md — FluentResults infrastructure: package install, ResultExtensions, ResultValidationBehavior, MediatR registration, ADR-006
+- [ ] 17-02-PLAN.md — Pilot adoption: migrate UpdateOrderStatus and AdjustStock handlers to return Result, update endpoints
 
 #### Phase 18: Enumeration - Enums with Behavior
 **Goal**: Replace plain enums with SmartEnum for type-safe enumerations with encapsulated behavior
