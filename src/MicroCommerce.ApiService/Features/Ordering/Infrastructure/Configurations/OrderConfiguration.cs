@@ -9,14 +9,7 @@ public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
     public void Configure(EntityTypeBuilder<Order> builder)
     {
-        builder.ToTable("Orders");
-
         builder.HasKey(o => o.Id);
-
-        builder.Property(o => o.Id)
-            .HasConversion(
-                id => id.Value,
-                value => OrderId.From(value));
 
         builder.Property(o => o.OrderNumber)
             .HasConversion(
@@ -92,10 +85,6 @@ public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.FailureReason)
             .HasMaxLength(1000);
-
-        // xmin optimistic concurrency token for PostgreSQL
-        builder.Property(o => o.Version)
-            .IsRowVersion();
 
         // Cart owns OrderItems
         builder.HasMany(o => o.Items)

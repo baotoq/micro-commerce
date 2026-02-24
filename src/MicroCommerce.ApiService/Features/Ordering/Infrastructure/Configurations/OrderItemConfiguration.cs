@@ -1,5 +1,4 @@
 using MicroCommerce.ApiService.Features.Ordering.Domain.Entities;
-using MicroCommerce.ApiService.Features.Ordering.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,20 +8,7 @@ public sealed class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
 {
     public void Configure(EntityTypeBuilder<OrderItem> builder)
     {
-        builder.ToTable("OrderItems");
-
         builder.HasKey(i => i.Id);
-
-        builder.Property(i => i.Id)
-            .HasConversion(
-                id => id.Value,
-                value => OrderItemId.From(value));
-
-        builder.Property(i => i.OrderId)
-            .HasConversion(
-                id => id.Value,
-                value => OrderId.From(value))
-            .IsRequired();
 
         builder.Property(i => i.ProductId)
             .IsRequired();

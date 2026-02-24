@@ -1,5 +1,4 @@
 using MicroCommerce.ApiService.Features.Reviews.Domain.Entities;
-using MicroCommerce.ApiService.Features.Reviews.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,15 +8,9 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 {
     public void Configure(EntityTypeBuilder<Review> builder)
     {
-        builder.ToTable("Reviews");
-
         builder.HasKey(r => r.Id);
 
-        // Strongly-typed ID conversion
         builder.Property(r => r.Id)
-            .HasConversion(
-                id => id.Value,
-                value => new ReviewId(value))
             .ValueGeneratedNever();
 
         // Composite unique index - one review per user per product
@@ -59,10 +52,6 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 
         builder.Property(r => r.UpdatedAt)
             .IsRequired();
-
-        // PostgreSQL xmin for optimistic concurrency
-        builder.Property(r => r.Version)
-            .IsRowVersion();
 
         // Ignore domain events (handled by interceptor)
         builder.Ignore(r => r.DomainEvents);

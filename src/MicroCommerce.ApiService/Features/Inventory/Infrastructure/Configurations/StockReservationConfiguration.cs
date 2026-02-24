@@ -1,5 +1,4 @@
 using MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
-using MicroCommerce.ApiService.Features.Inventory.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,19 +8,7 @@ public sealed class StockReservationConfiguration : IEntityTypeConfiguration<Sto
 {
     public void Configure(EntityTypeBuilder<StockReservation> builder)
     {
-        builder.ToTable("StockReservations");
-
         builder.HasKey(r => r.Id);
-
-        builder.Property(r => r.Id)
-            .HasConversion(
-                id => id.Value,
-                value => new ReservationId(value));
-
-        builder.Property(r => r.StockItemId)
-            .HasConversion(
-                id => id.Value,
-                value => new StockItemId(value));
 
         builder.Property(r => r.Quantity)
             .IsRequired();

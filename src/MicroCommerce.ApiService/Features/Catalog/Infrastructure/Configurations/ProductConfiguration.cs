@@ -9,15 +9,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.ToTable("Products");
-
         builder.HasKey(p => p.Id);
-
-        // ProductId conversion
-        builder.Property(p => p.Id)
-            .HasConversion(
-                id => id.Value,
-                value => new ProductId(value));
 
         // ProductName value object
         builder.Property(p => p.Name)
@@ -57,13 +49,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMaxLength(20)
             .IsRequired();
 
-        // CategoryId conversion
-        builder.Property(p => p.CategoryId)
-            .HasConversion(
-                id => id.Value,
-                value => new CategoryId(value))
-            .IsRequired();
-
         // Relationship to Category (reference by identity only, per Vernon Rule 3)
         builder.HasOne<Category>()
             .WithMany()
@@ -87,4 +72,3 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasFilter("\"Sku\" IS NOT NULL");
     }
 }
-

@@ -1,5 +1,4 @@
 using MicroCommerce.ApiService.Features.Cart.Domain.Entities;
-using MicroCommerce.ApiService.Features.Cart.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,19 +8,7 @@ public sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
 {
     public void Configure(EntityTypeBuilder<CartItem> builder)
     {
-        builder.ToTable("CartItems");
-
         builder.HasKey(i => i.Id);
-
-        builder.Property(i => i.Id)
-            .HasConversion(
-                id => id.Value,
-                value => new CartItemId(value));
-
-        builder.Property(i => i.CartId)
-            .HasConversion(
-                id => id.Value,
-                value => new CartId(value));
 
         builder.Property(i => i.ProductId)
             .IsRequired();

@@ -1,5 +1,4 @@
 using MicroCommerce.ApiService.Features.Cart.Domain.Entities;
-using MicroCommerce.ApiService.Features.Cart.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,14 +8,7 @@ public sealed class CartConfiguration : IEntityTypeConfiguration<Domain.Entities
 {
     public void Configure(EntityTypeBuilder<Domain.Entities.Cart> builder)
     {
-        builder.ToTable("Carts");
-
         builder.HasKey(c => c.Id);
-
-        builder.Property(c => c.Id)
-            .HasConversion(
-                id => id.Value,
-                value => new CartId(value));
 
         builder.Property(c => c.BuyerId)
             .IsRequired();
@@ -29,10 +21,6 @@ public sealed class CartConfiguration : IEntityTypeConfiguration<Domain.Entities
 
         builder.Property(c => c.ExpiresAt)
             .IsRequired();
-
-        // xmin optimistic concurrency token for PostgreSQL
-        builder.Property(c => c.Version)
-            .IsRowVersion();
 
         // Cart owns CartItems
         builder.HasMany(c => c.Items)

@@ -8,6 +8,7 @@ public sealed class CheckoutStateConfiguration : IEntityTypeConfiguration<Checko
 {
     public void Configure(EntityTypeBuilder<CheckoutState> builder)
     {
+        // MassTransit saga table - not auto-named by convention
         builder.ToTable("CheckoutSagas");
 
         builder.HasKey(x => x.CorrelationId);
@@ -31,7 +32,7 @@ public sealed class CheckoutStateConfiguration : IEntityTypeConfiguration<Checko
         builder.Property(x => x.ReservationIdsJson)
             .HasMaxLength(4096);
 
-        // PostgreSQL xmin optimistic concurrency
+        // MassTransit saga concurrency token (not IConcurrencyToken - kept explicit)
         builder.Property(x => x.RowVersion)
             .IsRowVersion();
     }
