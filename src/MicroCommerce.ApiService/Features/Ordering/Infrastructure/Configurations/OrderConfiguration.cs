@@ -64,7 +64,6 @@ public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         });
 
         builder.Property(o => o.Status)
-            .HasConversion<string>()
             .HasMaxLength(32)
             .IsRequired();
 

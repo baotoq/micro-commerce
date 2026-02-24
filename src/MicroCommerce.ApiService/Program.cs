@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Ardalis.SmartEnum.SystemTextJson;
 using FluentValidation;
 using MassTransit;
 using MicroCommerce.ApiService.Common.Behaviors;
@@ -9,12 +10,14 @@ using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Cart;
 using MicroCommerce.ApiService.Features.Cart.Infrastructure;
 using MicroCommerce.ApiService.Features.Catalog;
+using MicroCommerce.ApiService.Features.Catalog.Domain.ValueObjects;
 using MicroCommerce.ApiService.Features.Catalog.Infrastructure;
 using MicroCommerce.ApiService.Features.Messaging;
 using MicroCommerce.ApiService.Features.Inventory;
 using MicroCommerce.ApiService.Features.Inventory.Infrastructure;
 using MicroCommerce.ApiService.Features.Ordering;
 using MicroCommerce.ApiService.Features.Ordering.Application.Saga;
+using MicroCommerce.ApiService.Features.Ordering.Domain.ValueObjects;
 using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
 using MicroCommerce.ApiService.Features.Profiles;
 using MicroCommerce.ApiService.Features.Profiles.Infrastructure;
@@ -157,6 +160,15 @@ builder.Services.AddScoped<AuditInterceptor>();
 // Add services to the container.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
+// SmartEnum JSON serialization — serialize as plain string ("Submitted") not object format
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(
+        new SmartEnumNameConverter<OrderStatus, int>());
+    options.SerializerOptions.Converters.Add(
+        new SmartEnumNameConverter<ProductStatus, int>());
+});
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

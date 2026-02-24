@@ -45,7 +45,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMaxLength(50);
 
         builder.Property(p => p.Status)
-            .HasConversion<string>()
             .HasMaxLength(20)
             .IsRequired();
 
