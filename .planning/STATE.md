@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 16.1 of 21 (Adopt Vogen for Value Object) — COMPLETE
-Plan: 1 of 1 completed
+Plan: 2 of 2 completed
 Status: Phase 16.1 Complete
-Last activity: 2026-02-24 — Completed 16.1-01: Vogen adoption for all 14 strongly-typed ID types
+Last activity: 2026-02-24 — Completed 16.1-02: EF Core migrations for all 8 DbContexts after Vogen adoption
 
 Progress: [■■■■■■■■■■■■■■■■■■■■■░░░░░░░░░] 77% (77/96 plans completed)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 74 (v1.0: 49, v1.1: 23, v2.0: 2)
+- Total plans completed: 75 (v1.0: 49, v1.1: 23, v2.0: 3)
 - Average duration: 22 min
-- Total execution time: 27.7 hours
+- Total execution time: 27.8 hours
 
 **By Milestone:**
 
@@ -29,17 +29,18 @@ Progress: [■■■■■■■■■■■■■■■■■■■■■░░
 |-----------|--------|-------|----------|----------|
 | v1.0 MVP | 10 | 49 | 18.8h | 16 days |
 | v1.1 User Features | 7 | 23 | 8.8h | 2 days |
-| v2.0 DDD Foundation | 7 | 4 | 23 min | In progress |
+| v2.0 DDD Foundation | 7 | 5 | 27 min | In progress |
 
 **Recent Trend:**
-- Last 5 plans: v2.0 foundation infrastructure (15-01, 15-02, 16-01, 16-02)
-- Trend: DDD foundation layer + EF Core conventions complete, configuration DRY complete
+- Last 5 plans: v2.0 foundation infrastructure (15-01, 15-02, 16-01, 16-02, 16.1-01, 16.1-02)
+- Trend: DDD foundation layer + EF Core conventions complete, configuration DRY complete, Vogen adoption complete
 
-*Updated after 15-02 completion*
+*Updated after 16.1-02 completion*
 | Phase 15 P02 | 2 | 2 tasks | 7 files |
 | Phase 16-conventions-dry-configuration P01 | 7 | 2 tasks | 14 files |
 | Phase 16 P02 | 13 | 2 tasks | 45 files |
 | Phase 16.1-adopt-vogen-for-value-object P01 | 4 | 2 tasks | 43 files |
+| Phase 16.1-adopt-vogen-for-value-object P02 | 4 | 1 task | 16 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,8 @@ Recent decisions affecting v2.0:
 - [Phase 16.1-01]: Vogen 8.0.4 partial record structs with [ValueObject<Guid>] replace hand-rolled StronglyTypedId<T> class hierarchy
 - [Phase 16.1-01]: VogenEfCoreConverters marker class with [EfCoreConverter<T>] attributes replaces reflection-based StronglyTypedIdConvention
 - [Phase 16.1-01]: EventId uses Conversions.SystemTextJson only (no EfCoreValueConverter) as it is not an EF entity property
+- [Phase 16.1-02]: VogenIds migrations have empty Up()/Down() for all 8 contexts — RegisterAllInVogenEfCoreConverters() is applied at runtime via ConfigureConventions and is not recorded in model snapshots
+- [Phase 16.1-02]: Model snapshots unchanged after Vogen adoption — convention-based converters have no static snapshot representation
 
 ### Roadmap Evolution
 
@@ -85,6 +88,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 16.1-01-PLAN.md (Vogen adoption for all 14 strongly-typed ID types)
+Stopped at: Completed 16.1-02-PLAN.md (EF Core migrations for all 8 DbContexts after Vogen adoption)
 Resume file: None
 Next step: Phase 17 — next phase in v2.0 DDD Foundation milestone
