@@ -1,3 +1,4 @@
+using FluentResults;
 using MediatR;
 using MicroCommerce.ApiService.Common.Exceptions;
 using MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MicroCommerce.ApiService.Features.Inventory.Application.Commands.AdjustStock;
 
 public sealed class AdjustStockCommandHandler
-    : IRequestHandler<AdjustStockCommand, Unit>
+    : IRequestHandler<AdjustStockCommand, Result>
 {
     private readonly InventoryDbContext _context;
 
@@ -16,11 +17,11 @@ public sealed class AdjustStockCommandHandler
         _context = context;
     }
 
-    public async Task<Unit> Handle(
+    public async Task<Result> Handle(
         AdjustStockCommand request,
         CancellationToken cancellationToken)
     {
-        var stockItem = await _context.StockItems
+        StockItem? stockItem = await _context.StockItems
             .Include(s => s.Reservations)
             .FirstOrDefaultAsync(s => s.ProductId == request.ProductId, cancellationToken);
 
@@ -29,9 +30,16 @@ public sealed class AdjustStockCommandHandler
             throw new NotFoundException($"Stock item for product {request.ProductId} not found.");
         }
 
-        stockItem.AdjustStock(request.Adjustment, request.Reason, request.AdjustedBy);
+        try
+        {
+            stockItem.AdjustStock(request.Adjustment, request.Reason, request.AdjustedBy);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Result.Fail(ex.Message);
+        }
 
-        var adjustment = StockAdjustment.Create(
+        StockAdjustment adjustment = StockAdjustment.Create(
             stockItem.Id,
             request.Adjustment,
             stockItem.QuantityOnHand,
@@ -49,6 +57,6 @@ public sealed class AdjustStockCommandHandler
             throw new ConflictException("Stock was modified concurrently. Please retry.");
         }
 
-        return Unit.Value;
+        return Result.Ok();
     }
 }

@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using FluentResults;
 using MediatR;
+using MicroCommerce.ApiService.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using MicroCommerce.ApiService.Features.Inventory.Application.Commands.AdjustStock;
 using MicroCommerce.ApiService.Features.Inventory.Application.Commands.ReleaseReservation;
@@ -38,7 +40,8 @@ public static class InventoryEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status409Conflict);
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapPost("/stock/{productId:guid}/reserve", ReserveStock)
             .WithName("ReserveStock")
@@ -100,12 +103,12 @@ public static class InventoryEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var adjustedBy = user.FindFirst("preferred_username")?.Value ?? "system";
+        string adjustedBy = user.FindFirst("preferred_username")?.Value ?? "system";
 
-        var command = new AdjustStockCommand(productId, request.Adjustment, request.Reason, adjustedBy);
-        await sender.Send(command, cancellationToken);
+        AdjustStockCommand command = new(productId, request.Adjustment, request.Reason, adjustedBy);
+        Result result = await sender.Send(command, cancellationToken);
 
-        return Results.NoContent();
+        return result.ToHttpResult();
     }
 
     private static async Task<IResult> ReserveStock(
