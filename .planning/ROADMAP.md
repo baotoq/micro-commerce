@@ -129,7 +129,7 @@ Plans:
 
 Plans:
 - [ ] 19-01-PLAN.md — Install Ardalis.Specification packages, create 5 catalog specifications (ProductsBase, PublishedProducts, ProductsByCategory, ProductSearch, ProductByStatus), refactor GetProductsQueryHandler to spec composition
-- [ ] 19-02-PLAN.md — Create 2 ordering specifications (OrdersByStatus, OrdersByBuyer), refactor GetAllOrders and GetOrdersByBuyer handlers to use specs
+- [ ] 19-02-PLAN.md — Create 2 ordering specifications (ActiveOrdersSpec excluding terminal statuses, OrdersByBuyerSpec), refactor GetAllOrders and GetOrdersByBuyer handlers to use specs
 
 #### Phase 20: Source Generators - StronglyTypedId Improvements
 **Goal**: Automate StronglyTypedId converter generation through source generators
