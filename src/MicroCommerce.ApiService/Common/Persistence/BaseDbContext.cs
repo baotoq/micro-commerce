@@ -18,11 +18,4 @@ public abstract class BaseDbContext : DbContext
         configurationBuilder.Conventions.Add(_ => new Conventions.ConcurrencyTokenConvention());
         configurationBuilder.Conventions.Add(_ => new SoftDeletableConvention());
     }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-
-        optionsBuilder.UseSnakeCaseNamingConvention();
-    }
 }

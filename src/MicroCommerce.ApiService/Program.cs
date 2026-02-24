@@ -34,6 +34,7 @@ builder.AddNpgsqlDbContext<OutboxDbContext>("appdb", configureDbContextOptions: 
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "outbox"));
+    options.UseSnakeCaseNamingConvention();
 });
 
 // Module DbContexts
@@ -41,42 +42,49 @@ builder.AddNpgsqlDbContext<CatalogDbContext>("appdb", configureDbContextOptions:
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "catalog"));
+    options.UseSnakeCaseNamingConvention();
 });
 
 builder.AddNpgsqlDbContext<CartDbContext>("appdb", configureDbContextOptions: options =>
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "cart"));
+    options.UseSnakeCaseNamingConvention();
 });
 
 builder.AddNpgsqlDbContext<OrderingDbContext>("appdb", configureDbContextOptions: options =>
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "ordering"));
+    options.UseSnakeCaseNamingConvention();
 });
 
 builder.AddNpgsqlDbContext<InventoryDbContext>("appdb", configureDbContextOptions: options =>
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "inventory"));
+    options.UseSnakeCaseNamingConvention();
 });
 
 builder.AddNpgsqlDbContext<ProfilesDbContext>("appdb", configureDbContextOptions: options =>
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "profiles"));
+    options.UseSnakeCaseNamingConvention();
 });
 
 builder.AddNpgsqlDbContext<ReviewsDbContext>("appdb", configureDbContextOptions: options =>
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "reviews"));
+    options.UseSnakeCaseNamingConvention();
 });
 
 builder.AddNpgsqlDbContext<WishlistsDbContext>("appdb", configureDbContextOptions: options =>
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "wishlists"));
+    options.UseSnakeCaseNamingConvention();
 });
 
 // Azure Blob Storage for product images
