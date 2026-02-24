@@ -165,7 +165,7 @@ Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21
 | 1-10 | v1.0 MVP | 49/49 | Complete | 2026-02-13 |
 | 11-14.3 | v1.1 User Features | 23/23 | Complete | 2026-02-14 |
 | 15. Foundation | v2.0 DDD Foundation | 2/2 | Complete | 2026-02-14 |
-| 16. Conventions | 2/2 | Complete   | 2026-02-24 | - |
+| 16. Conventions | 2/2 | Complete    | 2026-02-24 | - |
 | 17. Result Pattern | v2.0 DDD Foundation | 0/TBD | Not started | - |
 | 18. Enumeration | v2.0 DDD Foundation | 0/TBD | Not started | - |
 | 19. Specification | v2.0 DDD Foundation | 0/TBD | Not started | - |
