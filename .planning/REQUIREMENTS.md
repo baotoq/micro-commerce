@@ -28,7 +28,7 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 
 - [x] **QUERY-01**: Specification pattern base classes (Ardalis.Specification) integrated with EF Core DbContext
 - [x] **QUERY-02**: Catalog specifications (PublishedProductsSpec, ProductsByCategorySpec, ProductSearchSpec)
-- [ ] **QUERY-03**: Ordering specifications (ActiveOrdersSpec, OrdersByBuyerSpec)
+- [x] **QUERY-03**: Ordering specifications (ActiveOrdersSpec, OrdersByBuyerSpec)
 
 ### Modernization
 
@@ -91,7 +91,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PRIM-06 | Phase 17 | Complete |
 | QUERY-01 | Phase 19 | Complete |
 | QUERY-02 | Phase 19 | Complete |
-| QUERY-03 | Phase 19 | Pending |
+| QUERY-03 | Phase 19 | Complete |
 | MOD-01 | Phase 16 | Pending |
 | MOD-02 | Phase 16 | Pending |
 | MOD-03 | Phase 16 | Pending |

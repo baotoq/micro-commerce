@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 19 in progress (1 of 2 plans done)
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 19 complete (2 of 2 plans done)
 
 ## Current Position
 
-Phase: 19 of 21 (Specification Pattern — Complex Query Logic) — In Progress
-Plan: 1 of 2 completed
-Status: Plan 19-01 Complete — Ardalis.Specification packages installed, 6 catalog spec classes created, GetProductsQueryHandler refactored (QUERY-01, QUERY-02) done
-Last activity: 2026-02-24 — Completed 19-01: Ardalis.Specification packages + catalog spec classes + GetProductsQueryHandler refactored
+Phase: 19 of 21 (Specification Pattern — Complex Query Logic) — Complete
+Plan: 2 of 2 completed
+Status: Phase 19 Complete — Specification pattern fully adopted: 6 catalog specs + GetProductsQueryHandler refactored (19-01), 2 ordering specs + GetAllOrdersQueryHandler + GetOrdersByBuyerQueryHandler refactored (19-02). QUERY-01, QUERY-02, QUERY-03 done.
+Last activity: 2026-02-24 — Completed 19-02: 2 ordering spec classes + 2 ordering query handlers refactored to WithSpecification
 
-Progress: [■■■■■■■■■■■■■■■■■■■■■■■░░░░░░░] 84% (82/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■■■■░░░░░░] 85% (83/96 plans completed)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 78 (v1.0: 49, v1.1: 23, v2.0: 6)
+- Total plans completed: 79 (v1.0: 49, v1.1: 23, v2.0: 7)
 - Average duration: 22 min
 - Total execution time: 27.97 hours
 
@@ -32,8 +32,8 @@ Progress: [■■■■■■■■■■■■■■■■■■■■■■■
 | v2.0 DDD Foundation | 7 | 9 | 40 min | In progress |
 
 **Recent Trend:**
-- Last 5 plans: v2.0 foundation infrastructure (17-01, 17-02, 18-01, 18-02, 19-01)
-- Trend: DDD foundation layer + EF Core conventions complete, Vogen adoption complete, FluentResults Result pattern complete (Phase 17), SmartEnum full migration complete (Phase 18), Ardalis.Specification pattern started (Phase 19)
+- Last 5 plans: v2.0 foundation infrastructure (18-01, 18-02, 19-01, 19-02)
+- Trend: DDD foundation layer + EF Core conventions complete, Vogen adoption complete, FluentResults Result pattern complete (Phase 17), SmartEnum full migration complete (Phase 18), Ardalis.Specification pattern complete (Phase 19)
 
 *Updated after 18-02 completion*
 | Phase 15 P02 | 2 | 2 tasks | 7 files |
@@ -46,6 +46,7 @@ Progress: [■■■■■■■■■■■■■■■■■■■■■■■
 | Phase 18-enumeration-enums-with-behavior P01 | 3 | 2 tasks | 13 files |
 | Phase 18-enumeration-enums-with-behavior P02 | 3 | 2 tasks | 6 files |
 | Phase 19-specification-pattern P01 | 3 | 2 tasks | 9 files |
+| Phase 19-specification-pattern P02 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,7 @@ Recent decisions affecting v2.0:
 - [Phase 18-02]: ChangeProductStatusCommandHandler uses switch on ToLowerInvariant() over SmartEnum.TryFromName — validator already guarantees valid input
 - [Phase 19-specification-pattern]: Ardalis.Specification 9.3.1 does not expose And() — composite spec with multiple Query.Where() calls achieves equivalent AND semantics
 - [Phase 19-specification-pattern]: Sorting kept in handler (request-specific SortBy/SortDirection params); pagination kept in handler for reusable count queries
+- [Phase 19-02]: Spec composition via chained WithSpecification() calls (buyer spec then active orders spec) — equivalent to And() without the naming conflict
 
 ### Roadmap Evolution
 
@@ -105,6 +107,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 19-01-PLAN.md (Ardalis.Specification packages, 6 catalog spec classes, GetProductsQueryHandler refactored to WithSpecification)
+Stopped at: Completed 19-02-PLAN.md (2 ordering spec classes, GetAllOrdersQueryHandler + GetOrdersByBuyerQueryHandler refactored to WithSpecification)
 Resume file: None
-Next step: Phase 19 Plan 02 — Ordering specifications (GetAllOrdersQueryHandler and GetOrdersByBuyerQueryHandler)
+Next step: Phase 20 (next phase in roadmap)
