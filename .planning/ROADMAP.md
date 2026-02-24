@@ -125,11 +125,11 @@ Plans:
   3. Ordering queries (ActiveOrdersSpec, OrdersByBuyerSpec) use specifications for filtering and pagination
   4. Specifications are unit-testable in isolation from EF Core and database
   5. Query handlers demonstrate specification composition via And/Or for complex filters
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 19-01: TBD
-- [ ] 19-02: TBD
+- [ ] 19-01-PLAN.md — Install Ardalis.Specification packages, create 5 catalog specifications (ProductsBase, PublishedProducts, ProductsByCategory, ProductSearch, ProductByStatus), refactor GetProductsQueryHandler to spec composition
+- [ ] 19-02-PLAN.md — Create 2 ordering specifications (OrdersByStatus, OrdersByBuyer), refactor GetAllOrders and GetOrdersByBuyer handlers to use specs
 
 #### Phase 20: Source Generators - StronglyTypedId Improvements
 **Goal**: Automate StronglyTypedId converter generation through source generators
@@ -179,7 +179,7 @@ Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21
 | 16. Conventions | 2/2 | Complete    | 2026-02-24 | - |
 | 17. Result Pattern | 2/2 | Complete    | 2026-02-24 | - |
 | 18. Enumeration | 2/2 | Complete    | 2026-02-24 | - |
-| 19. Specification | v2.0 DDD Foundation | 0/TBD | Not started | - |
+| 19. Specification | v2.0 DDD Foundation | 0/2 | Not started | - |
 | 20. Source Generators | v2.0 DDD Foundation | 0/TBD | Not started | - |
 | 21. Adoption | v2.0 DDD Foundation | 0/TBD | Not started | - |
 
