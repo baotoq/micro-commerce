@@ -187,6 +187,9 @@ builder.Services.AddMediatR(cfg =>
 
     // Validation runs first - fail fast before handler executes
     cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+
+    // Result validation: returns Result.Fail for Result-typed handlers (coexists with ValidationBehavior)
+    cfg.AddOpenBehavior(typeof(ResultValidationBehavior<,>));
 });
 
 // FluentValidation - auto-discover validators
