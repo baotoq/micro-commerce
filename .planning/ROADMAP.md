@@ -159,12 +159,12 @@ Plans:
   5. Additional command handlers beyond pilot (2+ more) adopt Result pattern for business rule validation
   6. Complex catalog and ordering queries use Specification pattern instead of inline LINQ
   7. All 180+ existing tests pass with no regressions after migration
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 21-01: TBD
-- [ ] 21-02: TBD
-- [ ] 21-03: TBD
+- [ ] 21-01-PLAN.md — Entity<TId> base class migration for child entities + AuditableAggregateRoot migration for aggregates
+- [ ] 21-02-PLAN.md — IConcurrencyToken migration (xmin to int Version) + EF Core migrations for 6 DbContexts
+- [ ] 21-03-PLAN.md — Result pattern expansion (ChangeProductStatus, UpdateCartItem) + OpenAPI schema transformers + final verification
 
 ## Progress
 
@@ -181,7 +181,7 @@ Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21
 | 18. Enumeration | 2/2 | Complete    | 2026-02-24 | - |
 | 19. Specification | 2/2 | Complete    | 2026-02-24 | - |
 | 20. Integration Testing | 2/2 | Complete    | 2026-02-25 | - |
-| 21. Adoption | v2.0 DDD Foundation | 0/TBD | Not started | - |
+| 21. Adoption | v2.0 DDD Foundation | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-29*
