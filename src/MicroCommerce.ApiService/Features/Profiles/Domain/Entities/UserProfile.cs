@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using MicroCommerce.ApiService.Features.Profiles.Domain.Events;
 using MicroCommerce.ApiService.Features.Profiles.Domain.ValueObjects;
 using MicroCommerce.BuildingBlocks.Common;
@@ -8,9 +7,8 @@ namespace MicroCommerce.ApiService.Features.Profiles.Domain.Entities;
 /// <summary>
 /// UserProfile aggregate root for the profiles domain.
 /// Manages display name, avatar, and address collection with default address invariant.
-/// Uses optimistic concurrency via PostgreSQL xmin column.
 /// </summary>
-public sealed class UserProfile : AuditableAggregateRoot<UserProfileId>
+public sealed class UserProfile : AuditableAggregateRoot<UserProfileId>, IConcurrencyToken
 {
     private readonly List<Address> _addresses = [];
 
@@ -23,11 +21,7 @@ public sealed class UserProfile : AuditableAggregateRoot<UserProfileId>
 
     public string? AvatarUrl { get; private set; }
 
-    /// <summary>
-    /// Concurrency token mapped to PostgreSQL xmin system column.
-    /// </summary>
-    [Timestamp]
-    public uint Version { get; private set; }
+    public int Version { get; set; }
 
     public IReadOnlyCollection<Address> Addresses => _addresses.AsReadOnly();
 

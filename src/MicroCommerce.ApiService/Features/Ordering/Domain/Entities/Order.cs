@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using MicroCommerce.ApiService.Features.Ordering.Domain.Events;
 using MicroCommerce.ApiService.Features.Ordering.Domain.ValueObjects;
 using MicroCommerce.BuildingBlocks.Common;
@@ -8,9 +7,8 @@ namespace MicroCommerce.ApiService.Features.Ordering.Domain.Entities;
 /// <summary>
 /// Order aggregate root for the ordering domain.
 /// Manages order items, enforces invariants, and tracks order lifecycle.
-/// Uses optimistic concurrency via PostgreSQL xmin column.
 /// </summary>
-public sealed class Order : BaseAggregateRoot<OrderId>
+public sealed class Order : BaseAggregateRoot<OrderId>, IConcurrencyToken
 {
     private const decimal FlatShippingCost = 5.99m;
     private const decimal TaxRate = 0.08m;
@@ -30,11 +28,7 @@ public sealed class Order : BaseAggregateRoot<OrderId>
     public DateTimeOffset? PaidAt { get; private set; }
     public string? FailureReason { get; private set; }
 
-    /// <summary>
-    /// Concurrency token mapped to PostgreSQL xmin system column.
-    /// </summary>
-    [Timestamp]
-    public uint Version { get; private set; }
+    public int Version { get; set; }
 
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 

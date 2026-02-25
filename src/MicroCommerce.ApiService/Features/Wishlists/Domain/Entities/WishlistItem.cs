@@ -1,20 +1,14 @@
-using System.ComponentModel.DataAnnotations;
 using MicroCommerce.ApiService.Features.Wishlists.Domain.ValueObjects;
+using MicroCommerce.BuildingBlocks.Common;
 
 namespace MicroCommerce.ApiService.Features.Wishlists.Domain.Entities;
 
 /// <summary>
 /// WishlistItem entity representing a saved product in a user's wishlist.
 /// This is a simple entity (not an aggregate root) with no domain events.
-/// Uses optimistic concurrency via PostgreSQL xmin column.
 /// </summary>
-public sealed class WishlistItem
+public sealed class WishlistItem : Entity<WishlistItemId>, IConcurrencyToken
 {
-    /// <summary>
-    /// Unique identifier for the wishlist item.
-    /// </summary>
-    public WishlistItemId Id { get; private set; }
-
     /// <summary>
     /// User who saved the item (Keycloak user ID from 'sub' claim).
     /// </summary>
@@ -30,14 +24,14 @@ public sealed class WishlistItem
     /// </summary>
     public DateTimeOffset AddedAt { get; private set; }
 
-    /// <summary>
-    /// Concurrency token mapped to PostgreSQL xmin system column.
-    /// </summary>
-    [Timestamp]
-    public uint Version { get; private set; }
+    public int Version { get; set; }
 
     // EF Core constructor
     private WishlistItem()
+    {
+    }
+
+    private WishlistItem(WishlistItemId id) : base(id)
     {
     }
 
@@ -46,9 +40,8 @@ public sealed class WishlistItem
     /// </summary>
     public static WishlistItem Create(Guid userId, Guid productId)
     {
-        return new WishlistItem
+        return new WishlistItem(WishlistItemId.New())
         {
-            Id = WishlistItemId.New(),
             UserId = userId,
             ProductId = productId,
             AddedAt = DateTimeOffset.UtcNow

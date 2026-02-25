@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using MicroCommerce.ApiService.Common.Exceptions;
 using MicroCommerce.ApiService.Features.Inventory.Domain.Events;
 using MicroCommerce.ApiService.Features.Inventory.Domain.ValueObjects;
@@ -9,9 +8,8 @@ namespace MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 /// <summary>
 /// StockItem aggregate root for the inventory domain.
 /// Tracks quantity on hand, manages reservations, and enforces stock invariants.
-/// Uses optimistic concurrency via PostgreSQL xmin column.
 /// </summary>
-public sealed class StockItem : BaseAggregateRoot<StockItemId>
+public sealed class StockItem : BaseAggregateRoot<StockItemId>, IConcurrencyToken
 {
     private static readonly TimeSpan DefaultReservationTtl = TimeSpan.FromMinutes(15);
 
@@ -24,11 +22,7 @@ public sealed class StockItem : BaseAggregateRoot<StockItemId>
 
     public int QuantityOnHand { get; private set; }
 
-    /// <summary>
-    /// Concurrency token mapped to PostgreSQL xmin system column.
-    /// </summary>
-    [Timestamp]
-    public uint Version { get; private set; }
+    public int Version { get; set; }
 
     public IReadOnlyCollection<StockReservation> Reservations => _reservations.AsReadOnly();
 

@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using MicroCommerce.ApiService.Features.Cart.Domain.ValueObjects;
 using MicroCommerce.BuildingBlocks.Common;
 
@@ -7,9 +6,8 @@ namespace MicroCommerce.ApiService.Features.Cart.Domain.Entities;
 /// <summary>
 /// Cart aggregate root for the cart domain.
 /// Manages cart items, enforces quantity invariants, and tracks a 30-day TTL.
-/// Uses optimistic concurrency via PostgreSQL xmin column.
 /// </summary>
-public sealed class Cart : AuditableAggregateRoot<CartId>
+public sealed class Cart : AuditableAggregateRoot<CartId>, IConcurrencyToken
 {
     private const int MaxQuantity = 99;
     private static readonly TimeSpan Ttl = TimeSpan.FromDays(30);
@@ -23,11 +21,7 @@ public sealed class Cart : AuditableAggregateRoot<CartId>
 
     public DateTimeOffset ExpiresAt { get; private set; }
 
-    /// <summary>
-    /// Concurrency token mapped to PostgreSQL xmin system column.
-    /// </summary>
-    [Timestamp]
-    public uint Version { get; private set; }
+    public int Version { get; set; }
 
     public IReadOnlyCollection<CartItem> Items => _items.AsReadOnly();
 

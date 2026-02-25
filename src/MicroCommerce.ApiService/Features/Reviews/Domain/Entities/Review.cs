@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using MicroCommerce.ApiService.Features.Reviews.Domain.Events;
 using MicroCommerce.ApiService.Features.Reviews.Domain.ValueObjects;
 using MicroCommerce.BuildingBlocks.Common;
@@ -8,9 +7,8 @@ namespace MicroCommerce.ApiService.Features.Reviews.Domain.Entities;
 /// <summary>
 /// Review aggregate root for the reviews domain.
 /// Manages product reviews with rating and text.
-/// Uses optimistic concurrency via PostgreSQL xmin column.
 /// </summary>
-public sealed class Review : AuditableAggregateRoot<ReviewId>
+public sealed class Review : AuditableAggregateRoot<ReviewId>, IConcurrencyToken
 {
     /// <summary>
     /// Product being reviewed.
@@ -26,11 +24,7 @@ public sealed class Review : AuditableAggregateRoot<ReviewId>
 
     public ReviewText Text { get; private set; } = null!;
 
-    /// <summary>
-    /// Concurrency token mapped to PostgreSQL xmin system column.
-    /// </summary>
-    [Timestamp]
-    public uint Version { get; private set; }
+    public int Version { get; set; }
 
     // EF Core constructor
     private Review(ReviewId id) : base(id)
