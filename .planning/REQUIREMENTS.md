@@ -37,6 +37,10 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 - [ ] **MOD-03**: Remove obsolete ValueObject base class and any dead infrastructure code
 - [ ] **MOD-04**: OpenAPI schema filters for StronglyTypedId (primitive display) and Enumeration (string display)
 
+### Testing
+
+- [ ] **TEST-01**: Integration test infrastructure with WebApplicationFactory + Testcontainers, one representative test per feature (7 features)
+
 ### Adoption
 
 - [ ] **ADOPT-01**: Migrate all child entities across 7 modules to Entity base class
@@ -95,7 +99,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOD-01 | Phase 16 | Pending |
 | MOD-02 | Phase 16 | Pending |
 | MOD-03 | Phase 16 | Pending |
-| MOD-04 | Phase 20 | Pending |
+| MOD-04 | Phase 21 | Pending |
+| TEST-01 | Phase 20 | Pending |
 | ADOPT-01 | Phase 21 | Pending |
 | ADOPT-02 | Phase 21 | Pending |
 | ADOPT-03 | Phase 21 | Pending |
@@ -105,8 +110,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADOPT-07 | Phase 21 | Pending |
 
 **Coverage:**
-- v2.0 requirements: 25 total
-- Mapped to phases: 25 (100%)
+- v2.0 requirements: 26 total
+- Mapped to phases: 26 (100%)
 - Unmapped: 0 ✓
 
 ---

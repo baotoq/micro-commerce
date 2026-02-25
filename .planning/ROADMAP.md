@@ -131,16 +131,16 @@ Plans:
 - [ ] 19-01-PLAN.md — Install Ardalis.Specification packages, create 5 catalog specifications (ProductsBase, PublishedProducts, ProductsByCategory, ProductSearch, ProductByStatus), refactor GetProductsQueryHandler to spec composition
 - [ ] 19-02-PLAN.md — Create 2 ordering specifications (ActiveOrdersSpec excluding terminal statuses, OrdersByBuyerSpec), refactor GetAllOrders and GetOrdersByBuyer handlers to use specs
 
-#### Phase 20: Source Generators - StronglyTypedId Improvements
-**Goal**: Automate StronglyTypedId converter generation through source generators
-**Depends on**: Phase 16 (existing manual pattern validated)
-**Requirements**: PRIM-01, MOD-04
+#### Phase 20: Integration Testing Infrastructure
+**Goal**: Set up integration testing foundation with xUnit, WebApplicationFactory, and Testcontainers, proving the pattern with one test per feature
+**Depends on**: Phase 19 (all building blocks proven, ready for validation)
+**Requirements**: TEST-01
 **Success Criteria** (what must be TRUE):
-  1. Meziantou.Framework.StronglyTypedId source generator integrated with auto-generated JSON, EF Core, and TypeConverter converters
-  2. New StronglyTypedId types (pilot with 2-3 IDs) use generator instead of manual record declarations
-  3. OpenAPI schema filters display StronglyTypedId as primitives (Guid/int) instead of nested objects in Swagger UI
-  4. Migration path documented for gradual adoption of remaining 15+ ID types
-  5. Build performance acceptable with source generator enabled (no significant compilation slowdown)
+  1. MicroCommerceWebAppFactory configured with PostgreSQL Testcontainer and fake auth handler
+  2. IntegrationTestBase provides helpers: authenticated/guest HttpClient creation, feature-scoped DbContext access, test data builders
+  3. One representative API endpoint test per feature (7 features: Catalog, Cart, Ordering, Inventory, Profiles, Reviews, Wishlists)
+  4. One representative handler-level test demonstrating edge case/business rule testing pattern
+  5. All integration tests pass with per-test-class database isolation using EnsureCreated
 **Plans**: TBD
 
 Plans:
@@ -150,7 +150,7 @@ Plans:
 #### Phase 21: Adoption - Full Building Block Integration
 **Goal**: Apply all new building blocks across all 7 feature modules with comprehensive test coverage
 **Depends on**: Phases 15-20 (all building blocks proven)
-**Requirements**: ADOPT-01, ADOPT-02, ADOPT-03, ADOPT-04, ADOPT-05, ADOPT-06, ADOPT-07
+**Requirements**: ADOPT-01, ADOPT-02, ADOPT-03, ADOPT-04, ADOPT-05, ADOPT-06, ADOPT-07, MOD-04
 **Success Criteria** (what must be TRUE):
   1. All child entities across 7 modules (Catalog, Cart, Ordering, Inventory, Profiles, Reviews, Wishlists) inherit from Entity base
   2. All aggregates needing timestamps use AuditableAggregateRoot or implement IAuditable explicitly
@@ -180,7 +180,7 @@ Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21
 | 17. Result Pattern | 2/2 | Complete    | 2026-02-24 | - |
 | 18. Enumeration | 2/2 | Complete    | 2026-02-24 | - |
 | 19. Specification | 2/2 | Complete    | 2026-02-24 | - |
-| 20. Source Generators | v2.0 DDD Foundation | 0/TBD | Not started | - |
+| 20. Integration Testing | v2.0 DDD Foundation | 0/TBD | Not started | - |
 | 21. Adoption | v2.0 DDD Foundation | 0/TBD | Not started | - |
 
 ---
