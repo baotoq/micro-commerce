@@ -68,10 +68,10 @@ public static class ReviewsEndpoints
 
     private static async Task<IResult> GetProductReviews(
         Guid productId,
-        int page,
-        int pageSize,
         ISender sender,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        int page = 1,
+        int pageSize = 5)
     {
         // Apply defaults
         if (page < 1) page = 1;
