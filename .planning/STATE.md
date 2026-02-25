@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 20 in progress (1 of 2 plans done)
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 20 complete (2 of 2 plans done)
 
 ## Current Position
 
-Phase: 20 of 21 (Integration Testing Infrastructure) — In progress
-Plan: 1 of 2 completed
-Status: Phase 20 Plan 01 Complete — Integration test infrastructure fixed: ApiWebApplicationFactory fixed (MassTransit health check dedup, UseSnakeCaseNamingConvention, per-schema MigrateAsync), FakeAuthenticationHandler added, IntegrationTestBase created. All 29 integration tests pass. TEST-01 done.
-Last activity: 2026-02-25 — Completed 20-01: ApiWebApplicationFactory + FakeAuthenticationHandler + IntegrationTestBase, all 173 tests green
+Phase: 20 of 21 (Integration Testing Infrastructure) — Complete
+Plan: 2 of 2 completed
+Status: Phase 20 Complete — All 7 features have representative integration tests. ProductBuilder/OrderBuilder fluent builders added. UpdateOrderStatusHandlerTests demonstrates FluentResults pattern. All 178 tests pass (34 integration + 144 unit).
+Last activity: 2026-02-25 — Completed 20-02: feature tests for Profiles/Reviews/Wishlists + handler-level test + test data builders. All 178 tests green.
 
-Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■░░░░░] 87% (84/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■░░░░] 90% (85/96 plans completed)
 
 ## Performance Metrics
 
@@ -95,6 +95,9 @@ Recent decisions affecting v2.0:
 - [Phase 20-01]: SmartEnum needs [JsonConverter] at class level for client-side HttpClient GetFromJsonAsync deserialization
 - [Phase 20-01]: StockItem.Reserve throws ConflictException (409) not InvalidOperationException (400) for insufficient stock
 - [Phase 20-01]: GetOrderDashboard groups timestamps in memory (EF cannot translate DateTimeOffset.Date + GroupBy + DateOnly.FromDateTime to SQL)
+- [Phase 20-02]: UpdateOrderStatusHandlerTests resolves IMediator from DI (not direct handler instantiation) for full DI pipeline
+- [Phase 20-02]: Handle_NonExistentOrder_ThrowsNotFoundException because handler throws NotFoundException (not Result.Fail) for missing orders — exception middleware converts to 404 at endpoint boundary
+- [Phase 20-02]: ReviewsEndpoints.GetProductReviews page/pageSize params need defaults (same pattern as CatalogEndpoints fixed in 20-01)
 
 ### Roadmap Evolution
 
@@ -114,6 +117,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 20-01-PLAN.md (ApiWebApplicationFactory fixed, FakeAuthenticationHandler, IntegrationTestBase, all 29 integration tests green)
+Stopped at: Completed 20-02-PLAN.md (feature tests for Profiles/Reviews/Wishlists, handler-level tests, test data builders, all 178 tests green)
 Resume file: None
-Next step: Phase 20-02 (integration tests for authenticated user flows)
+Next step: Phase 21 (final phase of v2.0 DDD Foundation)

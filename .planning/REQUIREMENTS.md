@@ -39,7 +39,7 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 
 ### Testing
 
-- [ ] **TEST-01**: Integration test infrastructure with WebApplicationFactory + Testcontainers, one representative test per feature (7 features)
+- [x] **TEST-01**: Integration test infrastructure with WebApplicationFactory + Testcontainers, one representative test per feature (7 features)
 
 ### Adoption
 
@@ -100,7 +100,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOD-02 | Phase 16 | Pending |
 | MOD-03 | Phase 16 | Pending |
 | MOD-04 | Phase 21 | Pending |
-| TEST-01 | Phase 20 | Pending |
+| TEST-01 | Phase 20 | Complete |
 | ADOPT-01 | Phase 21 | Pending |
 | ADOPT-02 | Phase 21 | Pending |
 | ADOPT-03 | Phase 21 | Pending |
