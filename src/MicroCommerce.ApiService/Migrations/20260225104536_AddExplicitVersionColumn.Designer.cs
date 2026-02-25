@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using MicroCommerce.ApiService.Features.Profiles.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MicroCommerce.ApiService.Migrations
 {
     [DbContext(typeof(ProfilesDbContext))]
-    partial class ProfilesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260225104536_AddExplicitVersionColumn")]
+    partial class AddExplicitVersionColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
