@@ -5,15 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Planning next milestone
+**Current focus:** v3.0 Kubernetes & GitOps
 
 ## Current Position
 
-Milestone: v2.0 DDD Foundation — SHIPPED 2026-02-25
-Status: All 3 milestones complete (v1.0, v1.1, v2.0). 26/26 v2.0 requirements satisfied.
-Last activity: 2026-02-25 — Completed v2.0 milestone: 9 phases, 18 plans, 182 tests passing.
-
-Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] 100% (90/90 plans completed)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-25 — Milestone v3.0 started
 
 ## Performance Metrics
 
@@ -28,24 +27,7 @@ Progress: [■■■■■■■■■■■■■■■■■■■■■■■
 |-----------|--------|-------|----------|----------|
 | v1.0 MVP | 10 | 49 | 18.8h | 16 days |
 | v1.1 User Features | 7 | 23 | 8.8h | 2 days |
-| v2.0 DDD Foundation | 7 | 9 | 40 min | In progress |
-
-**Recent Trend:**
-- Last 5 plans: v2.0 foundation infrastructure (18-01, 18-02, 19-01, 19-02)
-- Trend: DDD foundation layer + EF Core conventions complete, Vogen adoption complete, FluentResults Result pattern complete (Phase 17), SmartEnum full migration complete (Phase 18), Ardalis.Specification pattern complete (Phase 19)
-
-*Updated after 18-02 completion*
-| Phase 15 P02 | 2 | 2 tasks | 7 files |
-| Phase 16-conventions-dry-configuration P01 | 7 | 2 tasks | 14 files |
-| Phase 16 P02 | 13 | 2 tasks | 45 files |
-| Phase 16.1-adopt-vogen-for-value-object P01 | 4 | 2 tasks | 43 files |
-| Phase 16.1-adopt-vogen-for-value-object P02 | 4 | 1 task | 16 files |
-| Phase 17-result-pattern P01 | 3 | 2 tasks | 5 files |
-| Phase 17-result-pattern P02 | 4 | 2 tasks | 6 files |
-| Phase 18-enumeration-enums-with-behavior P01 | 3 | 2 tasks | 13 files |
-| Phase 18-enumeration-enums-with-behavior P02 | 3 | 2 tasks | 6 files |
-| Phase 19-specification-pattern P01 | 3 | 2 tasks | 9 files |
-| Phase 19-specification-pattern P02 | 2 | 2 tasks | 4 files |
+| v2.0 DDD Foundation | 7 | 9 | 40 min | 11 days |
 
 ## Accumulated Context
 
@@ -113,8 +95,7 @@ Recent decisions affecting v2.0:
 
 - v1.0 MVP: Phases 1-10 (shipped 2026-02-13)
 - v1.1 User Features: Phases 11-14.3 (shipped 2026-02-14)
-- v2.0 DDD Foundation: Phases 15-21 (current, roadmap created 2026-02-14)
-- Phase 16.1 inserted after Phase 16: Adopt Vogen for value object (URGENT)
+- v2.0 DDD Foundation: Phases 15-22 (shipped 2026-02-25)
 
 ### Pending Todos
 
@@ -122,11 +103,11 @@ None.
 
 ### Blockers/Concerns
 
-None. All v1.1 issues resolved. Clean slate for v2.0.
+None. Clean slate for v3.0.
 
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 22-01-PLAN.md (Interceptors wired to all 8 DbContexts, 5 InterceptorBehaviorTests added, 182 tests green, ENTITY-02/04/05 and ADOPT-03 requirements satisfied)
+Stopped at: Starting v3.0 Kubernetes & GitOps milestone
 Resume file: None
-Next step: Phase 22 complete. v2.0 DDD Foundation gap closure complete. All requirements satisfied.
+Next step: Define requirements, then create roadmap.

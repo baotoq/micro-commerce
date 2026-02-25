@@ -54,7 +54,17 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 
 ### Active
 
-(No active milestone — run `/gsd:new-milestone` to start next)
+**Current Milestone: v3.0 Kubernetes & GitOps**
+
+- [ ] Dockerfiles for ApiService, Gateway, and Web
+- [ ] Kustomize manifests (base + dev overlay) for all services and infrastructure
+- [ ] Full stack deployment in K8s: apps + PostgreSQL + Keycloak + RabbitMQ
+- [ ] RabbitMQ transport support for MassTransit (replacing Azure SB emulator in K8s)
+- [ ] GitHub Actions CI pipeline building and pushing images to ghcr.io
+- [ ] ArgoCD with app-of-apps pattern for GitOps deployment
+- [ ] Sealed Secrets for K8s secret management
+- [ ] OTEL Collector + Aspire Dashboard deployed in K8s for monitoring
+- [ ] Local kind cluster as dev environment
 
 ### Out of Scope
 
@@ -140,4 +150,4 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 | Order skips AuditableAggregateRoot | Domain-specific CreatedAt/PaidAt semantics | ✓ Good — intentional, documented design choice |
 
 ---
-*Last updated: 2026-02-25 after v2.0 milestone completed*
+*Last updated: 2026-02-25 after v3.0 milestone started*
