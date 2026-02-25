@@ -89,36 +89,36 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CONT-01 | — | Pending |
-| CONT-02 | — | Pending |
-| CONT-03 | — | Pending |
-| CONT-04 | — | Pending |
-| INFRA-01 | — | Pending |
-| INFRA-02 | — | Pending |
-| INFRA-03 | — | Pending |
-| INFRA-04 | — | Pending |
-| INFRA-05 | — | Pending |
-| MFST-01 | — | Pending |
-| MFST-02 | — | Pending |
-| MFST-03 | — | Pending |
-| MFST-04 | — | Pending |
-| MFST-05 | — | Pending |
-| MFST-06 | — | Pending |
-| TRAN-01 | — | Pending |
-| TRAN-02 | — | Pending |
-| CICD-01 | — | Pending |
-| CICD-02 | — | Pending |
-| GOPS-01 | — | Pending |
-| GOPS-02 | — | Pending |
-| GOPS-03 | — | Pending |
-| OBSV-01 | — | Pending |
-| OBSV-02 | — | Pending |
+| CONT-01 | Phase 23 | Pending |
+| CONT-02 | Phase 23 | Pending |
+| CONT-03 | Phase 23 | Pending |
+| CONT-04 | Phase 23 | Pending |
+| CICD-01 | Phase 23 | Pending |
+| INFRA-01 | Phase 24 | Pending |
+| INFRA-02 | Phase 24 | Pending |
+| INFRA-03 | Phase 24 | Pending |
+| INFRA-04 | Phase 24 | Pending |
+| INFRA-05 | Phase 24 | Pending |
+| GOPS-03 | Phase 24 | Pending |
+| MFST-01 | Phase 25 | Pending |
+| MFST-02 | Phase 25 | Pending |
+| MFST-03 | Phase 25 | Pending |
+| MFST-04 | Phase 25 | Pending |
+| MFST-05 | Phase 25 | Pending |
+| MFST-06 | Phase 25 | Pending |
+| TRAN-01 | Phase 25 | Pending |
+| TRAN-02 | Phase 25 | Pending |
+| GOPS-01 | Phase 26 | Pending |
+| GOPS-02 | Phase 26 | Pending |
+| CICD-02 | Phase 27 | Pending |
+| OBSV-01 | Phase 28 | Pending |
+| OBSV-02 | Phase 28 | Pending |
 
 **Coverage:**
 - v3.0 requirements: 24 total
-- Mapped to phases: 0
-- Unmapped: 24 ⚠️
+- Mapped to phases: 24
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-02-25 after initial definition*
+*Last updated: 2026-02-25 — traceability filled after roadmap creation (Phases 23-28)*
