@@ -1,4 +1,5 @@
 using MicroCommerce.ApiService.Features.Inventory.Domain.ValueObjects;
+using MicroCommerce.BuildingBlocks.Common;
 
 namespace MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 
@@ -6,9 +7,8 @@ namespace MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 /// Audit record for stock adjustments.
 /// Separate from StockItem aggregate - persisted independently for audit trail.
 /// </summary>
-public sealed class StockAdjustment
+public sealed class StockAdjustment : Entity<AdjustmentId>
 {
-    public AdjustmentId Id { get; private set; }
     public StockItemId StockItemId { get; private set; }
     public int Adjustment { get; private set; }
     public int QuantityAfter { get; private set; }
@@ -17,7 +17,11 @@ public sealed class StockAdjustment
     public DateTimeOffset CreatedAt { get; private set; }
 
     // EF Core constructor
-    private StockAdjustment()
+    private StockAdjustment() : base()
+    {
+    }
+
+    private StockAdjustment(AdjustmentId id) : base(id)
     {
     }
 
@@ -28,9 +32,8 @@ public sealed class StockAdjustment
         string? reason,
         string? adjustedBy)
     {
-        return new StockAdjustment
+        return new StockAdjustment(AdjustmentId.New())
         {
-            Id = AdjustmentId.New(),
             StockItemId = stockItemId,
             Adjustment = adjustment,
             QuantityAfter = quantityAfter,

@@ -1,4 +1,5 @@
 using MicroCommerce.ApiService.Features.Ordering.Domain.ValueObjects;
+using MicroCommerce.BuildingBlocks.Common;
 
 namespace MicroCommerce.ApiService.Features.Ordering.Domain.Entities;
 
@@ -6,9 +7,8 @@ namespace MicroCommerce.ApiService.Features.Ordering.Domain.Entities;
 /// OrderItem entity owned by Order aggregate.
 /// Stores a snapshot of product info at the time of ordering.
 /// </summary>
-public sealed class OrderItem
+public sealed class OrderItem : Entity<OrderItemId>
 {
-    public OrderItemId Id { get; private set; }
     public OrderId OrderId { get; private set; }
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; } = null!;
@@ -18,7 +18,11 @@ public sealed class OrderItem
     public decimal LineTotal { get; private set; }
 
     // EF Core constructor
-    private OrderItem()
+    private OrderItem() : base()
+    {
+    }
+
+    private OrderItem(OrderItemId id) : base(id)
     {
     }
 
@@ -30,9 +34,8 @@ public sealed class OrderItem
         if (unitPrice < 0)
             throw new ArgumentOutOfRangeException(nameof(unitPrice), "Unit price cannot be negative.");
 
-        return new OrderItem
+        return new OrderItem(OrderItemId.New())
         {
-            Id = OrderItemId.New(),
             OrderId = orderId,
             ProductId = productId,
             ProductName = productName,

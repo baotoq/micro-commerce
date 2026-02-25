@@ -1,4 +1,5 @@
 using MicroCommerce.ApiService.Features.Cart.Domain.ValueObjects;
+using MicroCommerce.BuildingBlocks.Common;
 
 namespace MicroCommerce.ApiService.Features.Cart.Domain.Entities;
 
@@ -6,11 +7,10 @@ namespace MicroCommerce.ApiService.Features.Cart.Domain.Entities;
 /// CartItem entity owned by Cart aggregate.
 /// Stores a snapshot of product info at the time of adding to cart.
 /// </summary>
-public sealed class CartItem
+public sealed class CartItem : Entity<CartItemId>
 {
     private const int MaxQuantity = 99;
 
-    public CartItemId Id { get; private set; }
     public CartId CartId { get; private set; }
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; } = null!;
@@ -19,7 +19,11 @@ public sealed class CartItem
     public int Quantity { get; private set; }
 
     // EF Core constructor
-    private CartItem()
+    private CartItem() : base()
+    {
+    }
+
+    private CartItem(CartItemId id) : base(id)
     {
     }
 
@@ -28,9 +32,8 @@ public sealed class CartItem
         if (quantity < 1 || quantity > MaxQuantity)
             throw new ArgumentOutOfRangeException(nameof(quantity), $"Quantity must be between 1 and {MaxQuantity}.");
 
-        return new CartItem
+        return new CartItem(CartItemId.New())
         {
-            Id = CartItemId.New(),
             CartId = cartId,
             ProductId = productId,
             ProductName = productName,

@@ -1,4 +1,5 @@
 using MicroCommerce.ApiService.Features.Inventory.Domain.ValueObjects;
+using MicroCommerce.BuildingBlocks.Common;
 
 namespace MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 
@@ -7,9 +8,8 @@ namespace MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 /// Owned by StockItem aggregate - not independently accessible.
 /// Reservations have a TTL and expire automatically.
 /// </summary>
-public sealed class StockReservation
+public sealed class StockReservation : Entity<ReservationId>
 {
-    public ReservationId Id { get; private set; }
     public StockItemId StockItemId { get; private set; }
     public int Quantity { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
@@ -18,15 +18,18 @@ public sealed class StockReservation
     public bool IsExpired => ExpiresAt <= DateTimeOffset.UtcNow;
 
     // EF Core constructor
-    private StockReservation()
+    private StockReservation() : base()
+    {
+    }
+
+    private StockReservation(ReservationId id) : base(id)
     {
     }
 
     internal static StockReservation Create(StockItemId stockItemId, int quantity, TimeSpan ttl)
     {
-        return new StockReservation
+        return new StockReservation(ReservationId.New())
         {
-            Id = ReservationId.New(),
             StockItemId = stockItemId,
             Quantity = quantity,
             CreatedAt = DateTimeOffset.UtcNow,

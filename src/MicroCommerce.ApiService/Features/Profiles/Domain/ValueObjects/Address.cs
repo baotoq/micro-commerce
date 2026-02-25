@@ -1,8 +1,9 @@
+using MicroCommerce.BuildingBlocks.Common;
+
 namespace MicroCommerce.ApiService.Features.Profiles.Domain.ValueObjects;
 
-public sealed class Address
+public sealed class Address : Entity<AddressId>
 {
-    public AddressId Id { get; private set; }
     public string Name { get; private set; }
     public string Street { get; private set; }
     public string City { get; private set; }
@@ -12,7 +13,7 @@ public sealed class Address
     public bool IsDefault { get; private set; }
 
     // EF Core constructor
-    private Address()
+    private Address() : base()
     {
         Name = string.Empty;
         Street = string.Empty;
@@ -22,9 +23,8 @@ public sealed class Address
         Country = string.Empty;
     }
 
-    private Address(AddressId id, string name, string street, string city, string state, string zipCode, string country, bool isDefault)
+    private Address(AddressId id, string name, string street, string city, string state, string zipCode, string country, bool isDefault) : base(id)
     {
-        Id = id;
         Name = name;
         Street = street;
         City = city;
