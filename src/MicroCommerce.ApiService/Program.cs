@@ -24,6 +24,7 @@ using MicroCommerce.ApiService.Features.Profiles.Infrastructure;
 using MicroCommerce.ApiService.Features.Reviews;
 using MicroCommerce.ApiService.Features.Reviews.Infrastructure;
 using MicroCommerce.ApiService.Features.Wishlists;
+using MicroCommerce.ApiService.Common.OpenApi;
 using MicroCommerce.ApiService.Features.Wishlists.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -171,7 +172,11 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddSchemaTransformer<VogenIdSchemaTransformer>();
+    options.AddSchemaTransformer<SmartEnumSchemaTransformer>();
+});
 
 builder.Services.AddAuthentication()
     .AddKeycloakJwtBearer(
