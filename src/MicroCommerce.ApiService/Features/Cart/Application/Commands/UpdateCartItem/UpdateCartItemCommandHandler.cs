@@ -1,33 +1,35 @@
+using FluentResults;
 using MediatR;
+using MicroCommerce.ApiService.Common.Exceptions;
 using MicroCommerce.ApiService.Features.Cart.Domain.ValueObjects;
 using MicroCommerce.ApiService.Features.Cart.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Cart.Application.Commands.UpdateCartItem;
 
-public sealed class UpdateCartItemCommandHandler
-    : IRequestHandler<UpdateCartItemCommand, Unit>
+public sealed class UpdateCartItemCommandHandler(CartDbContext context)
+    : IRequestHandler<UpdateCartItemCommand, Result>
 {
-    private readonly CartDbContext _context;
-
-    public UpdateCartItemCommandHandler(CartDbContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<Unit> Handle(
+    public async Task<Result> Handle(
         UpdateCartItemCommand request,
         CancellationToken cancellationToken)
     {
-        var cart = await _context.Carts
+        Domain.Entities.Cart? cart = await context.Carts
             .Include(c => c.Items)
             .FirstOrDefaultAsync(c => c.BuyerId == request.BuyerId, cancellationToken)
-            ?? throw new InvalidOperationException($"Cart not found for buyer '{request.BuyerId}'.");
+            ?? throw new NotFoundException($"Cart not found for buyer '{request.BuyerId}'.");
 
-        cart.UpdateItemQuantity(CartItemId.From(request.ItemId), request.Quantity);
+        try
+        {
+            cart.UpdateItemQuantity(CartItemId.From(request.ItemId), request.Quantity);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Result.Fail(ex.Message);
+        }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
-        return Unit.Value;
+        return Result.Ok();
     }
 }

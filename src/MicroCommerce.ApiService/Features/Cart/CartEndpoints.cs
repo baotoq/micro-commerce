@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using FluentResults;
 using MediatR;
+using MicroCommerce.ApiService.Common.Extensions;
 using MicroCommerce.ApiService.Features.Cart.Application.Commands.AddToCart;
 using MicroCommerce.ApiService.Features.Cart.Application.Commands.MergeCarts;
 using MicroCommerce.ApiService.Features.Cart.Application.Commands.RemoveCartItem;
@@ -36,7 +38,8 @@ public static class CartEndpoints
             .WithName("UpdateCartItem")
             .WithSummary("Update cart item quantity")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status422UnprocessableEntity);
 
         group.MapDelete("/items/{itemId:guid}", RemoveCartItem)
             .WithName("RemoveCartItem")
@@ -95,12 +98,11 @@ public static class CartEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var buyerId = BuyerIdentity.GetOrCreateBuyerId(httpContext);
+        Guid buyerId = BuyerIdentity.GetOrCreateBuyerId(httpContext);
 
-        var command = new UpdateCartItemCommand(buyerId, itemId, request.Quantity);
-        await sender.Send(command, cancellationToken);
-
-        return Results.NoContent();
+        UpdateCartItemCommand command = new UpdateCartItemCommand(buyerId, itemId, request.Quantity);
+        Result result = await sender.Send(command, cancellationToken);
+        return result.ToHttpResult();
     }
 
     private static async Task<IResult> RemoveCartItem(

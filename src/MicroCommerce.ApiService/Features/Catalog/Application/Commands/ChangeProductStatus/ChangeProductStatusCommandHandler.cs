@@ -1,3 +1,4 @@
+using FluentResults;
 using MediatR;
 using MicroCommerce.ApiService.Common.Exceptions;
 using MicroCommerce.ApiService.Features.Catalog.Domain.ValueObjects;
@@ -6,21 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Catalog.Application.Commands.ChangeProductStatus;
 
-public sealed class ChangeProductStatusCommandHandler
-    : IRequestHandler<ChangeProductStatusCommand, bool>
+public sealed class ChangeProductStatusCommandHandler(CatalogDbContext context)
+    : IRequestHandler<ChangeProductStatusCommand, Result>
 {
-    private readonly CatalogDbContext _context;
-
-    public ChangeProductStatusCommandHandler(CatalogDbContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<bool> Handle(
+    public async Task<Result> Handle(
         ChangeProductStatusCommand request,
         CancellationToken cancellationToken)
     {
-        var product = await _context.Products
+        Domain.Entities.Product? product = await context.Products
             .FirstOrDefaultAsync(p => p.Id == ProductId.From(request.Id), cancellationToken);
 
         if (product is null)
@@ -28,24 +22,30 @@ public sealed class ChangeProductStatusCommandHandler
             throw new NotFoundException($"Product with ID {request.Id} not found.");
         }
 
-        switch (request.Status.ToLowerInvariant())
+        try
         {
-            case "published":
-                product.Publish();
-                break;
-            case "draft":
-                product.Unpublish();
-                break;
-            case "archived":
-                product.Archive();
-                break;
-            default:
-                throw new InvalidOperationException($"Unknown status: {request.Status}");
+            switch (request.Status.ToLowerInvariant())
+            {
+                case "published":
+                    product.Publish();
+                    break;
+                case "draft":
+                    product.Unpublish();
+                    break;
+                case "archived":
+                    product.Archive();
+                    break;
+                default:
+                    return Result.Fail($"Unknown status: {request.Status}");
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Result.Fail(ex.Message);
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
-        return true;
+        return Result.Ok();
     }
 }
-

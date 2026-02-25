@@ -1,3 +1,4 @@
+using FluentResults;
 using MediatR;
 
 namespace MicroCommerce.ApiService.Features.Cart.Application.Commands.UpdateCartItem;
@@ -5,4 +6,4 @@ namespace MicroCommerce.ApiService.Features.Cart.Application.Commands.UpdateCart
 public sealed record UpdateCartItemCommand(
     Guid BuyerId,
     Guid ItemId,
-    int Quantity) : IRequest<Unit>;
+    int Quantity) : IRequest<Result>;

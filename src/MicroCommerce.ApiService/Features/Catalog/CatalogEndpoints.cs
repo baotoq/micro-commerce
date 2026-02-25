@@ -1,4 +1,6 @@
+using FluentResults;
 using MediatR;
+using MicroCommerce.ApiService.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using MicroCommerce.ApiService.Features.Catalog.Application.Commands.ArchiveProduct;
 using MicroCommerce.ApiService.Features.Catalog.Application.Commands.ChangeProductStatus;
@@ -88,7 +90,8 @@ public static class CatalogEndpoints
             .WithSummary("Change product status (publish/unpublish)")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status422UnprocessableEntity);
 
         group.MapDelete("/products/{id:guid}", ArchiveProduct)
             .WithName("ArchiveProduct")
@@ -239,10 +242,9 @@ public static class CatalogEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var command = new ChangeProductStatusCommand(id, request.Status);
-        await sender.Send(command, cancellationToken);
-
-        return Results.NoContent();
+        ChangeProductStatusCommand command = new ChangeProductStatusCommand(id, request.Status);
+        Result result = await sender.Send(command, cancellationToken);
+        return result.ToHttpResult();
     }
 
     private static async Task<IResult> ArchiveProduct(
