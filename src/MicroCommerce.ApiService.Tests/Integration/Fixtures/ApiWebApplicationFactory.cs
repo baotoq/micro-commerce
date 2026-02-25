@@ -90,7 +90,6 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
             // We remove ALL pool-related descriptors for each DbContext type, then re-register with
             // AddDbContext (non-pooled) pointing at the Testcontainer connection string.
 
-            ReplaceDbContext<OutboxDbContext>(services, "outbox");
             ReplaceDbContext<CatalogDbContext>(services, "catalog");
             ReplaceDbContext<CartDbContext>(services, "cart");
             ReplaceDbContext<OrderingDbContext>(services, "ordering");
@@ -201,9 +200,6 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
         // so only the first context's schema would be created. MigrateAsync applies each context's
         // migrations independently via separate __EFMigrationsHistory tables (one per schema).
         using Microsoft.Extensions.DependencyInjection.IServiceScope scope = Services.CreateScope();
-
-        OutboxDbContext outboxDb = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
-        await outboxDb.Database.MigrateAsync();
 
         CatalogDbContext catalogDb = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
         await catalogDb.Database.MigrateAsync();

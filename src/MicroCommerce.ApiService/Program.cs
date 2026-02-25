@@ -38,15 +38,6 @@ SoftDeleteInterceptor softDeleteInterceptor = new();
 ConcurrencyInterceptor concurrencyInterceptor = new();
 AuditInterceptor auditInterceptor = new();
 
-// Outbox DbContext for transactional domain events
-builder.AddNpgsqlDbContext<OutboxDbContext>("appdb", configureDbContextOptions: options =>
-{
-    options.UseNpgsql(npgsql =>
-        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "outbox"));
-    options.UseSnakeCaseNamingConvention();
-    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
-});
-
 // Module DbContexts
 builder.AddNpgsqlDbContext<CatalogDbContext>("appdb", configureDbContextOptions: options =>
 {
@@ -123,7 +114,7 @@ builder.Services.AddMassTransit(x =>
             r.UsePostgres();
         });
 
-    x.AddEntityFrameworkOutbox<OutboxDbContext>(o =>
+    x.AddEntityFrameworkOutbox<CatalogDbContext>(o =>
     {
         o.UsePostgres();
         o.UseBusOutbox();
@@ -156,7 +147,7 @@ builder.Services.AddMassTransit(x =>
         });
 
         // Inbox deduplication (innermost) - prevents duplicate message processing
-        cfg.UseEntityFrameworkOutbox<OutboxDbContext>(context);
+        cfg.UseEntityFrameworkOutbox<CatalogDbContext>(context);
     });
 
     x.UsingAzureServiceBus((context, cfg) =>
