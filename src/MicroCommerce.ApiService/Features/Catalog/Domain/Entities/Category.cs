@@ -11,12 +11,10 @@ namespace MicroCommerce.ApiService.Features.Catalog.Domain.Entities;
 /// - Domain event raising
 /// - Encapsulated state changes
 /// </summary>
-public sealed class Category : BaseAggregateRoot<CategoryId>
+public sealed class Category : AuditableAggregateRoot<CategoryId>
 {
     public CategoryName Name { get; private set; }
     public string? Description { get; private set; }
-    public DateTimeOffset CreatedAt { get; private set; }
-    public DateTimeOffset? UpdatedAt { get; private set; }
 
     // EF Core constructor
     private Category(CategoryId id) : base(id)
@@ -33,8 +31,7 @@ public sealed class Category : BaseAggregateRoot<CategoryId>
         var category = new Category(CategoryId.New())
         {
             Name = name,
-            Description = description?.Trim(),
-            CreatedAt = DateTimeOffset.UtcNow
+            Description = description?.Trim()
         };
 
         category.AddDomainEvent(new CategoryCreatedDomainEvent(category.Id));
@@ -49,6 +46,5 @@ public sealed class Category : BaseAggregateRoot<CategoryId>
     {
         Name = name;
         Description = description?.Trim();
-        UpdatedAt = DateTimeOffset.UtcNow;
     }
 }

@@ -54,8 +54,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(p => p.CreatedAt).IsRequired();
-
         // Review statistics
         builder.Property(p => p.AverageRating)
             .HasPrecision(3, 2);  // e.g., 4.25

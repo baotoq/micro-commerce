@@ -10,7 +10,7 @@ namespace MicroCommerce.ApiService.Features.Profiles.Domain.Entities;
 /// Manages display name, avatar, and address collection with default address invariant.
 /// Uses optimistic concurrency via PostgreSQL xmin column.
 /// </summary>
-public sealed class UserProfile : BaseAggregateRoot<UserProfileId>
+public sealed class UserProfile : AuditableAggregateRoot<UserProfileId>
 {
     private readonly List<Address> _addresses = [];
 
@@ -22,10 +22,6 @@ public sealed class UserProfile : BaseAggregateRoot<UserProfileId>
     public DisplayName DisplayName { get; private set; }
 
     public string? AvatarUrl { get; private set; }
-
-    public DateTimeOffset CreatedAt { get; private set; }
-
-    public DateTimeOffset UpdatedAt { get; private set; }
 
     /// <summary>
     /// Concurrency token mapped to PostgreSQL xmin system column.
@@ -46,13 +42,10 @@ public sealed class UserProfile : BaseAggregateRoot<UserProfileId>
     /// </summary>
     public static UserProfile Create(Guid userId, string displayName)
     {
-        var now = DateTimeOffset.UtcNow;
         var profile = new UserProfile(UserProfileId.New())
         {
             UserId = userId,
-            DisplayName = DisplayName.Create(displayName),
-            CreatedAt = now,
-            UpdatedAt = now
+            DisplayName = DisplayName.Create(displayName)
         };
 
         profile.AddDomainEvent(new ProfileCreatedDomainEvent(profile.Id, userId));
@@ -169,11 +162,11 @@ public sealed class UserProfile : BaseAggregateRoot<UserProfileId>
     }
 
     /// <summary>
-    /// Updates modification timestamp and raises domain event.
+    /// Raises domain event to signal profile modification.
+    /// AuditInterceptor handles UpdatedAt automatically.
     /// </summary>
     private void Touch()
     {
-        UpdatedAt = DateTimeOffset.UtcNow;
         AddDomainEvent(new ProfileUpdatedDomainEvent(Id, UserId));
     }
 

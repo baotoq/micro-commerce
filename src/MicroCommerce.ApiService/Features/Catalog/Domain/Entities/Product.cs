@@ -12,7 +12,7 @@ namespace MicroCommerce.ApiService.Features.Catalog.Domain.Entities;
 /// - Encapsulated state changes
 /// - Value objects for domain concepts
 /// </summary>
-public sealed class Product : BaseAggregateRoot<ProductId>
+public sealed class Product : AuditableAggregateRoot<ProductId>
 {
     public ProductName Name { get; private set; }
     public string Description { get; private set; } = null!;
@@ -21,8 +21,6 @@ public sealed class Product : BaseAggregateRoot<ProductId>
     public string? Sku { get; private set; }
     public ProductStatus Status { get; private set; }
     public CategoryId CategoryId { get; private set; }
-    public DateTimeOffset CreatedAt { get; private set; }
-    public DateTimeOffset? UpdatedAt { get; private set; }
 
     // Review statistics (denormalized)
     public decimal? AverageRating { get; private set; }
@@ -55,8 +53,7 @@ public sealed class Product : BaseAggregateRoot<ProductId>
             CategoryId = categoryId,
             ImageUrl = imageUrl,
             Sku = sku?.Trim(),
-            Status = ProductStatus.Draft,
-            CreatedAt = DateTimeOffset.UtcNow
+            Status = ProductStatus.Draft
         };
 
         product.AddDomainEvent(new ProductCreatedDomainEvent(product.Id));
@@ -82,7 +79,6 @@ public sealed class Product : BaseAggregateRoot<ProductId>
         CategoryId = categoryId;
         ImageUrl = imageUrl;
         Sku = sku?.Trim();
-        UpdatedAt = DateTimeOffset.UtcNow;
 
         AddDomainEvent(new ProductUpdatedDomainEvent(Id));
     }
@@ -95,7 +91,6 @@ public sealed class Product : BaseAggregateRoot<ProductId>
         if (Status == ProductStatus.Published) return; // idempotent
         Status.TransitionTo(ProductStatus.Published);
         Status = ProductStatus.Published;
-        UpdatedAt = DateTimeOffset.UtcNow;
 
         AddDomainEvent(new ProductStatusChangedDomainEvent(Id, Status));
     }
@@ -108,7 +103,6 @@ public sealed class Product : BaseAggregateRoot<ProductId>
         if (Status == ProductStatus.Draft) return; // idempotent
         Status.TransitionTo(ProductStatus.Draft);
         Status = ProductStatus.Draft;
-        UpdatedAt = DateTimeOffset.UtcNow;
 
         AddDomainEvent(new ProductStatusChangedDomainEvent(Id, Status));
     }
@@ -122,7 +116,6 @@ public sealed class Product : BaseAggregateRoot<ProductId>
         if (Status == ProductStatus.Archived) return; // idempotent
         Status.TransitionTo(ProductStatus.Archived);
         Status = ProductStatus.Archived;
-        UpdatedAt = DateTimeOffset.UtcNow;
 
         AddDomainEvent(new ProductArchivedDomainEvent(Id));
     }
@@ -137,4 +130,3 @@ public sealed class Product : BaseAggregateRoot<ProductId>
         ReviewCount = reviewCount;
     }
 }
-

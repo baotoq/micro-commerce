@@ -9,7 +9,7 @@ namespace MicroCommerce.ApiService.Features.Cart.Domain.Entities;
 /// Manages cart items, enforces quantity invariants, and tracks a 30-day TTL.
 /// Uses optimistic concurrency via PostgreSQL xmin column.
 /// </summary>
-public sealed class Cart : BaseAggregateRoot<CartId>
+public sealed class Cart : AuditableAggregateRoot<CartId>
 {
     private const int MaxQuantity = 99;
     private static readonly TimeSpan Ttl = TimeSpan.FromDays(30);
@@ -21,8 +21,6 @@ public sealed class Cart : BaseAggregateRoot<CartId>
     /// </summary>
     public Guid BuyerId { get; private set; }
 
-    public DateTimeOffset CreatedAt { get; private set; }
-    public DateTimeOffset LastModifiedAt { get; private set; }
     public DateTimeOffset ExpiresAt { get; private set; }
 
     /// <summary>
@@ -43,13 +41,10 @@ public sealed class Cart : BaseAggregateRoot<CartId>
     /// </summary>
     public static Cart Create(Guid buyerId)
     {
-        var now = DateTimeOffset.UtcNow;
         return new Cart(CartId.New())
         {
             BuyerId = buyerId,
-            CreatedAt = now,
-            LastModifiedAt = now,
-            ExpiresAt = now.Add(Ttl)
+            ExpiresAt = DateTimeOffset.UtcNow.Add(Ttl)
         };
     }
 
@@ -115,11 +110,11 @@ public sealed class Cart : BaseAggregateRoot<CartId>
     }
 
     /// <summary>
-    /// Updates modification timestamp and resets TTL.
+    /// Resets the TTL on cart modification.
+    /// AuditInterceptor handles UpdatedAt automatically.
     /// </summary>
     private void Touch()
     {
-        LastModifiedAt = DateTimeOffset.UtcNow;
         ExpiresAt = DateTimeOffset.UtcNow.Add(Ttl);
     }
 }

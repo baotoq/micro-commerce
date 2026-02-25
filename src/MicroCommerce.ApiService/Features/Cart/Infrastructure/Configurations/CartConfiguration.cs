@@ -13,12 +13,6 @@ public sealed class CartConfiguration : IEntityTypeConfiguration<Domain.Entities
         builder.Property(c => c.BuyerId)
             .IsRequired();
 
-        builder.Property(c => c.CreatedAt)
-            .IsRequired();
-
-        builder.Property(c => c.LastModifiedAt)
-            .IsRequired();
-
         builder.Property(c => c.ExpiresAt)
             .IsRequired();
 

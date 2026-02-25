@@ -23,7 +23,6 @@ public sealed class ProductTests
         // Assert
         product.Status.Should().Be(ProductStatus.Draft);
         product.Id.Should().NotBeNull();
-        product.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -62,8 +61,6 @@ public sealed class ProductTests
         product.CategoryId.Should().Be(categoryId);
         product.ImageUrl.Should().Be(imageUrl);
         product.Sku.Should().Be(sku);
-        product.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        product.UpdatedAt.Should().BeNull();
     }
 
     [Fact]
@@ -111,11 +108,11 @@ public sealed class ProductTests
     }
 
     [Fact]
-    public void Update_ValidData_SetsUpdatedAt()
+    public void Update_ValidData_RaisesEvent()
     {
         // Arrange
         Product product = CreateValidProduct();
-        product.UpdatedAt.Should().BeNull();
+        product.ClearDomainEvents();
 
         // Act
         product.Update(
@@ -127,8 +124,7 @@ public sealed class ProductTests
             null);
 
         // Assert
-        product.UpdatedAt.Should().NotBeNull();
-        product.UpdatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
+        product.DomainEvents.Should().ContainSingle(e => e is ProductUpdatedDomainEvent);
     }
 
     [Fact]
@@ -163,18 +159,17 @@ public sealed class ProductTests
     }
 
     [Fact]
-    public void Publish_SetsUpdatedAt()
+    public void Publish_RaisesDomainEvent()
     {
         // Arrange
         Product product = CreateValidProduct();
-        product.UpdatedAt.Should().BeNull();
+        product.ClearDomainEvents();
 
         // Act
         product.Publish();
 
         // Assert
-        product.UpdatedAt.Should().NotBeNull();
-        product.UpdatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
+        product.DomainEvents.Should().ContainSingle(e => e is ProductStatusChangedDomainEvent);
     }
 
     [Fact]

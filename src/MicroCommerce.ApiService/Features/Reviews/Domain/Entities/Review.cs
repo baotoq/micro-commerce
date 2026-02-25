@@ -10,7 +10,7 @@ namespace MicroCommerce.ApiService.Features.Reviews.Domain.Entities;
 /// Manages product reviews with rating and text.
 /// Uses optimistic concurrency via PostgreSQL xmin column.
 /// </summary>
-public sealed class Review : BaseAggregateRoot<ReviewId>
+public sealed class Review : AuditableAggregateRoot<ReviewId>
 {
     /// <summary>
     /// Product being reviewed.
@@ -25,10 +25,6 @@ public sealed class Review : BaseAggregateRoot<ReviewId>
     public Rating Rating { get; private set; } = null!;
 
     public ReviewText Text { get; private set; } = null!;
-
-    public DateTimeOffset CreatedAt { get; private set; }
-
-    public DateTimeOffset UpdatedAt { get; private set; }
 
     /// <summary>
     /// Concurrency token mapped to PostgreSQL xmin system column.
@@ -46,15 +42,12 @@ public sealed class Review : BaseAggregateRoot<ReviewId>
     /// </summary>
     public static Review Create(Guid productId, Guid userId, int rating, string text)
     {
-        var now = DateTimeOffset.UtcNow;
         var review = new Review(ReviewId.New())
         {
             ProductId = productId,
             UserId = userId,
             Rating = Rating.Create(rating),
-            Text = ReviewText.Create(text),
-            CreatedAt = now,
-            UpdatedAt = now
+            Text = ReviewText.Create(text)
         };
 
         review.AddDomainEvent(new ReviewCreatedDomainEvent(review.Id.Value, productId));
@@ -69,7 +62,6 @@ public sealed class Review : BaseAggregateRoot<ReviewId>
     {
         Rating = Rating.Create(rating);
         Text = ReviewText.Create(text);
-        UpdatedAt = DateTimeOffset.UtcNow;
 
         AddDomainEvent(new ReviewUpdatedDomainEvent(Id.Value, ProductId));
     }

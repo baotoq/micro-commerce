@@ -20,8 +20,6 @@ public sealed class CartTests
         // Assert
         cart.BuyerId.Should().Be(buyerId);
         cart.Items.Should().BeEmpty();
-        cart.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        cart.LastModifiedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -101,23 +99,6 @@ public sealed class CartTests
         act.Should().Throw<ArgumentOutOfRangeException>()
             .WithParameterName("quantity")
             .WithMessage("*Quantity must be at least 1*");
-    }
-
-    [Fact]
-    public void AddItem_UpdatesLastModifiedAt()
-    {
-        // Arrange
-        CartEntity cart = CreateValidCart();
-        DateTimeOffset originalLastModified = cart.LastModifiedAt;
-
-        // Wait a bit to ensure time difference
-        System.Threading.Thread.Sleep(10);
-
-        // Act
-        cart.AddItem(Guid.NewGuid(), "Test Product", 99.99m, null, 1);
-
-        // Assert
-        cart.LastModifiedAt.Should().BeAfter(originalLastModified);
     }
 
     [Fact]
