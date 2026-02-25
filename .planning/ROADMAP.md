@@ -141,11 +141,11 @@ Plans:
   3. One representative API endpoint test per feature (7 features: Catalog, Cart, Ordering, Inventory, Profiles, Reviews, Wishlists)
   4. One representative handler-level test demonstrating edge case/business rule testing pattern
   5. All integration tests pass with per-test-class database isolation using EnsureCreated
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 20-01: TBD
-- [ ] 20-02: TBD
+- [ ] 20-01-PLAN.md — Fix ApiWebApplicationFactory (MassTransit health check bug, EnsureCreated, 3 missing DbContexts), add FakeAuthenticationHandler, create IntegrationTestBase with auth/guest client helpers
+- [ ] 20-02-PLAN.md — Add 3 missing feature endpoint tests (Profiles, Reviews, Wishlists), handler-level UpdateOrderStatus test, test data builders (ProductBuilder, OrderBuilder)
 
 #### Phase 21: Adoption - Full Building Block Integration
 **Goal**: Apply all new building blocks across all 7 feature modules with comprehensive test coverage
