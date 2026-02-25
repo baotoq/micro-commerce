@@ -32,6 +32,10 @@ namespace MicroCommerce.ApiService.Tests.Integration.Fixtures;
 /// </summary>
 public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
+    private static readonly SoftDeleteInterceptor _softDeleteInterceptor = new();
+    private static readonly ConcurrencyInterceptor _concurrencyInterceptor = new();
+    private static readonly AuditInterceptor _auditInterceptor = new();
+
     private readonly PostgreSqlContainer _dbContainer;
 
     public ApiWebApplicationFactory()
@@ -182,6 +186,7 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
             options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
                 npgsql.MigrationsHistoryTable("__EFMigrationsHistory", schema));
             options.UseSnakeCaseNamingConvention();
+            options.AddInterceptors(_softDeleteInterceptor, _concurrencyInterceptor, _auditInterceptor);
         });
     }
 

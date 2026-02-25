@@ -33,12 +33,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
 
+// Interceptors — stateless, safe as singletons shared across all DbContexts
+SoftDeleteInterceptor softDeleteInterceptor = new();
+ConcurrencyInterceptor concurrencyInterceptor = new();
+AuditInterceptor auditInterceptor = new();
+
 // Outbox DbContext for transactional domain events
 builder.AddNpgsqlDbContext<OutboxDbContext>("appdb", configureDbContextOptions: options =>
 {
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "outbox"));
     options.UseSnakeCaseNamingConvention();
+    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
 // Module DbContexts
@@ -47,6 +53,7 @@ builder.AddNpgsqlDbContext<CatalogDbContext>("appdb", configureDbContextOptions:
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "catalog"));
     options.UseSnakeCaseNamingConvention();
+    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
 builder.AddNpgsqlDbContext<CartDbContext>("appdb", configureDbContextOptions: options =>
@@ -54,6 +61,7 @@ builder.AddNpgsqlDbContext<CartDbContext>("appdb", configureDbContextOptions: op
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "cart"));
     options.UseSnakeCaseNamingConvention();
+    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
 builder.AddNpgsqlDbContext<OrderingDbContext>("appdb", configureDbContextOptions: options =>
@@ -61,6 +69,7 @@ builder.AddNpgsqlDbContext<OrderingDbContext>("appdb", configureDbContextOptions
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "ordering"));
     options.UseSnakeCaseNamingConvention();
+    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
 builder.AddNpgsqlDbContext<InventoryDbContext>("appdb", configureDbContextOptions: options =>
@@ -68,6 +77,7 @@ builder.AddNpgsqlDbContext<InventoryDbContext>("appdb", configureDbContextOption
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "inventory"));
     options.UseSnakeCaseNamingConvention();
+    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
 builder.AddNpgsqlDbContext<ProfilesDbContext>("appdb", configureDbContextOptions: options =>
@@ -75,6 +85,7 @@ builder.AddNpgsqlDbContext<ProfilesDbContext>("appdb", configureDbContextOptions
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "profiles"));
     options.UseSnakeCaseNamingConvention();
+    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
 builder.AddNpgsqlDbContext<ReviewsDbContext>("appdb", configureDbContextOptions: options =>
@@ -82,6 +93,7 @@ builder.AddNpgsqlDbContext<ReviewsDbContext>("appdb", configureDbContextOptions:
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "reviews"));
     options.UseSnakeCaseNamingConvention();
+    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
 builder.AddNpgsqlDbContext<WishlistsDbContext>("appdb", configureDbContextOptions: options =>
@@ -89,6 +101,7 @@ builder.AddNpgsqlDbContext<WishlistsDbContext>("appdb", configureDbContextOption
     options.UseNpgsql(npgsql =>
         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "wishlists"));
     options.UseSnakeCaseNamingConvention();
+    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
 // Azure Blob Storage for product images
@@ -154,9 +167,6 @@ builder.Services.AddMassTransit(x =>
 });
 
 builder.Services.AddScoped<DomainEventInterceptor>();
-builder.Services.AddScoped<SoftDeleteInterceptor>();
-builder.Services.AddScoped<ConcurrencyInterceptor>();
-builder.Services.AddScoped<AuditInterceptor>();
 
 // Add services to the container.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
