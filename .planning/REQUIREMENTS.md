@@ -9,8 +9,8 @@ Requirements for Kubernetes & GitOps deployment milestone. Each maps to roadmap 
 
 ### Containerization
 
-- [ ] **CONT-01**: ApiService has a multi-stage Dockerfile with layer-cached restore and chiseled runtime image
-- [ ] **CONT-02**: Gateway has a multi-stage Dockerfile with layer-cached restore and chiseled runtime image
+- [x] **CONT-01**: ApiService has a multi-stage Dockerfile with layer-cached restore and chiseled runtime image
+- [x] **CONT-02**: Gateway has a multi-stage Dockerfile with layer-cached restore and chiseled runtime image
 - [x] **CONT-03**: Web (Next.js) has a multi-stage Dockerfile with standalone output and node:alpine runtime
 - [ ] **CONT-04**: All 3 images are pushed to ghcr.io with SHA-based tags
 
@@ -89,8 +89,8 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CONT-01 | Phase 23 | Pending |
-| CONT-02 | Phase 23 | Pending |
+| CONT-01 | Phase 23 | Complete |
+| CONT-02 | Phase 23 | Complete |
 | CONT-03 | Phase 23 | Complete |
 | CONT-04 | Phase 23 | Pending |
 | CICD-01 | Phase 23 | Pending |

@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Kubernetes & GitOps
 status: unknown
-last_updated: "2026-02-25T18:02:07.972Z"
+last_updated: "2026-02-25T18:02:41.623Z"
 progress:
   total_phases: 1
   completed_phases: 0
@@ -45,6 +45,7 @@ Progress: [████████████████████░░░
 | v2.0 DDD Foundation | 7 | 9 | 40 min | 11 days |
 | v3.0 K8s & GitOps | 0/6 | 0/TBD | - | In progress |
 | Phase 23 P02 | 2min | 2 tasks | 3 files |
+| Phase 23 P01 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,7 @@ Recent decisions affecting v3.0:
 - **NodePort for kind access**: Ingress NGINX EOL March 2026; NodePort is simplest for local kind cluster.
 - **No MinIO**: Azurite not suitable for K8s; use placeholder images in K8s deployment.
 - [Phase 23]: Next.js Dockerfile uses AUTH_SECRET=placeholder-for-docker-build to prevent next-auth v5 build failures; real secret injected at K8s runtime
+- [Phase 23]: Use noble-chiseled-extra base image (not plain noble-chiseled) for .NET containers because InvariantGlobalization is not set
 
 ### Pending Todos
 
@@ -74,7 +76,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-26
-Stopped at: Completed 23-02-PLAN.md (Next.js Web Dockerfile)
+Last session: 2026-02-25
+Stopped at: Completed 23-01-PLAN.md (.NET Container Publishing) and 23-02-PLAN.md (Next.js Web Dockerfile)
 Resume file: None
 Next step: Execute 23-03-PLAN.md (GitHub Actions container image workflow)
