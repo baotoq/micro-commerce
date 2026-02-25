@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -23,8 +24,8 @@ namespace MicroCommerce.ApiService.Tests.Integration.Fixtures;
 /// <summary>
 /// Custom WebApplicationFactory for integration tests.
 /// Replaces production dependencies with test equivalents:
-/// - PostgreSQL: Testcontainers instance
-/// - MassTransit: In-memory test harness
+/// - PostgreSQL: Testcontainers instance (replaces Aspire Npgsql integration)
+/// - MassTransit: In-memory test harness (replaces Azure Service Bus transport)
 /// - Azure Blob Storage: No-op stub (image upload not tested here)
 /// - Background services: Disabled (data seeders, cleanup services)
 /// - Keycloak JWT: Replaced with FakeAuthenticationHandler
@@ -56,92 +57,70 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
                 services.Remove(service);
             }
 
-            // Remove duplicate MassTransit health check registrations.
-            // AddMassTransit registers 'masstransit-bus' health check automatically.
-            // AddMassTransitTestHarness below will re-register it, causing duplicate exception.
-            System.Collections.Generic.List<ServiceDescriptor> masstransitHealthChecks = services
-                .Where(d => d.ServiceType == typeof(HealthCheckRegistration)
-                    && d.ImplementationInstance is HealthCheckRegistration hcr
-                    && hcr.Name.StartsWith("masstransit", StringComparison.OrdinalIgnoreCase))
-                .ToList();
-            foreach (ServiceDescriptor registration in masstransitHealthChecks)
+            // MassTransit registers 'masstransit-bus' health checks via IConfigureOptions<HealthCheckServiceOptions>.
+            // When AddMassTransitTestHarness is called, it re-registers the same checks, causing:
+            //   "Duplicate health checks were registered with the name(s): masstransit-bus"
+            // Fix: Add a PostConfigure action that deduplicates health check registrations by name.
+            // This runs after all IConfigureOptions<HealthCheckServiceOptions> have applied, removing any dupes.
+            services.PostConfigure<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckServiceOptions>(opts =>
             {
-                services.Remove(registration);
-            }
-
-            // Replace all DbContext registrations with Testcontainer connection string
-            // The production app uses Aspire service discovery, but tests need direct connection
-
-            // 1. OutboxDbContext
-            services.RemoveAll<DbContextOptions<OutboxDbContext>>();
-            services.AddDbContext<OutboxDbContext>(options =>
-            {
-                options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
-                    npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "outbox"));
+                System.Collections.Generic.HashSet<string> seen = new(StringComparer.OrdinalIgnoreCase);
+                System.Collections.Generic.List<HealthCheckRegistration> duplicates = [];
+                foreach (HealthCheckRegistration r in opts.Registrations)
+                {
+                    if (!seen.Add(r.Name))
+                    {
+                        duplicates.Add(r);
+                    }
+                }
+                foreach (HealthCheckRegistration duplicate in duplicates)
+                {
+                    opts.Registrations.Remove(duplicate);
+                }
             });
 
-            // 2. CatalogDbContext
-            services.RemoveAll<DbContextOptions<CatalogDbContext>>();
-            services.AddDbContext<CatalogDbContext>(options =>
-            {
-                options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
-                    npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "catalog"));
-            });
+            // Replace all DbContext registrations with Testcontainer connection string.
+            // Aspire's AddNpgsqlDbContext uses AddDbContextPool which registers additional pool-related
+            // services (IDbContextOptionsConfiguration<T>, IDbContextPool<T>, IScopedDbContextLease<T>)
+            // that must all be removed to prevent the Aspire connection string validator from running.
+            // We remove ALL pool-related descriptors for each DbContext type, then re-register with
+            // AddDbContext (non-pooled) pointing at the Testcontainer connection string.
 
-            // 3. CartDbContext
-            services.RemoveAll<DbContextOptions<CartDbContext>>();
-            services.AddDbContext<CartDbContext>(options =>
-            {
-                options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
-                    npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "cart"));
-            });
+            ReplaceDbContext<OutboxDbContext>(services, "outbox");
+            ReplaceDbContext<CatalogDbContext>(services, "catalog");
+            ReplaceDbContext<CartDbContext>(services, "cart");
+            ReplaceDbContext<OrderingDbContext>(services, "ordering");
+            ReplaceDbContext<InventoryDbContext>(services, "inventory");
+            ReplaceDbContext<ProfilesDbContext>(services, "profiles");
+            ReplaceDbContext<ReviewsDbContext>(services, "reviews");
+            ReplaceDbContext<WishlistsDbContext>(services, "wishlists");
 
-            // 4. OrderingDbContext
-            services.RemoveAll<DbContextOptions<OrderingDbContext>>();
-            services.AddDbContext<OrderingDbContext>(options =>
-            {
-                options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
-                    npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "ordering"));
-            });
-
-            // 5. InventoryDbContext
-            services.RemoveAll<DbContextOptions<InventoryDbContext>>();
-            services.AddDbContext<InventoryDbContext>(options =>
-            {
-                options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
-                    npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "inventory"));
-            });
-
-            // 6. ProfilesDbContext
-            services.RemoveAll<DbContextOptions<ProfilesDbContext>>();
-            services.AddDbContext<ProfilesDbContext>(options =>
-            {
-                options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
-                    npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "profiles"));
-            });
-
-            // 7. ReviewsDbContext
-            services.RemoveAll<DbContextOptions<ReviewsDbContext>>();
-            services.AddDbContext<ReviewsDbContext>(options =>
-            {
-                options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
-                    npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "reviews"));
-            });
-
-            // 8. WishlistsDbContext
-            services.RemoveAll<DbContextOptions<WishlistsDbContext>>();
-            services.AddDbContext<WishlistsDbContext>(options =>
-            {
-                options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
-                    npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "wishlists"));
-            });
-
-            // Replace MassTransit with in-memory test harness
-            // Remove existing MassTransit registration and replace with test harness
+            // Replace MassTransit with in-memory test harness.
+            // The primary challenge is BusDepot.ctor(IEnumerable<IBusInstance>) which throws
+            // "An item with the same key has already been added. Key: MassTransit.IBus"
+            // when both the production Azure Service Bus instance AND the test harness bus instance
+            // are registered as IBusInstance in the DI container.
+            //
+            // services.RemoveAll(IBus/IBusControl/IPublishEndpoint/ISendEndpointProvider) removes 4 services
+            // but leaves 3 bus-instance-related registrations that cause duplicates:
+            //   1. MassTransit.Transports.IBusInstance
+            //   2. MassTransit.DependencyInjection.Bind<IBus, IBusInstance>
+            //   3. MassTransit.IBusDepot
+            // These 3 must also be removed before AddMassTransitTestHarness adds its own versions.
             services.RemoveAll(typeof(IBus));
             services.RemoveAll(typeof(IBusControl));
             services.RemoveAll(typeof(IPublishEndpoint));
             services.RemoveAll(typeof(ISendEndpointProvider));
+
+            System.Collections.Generic.List<ServiceDescriptor> busInstanceDescriptors = services
+                .Where(d => d.ServiceType.FullName?.Equals("MassTransit.Transports.IBusInstance", StringComparison.Ordinal) == true
+                    || d.ServiceType.FullName?.StartsWith("MassTransit.DependencyInjection.Bind`2", StringComparison.Ordinal) == true
+                    || d.ServiceType.FullName?.Equals("MassTransit.IBusDepot", StringComparison.Ordinal) == true)
+                .ToList();
+            foreach (ServiceDescriptor descriptor in busInstanceDescriptors)
+            {
+                services.Remove(descriptor);
+            }
 
             services.AddMassTransitTestHarness(cfg =>
             {
@@ -167,12 +146,80 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
         builder.UseEnvironment("Testing");
     }
 
+    /// <summary>
+    /// Removes all pool-related service registrations for the given DbContext type
+    /// (registered by Aspire's AddNpgsqlDbContext/AddDbContextPool) and re-registers
+    /// the context with AddDbContext pointing at the Testcontainer connection string.
+    /// </summary>
+    private void ReplaceDbContext<TContext>(IServiceCollection services, string schema)
+        where TContext : DbContext
+    {
+        // Remove all service descriptors related to this DbContext type.
+        // AddDbContextPool registers: DbContextOptions<T>, IDbContextOptionsConfiguration<T>,
+        // IDbContextPool<T> (internal), IScopedDbContextLease<T> (internal), and T itself.
+        // We use FullName string matching for internal types to avoid EF1001 errors.
+        string contextTypeName = typeof(TContext).FullName ?? typeof(TContext).Name;
+        System.Collections.Generic.List<ServiceDescriptor> descriptorsToRemove = services
+            .Where(d =>
+                d.ServiceType == typeof(DbContextOptions<TContext>) ||
+                d.ServiceType == typeof(IDbContextOptionsConfiguration<TContext>) ||
+                d.ServiceType == typeof(TContext) ||
+                // Internal EF Core pool types — matched by FullName to avoid EF1001 errors
+                (d.ServiceType.IsGenericType &&
+                    (d.ServiceType.GetGenericTypeDefinition().FullName?.StartsWith("Microsoft.EntityFrameworkCore.Internal.IDbContextPool", StringComparison.Ordinal) == true ||
+                     d.ServiceType.GetGenericTypeDefinition().FullName?.StartsWith("Microsoft.EntityFrameworkCore.Internal.IScopedDbContextLease", StringComparison.Ordinal) == true) &&
+                    d.ServiceType.GenericTypeArguments.Length == 1 &&
+                    d.ServiceType.GenericTypeArguments[0].FullName == contextTypeName))
+            .ToList();
+
+        foreach (ServiceDescriptor descriptor in descriptorsToRemove)
+        {
+            services.Remove(descriptor);
+        }
+
+        services.AddDbContext<TContext>(options =>
+        {
+            options.UseNpgsql(_dbContainer.GetConnectionString(), npgsql =>
+                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", schema));
+            options.UseSnakeCaseNamingConvention();
+        });
+    }
+
     public async Task InitializeAsync()
     {
-        // Start the PostgreSQL container only
-        // Database schema will be created per-test-class using EnsureCreated
-        // No global schema creation here — each test class handles it via IntegrationTestBase.ResetDatabase
+        // Start the PostgreSQL container
         await _dbContainer.StartAsync();
+
+        // Apply migrations for all DbContexts.
+        // MigrateAsync is used instead of EnsureCreated because multiple DbContexts share one PostgreSQL
+        // database (each uses a separate schema). EnsureCreated skips if ANY tables exist in the DB,
+        // so only the first context's schema would be created. MigrateAsync applies each context's
+        // migrations independently via separate __EFMigrationsHistory tables (one per schema).
+        using Microsoft.Extensions.DependencyInjection.IServiceScope scope = Services.CreateScope();
+
+        OutboxDbContext outboxDb = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+        await outboxDb.Database.MigrateAsync();
+
+        CatalogDbContext catalogDb = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+        await catalogDb.Database.MigrateAsync();
+
+        CartDbContext cartDb = scope.ServiceProvider.GetRequiredService<CartDbContext>();
+        await cartDb.Database.MigrateAsync();
+
+        OrderingDbContext orderingDb = scope.ServiceProvider.GetRequiredService<OrderingDbContext>();
+        await orderingDb.Database.MigrateAsync();
+
+        InventoryDbContext inventoryDb = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
+        await inventoryDb.Database.MigrateAsync();
+
+        ProfilesDbContext profilesDb = scope.ServiceProvider.GetRequiredService<ProfilesDbContext>();
+        await profilesDb.Database.MigrateAsync();
+
+        ReviewsDbContext reviewsDb = scope.ServiceProvider.GetRequiredService<ReviewsDbContext>();
+        await reviewsDb.Database.MigrateAsync();
+
+        WishlistsDbContext wishlistsDb = scope.ServiceProvider.GetRequiredService<WishlistsDbContext>();
+        await wishlistsDb.Database.MigrateAsync();
     }
 
     public new async Task DisposeAsync()
