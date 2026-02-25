@@ -32,7 +32,7 @@ public sealed class SubmitOrderCommandHandler
 
         Order order = Order.Create(request.BuyerId, request.Email, address, items);
 
-        _context.Orders.Add(order);
+        await _context.Orders.AddAsync(order, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return order.Id.Value;

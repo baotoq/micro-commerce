@@ -31,7 +31,7 @@ public sealed class CreateProfileCommandHandler : IRequestHandler<CreateProfileC
 
         // Create new profile
         var profile = UserProfile.Create(request.UserId, request.DisplayName);
-        _context.UserProfiles.Add(profile);
+        await _context.UserProfiles.AddAsync(profile, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return profile.Id.Value;

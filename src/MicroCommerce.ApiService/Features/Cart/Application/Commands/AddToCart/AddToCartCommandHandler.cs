@@ -25,7 +25,7 @@ public sealed class AddToCartCommandHandler
         if (cart is null)
         {
             cart = Domain.Entities.Cart.Create(request.BuyerId);
-            _context.Carts.Add(cart);
+            await _context.Carts.AddAsync(cart, cancellationToken);
         }
 
         cart.AddItem(request.ProductId, request.ProductName, request.UnitPrice, request.ImageUrl, request.Quantity);

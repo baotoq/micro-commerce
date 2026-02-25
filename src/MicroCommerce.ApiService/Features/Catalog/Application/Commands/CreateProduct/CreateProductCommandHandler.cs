@@ -41,7 +41,7 @@ public sealed class CreateProductCommandHandler
             request.ImageUrl,
             request.Sku);
 
-        _context.Products.Add(product);
+        await _context.Products.AddAsync(product, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return product.Id.Value;

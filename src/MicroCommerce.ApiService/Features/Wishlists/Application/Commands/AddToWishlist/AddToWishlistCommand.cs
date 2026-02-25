@@ -33,7 +33,7 @@ public sealed class AddToWishlistCommandHandler : IRequestHandler<AddToWishlistC
 
         // Create new wishlist item
         var item = WishlistItem.Create(request.UserId, request.ProductId);
-        _context.WishlistItems.Add(item);
+        await _context.WishlistItems.AddAsync(item, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return item.Id.Value;

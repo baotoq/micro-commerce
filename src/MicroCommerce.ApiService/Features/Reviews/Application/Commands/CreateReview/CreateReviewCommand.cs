@@ -59,7 +59,7 @@ public sealed class CreateReviewCommandHandler : IRequestHandler<CreateReviewCom
             request.Text);
 
         // Step 3: Add to context and save - catch unique constraint violation
-        _reviewsContext.Reviews.Add(review);
+        await _reviewsContext.Reviews.AddAsync(review, cancellationToken);
 
         try
         {

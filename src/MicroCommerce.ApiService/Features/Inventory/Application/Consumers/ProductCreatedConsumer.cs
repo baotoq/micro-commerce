@@ -43,7 +43,7 @@ public sealed class ProductCreatedConsumer : IConsumer<ProductCreatedDomainEvent
         }
 
         var stockItem = StockItem.Create(productId);
-        _context.StockItems.Add(stockItem);
+        await _context.StockItems.AddAsync(stockItem, context.CancellationToken);
         await _context.SaveChangesAsync(context.CancellationToken);
 
         _logger.LogInformation("Created StockItem {StockItemId} for product {ProductId}.", stockItem.Id.Value, productId);

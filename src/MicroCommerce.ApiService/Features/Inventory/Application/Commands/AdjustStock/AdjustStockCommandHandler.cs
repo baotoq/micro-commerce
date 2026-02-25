@@ -46,7 +46,7 @@ public sealed class AdjustStockCommandHandler
             request.Reason,
             request.AdjustedBy);
 
-        _context.StockAdjustments.Add(adjustment);
+        await _context.StockAdjustments.AddAsync(adjustment, cancellationToken);
 
         try
         {

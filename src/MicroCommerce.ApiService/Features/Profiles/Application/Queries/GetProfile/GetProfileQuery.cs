@@ -47,7 +47,7 @@ public sealed class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, Pr
         if (profile is null)
         {
             profile = UserProfile.Create(request.UserId, "User");
-            _context.UserProfiles.Add(profile);
+            await _context.UserProfiles.AddAsync(profile, cancellationToken);
 
             try
             {
