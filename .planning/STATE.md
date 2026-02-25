@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 21 Complete (3 of 3 plans done)
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 22 Complete (1 of 1 plans done)
 
 ## Current Position
 
-Phase: 21 of 21 (Adoption - Full Building Block Integration) — Complete
-Plan: 3 of 3 completed
-Status: Phase 21-03 Complete — Result pattern adopted in ChangeProductStatus and UpdateCartItem handlers; VogenIdSchemaTransformer and SmartEnumSchemaTransformer created for OpenAPI; all ADOPT-04/05/06/07 and MOD-04 requirements verified; 177 tests pass. v2.0 DDD Foundation milestone complete.
-Last activity: 2026-02-25 — Completed 21-03: Result pattern for 2 more handlers + OpenAPI schema transformers for Vogen IDs and SmartEnums.
+Phase: 22 of 22 (Wire Interceptors to DbContexts) — Complete
+Plan: 1 of 1 completed
+Status: Phase 22-01 Complete — SoftDeleteInterceptor, ConcurrencyInterceptor, and AuditInterceptor wired to all 8 DbContext registrations; dead AddScoped registrations removed; ApiWebApplicationFactory mirrored; 5 InterceptorBehaviorTests pass; 182 total tests pass. ENTITY-02, ENTITY-04, ENTITY-05, ADOPT-03 requirements satisfied.
+Last activity: 2026-02-25 — Completed 22-01: Wire all 3 interceptors to all 8 DbContexts + 5 integration tests proving runtime behavior.
 
 Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] 100% (90/90 plans completed)
 
@@ -107,6 +107,8 @@ Recent decisions affecting v2.0:
 - [Phase 21-03]: Microsoft.OpenApi 2.0.0 (used by AspNetCore.OpenApi 10.x) uses JsonSchemaType enum for schema.Type (not string), JsonNode/JsonValue.Create() for schema.Enum items (not OpenApiString), types in root Microsoft.OpenApi namespace (not Microsoft.OpenApi.Models)
 - [Phase 21-03]: UpdateCartItemCommandHandler uses NotFoundException for missing cart (404 via exception middleware) — consistent with handler boundary pattern (not found = 404, domain rule failure = 422 Result.Fail)
 - [Phase 21-03]: VogenIdSchemaTransformer uses dual detection: ValueObjectAttribute name check + IsValueType/Guid Value fallback for robustness against Vogen version differences
+- [Phase 22-01]: Stateless interceptors (SoftDelete, Concurrency, Audit) instantiated as singleton `new` before DbContext registrations — shared safely across all 8 DbContexts; DomainEventInterceptor kept AddScoped due to IPublishEndpoint dependency
+- [Phase 22-01]: CartEntity type alias pattern resolves namespace conflict when test directory name (Integration/Cart/) collides with imported entity type (Cart)
 
 ### Roadmap Evolution
 
@@ -126,6 +128,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 21-03-PLAN.md (Result pattern for ChangeProductStatus+UpdateCartItem, OpenAPI schema transformers for Vogen IDs and SmartEnums, all Phase 21 requirements verified, 177 tests green)
+Stopped at: Completed 22-01-PLAN.md (Interceptors wired to all 8 DbContexts, 5 InterceptorBehaviorTests added, 182 tests green, ENTITY-02/04/05 and ADOPT-03 requirements satisfied)
 Resume file: None
-Next step: Phase 21 complete. v2.0 DDD Foundation milestone complete.
+Next step: Phase 22 complete. v2.0 DDD Foundation gap closure complete. All requirements satisfied.
