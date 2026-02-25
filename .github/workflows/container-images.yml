@@ -1,0 +1,174 @@
+name: Container Images
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*.*.*']
+
+jobs:
+  build-web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/baotoq/micro-commerce/web
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
+            type=semver,pattern={{version}}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: src/MicroCommerce.Web
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+
+  build-apiservice:
+    name: Build ApiService
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/baotoq/micro-commerce/apiservice
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
+            type=semver,pattern={{version}}
+
+      - name: Publish amd64 image
+        run: |
+          dotnet publish src/MicroCommerce.ApiService /t:PublishContainer \
+            --os linux --arch x64 \
+            -c Release \
+            -p ContainerImageTags='"${{ github.sha }}-amd64"'
+
+      - name: Publish arm64 image
+        run: |
+          dotnet publish src/MicroCommerce.ApiService /t:PublishContainer \
+            --os linux --arch arm64 \
+            -c Release \
+            -p ContainerImageTags='"${{ github.sha }}-arm64"'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create and push multi-arch manifest
+        run: |
+          TAGS="${{ steps.meta.outputs.tags }}"
+          # Build imagetools create command with all tags
+          TAG_ARGS=""
+          while IFS= read -r tag; do
+            [ -n "$tag" ] && TAG_ARGS="$TAG_ARGS -t $tag"
+          done <<< "$TAGS"
+
+          docker buildx imagetools create $TAG_ARGS \
+            ghcr.io/baotoq/micro-commerce/apiservice:${{ github.sha }}-amd64 \
+            ghcr.io/baotoq/micro-commerce/apiservice:${{ github.sha }}-arm64
+
+  build-gateway:
+    name: Build Gateway
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/baotoq/micro-commerce/gateway
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
+            type=semver,pattern={{version}}
+
+      - name: Publish amd64 image
+        run: |
+          dotnet publish src/MicroCommerce.Gateway /t:PublishContainer \
+            --os linux --arch x64 \
+            -c Release \
+            -p ContainerImageTags='"${{ github.sha }}-amd64"'
+
+      - name: Publish arm64 image
+        run: |
+          dotnet publish src/MicroCommerce.Gateway /t:PublishContainer \
+            --os linux --arch arm64 \
+            -c Release \
+            -p ContainerImageTags='"${{ github.sha }}-arm64"'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create and push multi-arch manifest
+        run: |
+          TAGS="${{ steps.meta.outputs.tags }}"
+          TAG_ARGS=""
+          while IFS= read -r tag; do
+            [ -n "$tag" ] && TAG_ARGS="$TAG_ARGS -t $tag"
+          done <<< "$TAGS"
+
+          docker buildx imagetools create $TAG_ARGS \
+            ghcr.io/baotoq/micro-commerce/gateway:${{ github.sha }}-amd64 \
+            ghcr.io/baotoq/micro-commerce/gateway:${{ github.sha }}-arm64
