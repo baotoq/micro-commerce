@@ -162,19 +162,19 @@ public static class CatalogEndpoints
 
     // Product handlers
     private static async Task<IResult> GetProducts(
-        [FromQuery] int page,
-        [FromQuery] int pageSize,
-        [FromQuery] Guid? categoryId,
-        [FromQuery] string? status,
-        [FromQuery] string? search,
-        [FromQuery] string? sortBy,
-        [FromQuery] string? sortDirection,
         ISender sender,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] Guid? categoryId = null,
+        [FromQuery] string? status = null,
+        [FromQuery] string? search = null,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] string? sortDirection = null)
     {
         var query = new GetProductsQuery(
-            page == 0 ? 1 : page,
-            pageSize == 0 ? 20 : pageSize,
+            page < 1 ? 1 : page,
+            pageSize < 1 ? 20 : pageSize,
             categoryId,
             status,
             search,

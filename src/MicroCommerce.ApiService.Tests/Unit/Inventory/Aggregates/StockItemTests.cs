@@ -1,4 +1,5 @@
 using FluentAssertions;
+using MicroCommerce.ApiService.Common.Exceptions;
 using MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 using MicroCommerce.ApiService.Features.Inventory.Domain.Events;
 using MicroCommerce.ApiService.Features.Inventory.Domain.ValueObjects;
@@ -125,7 +126,7 @@ public sealed class StockItemTests
     }
 
     [Fact]
-    public void Reserve_InsufficientStock_ThrowsInvalidOperationException()
+    public void Reserve_InsufficientStock_ThrowsConflictException()
     {
         // Arrange
         StockItem stockItem = CreateStockItem(initialQuantity: 5);
@@ -134,7 +135,7 @@ public sealed class StockItemTests
         Action act = () => stockItem.Reserve(10);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
+        act.Should().Throw<ConflictException>()
             .WithMessage("*Insufficient available stock*");
     }
 

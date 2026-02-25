@@ -239,7 +239,7 @@ public sealed class OrderTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot mark order as paid when status is 'Paid'*");
+            .WithMessage("*Cannot transition from 'Paid' to 'Paid'*");
     }
 
     [Fact]
@@ -253,7 +253,7 @@ public sealed class OrderTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot mark order as paid when status is 'Shipped'*");
+            .WithMessage("*Cannot transition from 'Shipped' to 'Paid'*");
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public sealed class OrderTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot mark order as failed when status is 'Confirmed'*");
+            .WithMessage("*Cannot transition from 'Confirmed' to 'Failed'*");
     }
 
     [Fact]
@@ -322,7 +322,7 @@ public sealed class OrderTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot mark order as failed when status is 'Shipped'*");
+            .WithMessage("*Cannot transition from 'Shipped' to 'Failed'*");
     }
 
     [Fact]
@@ -336,7 +336,7 @@ public sealed class OrderTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot mark order as failed when status is 'Delivered'*");
+            .WithMessage("*Cannot transition from 'Delivered' to 'Failed'*");
     }
 
     [Fact]
@@ -376,7 +376,7 @@ public sealed class OrderTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot confirm order when status is 'Submitted'*");
+            .WithMessage("*Cannot transition from 'Submitted' to 'Confirmed'*");
     }
 
     [Fact]
@@ -403,7 +403,7 @@ public sealed class OrderTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot ship order when status is 'Paid'*");
+            .WithMessage("*Cannot transition from 'Paid' to 'Shipped'*");
     }
 
     [Fact]
@@ -430,7 +430,7 @@ public sealed class OrderTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot deliver order when status is 'Confirmed'*");
+            .WithMessage("*Cannot transition from 'Confirmed' to 'Delivered'*");
     }
 
     [Fact]
@@ -457,7 +457,7 @@ public sealed class OrderTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot mark stock reserved when status is 'Paid'*");
+            .WithMessage("*Cannot transition from 'Paid' to 'StockReserved'*");
     }
 
     // Helper methods

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using MicroCommerce.ApiService.Common.Exceptions;
 using MicroCommerce.ApiService.Features.Inventory.Domain.Events;
 using MicroCommerce.ApiService.Features.Inventory.Domain.ValueObjects;
 using MicroCommerce.BuildingBlocks.Common;
@@ -90,7 +91,7 @@ public sealed class StockItem : BaseAggregateRoot<StockItemId>
             throw new ArgumentException("Reservation quantity must be positive.", nameof(quantity));
 
         if (AvailableQuantity < quantity)
-            throw new InvalidOperationException(
+            throw new ConflictException(
                 $"Insufficient available stock. Available: {AvailableQuantity}, Requested: {quantity}");
 
         var reservation = StockReservation.Create(Id, quantity, DefaultReservationTtl);

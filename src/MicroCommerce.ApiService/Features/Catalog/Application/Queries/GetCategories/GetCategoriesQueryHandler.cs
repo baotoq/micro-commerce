@@ -19,9 +19,12 @@ public sealed class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQue
 
     public async Task<IReadOnlyList<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
     {
+        // Note: Use c.Name (not c.Name.Value) for server-side ORDER BY translation.
+        // EF Core maps CategoryName to string via HasConversion; accessing .Value prevents
+        // SQL translation since EF can only translate the converted property, not sub-properties.
         return await _context.Categories
             .AsNoTracking()
-            .OrderBy(c => c.Name.Value)
+            .OrderBy(c => c.Name)
             .Select(c => new CategoryDto(
                 c.Id.Value,
                 c.Name.Value,

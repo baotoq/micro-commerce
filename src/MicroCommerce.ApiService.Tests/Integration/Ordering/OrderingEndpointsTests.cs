@@ -243,8 +243,14 @@ public sealed class OrderingEndpointsTests
         // Act
         HttpResponseMessage response = await _client.PatchAsJsonAsync($"/api/ordering/orders/{orderId!.Value}/status", request);
 
-        // Assert - This may return 400 if order is not in correct state for shipping
-        // The test verifies the endpoint exists and accepts requests
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NoContent, HttpStatusCode.BadRequest);
+        // Assert - The endpoint uses Result pattern (FluentResults), returning:
+        // - 204 NoContent on success (valid transition)
+        // - 422 UnprocessableEntity on business rule violation (invalid state transition)
+        // - 400 BadRequest on validation failure (unknown status value)
+        // The test verifies the endpoint exists and handles requests without crashing.
+        response.StatusCode.Should().BeOneOf(
+            HttpStatusCode.NoContent,
+            HttpStatusCode.BadRequest,
+            HttpStatusCode.UnprocessableEntity);
     }
 }

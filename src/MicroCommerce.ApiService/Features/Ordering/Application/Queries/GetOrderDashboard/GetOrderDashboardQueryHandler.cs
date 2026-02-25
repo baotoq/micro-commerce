@@ -46,26 +46,29 @@ public sealed class GetOrderDashboardQueryHandler(OrderingDbContext context)
             .Where(o => PendingStatuses.Contains(o.Status))
             .CountAsync(cancellationToken);
 
-        // Orders per day for last 7 days (server-side GROUP BY)
-        DateTimeOffset sevenDaysAgo = DateTimeOffset.UtcNow.Date.AddDays(-6);
+        // Orders per day for last 7 days.
+        // Use explicit UTC offset to avoid Npgsql rejecting non-UTC DateTimeOffset values.
+        // Fetch CreatedAt timestamps and group in memory — EF/Npgsql cannot translate
+        // DateTimeOffset.Date + GroupBy + DateOnly.FromDateTime to SQL in this EF version.
+        DateTimeOffset sevenDaysAgo = new DateTimeOffset(DateTimeOffset.UtcNow.UtcDateTime.Date.AddDays(-6), TimeSpan.Zero);
 
-        List<DailyOrderCount> ordersPerDay = await context.Orders
+        List<DateTimeOffset> recentOrderTimestamps = await context.Orders
             .AsNoTracking()
             .Where(o => o.CreatedAt >= sevenDaysAgo)
-            .GroupBy(o => o.CreatedAt.Date)
-            .Select(g => new DailyOrderCount(
-                DateOnly.FromDateTime(g.Key),
-                g.Count()))
-            .OrderBy(d => d.Date)
+            .Select(o => o.CreatedAt)
             .ToListAsync(cancellationToken);
+
+        // Group by date in memory (UTC date)
+        Dictionary<DateOnly, int> countsByDay = recentOrderTimestamps
+            .GroupBy(ts => DateOnly.FromDateTime(ts.UtcDateTime.Date))
+            .ToDictionary(g => g.Key, g => g.Count());
 
         // Fill in missing days with zero counts
         List<DailyOrderCount> filledDays = [];
         for (int i = 0; i < 7; i++)
         {
-            DateOnly date = DateOnly.FromDateTime(DateTimeOffset.UtcNow.Date.AddDays(-6 + i));
-            DailyOrderCount? existing = ordersPerDay.FirstOrDefault(d => d.Date == date);
-            filledDays.Add(existing ?? new DailyOrderCount(date, 0));
+            DateOnly date = DateOnly.FromDateTime(DateTimeOffset.UtcNow.UtcDateTime.Date.AddDays(-6 + i));
+            filledDays.Add(new DailyOrderCount(date, countsByDay.GetValueOrDefault(date, 0)));
         }
 
         return new OrderDashboardDto(
@@ -78,13 +81,17 @@ public sealed class GetOrderDashboardQueryHandler(OrderingDbContext context)
 
     private static DateTimeOffset? ParseTimeRange(string timeRange)
     {
+        // Use explicit UTC offset to avoid Npgsql rejecting non-UTC DateTimeOffset values.
+        // DateTimeOffset.UtcNow.Date returns a DateTime with Kind=Local which gets an implicit
+        // local timezone offset when converted to DateTimeOffset.
+        DateTime utcToday = DateTimeOffset.UtcNow.UtcDateTime.Date;
         return timeRange.ToLowerInvariant() switch
         {
-            "today" => DateTimeOffset.UtcNow.Date,
-            "7d" => DateTimeOffset.UtcNow.Date.AddDays(-7),
-            "30d" => DateTimeOffset.UtcNow.Date.AddDays(-30),
+            "today" => new DateTimeOffset(utcToday, TimeSpan.Zero),
+            "7d" => new DateTimeOffset(utcToday.AddDays(-7), TimeSpan.Zero),
+            "30d" => new DateTimeOffset(utcToday.AddDays(-30), TimeSpan.Zero),
             "all" => null,
-            _ => DateTimeOffset.UtcNow.Date
+            _ => new DateTimeOffset(utcToday, TimeSpan.Zero)
         };
     }
 }

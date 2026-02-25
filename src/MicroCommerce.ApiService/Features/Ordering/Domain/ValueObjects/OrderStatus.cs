@@ -1,7 +1,10 @@
 using Ardalis.SmartEnum;
+using Ardalis.SmartEnum.SystemTextJson;
+using System.Text.Json.Serialization;
 
 namespace MicroCommerce.ApiService.Features.Ordering.Domain.ValueObjects;
 
+[JsonConverter(typeof(SmartEnumNameConverter<OrderStatus, int>))]
 public abstract class OrderStatus : SmartEnum<OrderStatus>
 {
     // Happy path states

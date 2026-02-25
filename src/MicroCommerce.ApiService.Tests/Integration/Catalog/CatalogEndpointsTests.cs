@@ -4,19 +4,26 @@ using FluentAssertions;
 using MicroCommerce.ApiService.Features.Catalog;
 using MicroCommerce.ApiService.Features.Catalog.Application.Queries.GetCategories;
 using MicroCommerce.ApiService.Features.Catalog.Application.Queries.GetProducts;
+using MicroCommerce.ApiService.Features.Catalog.Infrastructure;
 using MicroCommerce.ApiService.Tests.Integration.Fixtures;
 
 namespace MicroCommerce.ApiService.Tests.Integration.Catalog;
 
 [Collection("Integration Tests")]
 [Trait("Category", "Integration")]
-public sealed class CatalogEndpointsTests
+public sealed class CatalogEndpointsTests : IntegrationTestBase
 {
     private readonly HttpClient _client;
 
     public CatalogEndpointsTests(ApiWebApplicationFactory factory)
+        : base(factory)
     {
         _client = factory.CreateClient();
+    }
+
+    public override async Task InitializeAsync()
+    {
+        await ResetDatabase(typeof(CatalogDbContext));
     }
 
     [Fact]
