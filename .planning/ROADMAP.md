@@ -144,7 +144,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 20-01-PLAN.md — Fix ApiWebApplicationFactory (MassTransit health check bug, EnsureCreated, 3 missing DbContexts), add FakeAuthenticationHandler, create IntegrationTestBase with auth/guest client helpers
+- [x] 20-01-PLAN.md — Fix ApiWebApplicationFactory (MassTransit health check bug, EnsureCreated, 3 missing DbContexts), add FakeAuthenticationHandler, create IntegrationTestBase with auth/guest client helpers
 - [ ] 20-02-PLAN.md — Add 3 missing feature endpoint tests (Profiles, Reviews, Wishlists), handler-level UpdateOrderStatus test, test data builders (ProductBuilder, OrderBuilder)
 
 #### Phase 21: Adoption - Full Building Block Integration

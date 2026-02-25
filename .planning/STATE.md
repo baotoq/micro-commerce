@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 19 complete (2 of 2 plans done)
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 20 in progress (1 of 2 plans done)
 
 ## Current Position
 
-Phase: 19 of 21 (Specification Pattern — Complex Query Logic) — Complete
-Plan: 2 of 2 completed
-Status: Phase 19 Complete — Specification pattern fully adopted: 6 catalog specs + GetProductsQueryHandler refactored (19-01), 2 ordering specs + GetAllOrdersQueryHandler + GetOrdersByBuyerQueryHandler refactored (19-02). QUERY-01, QUERY-02, QUERY-03 done.
-Last activity: 2026-02-24 — Completed 19-02: 2 ordering spec classes + 2 ordering query handlers refactored to WithSpecification
+Phase: 20 of 21 (Integration Testing Infrastructure) — In progress
+Plan: 1 of 2 completed
+Status: Phase 20 Plan 01 Complete — Integration test infrastructure fixed: ApiWebApplicationFactory fixed (MassTransit health check dedup, UseSnakeCaseNamingConvention, per-schema MigrateAsync), FakeAuthenticationHandler added, IntegrationTestBase created. All 29 integration tests pass. TEST-01 done.
+Last activity: 2026-02-25 — Completed 20-01: ApiWebApplicationFactory + FakeAuthenticationHandler + IntegrationTestBase, all 173 tests green
 
-Progress: [■■■■■■■■■■■■■■■■■■■■■■■■░░░░░░] 85% (83/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■░░░░░] 87% (84/96 plans completed)
 
 ## Performance Metrics
 
@@ -88,6 +88,13 @@ Recent decisions affecting v2.0:
 - [Phase 19-specification-pattern]: Ardalis.Specification 9.3.1 does not expose And() — composite spec with multiple Query.Where() calls achieves equivalent AND semantics
 - [Phase 19-specification-pattern]: Sorting kept in handler (request-specific SortBy/SortDirection params); pagination kept in handler for reusable count queries
 - [Phase 19-02]: Spec composition via chained WithSpecification() calls (buyer spec then active orders spec) — equivalent to And() without the naming conflict
+- [Phase 20-01]: MigrateAsync per DbContext over EnsureCreated for multi-schema shared PostgreSQL: EnsureCreated skips if ANY tables exist; MigrateAsync uses per-schema __EFMigrationsHistory tables independently
+- [Phase 20-01]: Per-class schema reset uses DROP SCHEMA IF EXISTS CASCADE + MigrateAsync, not EnsureDeletedAsync (which drops entire database)
+- [Phase 20-01]: ReplaceDbContext helper requires UseSnakeCaseNamingConvention() to match production BaseDbContext conventions
+- [Phase 20-01]: MassTransit health check dedup via PostConfigure<HealthCheckServiceOptions> (pre-removal does not work since AddMassTransitTestHarness re-adds after removal)
+- [Phase 20-01]: SmartEnum needs [JsonConverter] at class level for client-side HttpClient GetFromJsonAsync deserialization
+- [Phase 20-01]: StockItem.Reserve throws ConflictException (409) not InvalidOperationException (400) for insufficient stock
+- [Phase 20-01]: GetOrderDashboard groups timestamps in memory (EF cannot translate DateTimeOffset.Date + GroupBy + DateOnly.FromDateTime to SQL)
 
 ### Roadmap Evolution
 
@@ -106,7 +113,7 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 
 ## Session Continuity
 
-Last session: 2026-02-24
-Stopped at: Completed 19-02-PLAN.md (2 ordering spec classes, GetAllOrdersQueryHandler + GetOrdersByBuyerQueryHandler refactored to WithSpecification)
+Last session: 2026-02-25
+Stopped at: Completed 20-01-PLAN.md (ApiWebApplicationFactory fixed, FakeAuthenticationHandler, IntegrationTestBase, all 29 integration tests green)
 Resume file: None
-Next step: Phase 20 (next phase in roadmap)
+Next step: Phase 20-02 (integration tests for authenticated user flows)
