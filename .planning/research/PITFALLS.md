@@ -1,360 +1,549 @@
 # Pitfalls Research
 
-**Domain:** DDD Building Blocks for Existing .NET 10 Modular Monolith
-**Researched:** 2026-02-14
-**Confidence:** HIGH
+**Domain:** Kubernetes & GitOps deployment for .NET Aspire-based microservices platform
+**Researched:** 2026-02-25
+**Confidence:** HIGH (critical pitfalls verified against official docs and community sources)
+
+---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Entity Base Class Breaking Existing EF Core Mappings
+### Pitfall 1: .NET Dockerfile — Merging Restore and Build into One Layer
 
 **What goes wrong:**
-Adding an Entity base class with common properties (Id, CreatedAt, UpdatedAt) to existing aggregates causes EF Core to detect inheritance and attempt to apply TPH (Table-Per-Hierarchy) mapping. This breaks existing configurations, generates migrations that add discriminator columns, and makes existing columns nullable when they shouldn't be.
+The Dockerfile copies all source files then runs `dotnet restore` and `dotnet build` together. Any change to any `.cs` file invalidates the restore layer, causing full NuGet package downloads on every build. For a solution with 6 projects and their transitive dependency graph, this adds 2-4 minutes to every CI run.
 
 **Why it happens:**
-EF Core automatically scans for inheritance hierarchies. When it detects `Order : Entity<OrderId>`, it assumes this is domain inheritance requiring TPH mapping with a discriminator column, not just a technical base class for code reuse. Developers don't explicitly opt out of inheritance mapping, assuming EF will "just work."
+Developers write `COPY . .` first because it seems natural, then run `dotnet restore && dotnet build`. The caching benefit of separating restore from build is non-obvious until CI times become painful.
 
 **How to avoid:**
-1. Mark the base Entity class as `public abstract class Entity<TId>` and explicitly configure it as **not mapped** using `modelBuilder.Ignore<Entity<TId>>()` in `OnModelCreating`
-2. Use property-based inheritance where base class properties are mapped individually per entity type
-3. Keep BaseAggregateRoot focused on domain events only, move audit fields to a separate IAuditable interface
-4. Document that any new base class must be tested with migration generation before committing
+Use two-phase COPY in every service Dockerfile. Copy project files first, restore, then copy the full source:
+```dockerfile
+# Stage 1: restore — only invalidated when *.csproj or *.slnx changes
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY ["src/MicroCommerce.ApiService/MicroCommerce.ApiService.csproj", "src/MicroCommerce.ApiService/"]
+COPY ["src/MicroCommerce.ServiceDefaults/MicroCommerce.ServiceDefaults.csproj", "src/MicroCommerce.ServiceDefaults/"]
+COPY ["BuildingBlocks/BuildingBlocks.Common/BuildingBlocks.Common.csproj", "BuildingBlocks/BuildingBlocks.Common/"]
+RUN dotnet restore "src/MicroCommerce.ApiService/MicroCommerce.ApiService.csproj"
+
+# Stage 2: build — invalidated by any source change
+COPY . .
+RUN dotnet publish "src/MicroCommerce.ApiService/MicroCommerce.ApiService.csproj" \
+    -c Release --no-restore -o /app/publish
+```
+Pass `--no-restore` to `dotnet publish`. The restore layer is cached as long as `.csproj` files do not change.
+
+In GitHub Actions, add `cache-from: type=gha` and `cache-to: type=gha,mode=max` to `docker/build-push-action` to persist layer cache across workflow runs.
 
 **Warning signs:**
-- New migration adds `Discriminator` column to existing tables
-- Previously non-nullable columns become nullable after adding base class
-- Migration wants to recreate existing tables
-- Build succeeds but `Add-Migration` generates unexpected schema changes
+- `dotnet restore` appears in CI build logs after changing only a `.cs` file
+- CI build time does not improve between commits that only modify source code
+- NuGet package download lines visible in CI logs on every run
+- Second image build is as slow as the first (no layer reuse)
 
-**Phase to address:**
-Phase 1 (Entity Base Class Design) - Include explicit EF Core inheritance configuration testing in acceptance criteria.
+**Phase to address:** Phase 1 — Dockerfiles
 
 ---
 
-### Pitfall 2: Audit Field Interceptor Double-Setting Timestamps
+### Pitfall 2: Missing `output: 'standalone'` in Next.js Config Before Dockerizing
 
 **What goes wrong:**
-When adding an audit interceptor to set CreatedAt/UpdatedAt fields, existing entities already set these fields in domain logic (e.g., `Order.Create()` sets `CreatedAt = DateTimeOffset.UtcNow`). The interceptor overwrites the domain-set value, causing timestamp mismatches, or both set it leading to inconsistent timing (domain sets at creation time, interceptor sets at SaveChanges time - potentially milliseconds apart).
+Without `output: 'standalone'` in `next.config.ts`, the Docker image must include the full `node_modules` tree (500MB+ image). The standard `npm start` does not forward `SIGTERM` from Kubernetes, causing pods to miss graceful shutdown signals and dropping in-flight requests during rolling updates.
+
+The current `next.config.ts` does not have `output: 'standalone'` — it only configures `images.remotePatterns`. This is a local-dev config that was never hardened for container deployment.
 
 **Why it happens:**
-Multiple SaveChangesInterceptors execute in registration order. The project already has `DomainEventInterceptor` (lines run after SaveChanges completes). Adding `AuditableEntitiesInterceptor` creates a second interceptor that runs during `SavingChanges`. Developers forget existing entities control their own timestamps and don't check if fields are already set before overwriting.
+Next.js standalone output is an opt-in build mode. The default `next build` produces a `node_modules`-heavy output tree. Developers assume the output directory is self-contained — it is not. Additionally, the standalone server does NOT automatically include `public/` or `.next/static/` directories; they must be copied explicitly in the Dockerfile.
 
 **How to avoid:**
-1. Choose ONE strategy: either domain entities own timestamps OR interceptors own them, never both
-2. If using interceptor approach, remove all `CreatedAt = DateTimeOffset.UtcNow` from entity factory methods
-3. Use a marker interface `IAuditable` only on entities that DON'T manage their own timestamps
-4. In the interceptor, check `if (entry.Property(nameof(IAuditable.CreatedAt)).CurrentValue == default)` before setting
-5. Add integration tests that verify timestamp values match expectations
+1. Add to `next.config.ts`:
+```typescript
+const nextConfig: NextConfig = {
+  output: 'standalone',
+  images: { remotePatterns: [...] }
+};
+```
+2. After `next build`, manually copy static assets in the Dockerfile:
+```dockerfile
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+```
+3. Start the container with `node server.js`, not `npm start`, so `SIGTERM` is forwarded to Node directly.
+4. The `next.config.ts` `images.remotePatterns` currently hardcodes `127.0.0.1:10000` (Azurite). This must be parameterized for K8s where blob storage will have a different hostname.
 
 **Warning signs:**
-- Timestamps in tests are off by milliseconds when using `DateTimeOffset.UtcNow` in assertions
-- CreatedAt and UpdatedAt are identical for new entities (should be different after first update)
-- Domain events contain different timestamps than persisted entity
-- Aggregate factory methods still set timestamps but interceptor also runs
+- Docker image for Next.js exceeds 800MB
+- `standalone/` directory not present after `next build`
+- Pod logs show immediate exit when Kubernetes sends `SIGTERM` during rolling updates
+- Static assets return 404 in the running container despite build succeeding
 
-**Phase to address:**
-Phase 2 (Audit Fields & Interceptor) - First task: audit all existing entities, identify which set timestamps, plan migration strategy.
+**Phase to address:** Phase 1 — Dockerfiles
 
 ---
 
-### Pitfall 3: PostgreSQL xmin Concurrency Token Loss on Backup/Restore
+### Pitfall 3: Aspire Service Discovery Environment Variables Conflicting with Kubernetes DNS
 
 **What goes wrong:**
-The project uses `[Timestamp] public uint Version` mapped to PostgreSQL's `xmin` system column for optimistic concurrency (see OrderConfiguration.cs line 97-98). When the database is backed up and restored, all xmin values reset. Existing loaded entities in application memory have stale xmin values, causing **all subsequent updates to fail with concurrency exceptions** even though no actual concurrent modification occurred.
+Aspire injects service URLs via environment variables like `services__gateway__https__0` and `services__apiservice__http__0`. In Kubernetes, these variables are absent, so services fall back to `appsettings.json` values that still point to `localhost` or Aspire-managed ports. The result is YARP Gateway calling `http://localhost:5000` for the ApiService — its own loopback — instead of the K8s service DNS name. There is a known Aspire issue (GitHub #3698, #5096) where service discovery endpoint env vars do not override appsettings values consistently in all scenarios.
 
 **Why it happens:**
-PostgreSQL's xmin is a transaction ID, not a persistent version number. Backup/restore tools don't preserve transaction IDs. In production, backup/restore operations for blue-green deployments or disaster recovery will reset xmin, but the application doesn't detect this scenario.
+Aspire's `AddServiceDefaults()` registers an `IConfiguration`-backed service discovery provider. When running outside Aspire (in K8s), the `appsettings.json` `services` section still has Aspire-era values. Developers assume "it works in Aspire, it will resolve differently in K8s" without verifying the fallback chain. The MicroCommerce Gateway uses `WithReference(apiService)` in `AppHost.cs` — this Aspire-managed reference does not translate to K8s manifests automatically.
 
 **How to avoid:**
-1. Add an explicit `Version` column alongside xmin: `public long Version { get; private set; }` that increments manually
-2. Use the explicit Version for business logic, keep xmin only as DB-level safety net
-3. Document that xmin is unreliable across backup/restore boundaries
-4. For entities where concurrency is critical (Order, StockItem), migrate to explicit version column before adding new concurrency features
-5. Add alerting when concurrency exception rate spikes (may indicate backup/restore occurred)
+In Kubernetes manifests, explicitly set environment variables for every inter-service URL using K8s DNS via Kustomize overlays:
+```yaml
+env:
+  - name: services__apiservice__http__0
+    value: "http://apiservice-svc:8080"
+  - name: services__keycloak__http__0
+    value: "http://keycloak-svc:8080"
+  - name: services__keycloak__https__0
+    value: "http://keycloak-svc:8080"
+```
+Audit `appsettings.json` and `appsettings.Development.json` for any localhost or Aspire-specific URLs. Use `kubectl exec` to verify env vars inside pods after deployment.
 
 **Warning signs:**
-- Sudden spike in `DbUpdateConcurrencyException` after database maintenance
-- All updates fail after restoring from backup, even with no concurrent users
-- Version property shows unexpected values in logs after environment promotion
-- Local dev database restore breaks all update operations
+- `HttpRequestException: Connection refused` in Gateway pod logs pointing to `localhost` addresses
+- `ECONNREFUSED 127.0.0.1` in Next.js pod logs for API calls
+- Services work in local Aspire but fail immediately after K8s deployment
+- `kubectl exec` into pod shows `services__gateway__*` env vars absent or pointing to localhost
 
-**Phase to address:**
-Phase 3 (Concurrency Base & Version Strategy) - First task must evaluate xmin reliability vs explicit versioning, include migration plan for existing Order entities.
+**Phase to address:** Phase 2 — Kustomize manifests
 
 ---
 
-### Pitfall 4: Result Pattern Inconsistency with Existing Exception-Based Flow
+### Pitfall 4: MassTransit Transport Swap Breaking the Outbox, DLQ, and Saga
 
 **What goes wrong:**
-The project currently uses exceptions for error handling: `ValidationBehavior` throws `ValidationException`, domain methods throw `InvalidOperationException` (e.g., Order.MarkAsPaid line 102). Adding Result&lt;T&gt; to **some** operations creates inconsistent error handling where callers don't know if they should check `result.IsFailure` or catch exceptions, leading to uncaught exceptions or ignored Results.
+The existing `Program.cs` uses `x.UsingAzureServiceBus(...)` with `builder.AddAzureServiceBusClient("messaging")` (Aspire integration), `IServiceBusReceiveEndpointConfigurator` for DLQ routing, and `AddEntityFrameworkOutbox<CatalogDbContext>` for the transactional outbox. Swapping to `UsingRabbitMq(...)` while leaving the `IServiceBusReceiveEndpointConfigurator` cast causes a silent runtime no-op — the DLQ config block is silently skipped rather than throwing. Meanwhile, `builder.AddAzureServiceBusClient("messaging")` still tries to connect to Azure Service Bus and throws at startup.
+
+The `IDeadLetterQueueService` used by `MessagingEndpoints` depends on `ServiceBusClient` (Azure SDK) which will have no valid connection string in the K8s environment using RabbitMQ.
 
 **Why it happens:**
-Gradual adoption without a clear boundary. Developers add Result&lt;T&gt; to new features but existing code still throws. MediatR handlers return `Result<OrderDto>` but pipeline behaviors throw exceptions. Frontend expects consistent error response shape but gets mix of 400 (validation exception) and 200 with `{ success: false }`.
+The endpoint configuration callback in `Program.cs` has a transport-specific cast:
+```csharp
+if (cfg is IServiceBusReceiveEndpointConfigurator sb)
+{
+    sb.ConfigureDeadLetterQueueErrorTransport();
+}
+```
+This silently becomes a no-op with RabbitMQ. Developers trust MassTransit's transport-agnostic promise and assume zero code changes are needed. The Aspire `AddAzureServiceBusClient` is a separate DI registration from MassTransit's transport configuration.
 
 **How to avoid:**
-1. **Document the boundary**: Commands that fail due to **business rule violations** return Result&lt;T&gt;. Commands that fail due to **invalid input** throw ValidationException (caught by middleware)
-2. Update ValidationBehavior to return `Result.Failure()` instead of throwing, or keep it as-is and never use Result for validation failures
-3. Create an architectural decision record (ADR): "When to use Result vs Exception"
-4. Provide code examples and generator templates for both patterns
-5. Add analyzer rule to detect methods that both throw exceptions AND return Result
+1. Remove `builder.AddAzureServiceBusClient("messaging")` from `Program.cs` for K8s mode. The `IDeadLetterQueueService` that uses `ServiceBusClient` must be disabled or re-implemented for RabbitMQ management API.
+2. Replace the transport registration:
+```csharp
+x.UsingRabbitMq((context, cfg) =>
+{
+    cfg.Host(builder.Configuration["RabbitMq:Host"], "/", h =>
+    {
+        h.Username(builder.Configuration["RabbitMq:Username"]);
+        h.Password(builder.Configuration["RabbitMq:Password"]);
+    });
+    cfg.ConfigureEndpoints(context);
+});
+```
+3. Remove the `IServiceBusReceiveEndpointConfigurator` DLQ block from `AddConfigureEndpointsCallback`. RabbitMQ dead-lettering uses exchange arguments configured at queue declaration time.
+4. The EF Core outbox (`AddEntityFrameworkOutbox<CatalogDbContext>`) is transport-agnostic and does not require changes.
+5. Use an environment variable (e.g., `MASSTRANSIT_TRANSPORT=rabbitmq`) to select transport at startup, allowing local Aspire (Azure SB) and K8s (RabbitMQ) to use different transports from the same image.
+6. The `CheckoutStateMachine` correlation by `OrderId` works identically with RabbitMQ, but verify saga queue names match between environments — Azure Service Bus uses topics/subscriptions; RabbitMQ uses exchanges/queues with different naming conventions.
 
 **Warning signs:**
-- Method has `try-catch` block but also checks `if (result.IsFailure)` - redundant patterns
-- API endpoint returns 200 OK with error payload instead of 4xx status code
-- Some commands throw, some return Result, no clear pattern
-- Frontend has inconsistent error handling (`try-catch` in some places, `if (response.isSuccess)` in others)
+- `InvalidOperationException` about missing Service Bus connection string at startup
+- DLQ not populated with failed messages after transport swap
+- Checkout saga `CheckoutState` rows in database with stuck `Submitted` state (stock reservation response never received)
+- `CheckoutStateMachine` duplicate message processing (inbox deduplication silently non-functional)
+- RabbitMQ management UI shows queues with unexpected naming vs Azure Service Bus queue names
 
-**Phase to address:**
-Phase 4 (Result Pattern Introduction) - Phase 0 task: create ADR and error handling strategy before any Result&lt;T&gt; code is written.
+**Phase to address:** Phase 3 — Transport configuration (dedicated phase for transport swap)
 
 ---
 
-### Pitfall 5: Enumeration Class Migration Breaking Existing Enum Serialization
+### Pitfall 5: EF Core Migrations Race Condition in Init Containers on Cold Start
 
 **What goes wrong:**
-The project uses C# enums stored as strings (OrderStatus, ProductStatus - see OrderConfiguration line 73-76 `HasConversion<string>()`). Migrating to Enumeration classes requires changing JSON serialization, EF Core value converters, and potentially database values. **Existing API consumers break** because JSON shape changes from `"status": "Submitted"` to `"status": { "value": 1, "name": "Submitted" }`.
+With 8 separate DbContexts (catalog, cart, ordering, inventory, profiles, reviews, wishlists, outbox schemas), running `dotnet ef database update` as an init container causes race conditions when multiple pods start simultaneously or when the PostgreSQL pod is not yet fully ready. The migration init container exits non-zero because PostgreSQL refuses connections during its own initialization sequence, triggering a pod `CrashLoopBackOff`. Multiple replicas each running migrations can also deadlock on the `__EFMigrationsHistory` table.
 
 **Why it happens:**
-Enumeration classes are objects, not primitives. Default JSON serialization produces object graph. Developers write the Enumeration class, update EF Core mappings, but forget to add custom JsonConverter. Frontend and external integrations expect string/int, not object.
+Kubernetes starts init containers as soon as the pod is scheduled. If PostgreSQL is still initializing (cluster cold-start, pod restart), connections are refused and the migration runner crashes immediately. Kubernetes sees the non-zero exit code, restarts the pod, and the cycle repeats. With 8 schemas in one database, concurrent migrations across multiple pods can deadlock on the history table even though schemas are separate.
 
 **How to avoid:**
-1. **Before writing any Enumeration class**: implement and test custom `JsonConverter<Enumeration>` that serializes to string value matching current enum behavior
-2. Add integration tests that verify API response JSON shape doesn't change after migration
-3. Migrate one enum at a time with full test coverage, don't bulk-replace
-4. For each enum, check: domain usage, EF Core mapping, JSON contracts, OpenAPI schema
-5. Keep old enum for one release cycle with `[Obsolete]` attribute while Enumeration class runs in parallel
+1. Use a single init container that runs all migrations sequentially, preceded by a `pg_isready` wait loop:
+```bash
+#!/bin/bash
+until pg_isready -h $POSTGRES_HOST -p 5432 -U $POSTGRES_USER; do
+  echo "Waiting for PostgreSQL..."
+  sleep 2
+done
+dotnet ef database update --context CatalogDbContext
+dotnet ef database update --context CartDbContext
+dotnet ef database update --context OrderingDbContext
+# ... all 8 contexts in dependency order
+```
+2. Alternatively, call `db.Database.MigrateAsync()` at application startup with a PostgreSQL advisory lock to prevent concurrent migrations from multiple replicas:
+```csharp
+await using var advisoryLock = await db.Database.ExecuteSqlRawAsync(
+    "SELECT pg_advisory_lock(1234567890)");
+await db.Database.MigrateAsync();
+```
+3. Use the same base image for both the migration init container and the ApiService to ensure `dotnet ef` binary matches the application runtime.
+4. Set `restartPolicy: Always` on the init container so failed attempts retry automatically.
 
 **Warning signs:**
-- Frontend displays `[object Object]` instead of status name
-- OpenAPI schema shows Enumeration as object type instead of string enum
-- API response JSON structure changes after "internal refactoring"
-- Swagger UI can't send test requests because enum dropdown is gone
-- Database migration wants to change column type from text to composite
+- Pod stuck in `Init:CrashLoopBackOff` on cluster cold start
+- `connection refused` errors in init container logs referencing PostgreSQL host
+- Some schemas created, others missing after pod restart (partial migration state)
+- Integration tests in CI work against Testcontainers but K8s deployment fails cold-start
 
-**Phase to address:**
-Phase 5 (Enumeration Class) - Phase 0: create JsonConverter base class and test with one enum. Phase 1+: migrate enums one at a time, not bulk.
+**Phase to address:** Phase 2 — Kustomize manifests (init container strategy)
 
 ---
 
-### Pitfall 6: Specification Pattern N+1 Queries from IsSatisfiedBy in Loops
+### Pitfall 6: ArgoCD Sync Loop from Non-Idempotent Kustomize Output
 
 **What goes wrong:**
-Specification pattern implements `IsSatisfiedBy(TEntity entity)` for in-memory evaluation and `ToExpression()` for database queries. Developers use Specifications correctly in queries (`dbContext.Where(spec.ToExpression())`), but then in business logic call `if (spec.IsSatisfiedBy(entity))` inside a loop over a collection, causing N database roundtrips when entities have lazy-loaded navigation properties accessed by the spec.
+ArgoCD compares live cluster state against the rendered `kustomize build` output on every reconciliation cycle. If any Kustomize component generates output that differs between renders — a `commonAnnotations` value containing a dynamic timestamp, a `newTag` that ArgoCD has already applied but the overlay still specifies an old value, or a resource with `helm.sh/chart` annotation added by Helm — the application never reaches `Synced` status and continuously triggers sync operations.
 
 **Why it happens:**
-Specification reads navigation properties (e.g., `ActiveProductSpecification` checks `product.Category.IsActive`). If entity is loaded without includes, accessing `.Category` triggers lazy load. Calling spec on 100 products = 100 lazy loads. Developer doesn't realize `IsSatisfiedBy` triggers database access because it "looks like" in-memory code.
+Developers use `commonAnnotations` with build-time values. Kustomize `images:` block with a `newTag` pointing to `latest` causes ArgoCD to re-evaluate on every reconciliation because the digest changes. Any managed field ownership conflict from client-side apply `kubectl` commands versus ArgoCD's apply creates perpetual drift.
 
 **How to avoid:**
-1. Disable lazy loading globally: `options.UseLazyLoadingProxies(false)` (recommended for CQRS + DDD)
-2. Document that Specifications must work on **fully loaded** entities or only be used in query expressions
-3. Add analyzer rule: flag `IsSatisfiedBy` called inside loops
-4. Provide Specification base class that logs warning when navigation property is null
-5. Prefer using Specification only at query boundaries, not in domain logic
+1. Never use dynamic values in Kustomize `commonAnnotations`. Use static values. Image tags go only in the `images:` block with immutable digests or specific version tags (never `latest`).
+2. Enable `ServerSideApply` in ArgoCD Application spec to eliminate field ownership conflicts:
+```yaml
+spec:
+  syncPolicy:
+    syncOptions:
+      - ServerSideApply=true
+```
+3. Add `ignoreDifferences` for any Kubernetes-managed fields that legitimately change without Git commits:
+```yaml
+spec:
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/template/metadata/annotations/kubectl.kubernetes.io~1last-applied-configuration
+```
+4. Run `kustomize build k8s/overlays/dev | kubectl diff -` before committing to verify output is stable across multiple renders.
+5. For the app-of-apps pattern: the root Application must NOT point at the directory that also contains child Application manifests unless ArgoCD sync waves are configured.
 
 **Warning signs:**
-- Slow endpoint that loads collections and applies Specifications
-- Database profiler shows N identical queries for navigation properties
-- Fixing one N+1 issue reveals another in Specification evaluation
-- Unit tests pass but integration tests are slow (test DB doesn't reveal N+1 with small datasets)
+- ArgoCD application perpetually shows `OutOfSync` despite no Git changes
+- `argocd app diff` shows the same fields changing every sync cycle
+- `application-controller` pod CPU pegged above 80%
+- Sync operations complete but immediately re-trigger (< 3 minute cycle)
 
-**Phase to address:**
-Phase 6 (Specification Pattern) - Include explicit performance testing with 100+ entity collections in acceptance criteria.
+**Phase to address:** Phase 4 — ArgoCD GitOps
 
 ---
 
-### Pitfall 7: Source Generator Build Failures After Multi-Target Framework Change
+### Pitfall 7: Kustomize Strategic Merge Patch Targeting Wrong Container Name
 
 **What goes wrong:**
-Source generators for StronglyTypedId improvements work perfectly in single-target .NET 10 project. Later, when BuildingBlocks.Common is changed to multi-target (`<TargetFrameworks>net10.0;net8.0</TargetFrameworks>`) for compatibility with external tools, the generator runs twice (once per TFM), produces duplicate types, or only runs for one TFM causing build errors in consuming projects.
+The overlay patch updates `resources.requests.memory` for the `apiservice` container but the base Deployment names the container `api-service` (with a hyphen). The strategic merge patch silently adds a new container entry instead of updating the existing one. Kubernetes accepts the Deployment with two containers — the original plus a new one with only the resource patch applied and no image. The pod fails to schedule or starts with wrong configuration.
 
 **Why it happens:**
-Source generators execute per target framework. Multi-targeting means generator runs in multiple contexts. If generator isn't idempotent or doesn't check for existing types, it produces conflicts. MSBuild restores and builds for each TFM, but source generator output may not be isolated per TFM.
+Kustomize strategic merge patch on `containers[]` uses the container `name` field as the merge key. A naming mismatch between base and overlay silently adds rather than merges. There is no validation error from Kustomize or Kubernetes — the Deployment is accepted and the misconfiguration is only detectable by inspecting the running pod spec.
 
 **How to avoid:**
-1. Keep source generator projects single-target .NET 10.0 (they compile to roslyn analyzers, don't need multi-target)
-2. If BuildingBlocks.Common must multi-target, move source generators to separate single-target project
-3. Add `<IsRoslynComponent>true</IsRoslynComponent>` to generator project to ensure proper isolation
-4. Test generators in multi-target scenario **before** production use
-5. Document: "Source generator projects must remain single-target"
+1. Establish a naming standard immediately: container names use `lowercase` matching the service identifier exactly (e.g., `apiservice`, `gateway`, `frontend`) — no hyphens, no abbreviations.
+2. Prefer JSON 6902 patches for surgical container-level changes, as they fail explicitly if the target path does not exist:
+```yaml
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "512Mi"
+    target:
+      kind: Deployment
+      name: apiservice
+```
+3. After writing any patch, run `kustomize build k8s/overlays/dev | grep -A5 "name: apiservice"` and count container entries — exactly one should appear per Deployment.
+4. Use `kubectl diff -k k8s/overlays/dev` against a running cluster to catch accidental container additions before committing.
 
 **Warning signs:**
-- Build succeeds locally but fails in CI with "type defined in multiple places"
-- Changing TFM order in `<TargetFrameworks>` changes build outcome
-- Generated files appear in obj/net10.0/ but not obj/net8.0/ (or vice versa)
-- IDE shows red squigglies but build succeeds (or opposite)
-- `dotnet build` succeeds but `dotnet build -f net8.0` fails
+- Pod stuck in `Pending` with scheduler event "container X has no image specified"
+- `kubectl describe deployment apiservice` shows two containers where one is expected
+- Resource limits appear not applied despite overlay patch being committed
+- `kustomize build` output has duplicate container name entries under the same Deployment
 
-**Phase to address:**
-Phase 7 (Source Generator Setup) - Phase 0: define project structure and TFM strategy before generator implementation.
+**Phase to address:** Phase 2 — Kustomize manifests
 
 ---
 
-### Pitfall 8: StronglyTypedId JSON Serialization Breaks OpenAPI Schema
+### Pitfall 8: Sealed Secrets Master Key Not Backed Up Before Cluster Teardown
 
 **What goes wrong:**
-Current StronglyTypedId works in domain (`record ProductId(Guid Value) : StronglyTypedId<Guid>(Value)`). After adding source generator to create custom JsonConverters for StronglyTypedId types, OpenAPI/Swagger schema shows `ProductId` as object `{ value: "guid" }` instead of simple string, breaking auto-generated frontend clients (they generate `ProductId` interface instead of using string alias).
+The kind dev cluster is destroyed and recreated — a routine local development operation. The Sealed Secrets controller generates a new master key on first start. All previously committed `SealedSecret` YAML files in Git are now encrypted with the old key and cannot be decrypted by the new controller. Every secret must be manually re-sealed with `kubeseal`. In CI/CD pipelines, this silently breaks automated deployments until every secret is re-created.
 
 **Why it happens:**
-Swashbuckle reads JsonConverter to generate OpenAPI schema. Custom converter doesn't implement `ISchemaFilter` to tell Swashbuckle "serialize as underlying primitive type in schema." Generated TypeScript/C# clients create unnecessary wrapper types.
+The Sealed Secrets controller stores its private key as a Kubernetes Secret in the `kube-system` namespace. When the kind cluster is deleted, this Secret is gone. Developers assume Git stores everything needed to restore the cluster — but the sealing key is cluster-local and intentionally not committed to Git (it is the private decryption key). There is no warning when the key changes.
 
 **How to avoid:**
-1. Implement `ISchemaFilter` alongside JsonConverter to map StronglyTypedId to underlying type in OpenAPI
-2. Register schema filter: `services.AddSwaggerGen(c => c.SchemaFilter<StronglyTypedIdSchemaFilter>())`
-3. Test OpenAPI schema output explicitly: `openapi.json` should show `productId: { type: "string", format: "uuid" }`, not object
-4. Test generated client code from OpenAPI schema before releasing
-5. Document pattern: all custom serializers need corresponding schema filters
+1. Immediately after bootstrapping Sealed Secrets on a new cluster, export and back up the sealing key:
+```bash
+kubectl get secret -n kube-system \
+  -l sealedsecrets.bitnami.com/sealed-secrets-key \
+  -o yaml > sealed-secrets-master-key.yaml
+```
+Store this in a password manager or encrypted file store — never in Git.
+2. Script cluster recreation to restore the sealing key before the Sealed Secrets controller initializes:
+```bash
+kind create cluster --config kind-config.yaml
+kubectl apply -f sealed-secrets-master-key.yaml  # restore BEFORE controller starts
+helm install sealed-secrets sealed-secrets/sealed-secrets -n kube-system
+```
+3. Prefer bring-your-own-key (BYOK) with `kubeseal --cert` pointing to a custom certificate stored outside the cluster, so the same sealing certificate works across cluster recreations.
+4. Automate key backup in the cluster bootstrap script — never rely on a manual step that is skipped under time pressure.
 
 **Warning signs:**
-- OpenAPI schema shows nested objects for what should be primitives
-- Generated frontend client has `ProductId.value.value` nested access
-- Swagger UI requires entering JSON object instead of simple string for ID parameters
-- Frontend developers complain about TypeScript types being overly complex
-- API accepts `{"value":"..."}` but rejects simple string values
+- `error: no key could decrypt secret` in Sealed Secrets controller logs after cluster recreation
+- All pods crash with `Secret not found` after cluster teardown and recreate
+- ArgoCD shows all applications as `Healthy` (SealedSecrets synced) but pods fail with missing env vars
+- `kubectl get sealedsecret` shows resources but `kubectl get secret` shows no corresponding decrypted secrets
 
-**Phase to address:**
-Phase 8 (StronglyTypedId Enhancements) - Task 2 must include OpenAPI schema validation, not just JSON serialization.
+**Phase to address:** Phase 5 — Sealed Secrets
+
+---
+
+### Pitfall 9: OTEL Collector Pipeline Misconfigured — Silent Data Loss
+
+**What goes wrong:**
+The OTEL Collector is deployed and services send telemetry via OTLP (the project already configures OTLP via `AddServiceDefaults()`). The Collector receives data but one of three failure modes occurs silently: (1) the exporter endpoint is misconfigured and data is dropped at the exporter stage, (2) the `metrics` or `logs` pipeline is omitted so only traces flow, or (3) the `sending_queue` is undersized and the Collector OOMs under burst load — the checkout saga generates telemetry across 5 features simultaneously — causing data loss with no alerting.
+
+**Why it happens:**
+OTEL Collector config requires all three sections (`receivers`, `processors`, `exporters`) explicitly wired in `service.pipelines`. Omitting a signal type causes that signal to be silently discarded. The Collector starts successfully with partial pipelines. Under burst load (e.g., seed data loading triggering 50 product events), an unbounded queue grows until the pod is OOM-killed.
+
+**How to avoid:**
+1. Always configure all three signal pipelines explicitly:
+```yaml
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/dashboard]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/dashboard]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/dashboard]
+```
+2. Always include `memory_limiter` as the first processor with a hard cap:
+```yaml
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 400
+    spike_limit_mib: 100
+```
+3. Validate config before deploying: `otelcol validate --config collector-config.yaml`
+4. Include a `debug` exporter in development to verify data flows:
+```yaml
+exporters:
+  debug:
+    verbosity: detailed
+```
+5. The `.NET` services use `OTEL_EXPORTER_OTLP_ENDPOINT` from `AddServiceDefaults()`. In K8s, set this to the Collector's ClusterIP service DNS (e.g., `http://otel-collector-svc:4317`), not `localhost:4317`. Verify via `kubectl exec` that the env var points to the Collector service, not the Aspire Dashboard directly.
+6. The Aspire Dashboard can receive OTLP directly on port `18889` (gRPC). Either route through the Collector or send directly — but not both, or data will be duplicated.
+
+**Warning signs:**
+- Aspire Dashboard deployed but no traces or metrics visible despite pods running and accepting requests
+- OTEL Collector pod logs show `exporting_items` count but Dashboard shows nothing
+- Collector pod shows `OOMKilled` status under burst load
+- Only traces appear but metrics and logs are absent (partial pipeline)
+- `OTEL_EXPORTER_OTLP_ENDPOINT` env var in service pods points to `localhost`
+
+**Phase to address:** Phase 6 — OTEL Collector + Aspire Dashboard
+
+---
+
+### Pitfall 10: Keycloak Realm Import — One-Time Job That Does Not Update on Re-sync
+
+**What goes wrong:**
+The project has Keycloak realm JSON files in `src/MicroCommerce.AppHost/Realms/`. In K8s, the Keycloak operator's `KeycloakRealmImport` CR runs as a Kubernetes Job exactly once (on creation) using `IGNORE_EXISTING` strategy. If the realm already exists — which it will after the first deployment — subsequent ArgoCD syncs re-apply the `KeycloakRealmImport` CR but the Job does not re-run. Changes to the realm JSON (new client, updated redirect URI, new role) are silently ignored. The Job shows `Completed` status; ArgoCD treats the application as healthy.
+
+**Why it happens:**
+Keycloak operator's `RealmImport` CR is designed for declarative realm creation, not updates. This is documented behavior as of Keycloak v24+ but surprises developers who expect GitOps to mean "Git is truth." The operator provides no mechanism to detect that the source JSON changed and re-run the import with `OVERWRITE_EXISTING`.
+
+**How to avoid:**
+1. For the kind dev environment: use a Kubernetes Job or Helm hook that calls the Keycloak Admin REST API to upsert realm configuration on every deploy:
+```bash
+ACCESS_TOKEN=$(curl -s -X POST http://keycloak/realms/master/protocol/openid-connect/token \
+  -d "client_id=admin-cli&grant_type=password&username=$ADMIN_USER&password=$ADMIN_PASS" \
+  | jq -r .access_token)
+
+curl -X PUT http://keycloak/admin/realms/micro-commerce \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @/realm/realm.json
+```
+2. Alternatively, delete the `KeycloakRealmImport` CR before each deploy to force the Job to re-run:
+```bash
+kubectl delete keycloakrealmimport micro-commerce-realm -n keycloak
+argocd app sync micro-commerce
+```
+3. Keep the realm JSON export minimal — only clients, roles, and identity providers. Avoid exporting users, sessions, or event logs that change continuously.
+4. Store the realm admin credentials in a Sealed Secret, not as a plain ConfigMap value.
+
+**Warning signs:**
+- Realm JSON changes committed to Git and ArgoCD sync succeeds, but changes do not appear in Keycloak UI
+- `KeycloakRealmImport` Job shows `Completed` status after sync (this is the expected but misleading behavior)
+- New OIDC clients added to realm JSON return `invalid_client` from Keycloak
+- NextAuth.js cannot authenticate after realm JSON updates because client redirect URIs were changed in Git but not applied
+
+**Phase to address:** Phase 2 — Kustomize manifests (Keycloak bootstrap strategy)
 
 ---
 
 ## Technical Debt Patterns
 
-Shortcuts that seem reasonable but create long-term problems.
-
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| Skip explicit EF Core inheritance config | Base class "just works" | Migrations break production, discriminator columns added | Never - always test migration generation |
-| Mix Result and Exception error handling | Faster to add Result to one feature | Inconsistent error handling, confusing for team | Only during controlled migration phase with clear end date |
-| Use IsSatisfiedBy in loops | Code reads naturally | N+1 queries, performance degradation | Only on in-memory collections, never on DB entities |
-| Single audit interceptor for all entities | One place to manage timestamps | Conflicts with entities that own their timestamps | Only if NO existing entities set their own timestamps |
-| Keep xmin without explicit version | Minimal code, uses PostgreSQL feature | Breaks on backup/restore, debugging nightmare | Local dev only, never production |
-| Lazy load in Specifications | Specifications work without manual includes | N+1 queries, slow at scale | Never - disable lazy loading globally |
-| Multi-target BuildingBlocks early | "Future proofs" the library | Source generator issues, build complexity | Only when external .NET 8 integration confirmed |
-| Default JsonConverter without SchemaFilter | JSON serialization works | OpenAPI clients broken, API consumer pain | Local dev only, never for public API |
+| Single `COPY . .` in Dockerfile | Simpler Dockerfile, fewer lines | Full NuGet restore on every `.cs` change; CI 3-4 minutes slower per build | Never — restore/build separation is a one-time setup cost |
+| Hardcode service URLs in `appsettings.json` for K8s | Faster initial manifest authoring | Cannot promote same image across environments; breaks immutable image principle | Never — use environment variables in Kustomize overlays |
+| `npm start` instead of `node server.js` in Next.js container | Familiar invocation | Kubernetes SIGTERM not forwarded; graceful shutdown broken; requests dropped on rolling update | Never |
+| Skip resource `requests`/`limits` on pods | Faster manifest authoring | OOM kills evict adjacent pods; no HPA baseline; kind cluster instability on cold start | Never in K8s manifests |
+| Skip `memory_limiter` in OTEL Collector | Simpler Collector config | OOM under burst traffic; data loss for entire observability pipeline with no alerting | Never |
+| Sealed Secrets without key backup procedure | One less bootstrap step | Cluster recreation requires re-sealing every secret; CI/CD breaks until manually resolved | Never — automate backup in the bootstrap script |
+| ArgoCD auto-sync without health checks | Changes deploy immediately | Broken rollouts keep syncing, replacing healthy pods with broken ones in a loop | Only in `dev` overlay with `selfHeal: false` as a safety valve |
+| One init container per DbContext | One-concern-per-container principle | Race conditions on cold start; 8 init container failures restart the pod repeatedly | Never — use single sequential migration runner |
+| Use `latest` image tag in Kustomize overlays | Simpler overlay management | ArgoCD detects perpetual drift; no rollback target; no audit trail of what deployed when | Never — always use specific version tags or digest references |
+
+---
 
 ## Integration Gotchas
 
-Common mistakes when connecting to external services.
-
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| EF Core + DomainEventInterceptor | Adding second interceptor without testing execution order | Document interceptor execution order, test that both run |
-| MediatR + ValidationBehavior + Result | Behavior throws, handler returns Result - inconsistent | Choose: throw everywhere OR return Result everywhere |
-| PostgreSQL xmin + EF Core migrations | Assuming xmin persists across backup/restore | Document limitations, add explicit version column for critical entities |
-| MassTransit + Domain Events | Publishing before SaveChanges commits (existing interceptor uses SavedChangesAsync correctly) | Keep using SavedChangesAsync, never SavingChanges for publish |
-| Swashbuckle + JsonConverter | Converter works but schema breaks | Always add ISchemaFilter when adding custom JsonConverter |
-| Source Generators + Multi-TFM | Generator runs per TFM, creates duplicates | Keep generator projects single-target .NET 10 |
-| Npgsql + Enumeration classes | Trying to use MapEnum with Enumeration class (not supported) | Use HasConversion<string> for Enumeration, MapEnum only for C# enums |
+| Aspire + Kubernetes | Leaving `AddAzureServiceBusClient("messaging")` in `Program.cs` when running with RabbitMQ | Conditionalize transport registration via env var or remove Azure SB client entirely for K8s mode |
+| MassTransit + RabbitMQ | Keeping `IServiceBusReceiveEndpointConfigurator` DLQ cast in `AddConfigureEndpointsCallback` | Remove the transport-specific cast block; configure RabbitMQ dead-letter exchanges at queue declaration time |
+| YARP Gateway + Kubernetes | YARP resolving ApiService via Aspire env vars (`services__apiservice__*`) that are absent in K8s | Set explicit `services__apiservice__http__0` env var in Gateway K8s Deployment pointing to `http://apiservice-svc:8080` |
+| Keycloak + Next.js in K8s | NextAuth.js `KEYCLOAK_ISSUER` set to internal cluster DNS — browser cannot reach it for login redirects | Use internal issuer URL for server-side token validation; use external hostname for browser redirect flows; configure separately |
+| PostgreSQL + EF Core + K8s | Migration init container starts before PostgreSQL pod accepts connections | Add `pg_isready` wait loop in init container before any `dotnet ef database update` commands |
+| Next.js + Azure Blob Storage | `next.config.ts` `remotePatterns` hardcodes `127.0.0.1:10000` (Azurite); K8s images from different host return 400 | Parameterize blob storage hostname via environment variable; update `remotePatterns` in Kustomize overlay |
+| OTEL Collector + Aspire Dashboard | Collector `otlp` exporter targeting `localhost:18889`; Dashboard pod has different ClusterIP | Set Collector exporter endpoint to Dashboard's K8s service DNS (`http://aspire-dashboard-svc:18889`) |
+| ArgoCD + Sealed Secrets | ArgoCD syncs `SealedSecret` before `sealed-secrets-controller` is ready; secrets never decrypt | Install Sealed Secrets controller before ArgoCD syncs app manifests; use `sync-wave: "-1"` annotation |
+| kind + GHCR | kind cluster does not inherit Docker Desktop login credentials; image pulls from `ghcr.io` fail with `ErrImagePull` | Create an `imagePullSecret` from GHCR PAT and reference it in every Deployment or configure it as the default service account secret |
+
+---
 
 ## Performance Traps
 
-Patterns that work at small scale but fail as usage grows.
-
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| IsSatisfiedBy in loops over lazy entities | Slow endpoints, N SELECT queries | Disable lazy loading, use AsNoTracking | 100+ entities |
-| Loading all entities then applying Specification | Works in dev, slow in prod | Use ToExpression() in Where clause | 1000+ rows |
-| Multiple SaveChangesInterceptors doing queries | SaveChanges becomes slow | Interceptors should only modify tracked entities | 10+ interceptors |
-| Enumeration.GetAll() called repeatedly | No caching, recreates instances | Cache in static field or use source generator | Called in tight loops |
-| Result.Failure() with stack trace capture | Useful for debugging, allocates | Disable in production or make opt-in | High-frequency operations |
-| Specification.And() chains creating complex SQL | Readable code, terrible query plans | Limit And chains to 3-4, prefer specialized specs | 5+ And chains |
-| Domain events published individually | Works with 1-2 events, slow with many | Batch publish (existing interceptor does this correctly) | 10+ events per aggregate |
+| No resource requests set on pods | kind node OOMs on cold start; pod eviction cascade during seed data loading | Set `requests.cpu: 100m`, `requests.memory: 256Mi` minimum per service | When all 6 services initialize simultaneously on cluster cold start |
+| Next.js image optimization writing to local filesystem only | Optimized images cached per pod replica; each pod re-optimizes same images on first request | Mount a shared PVC for image cache or disable on-disk cache; use CDN for static assets | When more than one Next.js replica runs — invisible in single-replica kind dev |
+| OTEL Collector default batch settings under burst load | Telemetry backpressure; tail traces dropped | Configure `batch` processor with `send_batch_size: 512` and `timeout: 5s` | When all 8 features emit events simultaneously during checkout saga execution |
+| PostgreSQL without PVC persistence in kind | All data lost on pod restart; seed data re-runs on next startup; migration history inconsistent | Use `PersistentVolumeClaim` for PostgreSQL data; kind supports `hostPath` provisioner | Every time the postgres pod is deleted or kind node restarts |
+| No `livenessProbe` on ApiService | Deadlocked pod continues receiving requests; never auto-restarts | Configure liveness probe on `/alive` endpoint (already implemented) with `initialDelaySeconds: 30` | Under heavy saga load when MassTransit consumer threads deadlock |
+| Docker build without BuildKit layer cache in CI | Full image rebuild on every CI run even with identical source | Use `docker/build-push-action` with `cache-from: type=gha` in GitHub Actions | From first CI run — invisible locally where Docker daemon caches layers |
+
+---
+
+## Security Mistakes
+
+| Mistake | Risk | Prevention |
+|---------|------|------------|
+| Committing raw Kubernetes Secrets to Git | Credential exposure in Git history — rotating secrets does not remove history | Use Sealed Secrets exclusively; run `gitleaks` pre-commit hook to block base64-encoded secrets |
+| `requireHttpsMetadata: false` leaking into K8s | JWT validation accepts tokens from HTTP issuers; man-in-the-middle possible | The `Program.cs` already gates this on `IsDevelopment()`; verify K8s env name is `Production` not `Development` |
+| Keycloak admin credentials in ConfigMap as plain text | Admin password readable by any pod in namespace with ConfigMap access | Store Keycloak admin credentials in Sealed Secrets; reference via `secretKeyRef` in Deployment env |
+| CORS origins hardcoded to `*` in YARP Gateway | Any origin can make cross-origin requests including authenticated ones | Set explicit allowed origins in Kustomize overlay — this is a known tech debt item that must be addressed before K8s deployment |
+| ArgoCD admin password never rotated after bootstrap | Default ArgoCD admin credential controls entire cluster deployment | Change ArgoCD admin password immediately post-bootstrap; configure OIDC via Keycloak for ArgoCD admin login |
+| `imagePullPolicy: Always` with mutable `latest` tag | Different pod replicas may run different image versions; unpredictable rollouts | Use immutable tags (digest or semantic version); set `imagePullPolicy: IfNotPresent` for specific version tags |
+
+---
 
 ## "Looks Done But Isn't" Checklist
 
-Things that appear complete but are missing critical pieces.
+- [ ] **Next.js Docker image:** Verify `standalone/server.js` exists inside the built container. Run `docker run --rm <image> ls /app/server.js`. Image size should be under 300MB, not 800MB+.
+- [ ] **Next.js static assets:** Hit the running container's `/` route and verify `/_next/static/` assets load. Static files are not included in standalone output by default and require an explicit `COPY` step.
+- [ ] **MassTransit transport swap:** Verify `AddAzureServiceBusClient` is removed from `Program.cs` for K8s mode. Run a full checkout flow end-to-end; confirm saga completes and stock is deducted.
+- [ ] **Keycloak realm import applied:** After ArgoCD sync, verify the `micro-commerce` realm clients exist via Keycloak Admin API: `GET /admin/realms/micro-commerce/clients`. Do not trust Job `Completed` status alone.
+- [ ] **Sealed Secrets key backed up:** Run `kubectl get secret -n kube-system -l sealedsecrets.bitnami.com/sealed-secrets-key` immediately after cluster creation. Verify the backup file exists outside the cluster before proceeding with any secret sealing.
+- [ ] **OTEL pipeline completeness:** Run a checkout flow (triggers traces + metrics + logs across Catalog, Cart, Ordering, Inventory, Profiles). Verify all three signal types appear in the Aspire Dashboard.
+- [ ] **No localhost in K8s manifests:** `grep -r "localhost" k8s/` must return zero results in any env var value or service URL.
+- [ ] **PostgreSQL data survives pod restart:** `kubectl delete pod postgres-0`; wait for restart; confirm catalog products still return from `/api/catalog/products`.
+- [ ] **ArgoCD sync stability:** Wait 5 minutes after initial sync; application must remain `Synced` without manual intervention. A sync loop becomes apparent within 2-3 reconciliation cycles (default 3 minutes).
+- [ ] **kind image pull from GHCR:** Verify `imagePullSecrets` is configured on each Deployment. Run `kubectl describe pod <name>` and check for `ErrImagePull` events before declaring deployment successful.
+- [ ] **Resource limits present:** Run `kubectl describe nodes` and verify no pods show `BestEffort` QoS class — all pods should have `Burstable` or `Guaranteed` QoS from defined requests.
 
-- [ ] **Entity Base Class:** Added class and updated entities, but forgot to test `Add-Migration` - will break in CI
-- [ ] **Audit Interceptor:** Interceptor registered, but existing entities still set timestamps - creates conflicts
-- [ ] **Result Pattern:** Returned Result from handler, but pipeline behavior still throws - inconsistent
-- [ ] **Enumeration Class:** Created class and EF mapping, but no JsonConverter - API JSON breaks
-- [ ] **Specification:** Implemented IsSatisfiedBy, but used in loop over DB entities - N+1 queries
-- [ ] **Source Generator:** Works locally, but not tested with multi-target - CI fails
-- [ ] **StronglyTypedId JsonConverter:** JSON works, but OpenAPI schema wrong - client generation breaks
-- [ ] **Concurrency:** Added Version property, but didn't populate from xmin - all updates fail
-- [ ] **Migration:** Created migration, but didn't test on copy of production data - data loss on deploy
-- [ ] **Integration Test:** Tests pass, but use in-memory collection not real DB - Specification N+1 not caught
+---
 
 ## Recovery Strategies
 
-When pitfalls occur despite prevention, how to recover.
-
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| Entity base added discriminator column | HIGH | Revert migration, add `modelBuilder.Ignore<Entity>()`, generate new migration |
-| Audit interceptor overwrites domain timestamps | MEDIUM | Change interceptor to check for default value before setting, OR remove domain logic |
-| xmin lost after backup/restore | HIGH | Add explicit Version column, backfill from xmin, update all concurrency checks |
-| Result/Exception mixing breaks error handling | MEDIUM | Create ADR, choose one approach, refactor over 2-3 sprints |
-| Enumeration breaks JSON serialization | LOW | Add JsonConverter, test API contracts, deploy hotfix |
-| Specification causes N+1 | LOW | Add .Include() to query or disable lazy loading |
-| Source generator build breaks | HIGH | Move to single-target project, regenerate, test all consuming projects |
-| StronglyTypedId breaks OpenAPI | MEDIUM | Add SchemaFilter, regenerate OpenAPI, update client SDKs |
-| Multi-interceptor execution order wrong | MEDIUM | Document order, reorder registrations, test with integration test |
+| Sealed Secrets key lost (cluster destroyed) | HIGH | Export all secret values from running pods before teardown; re-seal with new key; commit updated SealedSecrets; ArgoCD auto-syncs |
+| MassTransit transport misconfiguration (startup crash) | MEDIUM | Roll back Deployment to previous image: `kubectl rollout undo deployment/apiservice`; fix transport config; rebuild and push new image |
+| Saga state stuck (transport swap mid-flight) | HIGH | Query `OrderingDbContext.CheckoutStates` for stuck sagas; manually compensate (release stock via API); clear saga rows; redeploy |
+| ArgoCD sync loop (perpetual OutOfSync) | LOW | Identify non-idempotent field via `argocd app diff`; add `ignoreDifferences` rule or remove dynamic annotation from Kustomize output |
+| Keycloak realm config lost (operator one-time import) | MEDIUM | Call Keycloak Admin REST API with realm JSON to upsert; or delete `KeycloakRealmImport` CR and trigger ArgoCD sync |
+| OTEL Collector OOM crash | LOW | Collector is stateless; redeploy pod; data during crash window is unrecoverable but service continues; add `memory_limiter` processor immediately |
+| Migration init container deadlock | MEDIUM | `kubectl delete pod <app-pod>` to trigger restart; add `pg_isready` wait loop to init container script; EF migrations are idempotent — safe to re-run |
+| Next.js SIGTERM not forwarded | LOW | Update Dockerfile `CMD` from `["npm", "start"]` to `["node", "server.js"]`; rebuild image; trigger rolling restart |
+| kind cluster cold-start PostgreSQL race | LOW | Delete crashed pod; pod restarts and init container retries; add `pg_isready` loop to prevent recurrence |
+
+---
 
 ## Pitfall-to-Phase Mapping
 
-How roadmap phases should address these pitfalls.
-
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| Entity base discriminator columns | Phase 1 Task 0 | Generate migration after base class, ensure no discriminator |
-| Audit interceptor timestamp conflicts | Phase 2 Task 0 | Audit existing entities, decide single strategy |
-| xmin backup/restore failure | Phase 3 Task 0 | Test backup/restore cycle, verify version still works |
-| Result/Exception inconsistency | Phase 4 Task 0 | Create ADR before any Result code |
-| Enumeration JSON serialization | Phase 5 Task 0 | Create JsonConverter base, test one enum |
-| Specification N+1 queries | Phase 6 Task Final | Load test with 100+ entities, check query count |
-| Source generator multi-TFM duplication | Phase 7 Task 0 | Define single-target strategy before generator code |
-| StronglyTypedId OpenAPI schema | Phase 8 Task 2 | Validate openapi.json schema, test client generation |
+| Dockerfile layer caching (restore/build separation) | Phase 1 — Dockerfiles | Build image twice; second build must skip `dotnet restore` layer (cache hit in build logs) |
+| Next.js `output: 'standalone'` missing | Phase 1 — Dockerfiles | `docker run` image; confirm `/app/server.js` exists; image size under 300MB |
+| Next.js `npm start` vs `node server.js` | Phase 1 — Dockerfiles | Send `kill -SIGTERM <pid>` to container process; verify graceful shutdown within 30 seconds |
+| Aspire env vars vs K8s DNS conflict | Phase 2 — Kustomize manifests | `kubectl exec` into pod; `printenv \| grep services__` shows K8s DNS values not localhost |
+| EF Core migration race condition | Phase 2 — Kustomize manifests | Delete all pods; restart cluster cold; verify all 8 schemas present after pod stabilizes |
+| Kustomize patch targeting wrong container name | Phase 2 — Kustomize manifests | `kustomize build` output; count container entries per Deployment — exactly one per service |
+| Keycloak realm import one-time-only | Phase 2 — Kustomize manifests | Modify realm JSON; ArgoCD sync; verify change appears in Keycloak Admin UI |
+| MassTransit transport swap (DLQ, saga, outbox) | Phase 3 — Transport configuration | Checkout flow end-to-end; intentionally fail payment; verify stock reservation released |
+| ArgoCD sync loop | Phase 4 — ArgoCD GitOps | Wait 5 minutes post-sync; application remains `Synced` without manual intervention |
+| ArgoCD app-of-apps bootstrap ordering | Phase 4 — ArgoCD GitOps | Tear down and re-bootstrap cluster; verify all child apps sync in correct dependency order |
+| Sealed Secrets key not backed up | Phase 5 — Sealed Secrets | Delete and recreate kind cluster using backed-up key; verify all SealedSecrets decrypt correctly |
+| OTEL Collector silent data loss | Phase 6 — OTEL Collector | Run `otelcol validate`; trigger checkout flow; confirm all three signals appear in Dashboard |
+| OTEL Collector OOM under burst load | Phase 6 — OTEL Collector | `memory_limiter` configured; 10 concurrent checkout flows must not OOM-kill the Collector pod |
+
+---
 
 ## Sources
 
-### EF Core Inheritance & Mapping
-- [Inheritance - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/inheritance)
-- [EF Core Inheritance - Learn About TPC, TPH, and TPT Pattern](https://entityframeworkcore.com/model-inheritance)
-- [Working with Inheritance in Entity Framework Core](https://blog.devart.com/how-to-work-with-inheritance-in-entity-framework-core.html)
-
-### SaveChangesInterceptor & Audit
-- [Interceptors - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/interceptors)
-- [EF Core Interceptors: SaveChangesInterceptor for Auditing Entities in .NET 8 Microservices](https://mehmetozkaya.medium.com/ef-core-interceptors-savechangesinterceptor-for-auditing-entities-in-net-8-microservices-6923190a03b9)
-- [How To Use EF Core Interceptors](https://www.milanjovanovic.tech/blog/how-to-use-ef-core-interceptors)
-
-### PostgreSQL xmin Concurrency
-- [Concurrency Tokens | Npgsql Documentation](https://www.npgsql.org/efcore/modeling/concurrency.html)
-- [Handling Concurrency Conflicts - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/saving/concurrency)
-- [How to use xmin as version control for records · Issue #2778 · npgsql/efcore.pg](https://github.com/npgsql/efcore.pg/issues/2778)
-
-### Result Pattern
-- [Is the result pattern worth it?: Working with the result pattern - Part 4](https://andrewlock.net/working-with-the-result-pattern-part-4-is-the-result-pattern-worth-it/)
-- [The Result Pattern in C#: A comprehensive guide](https://www.linkedin.com/pulse/result-pattern-c-comprehensive-guide-andre-baltieri-wieuf)
-
-### Enumeration Classes
-- [Enum Type Mapping | Npgsql Documentation](https://www.npgsql.org/efcore/mapping/enum.html)
-- [Enum mapping with v9 and ordering · Issue #3390 · npgsql/efcore.pg](https://github.com/npgsql/efcore.pg/issues/3390)
-- [Value Conversions - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions)
-
-### Specification Pattern
-- [Specification pattern: C# implementation · Enterprise Craftsmanship](https://enterprisecraftsmanship.com/posts/specification-pattern-c-implementation/)
-- [Specification Pattern in Java: Enhancing Business Rules with Decoupled Logic](https://java-design-patterns.com/patterns/specification/)
-
-### Source Generators
-- [.NET Handbook | Best Practices / Source Generators](https://infinum.com/handbook/dotnet/best-practices/source-generators)
-- [Errors and warnings associated with source generators - C# reference | Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/source-generator-errors)
-- [.NET 10 based source generator and false IDE unresolved symbol errors · Issue #81475 · dotnet/roslyn](https://github.com/dotnet/roslyn/issues/81475)
-
-### StronglyTypedId
-- [CS0436 Warning · Issue #38 · andrewlock/StronglyTypedId](https://github.com/andrewlock/StronglyTypedId/issues/38)
-- [Exception is thrown when deserializing nullable strongly-typed id · Issue #36 · andrewlock/StronglyTypedId](https://github.com/andrewlock/StronglyTypedId/issues/36)
-- [GitHub - andrewlock/StronglyTypedId](https://github.com/andrewlock/StronglyTypedId)
-
-### MediatR Error Handling
-- [Improving Error Handling with the Result Pattern in MediatR](https://goatreview.com/improving-error-handling-result-pattern-mediatr/)
-- [MediatR Response: Should the Request Handler Return Exceptions?](https://medium.com/sharpassembly/mediatr-response-should-the-request-handler-return-exceptions-8a7928a7c572)
-- [Global Exception Handling for MediatR Requests - Code Maze](https://code-maze.com/csharp-global-exception-handling-for-mediatr-requests/)
-
-### DDD Patterns
-- [DDD Modelling - Aggregates vs Entities: A Practical Guide](https://www.dandoescode.com/blog/ddd-modelling-aggregates-vs-entities)
-- [Modeling Aggregates with DDD and Entity Framework](https://kalele.io/modeling-aggregates-with-ddd-and-entity-framework/)
-- [Creating Domain-Driven Design entity classes with Entity Framework Core](https://www.thereformedprogrammer.net/creating-domain-driven-design-entity-classes-with-entity-framework-core/)
+- [Andrew Lock — Caching Docker layers with multi-stage builds](https://andrewlock.net/caching-docker-layers-on-serverless-build-hosts-with-multi-stage-builds---target,-and---cache-from/)
+- [dotnet/dotnet-docker GitHub Discussion #6123 — NuGet caching in Docker](https://github.com/dotnet/dotnet-docker/discussions/6123)
+- [Next.js Docs — output: standalone](https://nextjs.org/docs/pages/api-reference/config/next-config-js/output)
+- [Next.js Docs — Deploying](https://nextjs.org/docs/app/getting-started/deploying)
+- [Next.js GitHub Discussion #75930 — standalone performance](https://github.com/vercel/next.js/discussions/75930)
+- [Self-hosting Next.js at Scale in 2025 — Sherpa](https://www.sherpa.sh/blog/secrets-of-self-hosting-nextjs-at-scale-in-2025)
+- [dotnet/aspire GitHub Issue #3698 — Ignore URL for service discovery in K8s](https://github.com/dotnet/aspire/issues/3698)
+- [dotnet/aspire GitHub Issue #5096 — Service discovery endpoint env vars priority](https://github.com/dotnet/aspire/issues/5096)
+- [Milan Jovanovic — Using MassTransit with RabbitMQ and Azure Service Bus](https://www.milanjovanovic.tech/blog/using-masstransit-with-rabbitmq-and-azure-service-bus)
+- [MassTransit — Saga Persistence](https://masstransit.io/documentation/patterns/saga/persistence)
+- [MassTransit GitHub Discussion #4953 — EF Core Inbox/Outbox with Saga](https://github.com/MassTransit/MassTransit/discussions/4953)
+- [Scaling a State Machine Saga with Kubernetes](https://medium.com/@czinege.roland/scaling-a-state-machine-saga-with-kubernetes-43fb8e02689a)
+- [Atlas Guides — Schema migrations in K8s with init containers](https://atlasgo.io/guides/deploying/k8s-init-container)
+- [ArgoCD FAQ — Sync options](https://argo-cd.readthedocs.io/en/stable/faq/)
+- [ArgoCD — Cluster Bootstrapping](https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/)
+- [ArgoCD GitHub Discussion #11892 — ApplicationSets vs App-of-apps vs Kustomize](https://github.com/argoproj/argo-cd/discussions/11892)
+- [Argo Blog — CRDs and Kustomize patching lists](https://blog.argoproj.io/argo-crds-and-kustomize-the-problem-of-patching-lists-5cfc43da288c)
+- [Kustomize GitHub Issue #5997 — Strategic merge failures unclear](https://github.com/kubernetes-sigs/kustomize/issues/5997)
+- [Kustomize GitHub Issue #5874 — Unexpected strategic merge patch behavior](https://github.com/kubernetes-sigs/kustomize/issues/5874)
+- [Sealed Secrets GitHub — bitnami-labs/sealed-secrets](https://github.com/bitnami-labs/sealed-secrets)
+- [Medium — Take backup of all sealed-secrets keys](https://ismailyenigul.medium.com/take-backup-of-all-sealed-secrets-keys-or-re-encrypt-regularly-297367b3443)
+- [OpenTelemetry — Collector configuration](https://opentelemetry.io/docs/collector/configuration/)
+- [OpenTelemetry — Collector resiliency](https://opentelemetry.io/docs/collector/resiliency/)
+- [Keycloak — Automating realm import](https://www.keycloak.org/operator/realm-import)
+- [Medium — Keycloak realm import in Kubernetes](https://rahulroyz.medium.com/update-keycloak-realm-configurations-using-import-feature-on-kubernetes-platform-b1b0ed85f7f7)
+- [Kubernetes Blog — 7 Common Kubernetes Pitfalls (2025)](https://kubernetes.io/blog/2025/10/20/seven-kubernetes-pitfalls-and-how-to-avoid/)
+- [Milan Jovanovic — Standalone Aspire Dashboard Setup](https://www.milanjovanovic.tech/blog/standalone-aspire-dashboard-setup-for-distributed-dotnet-applications)
+- [Microsoft Learn — Standalone Aspire dashboard](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dashboard/standalone)
+- [Microsoft Learn — Aspire Kubernetes integration](https://learn.microsoft.com/en-us/dotnet/aspire/deployment/kubernetes-integration)
 
 ---
-*Pitfalls research for: DDD Building Blocks in .NET 10 Modular Monolith*
-*Researched: 2026-02-14*
+*Pitfalls research for: Kubernetes & GitOps deployment — MicroCommerce v3.0*
+*Researched: 2026-02-25*

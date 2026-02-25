@@ -1,266 +1,224 @@
 # Project Research Summary
 
-**Project:** MicroCommerce v2.0 - DDD Foundation Milestone
-**Domain:** DDD Building Blocks for .NET 10 Modular Monolith E-Commerce Platform
-**Researched:** 2026-02-14
+**Project:** MicroCommerce v3.0 — Kubernetes & GitOps Deployment
+**Domain:** K8s deployment with GitOps for .NET 10 microservices e-commerce platform
+**Researched:** 2026-02-25
 **Confidence:** HIGH
 
 ## Executive Summary
 
-MicroCommerce is a .NET 10 modular monolith e-commerce platform demonstrating modern microservices-ready architecture. The v2.0 milestone focuses on strengthening the DDD foundation by adding enterprise-grade building blocks: Entity base classes with audit fields, optimistic concurrency, Result type for explicit error handling, Enumeration classes with behavior, Specification pattern for complex queries, and source generators for StronglyTypedId improvements. These additions integrate with the existing BaseAggregateRoot, DomainEvent infrastructure, and CQRS/MediatR pipeline.
+MicroCommerce v3.0 is a Kubernetes and GitOps deployment milestone layered on top of a fully implemented .NET 10 modular monolith with 182 automated tests, complete DDD building blocks, and .NET Aspire local dev orchestration. The goal is not to change the application but to containerize and deploy it to a kind-based Kubernetes cluster using ArgoCD for GitOps continuous delivery, Kustomize for manifest management, Sealed Secrets for secret safety, and RabbitMQ as the K8s-native messaging transport (replacing the Azure Service Bus emulator which does not run in K8s). The recommended approach is to build in strict dependency order: Dockerfiles first (images are the root dependency for all K8s resources), then infrastructure manifests (PostgreSQL, RabbitMQ, Keycloak), then application manifests, then the CI/CD pipeline, then ArgoCD GitOps wiring, and finally observability.
 
-The recommended approach is **additive, not disruptive**: new building blocks are opt-in, allowing gradual migration without breaking existing code. Core strategy uses battle-tested libraries (FluentResults for Result pattern, Ardalis.SmartEnum for enumerations, Ardalis.Specification for queries, Meziantou.Framework.StronglyTypedId for source generation) to avoid reinventing foundational patterns. Integration happens at three key points: EF Core SaveChangesInterceptors for cross-cutting concerns like audit timestamps, MediatR pipeline behaviors for Result-based validation, and EF Core model conventions for automatic value converter application.
+The key architectural decision is that Aspire and Kubernetes are parallel deployment paths — not competing. Aspire remains the local inner-loop dev tool unchanged; Kustomize overlays and ArgoCD define the cluster state. The primary application code change is a configurable MassTransit transport switch (`MASSTRANSIT_TRANSPORT` env var selecting between Azure Service Bus for Aspire dev and RabbitMQ for K8s). Minor changes are also required in ServiceDefaults (health endpoints must not be gated on `IsDevelopment()`), Gateway appsettings (YARP destinations must use K8s DNS not Aspire service discovery notation), and `next.config.ts` (must add `output: 'standalone'` before the Next.js Dockerfile will produce a correct image).
 
-Key risks center on backward compatibility and integration conflicts: (1) Entity base classes triggering unwanted EF Core TPH inheritance mappings, (2) audit interceptors conflicting with existing domain-driven timestamp management, (3) PostgreSQL xmin concurrency token limitations during backup/restore, (4) Result pattern creating inconsistent error handling when mixed with existing exception-based flow. Prevention strategy: explicit EF Core configuration testing in Phase 1, timestamp ownership audit before interceptor adoption in Phase 2, explicit versioning evaluation in Phase 3, and architectural decision record for Result/Exception boundaries in Phase 4.
+The principal risks are operational rather than architectural. The three highest-impact pitfalls are: (1) Aspire service discovery env vars being absent in K8s causing YARP to route to localhost, (2) the MassTransit transport swap silently breaking the DLQ feature and potentially the checkout saga if the Azure Service Bus-specific code paths are not removed, and (3) EF Core migration init containers racing with PostgreSQL startup causing `CrashLoopBackOff` on cold cluster start. All three are preventable with well-known mitigations documented in PITFALLS.md. Sealed Secrets key management is the only long-term operational risk — a lost master key requires re-sealing every secret — and must be addressed with a key backup procedure in the cluster bootstrap script.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The stack builds on existing .NET 10, EF Core 10, MediatR, and PostgreSQL foundations with four targeted library additions and one build-time source generator. All choices prioritize .NET ecosystem standards, zero runtime dependencies, and seamless EF Core integration.
+The new stack additions for v3.0 are all well-established, version-pinned, and verified against official sources as of 2026-02-25. For container images: `.NET 10 aspnet` runtime (mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled) and `node:22-alpine` for Next.js. Container registry: `ghcr.io` (free, GitHub-token auth, no rate limits). Local Kubernetes: `kind v0.31.0` (K8s 1.35.0, Docker-based, CI-compatible). Manifest management: `Kustomize v5.8.1` for internal services, Helm only for third-party infra. GitOps: `ArgoCD v3.3.2` (v3.3.2 specifically — v3.3.0 and v3.3.1 have a client-side apply migration bug). Secrets: `Sealed Secrets v0.35.0`. Message broker: `RabbitMQ Cluster Operator v2.19.1` with `MassTransit.RabbitMQ 9.0.1`. Observability: `OTEL Collector contrib v0.143.0` feeding the standalone Aspire Dashboard container.
 
 **Core technologies:**
-- **FluentResults 4.0.0**: Result pattern implementation — mature library with .NET 10 compatibility via .NET Standard 2.0, supports multiple errors per result with rich metadata, zero dependencies, better for complex error scenarios than exception-driven flow
-- **Ardalis.SmartEnum 8.2.0**: Strongly-typed enumeration replacement — de facto standard in .NET DDD community, supports rich behavior and custom properties, integrates with EF Core 7+ via value converters
-- **Ardalis.Specification 9.3.1**: Query specification pattern — standard for DDD specifications in .NET, integrates seamlessly with EF Core, promotes query reuse and testability, used in Microsoft eShopOnWeb reference architecture
-- **Meziantou.Framework.StronglyTypedId 2.3.11**: Source generator for StronglyTypedId — most comprehensive generator for the pattern, zero runtime dependencies, generates all needed converters (System.Text.Json, TypeConverter, EF Core), actively maintained (updated Jan 2026)
-
-**Supporting EF Core integration:**
-- Ardalis.Specification.EntityFrameworkCore 9.3.1 for specification evaluation
-- Ardalis.SmartEnum.EFCore 8.2.0 for automatic value conversion
-- All packages forward-compatible with EF Core 10.0.3
-
-**What to avoid:**
-- andrewlock/StronglyTypedId (still in beta 1.0.0-beta08 after 2+ years)
-- Custom ValueObject base class (already obsoleted, readonly record struct is superior)
-- Audit.EntityFramework.Core (too heavyweight for simple timestamp tracking)
-- Custom Result implementation (FluentResults is battle-tested)
+- kind v0.31.0: local K8s cluster — Docker-based, no VM overhead, CI-compatible
+- ArgoCD v3.3.2: GitOps CD controller — app-of-apps pattern, declarative, Git-native; use v3.3.2 specifically (fixes apply migration issue in v3.3.0/3.3.1)
+- Kustomize v5.8.1: K8s manifest management — built into kubectl, plain YAML output, no templating language required
+- Sealed Secrets v0.35.0: GitOps-safe secrets — one-way encryption, safe to commit to Git
+- MassTransit.RabbitMQ 9.0.1: K8s messaging transport — drop-in replacement for Azure SB, same consumer/saga/outbox config unchanged
+- OTEL Collector contrib v0.143.0: telemetry pipeline — receives OTLP from apps, fans out to Aspire Dashboard; use v0.142.0 if OCB/OpAMPSupervisor tooling is needed (broken in v0.143.0)
+- ghcr.io: image registry — free for public repos, `GITHUB_TOKEN` auth, no Docker Hub rate limits
+- docker/build-push-action v6.19.2: CI image builds — BuildKit, GHA layer cache support
 
 ### Expected Features
 
-Research identified six table stakes features for comprehensive DDD building blocks, five differentiating features that provide significant value for domain-rich applications, and three anti-features to explicitly avoid.
+**Must have (P1 — required for a working K8s demo):**
+- Dockerfiles for ApiService, Gateway, and Web (Next.js) — images are the root dependency for all K8s resources
+- Kustomize base manifests for all 3 services (Deployment + Service + ConfigMap)
+- PostgreSQL StatefulSet + PVC + Service — database must persist in cluster
+- RabbitMQ Deployment + Service + ConfigMap — messaging must run in cluster
+- Keycloak Deployment + Service + Realm ConfigMap — auth must run in cluster
+- Liveness and readiness probes on all 3 app services — K8s table stake
+- Resource requests and limits on all containers — without these, kind cluster scheduler misbehaves
+- GitHub Actions workflow: build and push 3 images to ghcr.io on push to master
+- imagePullSecret in cluster for ghcr.io
+- MassTransit RabbitMQ transport support configurable via env var
+- OTEL Collector + standalone Aspire Dashboard — observability must work in cluster
+- ArgoCD Application manifests with app-of-apps root — GitOps deployment working end-to-end
 
-**Must have (table stakes):**
-- **Entity Base Class** — standardizes ID handling, equality, and child entity patterns across all 7 feature modules (currently only aggregates have BaseAggregateRoot, child entities like CartItem/OrderItem lack standard base)
-- **Audit Field Interfaces** — automatic CreatedAt/ModifiedAt tracking via SaveChangesInterceptor (currently manual per aggregate, industry standard is interface-based automation)
-- **Optimistic Concurrency Base** — standardizes RowVersion/Version pattern for aggregates needing concurrency control (currently manual [Timestamp] on Order.Version, should be opt-in base class/interface)
-- **StronglyTypedId Converters** — auto-generated EF Core, System.Text.Json, TypeConverter support for all 15+ ID types (currently manual inheritance from StronglyTypedId base and manual EF configuration)
-- **Specification Pattern** — reusable, composable query logic for complex catalog/ordering queries (currently ad-hoc LINQ scattered across handlers)
-- **Enumeration/SmartEnum** — enums with behavior, encapsulation, type safety, EF Core persistence (currently plain enums like OrderStatus/ProductStatus with no centralized transition logic)
+**Should have (P2 — required for a credible GitOps demo):**
+- Sealed Secrets replacing plain K8s Secrets — GitOps-safe secret management
+- Namespace isolation (`micro-commerce` namespace on all resources)
+- Startup probes for Keycloak and ApiService (slow startup protection)
+- Image tag update automation (CI commits SHA back to overlay, ArgoCD auto-syncs)
+- Kustomize dev overlay for kind cluster (image repo/tag overrides)
 
-**Should have (competitive):**
-- **Result type monad** — railway-oriented error handling eliminates exception-driven flow for business logic failures, enables explicit Result.Success/Failure instead of throwing domain exceptions
-- **Domain Event Dispatcher (in-process)** — automatic MediatR notification handlers before SaveChanges (already have out-of-process via DomainEventInterceptor + MassTransit, could add in-process handlers)
-- **Soft Delete Interface** — ISoftDeletable + interceptor for logical deletion pattern (Product.Archive is manual, could be interface-driven with global query filter)
-
-**Defer (v2+):**
-- Tenant ID Interface (single-tenant application, multi-tenancy is premature)
-- Outbox Pattern Support (MassTransit handles this, would duplicate existing infrastructure)
-- Generic Repository (EF Core DbContext already is unit-of-work + repository, avoid leaky abstraction)
-
-**Migration strategy:**
-All features are backward compatible and opt-in. StronglyTypedId generators are additive, audit interfaces apply progressively, concurrency is opt-in, SmartEnum requires breaking migration (coordinate with frontend), Result pattern is opt-in per command, Specifications are additive.
+**Defer (P3 — post-v3.0):**
+- Horizontal Pod Autoscaler — meaningful only under real load; document as next step
+- Network Policies — requires non-default CNI in kind; production hardening
+- cert-manager + TLS — production hardening only
+- Service Mesh (Istio/Linkerd) — YARP already handles auth/routing; massive overhead for no showcase gain
+- PostgreSQL Operator (CloudNativePG) — HA overkill for showcase
+- Multi-environment overlays (staging, prod) — only dev cluster exists
+- MinIO for Blob Storage — low demo value; disable or use placeholder images in K8s
 
 ### Architecture Approach
 
-Integration is **additive, not disruptive**: new building blocks extend the existing foundation (BaseAggregateRoot, StronglyTypedId, DomainEvent, DomainEventInterceptor) without replacing it. Existing aggregates continue working unchanged while new building blocks provide opt-in capabilities through inheritance (AuditableAggregateRoot extends BaseAggregateRoot) and marker interfaces (IAuditable, IConcurrencyToken).
+The architecture separates concerns cleanly across two layers: CI (GitHub Actions builds and pushes images, then commits updated image tags to the Kustomize overlay) and CD (ArgoCD detects the Git change and syncs the cluster). Application services (ApiService, Gateway, Web) are standard K8s Deployments with ClusterIP Services; stateful dependencies (PostgreSQL, RabbitMQ, Keycloak) are StatefulSets with PersistentVolumeClaims. The YARP Gateway remains the single external entry point (via NodePort or Ingress), and the internal service-to-service communication switches from Aspire's env-var-based service discovery to standard K8s DNS (`http://service-name.namespace.svc.cluster.local:port`). The key configuration delta between local Aspire and K8s is captured entirely in Kustomize overlays — no application source changes beyond the transport switch and health endpoint gate.
 
 **Major components:**
-1. **Entity Hierarchy** — BuildingBlocks.Common gains Entity base for child entities, AuditableAggregateRoot for aggregates needing timestamps, IConcurrencyToken interface for version-tracked aggregates. Existing BaseAggregateRoot unchanged, existing aggregates opt-in to new bases.
-2. **EF Core Interceptors & Conventions** — AuditInterceptor sets CreatedAt/UpdatedAt on IAuditable entities during SavingChanges, runs before existing DomainEventInterceptor. Model conventions (StronglyTypedIdConvention, ConcurrencyTokenConvention) auto-apply value converters and row versioning, eliminating repetitive configuration.
-3. **MediatR Pipeline Extensions** — ResultValidationBehavior for Result-based handlers coexists with existing exception-based ValidationBehavior. MediatR resolves correct behavior based on TResponse constraint (Result vs plain type).
-4. **Query Abstraction** — Specification pattern via ISpecification, base Specification class, and SpecificationEvaluator for EF Core query building. Used directly with DbContext (no repository layer needed), testable in isolation, composable via And/Or.
-5. **Domain Primitives** — FluentResults Result/Result types for explicit error handling, Enumeration base for SmartEnum pattern with business logic, source-generated StronglyTypedId with auto converters (JSON, EF Core, TypeConverter).
-6. **JSON & OpenAPI Integration** — Custom JsonConverters for StronglyTypedId (serializes as primitive, not object) and Enumeration (serializes as string name), ISchemaFilter for correct OpenAPI schema generation (prevents nested object schemas).
+1. GitHub Actions CI — tests, builds 3 container images, pushes to ghcr.io, commits SHA tag back to deploy/overlays/dev/
+2. Git repository (deploy/ directory) — single source of truth for all K8s manifests; ArgoCD syncs from this
+3. ArgoCD (app-of-apps) — root Application watches deploy/argocd/apps/, each child Application independently syncs one service
+4. kind cluster — local K8s environment; 1 control-plane + 2 worker nodes for realistic scheduling
+5. Kustomize base/overlays — base/ has environment-neutral manifests; overlays/dev/ patches image tags, resource limits, and contains SealedSecrets
+6. Sealed Secrets controller — decrypts SealedSecret CRDs committed to Git into live K8s Secrets
+7. OTEL Collector — receives OTLP gRPC from all apps, enriches with K8s metadata, fans out to Aspire Dashboard
+8. Aspire Dashboard (standalone) — developer observability UI for traces, metrics, and logs in K8s (in-memory; clears on pod restart)
 
-**Data flow changes:**
-Exception-based flow continues for infrastructure failures and invalid input (ValidationBehavior throws). Result-based flow is opt-in for business rule violations: ResultValidationBehavior returns Result.Failure instead of throwing. Audit timestamps set automatically via AuditInterceptor before SaveChanges, domain events published after SaveChanges by existing DomainEventInterceptor (unchanged). StronglyTypedId conversion handled transparently by conventions (no manual HasConversion calls).
-
-**Integration points:**
-- SaveChangesInterceptor stack: AuditInterceptor (SavingChanges) → DomainEventInterceptor (SavedChangesAsync)
-- MediatR pipeline: ValidationBehavior (throws) OR ResultValidationBehavior (returns Result) based on TResponse type
-- EF Core conventions: StronglyTypedIdConvention, ConcurrencyTokenConvention applied globally via ConfigureConventions
+**Recommended project structure:**
+```
+deploy/
+  base/                     # Environment-neutral manifests
+    apiservice/, gateway/, web/, postgres/, rabbitmq/, keycloak/, monitoring/
+  overlays/
+    dev/                    # kind cluster overrides: image tags, resource limits
+      patches/
+      sealed-secrets/       # SealedSecret YAMLs safe to commit
+  argocd/
+    apps/                   # Child Application manifests (one per service)
+    root-app.yaml           # Bootstrap: points ArgoCD at apps/ directory
+src/
+  MicroCommerce.ApiService/Dockerfile
+  MicroCommerce.Gateway/Dockerfile
+  MicroCommerce.Web/Dockerfile
+.github/workflows/
+  dotnet-test.yml           # Existing
+  docker-build.yml          # New: build + push to ghcr.io
+  update-manifests.yml      # New: commit SHA tags to overlay
+```
 
 ### Critical Pitfalls
 
-Eight critical pitfalls identified, all with concrete prevention strategies and clear phase assignments for mitigation.
+1. **Aspire service discovery env vars absent in K8s** — YARP routes to localhost causing immediate connection failures. Explicitly set `services__apiservice__http__0=http://apiservice-svc:8080` in Gateway's K8s Deployment env vars via Kustomize overlay. Verify with `kubectl exec` after deployment.
 
-1. **Entity Base Class Breaking EF Core Mappings** — Adding Entity base triggers unwanted TPH (Table-Per-Hierarchy) mapping with discriminator columns. Prevention: explicitly mark Entity as unmapped via modelBuilder.Ignore(), test migration generation in Phase 1 Task 0.
-2. **Audit Interceptor Double-Setting Timestamps** — Existing aggregates set CreatedAt in factory methods (Order.Create), interceptor overwrites causing conflicts. Prevention: choose ONE strategy (domain OR interceptor), audit existing entities before Phase 2, use marker interface only on entities that DON'T manage timestamps.
-3. **PostgreSQL xmin Concurrency Token Loss on Backup/Restore** — xmin is transaction ID, not persistent version number, resets on backup/restore causing all updates to fail. Prevention: add explicit Version column alongside xmin in Phase 3, document xmin limitations, test backup/restore cycle.
-4. **Result Pattern Inconsistency with Existing Exception Flow** — Mixing Result return types with exception-throwing handlers creates unpredictable error handling. Prevention: create ADR in Phase 4 Task 0 defining boundary (business rules → Result, invalid input → exception), never mix both in same handler.
-5. **Enumeration Class Migration Breaking JSON Serialization** — Default Enumeration serialization produces object {"value": 1, "name": "Submitted"}, breaking API contracts expecting "Submitted". Prevention: implement custom JsonConverter in Phase 5 Task 0 before migrating any enums, test API response shape doesn't change.
-6. **Specification IsSatisfiedBy N+1 Queries** — Using spec.IsSatisfiedBy(entity) in loops triggers lazy loads on navigation properties. Prevention: disable lazy loading globally, document Specifications work only on fully loaded entities or in query expressions, load test Phase 6 with 100+ entity collections.
-7. **Source Generator Build Failures in Multi-Target Projects** — Source generators run per TFM, multi-targeting BuildingBlocks.Common causes duplicate type generation. Prevention: keep generator projects single-target .NET 10.0 in Phase 7 Task 0, test before production use.
-8. **StronglyTypedId JSON Breaking OpenAPI Schema** — Custom JsonConverter works but OpenAPI schema shows nested object instead of primitive, breaking client generation. Prevention: implement ISchemaFilter alongside JsonConverter in Phase 8 Task 2, validate openapi.json schema output.
+2. **MassTransit transport swap breaking DLQ and saga** — `AddAzureServiceBusClient("messaging")` throws at startup; `IServiceBusReceiveEndpointConfigurator` DLQ cast silently no-ops on RabbitMQ. Remove the Azure SB client registration and transport-specific DLQ block for K8s mode; use `MASSTRANSIT_TRANSPORT` env var to switch transports. Run a full checkout flow including intentional payment failure to verify saga compensates correctly with RabbitMQ.
 
-**Common technical debt patterns:**
-- Skipping explicit EF Core inheritance configuration testing (NEVER acceptable, always test migration generation)
-- Mixing Result and Exception without clear boundary (only during controlled migration with end date)
-- Using IsSatisfiedBy in loops over database entities (NEVER, only for in-memory collections)
-- Keeping xmin without explicit version column in production (local dev only)
+3. **EF Core migration init container race condition** — 8 DbContexts run migrations at startup; if PostgreSQL is still initializing, init containers crash-loop. Use a single init container with a `pg_isready` wait loop running all 8 migrations sequentially, or call `MigrateAsync()` at startup with a PostgreSQL advisory lock.
+
+4. **Next.js missing `output: 'standalone'`** — Without it, the Docker image is 800MB+ and `SIGTERM` is not forwarded, breaking rolling updates. Add `output: 'standalone'` to `next.config.ts` and use `node server.js` (not `npm start`) as the container entrypoint. Explicitly copy `.next/static/` and `public/` which are not included in standalone output by default.
+
+5. **Sealed Secrets master key lost on cluster teardown** — kind clusters are routinely destroyed. Export the sealing key immediately after bootstrapping and store outside Git. Automate key restoration in the cluster bootstrap script; never rely on a manual step under time pressure.
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure follows a **safe migration path** prioritizing low-risk foundations first, followed by behavior enrichment, then query patterns. Critical dependencies: AuditInterceptor requires IAuditable interface, ResultValidationBehavior requires Result type, Conventions require marker interfaces, Enumeration EF Core support requires EnumerationValueConverter.
+Based on the dependency graph in FEATURES.md and the build order in ARCHITECTURE.md, 6 phases are suggested:
 
-### Phase 15: Foundation - Entity Base & Audit Infrastructure
-**Rationale:** Lowest risk, highest impact. Entity base classes and audit interfaces are purely additive, no breaking changes. Establishes foundation for all subsequent phases.
-**Delivers:** Entity base for child entities (OrderItem, CartItem), AuditableAggregateRoot for aggregates, IAuditable/IConcurrencyToken interfaces, AuditInterceptor with timestamp automation.
-**Addresses:** Table stakes features (Entity Base Class, Audit Field Interfaces, Optimistic Concurrency Base from FEATURES.md).
-**Avoids:** Pitfall 1 (EF Core TPH mapping), Pitfall 2 (timestamp conflicts).
-**Research Flag:** Standard patterns, skip phase research. Include explicit migration testing in Task 0.
+### Phase 1: Dockerfiles and Container Image Pipeline
+**Rationale:** Container images are the root dependency for all K8s resources. Nothing else can proceed without them. This phase also captures the two highest-impact code changes to the existing application (`output: 'standalone'` in next.config.ts, `ASPNETCORE_URLS` and non-root user in .NET Dockerfiles).
+**Delivers:** Three production-ready multi-stage container images (ApiService, Gateway, Web). GitHub Actions workflow builds and pushes to ghcr.io on every master commit using BuildKit layer caching.
+**Addresses:** Dockerfiles for all 3 services, GitHub Actions image pipeline, ghcr.io registry, imagePullSecret.
+**Avoids:** Dockerfile layer caching pitfall (copy .csproj first, restore, then copy source); Next.js standalone output pitfall; `npm start` vs `node server.js` pitfall.
 
-### Phase 16: EF Core Conventions - DRY Improvements
-**Rationale:** Eliminates repetitive manual configuration after base classes exist. Non-breaking, pure refactoring, no behavior changes.
-**Delivers:** StronglyTypedIdConvention for auto value converters, ConcurrencyTokenConvention for auto row versioning, removal of manual HasConversion calls from 30+ entity configurations.
-**Uses:** Existing StronglyTypedId base class, IConcurrencyToken interface from Phase 15.
-**Avoids:** Pitfall 3 (xmin backup/restore) by documenting limitations in Task 0.
-**Research Flag:** Standard EF Core patterns, skip phase research.
+### Phase 2: Infrastructure Manifests and Secrets Strategy
+**Rationale:** Application services cannot start without their dependencies (PostgreSQL, RabbitMQ, Keycloak). Secrets strategy must be established before any credentials are written to files. The EF Core migration init container approach is decided here.
+**Delivers:** PostgreSQL StatefulSet + PVC, RabbitMQ StatefulSet + PVC, Keycloak StatefulSet + realm ConfigMap. Sealed Secrets controller bootstrapped; all credentials sealed and committed to Git.
+**Addresses:** PostgreSQL in K8s, RabbitMQ in K8s, Keycloak in K8s + realm import, secrets management.
+**Avoids:** EF Core migration race condition (init container with pg_isready loop); Keycloak realm one-time-import pitfall (upsert via Admin API instead of operator Job); plain secrets in Git (Sealed Secrets from day one); Sealed Secrets key loss (automated backup in bootstrap script).
 
-### Phase 17: Result Pattern - Explicit Error Handling
-**Rationale:** Foundational behavioral change, requires architectural decision before adoption. Pilot with 1-2 commands to validate approach before broader rollout.
-**Delivers:** FluentResults integration, Result/Result types in BuildingBlocks.Common, ResultExtensions.ToHttpResult(), ResultValidationBehavior for MediatR pipeline.
-**Addresses:** Differentiator feature (Result type monad from FEATURES.md).
-**Avoids:** Pitfall 4 (Result/Exception mixing) via ADR creation in Task 0.
-**Research Flag:** Needs phase research for ADR creation, error handling boundary definition, and pilot command selection.
+### Phase 3: Application Manifests and MassTransit Transport Switch
+**Rationale:** With infrastructure running and images available, application service manifests can be written. The MassTransit transport switch is the most complex application code change and belongs in its own phase to allow complete verification before GitOps is wired.
+**Delivers:** ApiService, Gateway, and Web Deployments + Services + ConfigMaps with correct K8s DNS service discovery. Configurable MassTransit transport (`MASSTRANSIT_TRANSPORT` env var). Health endpoints exposed unconditionally. YARP routing via K8s DNS.
+**Addresses:** Kustomize base manifests, liveness/readiness probes, resource limits, service discovery transition, MassTransit transport abstraction.
+**Avoids:** Aspire service discovery conflict (explicit K8s DNS in YARP config); MassTransit transport swap breaking DLQ/saga (full checkout flow verification before proceeding); health checks gated on IsDevelopment.
 
-### Phase 18: Enumeration Classes - Enums with Behavior
-**Rationale:** Breaking migration requiring frontend coordination. Migrate selectively (only enums with behavior), defer simple label enums.
-**Delivers:** Enumeration base class, EnumerationValueConverter for EF Core, EnumerationJsonConverter for API serialization, migration of OrderStatus and PaymentStatus.
-**Uses:** Ardalis.SmartEnum library from STACK.md.
-**Avoids:** Pitfall 5 (JSON serialization) by implementing JsonConverter in Task 0 before any enum migration.
-**Research Flag:** Standard pattern (library-driven), skip phase research. Coordinate with frontend team for DTO changes.
+### Phase 4: Kustomize Overlays and ArgoCD GitOps
+**Rationale:** Once base manifests work with infrastructure running, the Kustomize dev overlay patches them for the kind cluster, and ArgoCD is configured to manage the cluster state from Git. This phase closes the GitOps management loop.
+**Delivers:** Kustomize dev overlay with image tag patches and resource limit adjustments. ArgoCD app-of-apps root application and per-service child applications. ArgoCD syncs cluster state from Git.
+**Addresses:** Kustomize dev overlay, ArgoCD app-of-apps, namespace isolation, ArgoCD Application manifests.
+**Avoids:** Kustomize strategic merge patch targeting wrong container name (establish naming convention, prefer JSON 6902 patches); ArgoCD sync loop from non-idempotent output (ServerSideApply enabled, no dynamic annotations, immutable image tags); single monolithic ArgoCD application anti-pattern.
 
-### Phase 19: Specification Pattern - Complex Query Logic
-**Rationale:** Highest complexity, defer until simpler patterns established. Adopt selectively for complex queries only.
-**Delivers:** ISpecification/Specification interfaces, SpecificationEvaluator for EF Core, specifications for catalog filtering (PublishedProductsSpec, ProductsByCategorySpec) and order queries (ActiveOrdersSpec).
-**Uses:** Ardalis.Specification patterns from STACK.md.
-**Implements:** Query abstraction component from ARCHITECTURE.md.
-**Avoids:** Pitfall 6 (N+1 queries) via lazy loading disabled globally, performance testing in final task.
-**Research Flag:** Needs phase research for specification selection criteria, query candidates, and testability patterns.
+### Phase 5: CI/CD GitOps Loop Closure
+**Rationale:** Once ArgoCD manages the cluster from Git, the CI pipeline is extended to commit image SHA tags back to the overlay, closing the full GitOps loop. This is a pure automation improvement with no impact on cluster functionality.
+**Delivers:** GitHub Actions update-manifests.yml workflow commits new image SHA tags to deploy/overlays/dev/ after successful image push. ArgoCD detects the Git change and automatically rolls out new pods.
+**Addresses:** Image tag update automation, full GitOps loop (CI build → Git commit → ArgoCD sync → K8s rollout).
+**Avoids:** `latest` tag anti-pattern (SHA-based tags prevent perpetual ArgoCD OutOfSync); non-auditable deployments (every deploy is a traceable Git commit).
 
-### Phase 20: Source Generators - StronglyTypedId Improvements
-**Rationale:** Optional optimization, defer until 20+ StronglyTypedId types exist. Build-time complexity warrants late adoption.
-**Delivers:** Meziantou.Framework.StronglyTypedId integration, assembly-level converter defaults, StronglyTypedIdJsonConverterFactory, gradual migration of existing manual records.
-**Uses:** Meziantou source generator from STACK.md.
-**Avoids:** Pitfall 7 (multi-TFM build failures) by keeping generator project single-target, Pitfall 8 (OpenAPI schema) by adding ISchemaFilter.
-**Research Flag:** Standard generator patterns, skip phase research. Pilot with new feature module before migrating existing IDs.
-
-### Phase 21: Adoption - Migration Across 7 Feature Modules
-**Rationale:** Apply all building blocks across Catalog, Cart, Ordering, Inventory, Messaging, Auth, Admin modules. Validate patterns at scale.
-**Delivers:** All aggregates using AuditableAggregateRoot or IConcurrencyToken, child entities using Entity base, complex queries using Specifications, enums with behavior using SmartEnum.
-**Addresses:** Complete feature coverage from FEATURES.md across all modules.
-**Research Flag:** Needs phase research for per-module migration strategy, testing approach, and rollback plan.
+### Phase 6: Observability — OTEL Collector and Aspire Dashboard
+**Rationale:** Observability is deferred until services are running and the GitOps loop is closed. Adding it last makes debugging OTEL configuration much easier — there is a running application to send telemetry from.
+**Delivers:** OTEL Collector Deployment + Service + ConfigMap with all three signal pipelines (traces, metrics, logs). Standalone Aspire Dashboard Deployment + Service. All app Deployments updated with `OTEL_EXPORTER_OTLP_ENDPOINT` env var pointing to Collector ClusterIP service.
+**Addresses:** OTEL Collector in K8s, standalone Aspire Dashboard, observability without Aspire AppHost.
+**Avoids:** Silent OTEL data loss (explicit pipeline config for all three signals, `memory_limiter` processor mandatory at 400MiB); OTEL Collector OOM under burst checkout saga load; Collector pointing to localhost instead of Dashboard K8s service DNS.
 
 ### Phase Ordering Rationale
 
-- **Phases 15-16 (Foundation + Conventions)** come first because they're non-breaking, low-risk infrastructure changes that establish patterns for subsequent phases. No existing code breaks, pure additive changes.
-- **Phase 17 (Result Pattern)** requires architectural decision (ADR) and pilot validation before broader adoption, so it comes after stable foundation exists. Pilot with 1-2 commands, evaluate developer experience, then decide on broader rollout.
-- **Phase 18 (Enumeration)** is a breaking migration requiring frontend coordination, deferred until non-breaking patterns proven. Selective migration (only enums with behavior like OrderStatus) rather than bulk replacement.
-- **Phase 19 (Specification)** is highest complexity pattern, deferred until simpler building blocks established. Adopt selectively for complex catalog/ordering queries, skip for simple CRUD.
-- **Phase 20 (Source Generators)** is optional build-time optimization, deferred until manual patterns validated and 20+ StronglyTypedId types justify complexity.
-- **Phase 21 (Adoption)** applies all patterns across 7 feature modules, validating at scale after individual patterns proven in earlier phases.
-
-**Critical dependencies:**
-- Phase 16 depends on Phase 15 (conventions need interfaces/base classes)
-- Phase 18 depends on Phase 17 (Enumeration errors benefit from Result pattern)
-- Phase 19 can run parallel to Phase 18 (independent patterns)
-- Phase 21 depends on all previous phases (applies validated patterns)
+- Dockerfiles first because images are the absolute root dependency — no K8s resource can reference a non-existent image, and the Next.js standalone config change must land before any Dockerfile is written.
+- Infrastructure before applications because ApiService cannot start without PostgreSQL and RabbitMQ; Keycloak must be running for JWT validation; Sealed Secrets strategy must exist before any credential is encoded.
+- Application manifests before GitOps wiring because Kustomize overlays patch base manifests that must exist and have been verified working first.
+- ArgoCD before the full CI/CD loop because ArgoCD must be installed and the app-of-apps structure must work before CI can commit back to Git and expect a sync.
+- Observability last because it has no blocking dependencies and a running, stable cluster is the best environment for debugging OTEL pipelines.
 
 ### Research Flags
 
-**Phases needing deeper research during planning:**
-- **Phase 17 (Result Pattern):** Needs ADR creation, error handling boundary definition, pilot command selection criteria, MediatR pipeline behavior registration strategy
-- **Phase 19 (Specification Pattern):** Needs specification selection criteria (when to use vs inline LINQ), query candidate identification across modules, testability patterns, performance testing approach
-- **Phase 21 (Adoption):** Needs per-module migration strategy, testing approach for 7 modules, rollback plan if patterns don't scale
+Phases likely needing deeper research during planning:
+- **Phase 2 (Keycloak realm import):** The operator's `KeycloakRealmImport` CR runs exactly once (IGNORE_EXISTING strategy). The upsert-via-Admin-API approach needs a tested script for this project's specific realm structure and ArgoCD sync lifecycle. Research the Keycloak Admin REST API realm PUT behavior for existing realms with active sessions.
+- **Phase 3 (MassTransit DLQ for RabbitMQ):** The existing `DeadLetterQueueService` uses `ServiceBusClient` (Azure SDK). A RabbitMQ-compatible implementation using the RabbitMQ Management API or a graceful disable path needs design. This is the most uncertain code change in the milestone.
+- **Phase 5 (Image tag update strategy):** Two viable approaches — CI commits back to repo (needs write token, creates noise commits) vs. ArgoCD Image Updater (additional controller). For a showcase the commit-back approach is simpler but the implementation has several edge cases (race conditions when multiple services build simultaneously, GPG signing requirements on the bot commit).
 
-**Phases with standard patterns (skip research-phase):**
-- **Phase 15 (Foundation):** Well-documented EF Core interceptor patterns, standard entity base class implementations
-- **Phase 16 (Conventions):** EF Core model conventions are standard .NET feature with official docs
-- **Phase 18 (Enumeration):** Library-driven (Ardalis.SmartEnum), standard value converter patterns
-- **Phase 20 (Source Generators):** Standard Meziantou generator with comprehensive docs, pilot-first approach validates before broader use
+Phases with standard, well-documented patterns (safe to skip research-phase):
+- **Phase 1 (Dockerfiles):** Multi-stage .NET and Next.js Dockerfiles are thoroughly documented; exact patterns with layer caching strategy are provided in STACK.md and ARCHITECTURE.md.
+- **Phase 4 (Kustomize + ArgoCD):** App-of-apps is an official ArgoCD pattern with comprehensive documentation and the exact YAML structure is provided in ARCHITECTURE.md.
+- **Phase 6 (OTEL Collector):** OTEL Collector configuration for K8s is well-documented; the exact ConfigMap with all three signal pipelines and memory_limiter is provided in STACK.md and PITFALLS.md.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All libraries are .NET ecosystem standards with official docs, active maintenance, and production usage. FluentResults (4.0.0), Ardalis.SmartEnum (8.2.0), Ardalis.Specification (9.3.1), Meziantou.StronglyTypedId (2.3.11) all verified .NET 10 compatible. Zero deprecated or beta dependencies. |
-| Features | HIGH | Feature landscape based on official Microsoft DDD guidance, Enterprise Craftsmanship patterns, and verified with current codebase structure. All six table stakes features identified in existing code gaps (child entities lack base, audit is manual, concurrency is manual per aggregate). |
-| Architecture | HIGH | Integration points verified against existing codebase (DomainEventInterceptor at line 159-174, ValidationBehavior exists, StronglyTypedId pattern in use). Additive approach proven via explicit opt-in mechanisms (marker interfaces, inheritance). Data flow changes documented with before/after examples. |
-| Pitfalls | HIGH | All eight critical pitfalls sourced from official docs (EF Core inheritance, PostgreSQL xmin docs), real-world issues (GitHub issues on StronglyTypedId, Specification N+1 patterns), and architectural best practices (Result/Exception mixing anti-pattern). Prevention strategies tied to specific phase tasks. |
+| Stack | HIGH | All versions verified against official GitHub releases and NuGet as of 2026-02-25. One caveat: OTEL Collector v0.143.0 has a known OCB/OpAMPSupervisor artifact issue — use v0.142.0 if those tools are needed. ArgoCD v3.3.2 specifically required (v3.3.0/v3.3.1 have a client-side apply bug). |
+| Features | HIGH | Feature set is grounded in K8s deployment fundamentals. P1/P2/P3 prioritization is well-reasoned and matches community consensus for a showcase-grade deployment. Anti-feature decisions (no service mesh, no HPA, no PostgreSQL operator) are clearly justified. |
+| Architecture | HIGH | All patterns (app-of-apps, Sealed Secrets workflow, multi-stage Dockerfiles, Kustomize base/overlay structure, service discovery transition table) are from official documentation. The Aspire + K8s parallel deployment model is confirmed by Microsoft docs. |
+| Pitfalls | HIGH | All 10 critical pitfalls are sourced from official Aspire GitHub issues, MassTransit GitHub discussions, Kubernetes Blog, and community production experience. The Keycloak realm import limitation is documented operator behavior. Each pitfall has concrete warning signs and recovery steps. |
 
 **Overall confidence:** HIGH
 
-All research areas backed by official documentation (Microsoft Learn EF Core, .NET architecture guides), established library documentation (Ardalis, Meziantou), and verified against existing MicroCommerce codebase patterns. No speculative recommendations or untested patterns.
-
 ### Gaps to Address
 
-Minor gaps requiring validation during implementation, none blocking roadmap creation:
-
-- **User Tracking (CreatedBy/ModifiedBy):** Research identified interfaces (IUserCreatable, IUserModifiable) but deferred implementation details. Handle during Phase 15 planning: decide if user tracking is needed, if so implement IHttpContextAccessor integration in AuditInterceptor.
-- **SmartEnum vs Enumeration Base Class:** Both Ardalis.SmartEnum (library) and custom Enumeration base (hand-rolled) are viable. Recommend Ardalis for consistency with other Ardalis packages (GuardClauses, Specification), but validate during Phase 18 planning based on team preference.
-- **Specification Repository Integration:** Research shows Specification pattern works with both direct DbContext access (current MicroCommerce approach) and repository abstraction. Phase 19 planning should confirm continuing DbContext-direct pattern vs introducing repository layer.
-- **Source Generator Choice:** Meziantou.Framework.StronglyTypedId recommended over andrewlock/StronglyTypedId based on stability, but Phase 20 planning should validate converter generation meets all needs (EF Core, JSON, TypeConverter, OpenAPI).
+- **Azurite / Azure Blob Storage in K8s:** `next.config.ts` `remotePatterns` hardcodes `127.0.0.1:10000` (Azurite). The decision to disable blob features in K8s (placeholder images) vs. add a MinIO StatefulSet has not been made. Resolve during Phase 3 planning — if placeholder images are used, the image optimization config must still be updated to avoid Next.js returning 400 on image requests from a different hostname.
+- **Ingress vs NodePort for external access:** FEATURES.md notes Ingress NGINX is EOL March 2026. ARCHITECTURE.md shows NGINX Ingress in the diagram but for kind local access NodePort on the Gateway service is the simplest path. For more polished routing Traefik or Envoy Gateway are the alternatives. Resolve at the start of Phase 3 — the choice affects the Gateway Service manifest type.
+- **MassTransit v9 commercial license scope:** MassTransit v9 transitioned to commercial licensing; v8 remains Apache 2.0 through end of 2026. The project already uses v9. For a public showcase project, confirm whether the license terms permit open-source use before Phase 3. If not, evaluate pinning `MassTransit.RabbitMQ` at 8.x.
+- **CORS allowed origins in YARP Gateway:** PITFALLS.md flags that CORS is currently `*` in the YARP Gateway — acknowledged tech debt that must be addressed before K8s deployment. An explicit allowed-origins list is needed in the Kustomize overlay ConfigMap for the Gateway. The correct origin value (the K8s-exposed hostname for the Web service) depends on the Ingress/NodePort decision above.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-
-**Official Microsoft Documentation:**
-- [Microsoft Learn - Seedwork DDD base classes](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/seedwork-domain-model-base-classes-interfaces)
-- [Microsoft Learn - Enumeration classes over enum types](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types)
-- [Microsoft Learn - EF Core Inheritance](https://learn.microsoft.com/en-us/ef/core/modeling/inheritance)
-- [Microsoft Learn - EF Core Interceptors](https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/interceptors)
-- [Microsoft Learn - EF Core Concurrency Handling](https://learn.microsoft.com/en-us/ef/core/saving/concurrency)
-- [Microsoft Learn - EF Core Value Conversions](https://learn.microsoft.com/en/ef/core/modeling/value-conversions)
-
-**Library Documentation:**
-- [FluentResults GitHub Repository](https://github.com/altmann/FluentResults)
-- [Ardalis.SmartEnum GitHub Repository](https://github.com/ardalis/SmartEnum) and [official docs](https://www.nuget.org/packages/Ardalis.SmartEnum/)
-- [Ardalis.Specification GitHub Repository](https://github.com/ardalis/Specification) and [official docs](http://specification.ardalis.com/)
-- [Meziantou.Framework.StronglyTypedId](https://github.com/meziantou/Meziantou.Framework) and [blog post](https://www.meziantou.net/strongly-typed-ids-with-csharp-source-generators.htm)
-
-**EF Core Integration:**
-- [Npgsql - Concurrency Tokens with xmin](https://www.npgsql.org/efcore/modeling/concurrency.html)
-- [Npgsql - Enum Type Mapping](https://www.npgsql.org/efcore/mapping/enum.html)
+- [kind v0.31.0 Release](https://github.com/kubernetes-sigs/kind/releases) — version verification, K8s default, compatibility matrix
+- [ArgoCD v3.3.2 Release](https://github.com/argoproj/argo-cd/releases) — latest stable, apply migration bug fix
+- [Kustomize v5.8.1 Release](https://github.com/kubernetes-sigs/kustomize/releases) — namespace propagation regression fix
+- [Sealed Secrets v0.35.0](https://github.com/bitnami-labs/sealed-secrets/releases) — version, workflow documentation
+- [MassTransit.RabbitMQ 9.0.1](https://www.nuget.org/packages/MassTransit.RabbitMQ/) — NuGet latest stable, Feb 7, 2026
+- [RabbitMQ Cluster Operator v2.19.1](https://github.com/rabbitmq/cluster-operator/releases) — operator version, Feb 6, 2026
+- [ArgoCD cluster bootstrapping / app-of-apps](https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/) — official pattern
+- [Kustomize documentation](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) — overlay structure
+- [MassTransit RabbitMQ quick start](https://masstransit.io/quick-starts/rabbitmq) — transport configuration
+- [Next.js standalone output docs](https://nextjs.org/docs/app/getting-started/deploying) — output mode, static asset handling
+- [.NET container docs](https://learn.microsoft.com/en-us/dotnet/core/docker/build-container) — multi-stage Dockerfile patterns
+- [Aspire Dashboard standalone](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dashboard/standalone) — ports, environment config
+- [OpenTelemetry Collector on Kubernetes](https://opentelemetry.io/docs/platforms/kubernetes/collector/) — pipeline configuration
 
 ### Secondary (MEDIUM confidence)
+- [dotnet/aspire GitHub Issue #3698](https://github.com/dotnet/aspire/issues/3698) — service discovery env var conflict with K8s
+- [dotnet/aspire GitHub Issue #5096](https://github.com/dotnet/aspire/issues/5096) — env var priority in service discovery
+- [Kustomize vs Helm 2026 analysis](https://tasrieit.com/blog/helm-vs-kustomize-kubernetes-comparison-2026) — hybrid Kustomize+Helm recommendation
+- [CNCF Blog — ArgoCD app-of-apps 2025](https://www.cncf.io/blog/2025/10/07/managing-kubernetes-workloads-using-the-app-of-apps-pattern-in-argocd-2/)
+- [Sealed Secrets key backup](https://ismailyenigul.medium.com/take-backup-of-all-sealed-secrets-keys-or-re-encrypt-regularly-297367b3443)
+- [Keycloak realm import in K8s](https://rahulroyz.medium.com/update-keycloak-realm-configurations-using-import-feature-on-kubernetes-platform-b1b0ed85f7f7)
+- [Kubernetes Blog — Common Pitfalls 2025](https://kubernetes.io/blog/2025/10/20/seven-kubernetes-pitfalls-and-how-to-avoid/)
+- [Atlas — Schema migrations in K8s with init containers](https://atlasgo.io/guides/deploying/k8s-init-container)
+- [Milan Jovanovic — Using MassTransit with RabbitMQ and Azure Service Bus](https://www.milanjovanovic.tech/blog/using-masstransit-with-rabbitmq-and-azure-service-bus)
 
-**DDD Patterns & Best Practices:**
-- [Enterprise Craftsmanship - Entity Base Class](https://enterprisecraftsmanship.com/posts/entity-base-class/)
-- [Enterprise Craftsmanship - Specification Pattern C# Implementation](https://enterprisecraftsmanship.com/posts/specification-pattern-c-implementation/)
-- [Medium - Clean DDD Lessons: Audit Metadata](https://medium.com/unil-ci-software-engineering/clean-ddd-lessons-audit-metadata-for-domain-entities-5935a5c6db5b)
-- [ByteAether - Building Enterprise Data Access Layer: Automated Auditing](https://byteaether.github.io/2025/building-an-enterprise-data-access-layer-automated-auditing/)
-
-**Result Pattern Implementation:**
-- [Milan Jovanovic - Functional Error Handling with Result Pattern](https://www.milanjovanovic.tech/blog/functional-error-handling-in-dotnet-with-the-result-pattern)
-- [NikolaTech - Result Pattern in .NET](https://www.nikolatech.net/blogs/result-pattern-manage-errors-in-dotnet)
-- [Andrew Lock - Is Result Pattern Worth It?](https://andrewlock.net/working-with-the-result-pattern-part-4-is-the-result-pattern-worth-it/)
-- [GoatReview - Improving Error Handling with Result Pattern in MediatR](https://goatreview.com/improving-error-handling-result-pattern-mediatr/)
-
-**SmartEnum & Specification Usage:**
-- [Code Maze - Improve Enums with SmartEnum Library](https://code-maze.com/csharp-improve-enums-with-the-smartenum-library/)
-- [NimblePros - Persisting Smart Enum with EF Core](https://blog.nimblepros.com/blogs/persisting-a-smart-enum-with-entity-framework-core/)
-- [NimblePros - Getting Started with Specifications](https://blog.nimblepros.com/blogs/getting-started-with-specifications/)
-- [Anton DevTips - Specification Pattern in EF Core](https://antondevtips.com/blog/specification-pattern-in-ef-core-flexible-data-access-without-repositories)
-
-**StronglyTypedId Patterns:**
-- [Andrew Lock - Rebuilding StronglyTypedId as Source Generator](https://andrewlock.net/rebuilding-stongly-typed-id-as-a-source-generator-1-0-0-beta-release/)
-- [Andrew Lock - Using Strongly-Typed Entity IDs with EF Core](https://andrewlock.net/using-strongly-typed-entity-ids-to-avoid-primitive-obsession-part-3/)
-- [Anton DevTips - Better Entity Identification with Strongly Typed IDs](https://antondevtips.com/blog/a-better-way-to-handle-entity-identification-in-dotnet-with-strongly-typed-ids)
-
-### Tertiary (LOW confidence, needs validation)
-
-**Performance & Pitfalls:**
-- [Medium - Optimistic Locking in .NET](https://medium.com/@imaanmzr/optimistic-locking-in-net-bd677916ef60)
-- [Learn EF Core - Concurrency Management](https://www.learnentityframeworkcore.com/concurrency)
-- [Digital Drummer - EF Core Audit Fields](https://digitaldrummerj.me/ef-core-audit-columns/)
-
-**Source Generator Edge Cases:**
-- [.NET Handbook - Source Generator Best Practices](https://infinum.com/handbook/dotnet/best-practices/source-generators)
-- [GitHub - StronglyTypedId CS0436 Warning Issue](https://github.com/andrewlock/StronglyTypedId/issues/38)
+### Tertiary (LOW confidence, validate at implementation time)
+- [Ingress NGINX EOL March 2026](https://www.chkk.io/blog/ingress-nginx-deprecation) — replacement guidance; confirm current status before Phase 3
+- [MassTransit v9 announcement](https://masstransit.io/introduction/v9-announcement) — commercial license terms; confirm applicability for public showcase use case
 
 ---
-*Research completed: 2026-02-14*
+*Research completed: 2026-02-25*
 *Ready for roadmap: yes*

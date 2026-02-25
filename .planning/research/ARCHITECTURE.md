@@ -1,1279 +1,611 @@
-# Architecture Research: DDD Building Blocks Integration
+# Architecture Research: Kubernetes & GitOps Deployment
 
-**Domain:** DDD Building Blocks Integration with Existing .NET 10 Modular Monolith
-**Researched:** 2026-02-14
+**Domain:** K8s deployment for .NET modular monolith with GitOps
+**Researched:** 2026-02-25
 **Confidence:** HIGH
 
-## Executive Summary
+## Standard Architecture
 
-MicroCommerce has an existing DDD foundation with BaseAggregateRoot, StronglyTypedId, DomainEvent, and DomainEventInterceptor. The new building blocks (Entity base, audit interfaces, concurrency, Result type, Enumeration class, Specification pattern, source generators) integrate by extending this foundation, not replacing it. Integration happens at three key points: EF Core configurations, MediatR pipeline behaviors, and domain entity inheritance hierarchy.
-
-**Key Integration Principle:** Additive, not disruptive. Existing aggregates continue working unchanged while new building blocks provide opt-in capabilities.
-
-## Existing Architecture Snapshot
-
-### Current Building Blocks
+### System Overview
 
 ```
-BuildingBlocks.Common/
-├── BaseAggregateRoot<TId>        # Aggregate root base with domain events
-├── IAggregateRoot                # Marker interface
-├── StronglyTypedId<T>            # Base record for typed IDs
-├── ValueObject                   # OBSOLETE class-based value objects
-├── Events/
-│   ├── DomainEvent               # Event base with EventId
-│   ├── IDomainEvent              # Event marker interface
-│   └── EventId                   # StronglyTypedId<Guid> for events
+┌──────────────────────────────────────────────────────────────────┐
+│                    GitHub Actions (CI)                            │
+│   Test → Build Images → Push ghcr.io → Update image tags        │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │ git push (image tag update)
+┌────────────────────────────▼─────────────────────────────────────┐
+│                 Git Repo (GitOps source of truth)                 │
+│   deploy/base/         deploy/overlays/dev/      argocd/         │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │ ArgoCD polls / syncs
+┌────────────────────────────▼─────────────────────────────────────┐
+│              Kubernetes Cluster (kind for dev)                    │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │   Ingress (NGINX) — routes *.micro-commerce.local           │ │
+│  └──────┬─────────────────────────────────────────────┬────────┘ │
+│         │ /                                           │ /api/*   │
+│  ┌──────▼──────────┐                        ┌────────▼────────┐  │
+│  │ Web (Next.js)   │                        │ Gateway (YARP)  │  │
+│  │ port 3000       │                        │ port 8080       │  │
+│  └─────────────────┘                        └────────┬────────┘  │
+│                                                      │           │
+│                                             ┌────────▼────────┐  │
+│                                             │ ApiService      │  │
+│                                             │ (.NET 10)       │  │
+│                                             └────────┬────────┘  │
+│                                                      │           │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────▼────────┐  │
+│  │  PostgreSQL  │  │  RabbitMQ    │  │  Keycloak             │  │
+│  │  (StatefulSet│  │  (StatefulSet│  │  (StatefulSet)        │  │
+│  └──────────────┘  └──────────────┘  └───────────────────────┘  │
+│                                                                   │
+│  ┌──────────────────────────────────────────────────────────────┐ │
+│  │  Monitoring: OTEL Collector + Aspire Dashboard               │ │
+│  └──────────────────────────────────────────────────────────────┘ │
+│                                                                   │
+│  ┌──────────────┐  ┌──────────────┐                             │
+│  │  ArgoCD      │  │  Sealed      │                             │
+│  │  (GitOps)    │  │  Secrets     │                             │
+│  └──────────────┘  └──────────────┘                             │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-### Current Domain Model Pattern
-
-```csharp
-// Aggregate Root
-public sealed class Order : BaseAggregateRoot<OrderId>
-{
-    [Timestamp]
-    public uint Version { get; private set; }  // PostgreSQL xmin concurrency
-
-    private readonly List<OrderItem> _items = [];
-    public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
-
-    private Order(OrderId id) : base(id) { }
-
-    public static Order Create(...)
-    {
-        var order = new Order(OrderId.New()) { ... };
-        order.AddDomainEvent(new OrderSubmittedDomainEvent(...));
-        return order;
-    }
-}
-
-// Child Entity (No base class currently)
-public sealed class OrderItem
-{
-    public OrderItemId Id { get; private set; }
-    public OrderId OrderId { get; private set; }
-    private OrderItem() { }
-    internal static OrderItem Create(...) => new OrderItem { ... };
-}
-
-// StronglyTypedId
-public sealed record OrderId(Guid Value) : StronglyTypedId<Guid>(Value)
-{
-    public static OrderId New() => new(Guid.NewGuid());
-    public static OrderId From(Guid value) => new(value);
-}
-
-// Value Object (readonly record struct pattern)
-public readonly record struct ProductName
-{
-    public string Value { get; init; }
-    private ProductName(string value) => Value = value;
-    public static ProductName Create(string value) { ... }
-}
-```
-
-### Current EF Core Integration
-
-**DbContext per Feature Module:**
-```csharp
-public class OrderingDbContext : DbContext
-{
-    public DbSet<Order> Orders => Set<Order>();
-    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.HasDefaultSchema("ordering");
-        modelBuilder.ApplyConfigurationsFromAssembly(...);
-    }
-}
-```
-
-**Value Converters for StronglyTypedId:**
-```csharp
-builder.Property(o => o.Id)
-    .HasConversion(
-        id => id.Value,
-        value => OrderId.From(value));
-```
-
-**Complex Properties for Value Objects:**
-```csharp
-builder.ComplexProperty(p => p.Price, priceBuilder =>
-{
-    priceBuilder.Property(m => m.Amount)
-        .HasColumnName("Price")
-        .HasPrecision(18, 2);
-});
-```
-
-**PostgreSQL xmin for Concurrency:**
-```csharp
-builder.Property(o => o.Version).IsRowVersion();  // Maps to xmin
-```
-
-### Current MediatR Pipeline
-
-**Single Pipeline Behavior:**
-```csharp
-// ValidationBehavior<TRequest, TResponse>
-public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-{
-    public async Task<TResponse> Handle(...)
-    {
-        if (!_validators.Any()) return await next();
-
-        var failures = await ValidateAsync(request);
-        if (failures.Any()) throw new ValidationException(failures);
-
-        return await next();
-    }
-}
-```
-
-**Handler Pattern (Exception-based):**
-```csharp
-public record SubmitOrderCommand(...) : IRequest<Guid>;
-
-public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Guid>
-{
-    public async Task<Guid> Handle(SubmitOrderCommand request, CancellationToken ct)
-    {
-        var order = Order.Create(...);
-        _context.Orders.Add(order);
-        await _context.SaveChangesAsync(ct);
-        return order.Id.Value;  // Direct Guid return
-    }
-}
-```
-
-**Exception Handling:**
-- GlobalExceptionHandler maps ValidationException, NotFoundException, ConflictException to ProblemDetails
-- Exceptions propagate up through MediatR pipeline
-
-### Current Domain Event Publishing
-
-**DomainEventInterceptor:**
-```csharp
-public class DomainEventInterceptor : SaveChangesInterceptor
-{
-    public override async ValueTask<int> SavedChangesAsync(...)
-    {
-        // After SaveChanges completes:
-        var aggregates = context.ChangeTracker.Entries<IAggregateRoot>();
-        var events = aggregates.SelectMany(a => a.DomainEvents);
-
-        foreach (var aggregate in aggregates)
-            aggregate.ClearDomainEvents();
-
-        foreach (var @event in events)
-            await _publishEndpoint.Publish(@event, @event.GetType(), ct);
-    }
-}
-```
-
-## New Building Blocks Integration
-
-### 1. Entity Base Class with Audit
-
-**New Component:**
-```csharp
-// BuildingBlocks.Common/Entity.cs
-public abstract class Entity<TId> : IEntity<TId>, IAuditable
-{
-    public TId Id { get; protected init; }
-    public DateTimeOffset CreatedAt { get; private set; }
-    public DateTimeOffset? UpdatedAt { get; private set; }
-
-    protected Entity(TId id) => Id = id;
-}
-
-// Interfaces
-public interface IEntity<TId> { TId Id { get; } }
-public interface IAuditable
-{
-    DateTimeOffset CreatedAt { get; }
-    DateTimeOffset? UpdatedAt { get; }
-}
-```
-
-**Integration Point: Aggregate Hierarchy**
-
-**EXISTING (unchanged):**
-```csharp
-public sealed class Order : BaseAggregateRoot<OrderId>  // Still works
-{
-    // No audit properties — teams choose when to add
-}
-```
-
-**NEW (opt-in audit):**
-```csharp
-public abstract class AuditableAggregateRoot<TId> : BaseAggregateRoot<TId>, IAuditable
-{
-    public DateTimeOffset CreatedAt { get; private set; }
-    public DateTimeOffset? UpdatedAt { get; private set; }
-
-    protected AuditableAggregateRoot(TId id) : base(id) { }
-}
-
-// Opt-in usage
-public sealed class Product : AuditableAggregateRoot<ProductId>
-{
-    private Product(ProductId id) : base(id) { }
-}
-```
-
-**Integration Point: Child Entities**
-
-**BEFORE (no base class):**
-```csharp
-public sealed class OrderItem
-{
-    public OrderItemId Id { get; private set; }
-    private OrderItem() { }
-}
-```
-
-**AFTER (opt-in Entity base):**
-```csharp
-public sealed class OrderItem : Entity<OrderItemId>
-{
-    private OrderItem(OrderItemId id) : base(id) { }
-}
-```
-
-**Integration Point: EF Core AuditInterceptor**
-
-**New Component:**
-```csharp
-// ApiService/Common/Persistence/AuditInterceptor.cs
-public class AuditInterceptor : SaveChangesInterceptor
-{
-    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, ...)
-    {
-        var entries = eventData.Context?.ChangeTracker
-            .Entries<IAuditable>()
-            .Where(e => e.State is EntityState.Added or EntityState.Modified);
-
-        foreach (var entry in entries)
-        {
-            if (entry.State == EntityState.Added)
-                entry.Property(nameof(IAuditable.CreatedAt)).CurrentValue = DateTimeOffset.UtcNow;
-
-            if (entry.State == EntityState.Modified)
-                entry.Property(nameof(IAuditable.UpdatedAt)).CurrentValue = DateTimeOffset.UtcNow;
-        }
-
-        return base.SavingChanges(eventData, result);
-    }
-}
-```
-
-**DbContext Registration (per-module):**
-```csharp
-services.AddDbContext<OrderingDbContext>((sp, options) =>
-{
-    options.UseNpgsql(connectionString)
-        .AddInterceptors(
-            sp.GetRequiredService<DomainEventInterceptor>(),  // Existing
-            sp.GetRequiredService<AuditInterceptor>());       // NEW
-});
-```
-
-**Data Flow:**
-```
-SaveChangesAsync()
-    ↓
-AuditInterceptor.SavingChanges()          // Sets CreatedAt/UpdatedAt
-    ↓
-[Database write]
-    ↓
-DomainEventInterceptor.SavedChangesAsync() // Publishes domain events
-```
-
-### 2. Concurrency Handling
-
-**Current Approach:** Direct PostgreSQL xmin mapping
-```csharp
-[Timestamp]
-public uint Version { get; private set; }
-```
-
-**New Building Block (optional pattern):**
-```csharp
-// BuildingBlocks.Common/IConcurrencyToken.cs
-public interface IConcurrencyToken { uint Version { get; } }
-
-// Opt-in usage in aggregates
-public sealed class Order : BaseAggregateRoot<OrderId>, IConcurrencyToken
-{
-    [Timestamp]
-    public uint Version { get; private set; }
-}
-```
-
-**Integration Point: EF Core Configuration Convention**
-
-**New Convention (applied globally):**
-```csharp
-// ApiService/Common/Persistence/ConcurrencyTokenConvention.cs
-public class ConcurrencyTokenConvention : IModelFinalizingConvention
-{
-    public void ProcessModelFinalizing(IConventionModelBuilder modelBuilder, ...)
-    {
-        foreach (var entityType in modelBuilder.Metadata.GetEntityTypes())
-        {
-            if (typeof(IConcurrencyToken).IsAssignableFrom(entityType.ClrType))
-            {
-                entityType.FindProperty(nameof(IConcurrencyToken.Version))
-                    ?.SetIsRowVersion(true);
-            }
-        }
-    }
-}
-
-// DbContext
-protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-{
-    configurationBuilder.Conventions.Add(_ => new ConcurrencyTokenConvention());
-}
-```
-
-**Benefit:** Removes repetitive `builder.Property(o => o.Version).IsRowVersion()` in every configuration.
-
-**Conflict Handling (unchanged):**
-```csharp
-try
-{
-    await _context.SaveChangesAsync();
-}
-catch (DbUpdateConcurrencyException ex)
-{
-    throw new ConflictException("Order was modified by another transaction.");
-}
-```
-
-### 3. Result Type Pattern
-
-**New Component:**
-```csharp
-// BuildingBlocks.Common/Result.cs
-public class Result
-{
-    public bool IsSuccess { get; }
-    public Error Error { get; }
-
-    protected Result(bool isSuccess, Error error)
-    {
-        IsSuccess = isSuccess;
-        Error = error;
-    }
-
-    public static Result Success() => new(true, Error.None);
-    public static Result Failure(Error error) => new(false, error);
-}
-
-public class Result<TValue> : Result
-{
-    private readonly TValue? _value;
-
-    public TValue Value => IsSuccess
-        ? _value!
-        : throw new InvalidOperationException("Cannot access value of failed result.");
-
-    private Result(TValue value) : base(true, Error.None) => _value = value;
-    private Result(Error error) : base(false, error) => _value = default;
-
-    public static Result<TValue> Success(TValue value) => new(value);
-    public static new Result<TValue> Failure(Error error) => new(error);
-}
-
-public record Error(string Code, string Message)
-{
-    public static readonly Error None = new(string.Empty, string.Empty);
-}
-```
-
-**Integration Point: MediatR Commands/Queries**
-
-**BEFORE (exception-based):**
-```csharp
-public record SubmitOrderCommand(...) : IRequest<Guid>;
-
-public class Handler : IRequestHandler<SubmitOrderCommand, Guid>
-{
-    public async Task<Guid> Handle(...)
-    {
-        if (cart.Items.Count == 0)
-            throw new ValidationException("Cart is empty");  // Exception path
-
-        var order = Order.Create(...);
-        await _context.SaveChangesAsync();
-        return order.Id.Value;
-    }
-}
-```
-
-**AFTER (Result-based, opt-in):**
-```csharp
-public record SubmitOrderCommand(...) : IRequest<Result<Guid>>;
-
-public class Handler : IRequestHandler<SubmitOrderCommand, Result<Guid>>
-{
-    public async Task<Result<Guid>> Handle(...)
-    {
-        if (cart.Items.Count == 0)
-            return Result<Guid>.Failure(new Error("Cart.Empty", "Cart is empty"));
-
-        var order = Order.Create(...);
-        await _context.SaveChangesAsync();
-        return Result<Guid>.Success(order.Id.Value);
-    }
-}
-```
-
-**Integration Point: Endpoint Mapping**
-
-**BEFORE:**
-```csharp
-app.MapPost("/orders", async (SubmitOrderCommand cmd, ISender sender) =>
-{
-    try
-    {
-        var orderId = await sender.Send(cmd);
-        return Results.Ok(orderId);
-    }
-    catch (ValidationException ex)
-    {
-        return Results.BadRequest(ex.Errors);
-    }
-});
-```
-
-**AFTER (with Result extension):**
-```csharp
-// ApiService/Common/Extensions/ResultExtensions.cs
-public static class ResultExtensions
-{
-    public static IResult ToHttpResult<T>(this Result<T> result)
-    {
-        return result.IsSuccess
-            ? Results.Ok(result.Value)
-            : Results.BadRequest(new { error = result.Error.Code, message = result.Error.Message });
-    }
-}
-
-// Endpoint
-app.MapPost("/orders", async (SubmitOrderCommand cmd, ISender sender) =>
-{
-    var result = await sender.Send(cmd);
-    return result.ToHttpResult();
-});
-```
-
-**Integration Point: Pipeline Behavior (optional)**
-
-**New ValidationBehavior for Result:**
-```csharp
-public class ResultValidationBehavior<TRequest, TResponse>
-    : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull
-    where TResponse : Result
-{
-    private readonly IEnumerable<IValidator<TRequest>> _validators;
-
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, ...)
-    {
-        if (!_validators.Any()) return await next();
-
-        var failures = await ValidateAsync(request);
-        if (failures.Any())
-        {
-            var error = new Error("Validation.Failed", string.Join(", ", failures.Select(f => f.ErrorMessage)));
-            return (TResponse)(object)Result.Failure(error);  // No exception thrown
-        }
-
-        return await next();
-    }
-}
-```
-
-**Coexistence Strategy:**
-- **Exception-based:** `IRequest<T>` handlers continue using ValidationBehavior (throws exception)
-- **Result-based:** `IRequest<Result<T>>` handlers use ResultValidationBehavior (returns failure)
-- Register both behaviors, MediatR resolves based on TResponse constraint
-
-### 4. Enumeration Class (Smart Enums)
-
-**Current State:** Using primitive enums
-```csharp
-public enum OrderStatus
-{
-    Submitted,
-    StockReserved,
-    Paid,
-    // ...
-}
-```
-
-**New Building Block:**
-```csharp
-// BuildingBlocks.Common/Enumeration.cs
-public abstract class Enumeration<TEnum> : IComparable<TEnum>
-    where TEnum : Enumeration<TEnum>
-{
-    private static readonly Lazy<Dictionary<int, TEnum>> _allValues = new(() =>
-        typeof(TEnum)
-            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
-            .Where(f => f.FieldType == typeof(TEnum))
-            .Select(f => (TEnum)f.GetValue(null)!)
-            .ToDictionary(e => e.Value));
-
-    public string Name { get; }
-    public int Value { get; }
-
-    protected Enumeration(int value, string name)
-    {
-        Value = value;
-        Name = name;
-    }
-
-    public static IReadOnlyCollection<TEnum> GetAll() => _allValues.Value.Values.ToList();
-    public static TEnum FromValue(int value) => _allValues.Value[value];
-    public static TEnum? FromName(string name) => GetAll().FirstOrDefault(e => e.Name == name);
-
-    public override string ToString() => Name;
-    public int CompareTo(TEnum? other) => Value.CompareTo(other?.Value);
-}
-```
-
-**Integration Point: Domain Model**
-
-**Migration Path (backward compatible):**
-```csharp
-// Step 1: Create enumeration class (enum stays for now)
-public sealed class OrderStatus : Enumeration<OrderStatus>
-{
-    public static readonly OrderStatus Submitted = new(0, nameof(Submitted));
-    public static readonly OrderStatus StockReserved = new(1, nameof(StockReserved));
-    public static readonly OrderStatus Paid = new(2, nameof(Paid));
-    public static readonly OrderStatus Confirmed = new(3, nameof(Confirmed));
-
-    private OrderStatus(int value, string name) : base(value, name) { }
-
-    // Business logic methods
-    public bool CanTransitionTo(OrderStatus targetStatus) => (this, targetStatus) switch
-    {
-        (var s, var t) when s == Submitted && t == StockReserved => true,
-        (var s, var t) when s == StockReserved && t == Paid => true,
-        (var s, var t) when s == Paid && t == Confirmed => true,
-        _ => false
-    };
-
-    public bool IsTerminal() => this == Delivered || this == Failed || this == Cancelled;
-}
-```
-
-**Integration Point: EF Core Value Converter**
-
-**New Converter:**
-```csharp
-// ApiService/Common/Persistence/EnumerationValueConverter.cs
-public class EnumerationValueConverter<TEnum> : ValueConverter<TEnum, int>
-    where TEnum : Enumeration<TEnum>
-{
-    public EnumerationValueConverter()
-        : base(
-            enumeration => enumeration.Value,
-            value => Enumeration<TEnum>.FromValue(value))
-    {
-    }
-}
-
-// Configuration
-builder.Property(o => o.Status)
-    .HasConversion(new EnumerationValueConverter<OrderStatus>())
-    .HasMaxLength(32)
-    .IsRequired();
-```
-
-**Integration Point: API Serialization**
-
-**JSON Converter:**
-```csharp
-public class EnumerationJsonConverter<TEnum> : JsonConverter<TEnum>
-    where TEnum : Enumeration<TEnum>
-{
-    public override TEnum Read(ref Utf8JsonReader reader, Type typeToConvert, ...)
-    {
-        var value = reader.GetString();
-        return Enumeration<TEnum>.FromName(value)
-            ?? throw new JsonException($"Unknown {typeof(TEnum).Name}: {value}");
-    }
-
-    public override void Write(Utf8JsonWriter writer, TEnum value, ...)
-    {
-        writer.WriteStringValue(value.Name);
-    }
-}
-
-// Register globally
-services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.Converters.Add(new EnumerationJsonConverter<OrderStatus>());
-});
-```
-
-### 5. Specification Pattern
-
-**New Component:**
-```csharp
-// BuildingBlocks.Common/Specification/ISpecification.cs
-public interface ISpecification<T>
-{
-    Expression<Func<T, bool>>? Criteria { get; }
-    List<Expression<Func<T, object>>> Includes { get; }
-    List<string> IncludeStrings { get; }
-    Expression<Func<T, object>>? OrderBy { get; }
-    Expression<Func<T, object>>? OrderByDescending { get; }
-    int Take { get; }
-    int Skip { get; }
-    bool IsPagingEnabled { get; }
-}
-
-// Base specification
-public abstract class Specification<T> : ISpecification<T>
-{
-    public Expression<Func<T, bool>>? Criteria { get; private set; }
-    public List<Expression<Func<T, object>>> Includes { get; } = [];
-    // ... other properties
-
-    protected void AddCriteria(Expression<Func<T, bool>> criteria) => Criteria = criteria;
-    protected void AddInclude(Expression<Func<T, object>> includeExpression) => Includes.Add(includeExpression);
-    protected void ApplyPaging(int skip, int take) { Skip = skip; Take = take; IsPagingEnabled = true; }
-    protected void ApplyOrderBy(Expression<Func<T, object>> orderByExpression) => OrderBy = orderByExpression;
-}
-```
-
-**Integration Point: Query Handlers**
-
-**BEFORE (ad-hoc LINQ):**
-```csharp
-public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, List<ProductDto>>
-{
-    public async Task<List<ProductDto>> Handle(...)
-    {
-        var query = _context.Products
-            .Where(p => p.Status == ProductStatus.Published);
-
-        if (request.CategoryId.HasValue)
-            query = query.Where(p => p.CategoryId == new CategoryId(request.CategoryId.Value));
-
-        if (!string.IsNullOrEmpty(request.Search))
-            query = query.Where(p => p.Name.Value.Contains(request.Search));
-
-        return await query
-            .OrderByDescending(p => p.CreatedAt)
-            .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .Select(p => new ProductDto(...))
-            .ToListAsync();
-    }
-}
-```
-
-**AFTER (with Specification):**
-```csharp
-// Specification
-public class PublishedProductsSpec : Specification<Product>
-{
-    public PublishedProductsSpec(Guid? categoryId, string? search, int page, int pageSize)
-    {
-        AddCriteria(p => p.Status == ProductStatus.Published);
-
-        if (categoryId.HasValue)
-            AddCriteria(p => p.CategoryId == new CategoryId(categoryId.Value));
-
-        if (!string.IsNullOrEmpty(search))
-            AddCriteria(p => p.Name.Value.Contains(search));
-
-        ApplyOrderByDescending(p => p.CreatedAt);
-        ApplyPaging((page - 1) * pageSize, pageSize);
-    }
-}
-
-// Specification Evaluator
-public static class SpecificationEvaluator
-{
-    public static IQueryable<T> GetQuery<T>(IQueryable<T> inputQuery, ISpecification<T> spec)
-        where T : class
-    {
-        var query = inputQuery;
-
-        if (spec.Criteria != null)
-            query = query.Where(spec.Criteria);
-
-        query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
-        query = spec.IncludeStrings.Aggregate(query, (current, include) => current.Include(include));
-
-        if (spec.OrderBy != null)
-            query = query.OrderBy(spec.OrderBy);
-        else if (spec.OrderByDescending != null)
-            query = query.OrderByDescending(spec.OrderByDescending);
-
-        if (spec.IsPagingEnabled)
-            query = query.Skip(spec.Skip).Take(spec.Take);
-
-        return query;
-    }
-}
-
-// Handler
-public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, List<ProductDto>>
-{
-    public async Task<List<ProductDto>> Handle(...)
-    {
-        var spec = new PublishedProductsSpec(request.CategoryId, request.Search, request.Page, request.PageSize);
-
-        return await SpecificationEvaluator
-            .GetQuery(_context.Products, spec)
-            .Select(p => new ProductDto(...))
-            .ToListAsync();
-    }
-}
-```
-
-**Benefits:**
-- Specifications are testable in isolation (unit tests without database)
-- Reusable across queries
-- Complex business rules encapsulated
-- Easier to understand than scattered LINQ
-
-**Integration Point: Repository Pattern (optional)**
-
-MicroCommerce currently uses DbContext directly in handlers (no repository layer). If adding repositories later:
-
-```csharp
-public interface IRepository<T> where T : class
-{
-    Task<List<T>> ListAsync(ISpecification<T> spec);
-    Task<T?> FirstOrDefaultAsync(ISpecification<T> spec);
-    Task<int> CountAsync(ISpecification<T> spec);
-}
-
-public class EfRepository<T> : IRepository<T> where T : class
-{
-    private readonly DbContext _context;
-
-    public async Task<List<T>> ListAsync(ISpecification<T> spec)
-    {
-        return await SpecificationEvaluator.GetQuery(_context.Set<T>(), spec).ToListAsync();
-    }
-}
-```
-
-### 6. Source Generators for StronglyTypedId
-
-**Current Pattern (manual):**
-```csharp
-public sealed record OrderId(Guid Value) : StronglyTypedId<Guid>(Value)
-{
-    public static OrderId New() => new(Guid.NewGuid());
-    public static OrderId From(Guid value) => new(value);
-}
-
-// EF Core configuration (manual in every entity configuration)
-builder.Property(o => o.Id)
-    .HasConversion(
-        id => id.Value,
-        value => OrderId.From(value));
-```
-
-**New Building Block: Source Generator Integration**
-
-**Option 1: StronglyTypedId Library**
-```csharp
-// Add NuGet: StronglyTypedId
-// BuildingBlocks.Common/StronglyTypedIdConfig.cs
-
-[assembly: StronglyTypedIdDefaults(
-    backingType: StronglyTypedIdBackingType.Guid,
-    converters: StronglyTypedIdConverter.EfCoreValueConverter | StronglyTypedIdConverter.SystemTextJson)]
-
-// Usage
-[StronglyTypedId]
-public partial struct OrderId { }
-
-// Generated code includes:
-// - OrderId(Guid value) constructor
-// - Guid Value property
-// - static OrderId New()
-// - EF Core ValueConverter
-// - System.Text.Json JsonConverter
-```
-
-**Option 2: Custom Source Generator (more control)**
-
-**Integration Point: EF Core Convention**
-
-**Problem:** Even with source-generated ValueConverters, still need to apply them:
-```csharp
-builder.Property(o => o.Id).HasConversion(new OrderIdValueConverter());  // Repetitive
-```
-
-**Solution: Global ValueConverter Convention**
-```csharp
-// ApiService/Common/Persistence/StronglyTypedIdConvention.cs
-public class StronglyTypedIdConvention : IModelFinalizingConvention
-{
-    public void ProcessModelFinalizing(IConventionModelBuilder modelBuilder, ...)
-    {
-        foreach (var entityType in modelBuilder.Metadata.GetEntityTypes())
-        {
-            foreach (var property in entityType.GetProperties())
-            {
-                if (IsStronglyTypedId(property.ClrType))
-                {
-                    var converterType = typeof(StronglyTypedIdValueConverter<>).MakeGenericType(property.ClrType);
-                    var converter = (ValueConverter)Activator.CreateInstance(converterType)!;
-                    property.SetValueConverter(converter);
-                }
-            }
-        }
-    }
-
-    private static bool IsStronglyTypedId(Type type)
-    {
-        return type.BaseType is { IsGenericType: true }
-            && type.BaseType.GetGenericTypeDefinition() == typeof(StronglyTypedId<>);
-    }
-}
-
-// DbContext
-protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-{
-    configurationBuilder.Conventions.Add(_ => new StronglyTypedIdConvention());
-}
-```
-
-**Result:** No more manual `.HasConversion()` calls. Convention auto-applies converters to all StronglyTypedId properties.
-
-**Integration Point: JSON Serialization**
-
-**Problem:** StronglyTypedId serializes as object by default:
-```json
-{ "orderId": { "value": "123e4567-e89b-12d3-a456-426614174000" } }
-```
-
-**Solution: Custom JsonConverter**
-```csharp
-// BuildingBlocks.Common/StronglyTypedIdJsonConverter.cs
-public class StronglyTypedIdJsonConverterFactory : JsonConverterFactory
-{
-    public override bool CanConvert(Type typeToConvert)
-    {
-        return typeToConvert.BaseType is { IsGenericType: true }
-            && typeToConvert.BaseType.GetGenericTypeDefinition() == typeof(StronglyTypedId<>);
-    }
-
-    public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-    {
-        var valueType = typeToConvert.BaseType!.GetGenericArguments()[0];
-        var converterType = typeof(StronglyTypedIdJsonConverter<,>).MakeGenericType(typeToConvert, valueType);
-        return (JsonConverter)Activator.CreateInstance(converterType)!;
-    }
-}
-
-public class StronglyTypedIdJsonConverter<TId, TValue> : JsonConverter<TId>
-    where TId : StronglyTypedId<TValue>
-{
-    public override TId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var value = JsonSerializer.Deserialize<TValue>(ref reader, options)!;
-        return (TId)Activator.CreateInstance(typeToConvert, value)!;
-    }
-
-    public override void Write(Utf8JsonWriter writer, TId value, JsonSerializerOptions options)
-    {
-        JsonSerializer.Serialize(writer, value.Value, options);
-    }
-}
-
-// Registration
-services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.Converters.Add(new StronglyTypedIdJsonConverterFactory());
-});
-```
-
-**Result:**
-```json
-{ "orderId": "123e4567-e89b-12d3-a456-426614174000" }
-```
+### Component Responsibilities
+
+| Component | Responsibility | K8s Resource |
+|-----------|---------------|--------------|
+| Web (Next.js) | Customer-facing SSR storefront + admin UI | Deployment + ClusterIP Service |
+| Gateway (YARP) | Centralized auth, rate limiting, routing to ApiService | Deployment + ClusterIP Service |
+| ApiService (.NET 10) | Modular monolith backend — all feature modules | Deployment + ClusterIP Service |
+| PostgreSQL | Shared database, schema-per-feature (8 DbContexts) | StatefulSet + PVC |
+| RabbitMQ | Domain events transport (replaces Azure SB emulator) | StatefulSet + PVC |
+| Keycloak | JWT issuer and identity provider | StatefulSet + PVC |
+| NGINX Ingress | External traffic routing, hostname-based dispatch | IngressClass + Ingress |
+| ArgoCD | GitOps controller pulling from Git, applying manifests | Deployment (system namespace) |
+| Sealed Secrets | In-cluster decryption of encrypted secrets committed to Git | CRD controller |
+| OTEL Collector | Receives OTLP telemetry, fans out to Aspire Dashboard | Deployment |
+| Aspire Dashboard | Developer observability (traces, metrics, logs) | Deployment |
 
 ## Recommended Project Structure
 
-### BuildingBlocks.Common (New Components)
-
 ```
-BuildingBlocks.Common/
-├── BaseAggregateRoot.cs              # EXISTING (unchanged)
-├── AuditableAggregateRoot.cs         # NEW (inherits BaseAggregateRoot)
-├── Entity.cs                         # NEW (base for child entities)
-├── IAuditable.cs                     # NEW (audit interface)
-├── IConcurrencyToken.cs              # NEW (concurrency marker)
-├── StronglyTypedId.cs                # EXISTING (unchanged)
-├── ValueObject.cs                    # EXISTING (obsolete, keep for migration)
-├── Result/
-│   ├── Result.cs                     # NEW (success/failure result)
-│   ├── Result{T}.cs                  # NEW (generic result)
-│   └── Error.cs                      # NEW (error record)
-├── Enumeration/
-│   └── Enumeration{TEnum}.cs         # NEW (smart enum base)
-├── Specification/
-│   ├── ISpecification{T}.cs          # NEW (specification interface)
-│   ├── Specification{T}.cs           # NEW (specification base)
-│   └── SpecificationEvaluator.cs     # NEW (EF Core query builder)
-├── Events/                           # EXISTING (unchanged)
-│   ├── DomainEvent.cs
-│   ├── IDomainEvent.cs
-│   └── EventId.cs
-└── Converters/
-    ├── StronglyTypedIdJsonConverterFactory.cs    # NEW
-    └── EnumerationJsonConverter{TEnum}.cs        # NEW
-```
+deploy/
+├── base/                           # Shared K8s manifests (all environments)
+│   ├── kustomization.yaml          # Lists all resources
+│   ├── namespace.yaml              # micro-commerce namespace
+│   │
+│   ├── apiservice/
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   └── configmap.yaml         # Non-secret config (OTEL endpoint, etc.)
+│   │
+│   ├── gateway/
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   └── configmap.yaml         # YARP route config (appsettings.json content)
+│   │
+│   ├── web/
+│   │   ├── deployment.yaml
+│   │   └── service.yaml
+│   │
+│   ├── postgres/
+│   │   ├── statefulset.yaml
+│   │   ├── service.yaml
+│   │   └── pvc.yaml
+│   │
+│   ├── rabbitmq/
+│   │   ├── statefulset.yaml
+│   │   ├── service.yaml
+│   │   └── pvc.yaml
+│   │
+│   ├── keycloak/
+│   │   ├── statefulset.yaml
+│   │   ├── service.yaml
+│   │   ├── pvc.yaml
+│   │   └── configmap.yaml         # Realm JSON mounted as volume
+│   │
+│   ├── monitoring/
+│   │   ├── otel-collector.yaml    # Deployment + Service + ConfigMap
+│   │   └── aspire-dashboard.yaml  # Deployment + Service
+│   │
+│   └── ingress/
+│       └── ingress.yaml           # Routes to gateway and web
+│
+├── overlays/
+│   └── dev/                        # kind cluster overlay
+│       ├── kustomization.yaml      # References base, applies patches
+│       ├── patches/
+│       │   ├── apiservice-image.yaml    # Image tag patch
+│       │   ├── gateway-image.yaml
+│       │   ├── web-image.yaml
+│       │   └── resource-limits.yaml    # Relaxed limits for dev
+│       └── sealed-secrets/
+│           ├── postgres-credentials.yaml      # SealedSecret
+│           ├── rabbitmq-credentials.yaml      # SealedSecret
+│           ├── keycloak-credentials.yaml      # SealedSecret
+│           └── app-secrets.yaml              # SealedSecret (AUTH_SECRET, etc.)
+│
+└── argocd/
+    ├── apps/                       # App-of-apps child applications
+    │   ├── apiservice-app.yaml
+    │   ├── gateway-app.yaml
+    │   ├── web-app.yaml
+    │   ├── postgres-app.yaml
+    │   ├── rabbitmq-app.yaml
+    │   ├── keycloak-app.yaml
+    │   └── monitoring-app.yaml
+    └── root-app.yaml               # Parent app pointing to apps/
 
-### ApiService/Common (New Infrastructure)
+src/
+├── MicroCommerce.AppHost/          # Aspire orchestrator (local dev only)
+├── MicroCommerce.ApiService/
+│   └── Dockerfile                  # Multi-stage .NET 10 build
+├── MicroCommerce.Gateway/
+│   └── Dockerfile                  # Multi-stage .NET 10 build
+└── MicroCommerce.Web/
+    └── Dockerfile                  # Multi-stage Next.js 16 build
 
-```
-ApiService/Common/
-├── Behaviors/
-│   ├── ValidationBehavior.cs                     # EXISTING (exception-based)
-│   └── ResultValidationBehavior.cs               # NEW (Result-based)
-├── Persistence/
-│   ├── DomainEventInterceptor.cs                 # EXISTING (unchanged)
-│   ├── AuditInterceptor.cs                       # NEW
-│   ├── Conventions/
-│   │   ├── StronglyTypedIdConvention.cs          # NEW (auto value converters)
-│   │   └── ConcurrencyTokenConvention.cs         # NEW (auto concurrency)
-│   └── Converters/
-│       └── EnumerationValueConverter{TEnum}.cs   # NEW
-├── Extensions/
-│   └── ResultExtensions.cs                       # NEW (Result → IResult)
-└── Exceptions/                                   # EXISTING (unchanged)
-    ├── ValidationException.cs
-    ├── NotFoundException.cs
-    └── GlobalExceptionHandler.cs
-```
-
-### Feature Module Integration
-
-```
-Features/Ordering/
-├── Domain/
-│   ├── Entities/
-│   │   ├── Order.cs                 # BEFORE: BaseAggregateRoot<OrderId>
-│   │   │                            # AFTER:  AuditableAggregateRoot<OrderId> (opt-in)
-│   │   └── OrderItem.cs             # BEFORE: No base class
-│   │                                # AFTER:  Entity<OrderItemId> (opt-in)
-│   ├── ValueObjects/
-│   │   ├── OrderStatus.cs           # BEFORE: enum
-│   │   │                            # AFTER:  Enumeration<OrderStatus> (migration)
-│   │   └── OrderId.cs               # BEFORE: Manual record
-│   │                                # AFTER:  [StronglyTypedId] partial struct (opt-in)
-│   └── Specifications/              # NEW
-│       └── ActiveOrdersSpec.cs      # Reusable query logic
-├── Application/
-│   ├── Commands/
-│   │   └── SubmitOrder/
-│   │       ├── SubmitOrderCommand.cs    # BEFORE: IRequest<Guid>
-│   │       │                            # AFTER:  IRequest<Result<Guid>> (opt-in)
-│   │       └── SubmitOrderHandler.cs    # Returns Result<Guid>
-│   └── Queries/
-│       └── GetOrders/
-│           ├── GetOrdersQuery.cs        # Uses specifications
-│           └── GetOrdersHandler.cs      # SpecificationEvaluator integration
-└── Infrastructure/
-    ├── OrderingDbContext.cs         # Adds AuditInterceptor, conventions
-    └── Configurations/
-        └── OrderConfiguration.cs    # BEFORE: Manual .HasConversion()
-                                     # AFTER:  Convention auto-applies (cleaner)
+.github/
+└── workflows/
+    ├── dotnet-test.yml             # Existing: unit + integration tests
+    ├── docker-build.yml            # New: build + push images to ghcr.io
+    └── update-manifests.yml        # New: update image tags in deploy/ overlays
 ```
 
-## Data Flow Changes
+### Structure Rationale
 
-### Before: Exception-Based Flow
+- **deploy/base/:** Common manifests shared across all environments. No image tags here — they are patched in overlays. This is the DRY foundation.
+- **deploy/overlays/dev/:** Kind cluster-specific configuration. Contains image tag patches and sealed secrets encrypted for this cluster's key.
+- **deploy/argocd/:** GitOps operator configuration. App-of-apps pattern keeps each service independently syncable while a single root app bootstraps everything.
+- **Dockerfiles co-located with source:** Each service owns its build definition, following standard practice and enabling `docker build -f src/MicroCommerce.ApiService/Dockerfile .` from repo root.
 
-```
-HTTP Request
-    ↓
-Endpoint → MediatR.Send(Command)
-    ↓
-ValidationBehavior
-    ├─ Validation fails → throw ValidationException
-    └─ Validation passes → next()
-         ↓
-    CommandHandler
-         ├─ Business rule fails → throw InvalidOperationException
-         └─ Success → return TResponse
-              ↓
-         DbContext.SaveChangesAsync()
-              ↓
-         DomainEventInterceptor (publishes events)
-              ↓
-    Endpoint returns Results.Ok(response)
+## Architectural Patterns
 
-[On Exception]
-    GlobalExceptionHandler catches → ProblemDetails → HTTP 4xx
-```
+### Pattern 1: Aspire for Dev, K8s Manifests for Cluster
 
-### After: Result-Based Flow (Opt-In)
+**What:** .NET Aspire remains the local development orchestrator. Kubernetes manifests are the production/cluster deployment target. These are parallel paths — not one replacing the other.
 
-```
-HTTP Request
-    ↓
-Endpoint → MediatR.Send(Command)
-    ↓
-ResultValidationBehavior
-    ├─ Validation fails → return Result.Failure(error)  [NO EXCEPTION]
-    └─ Validation passes → next()
-         ↓
-    CommandHandler
-         ├─ Business rule fails → return Result.Failure(error)  [NO EXCEPTION]
-         └─ Success → return Result.Success(value)
-              ↓
-         DbContext.SaveChangesAsync()
-              ↓
-         AuditInterceptor (sets CreatedAt/UpdatedAt)  [NEW]
-              ↓
-         [Database write]
-              ↓
-         DomainEventInterceptor (publishes events)
-              ↓
-    Endpoint → result.ToHttpResult() → HTTP 200/400
+**When to use:** Always. Aspire provides the fastest inner loop (hot reload, dashboard, dependency injection), while Kustomize manifests provide the declarative cluster state.
 
-[Exceptions only for infrastructure failures]
+**Trade-offs:**
+- Pro: Developers keep fast Aspire workflow unchanged.
+- Pro: Cluster deployment is fully declarative and GitOps-driven.
+- Con: Two deployment models to maintain (Aspire AppHost + K8s manifests).
+- Mitigation: The Aspire Kubernetes integration (`Aspire.Hosting.Kubernetes`) can generate a starter manifest — use as a starting point, not final output.
+
+**Example — Aspire (local):**
+```csharp
+// AppHost.cs — stays unchanged for local dev
+var apiService = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
+    .WithReference(keycloak)
+    .WithReference(appDb)
+    .WithReference(messaging);  // still Azure SB emulator locally
 ```
 
-### Audit Timestamps Flow
-
-```
-Entity implements IAuditable
-    ↓
-SaveChangesAsync() called
-    ↓
-AuditInterceptor.SavingChanges()
-    ├─ EntityState.Added → Set CreatedAt = UtcNow
-    └─ EntityState.Modified → Set UpdatedAt = UtcNow
-         ↓
-[Database write with timestamps]
-```
-
-### StronglyTypedId Conversion Flow
-
-```
-Domain Layer: Order { OrderId Id }
-    ↓
-EF Core Write: StronglyTypedIdConvention
-    ├─ Detects StronglyTypedId<Guid>
-    └─ Auto-applies ValueConverter → Guid column
-         ↓
-Database: orders.id (uuid column)
-         ↓
-EF Core Read: ValueConverter
-    ├─ Guid from DB → OrderId.From(guid)
-    └─ Returns OrderId
-         ↓
-JSON Serialization: StronglyTypedIdJsonConverter
-    └─ OrderId → "uuid-string" (not {"value": "uuid-string"})
+**Example — K8s Deployment:**
+```yaml
+# deploy/base/apiservice/deployment.yaml
+spec:
+  containers:
+    - name: apiservice
+      env:
+        - name: ConnectionStrings__appdb
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: connection-string
+        - name: ConnectionStrings__messaging
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: amqp-url
 ```
 
-## Anti-Patterns to Avoid
+### Pattern 2: Service Discovery — Aspire Env Vars vs K8s DNS
 
-### Anti-Pattern 1: Forcing Result on All Handlers
+**What:** Aspire injects `services__<name>__https__0` environment variables for service-to-service discovery. Kubernetes uses DNS-based discovery via ClusterIP services.
 
-**What teams do:** Mandate `IRequest<Result<T>>` for all commands/queries immediately.
+**Aspire approach (local):**
+```
+services__gateway__https__0 = https://localhost:5210
+services__apiservice__https__0 = https://localhost:7180
+```
 
-**Why it's wrong:**
-- Breaking change for existing handlers
-- Not all operations benefit from Result pattern (simple CRUD doesn't need it)
-- Increases boilerplate where exceptions are fine
+**K8s approach (cluster):**
+```
+# YARP appsettings.json in Gateway's ConfigMap
+"Clusters": {
+  "apiservice": {
+    "Destinations": {
+      "default": {
+        "Address": "http://apiservice.micro-commerce.svc.cluster.local:8080"
+      }
+    }
+  }
+}
+```
 
-**Do this instead:**
-- Use Result for complex business operations with expected failures (checkout, payment)
-- Keep exceptions for unexpected errors (database down, network timeout)
-- Migrate incrementally, starting with high-value scenarios
+**Key implication:** The Gateway's YARP `appsettings.json` destination address changes from `https+http://apiservice` (Aspire service discovery notation) to `http://apiservice:8080` (K8s DNS). This is the primary configuration delta between environments. The simplest approach is a ConfigMap containing the full YARP config, mounted over the image's embedded `appsettings.json`.
 
-### Anti-Pattern 2: Audit All The Things
+**Next.js gateway URL:** In Aspire, the frontend reads `process.env.services__gateway__https__0`. In K8s, set `API_URL=http://gateway.micro-commerce.svc.cluster.local:8080` as an environment variable in the Web deployment. The `/api/config` route already falls back to `process.env.API_URL`.
 
-**What teams do:** Make every entity inherit `AuditableAggregateRoot` or `Entity<TId>`.
+**Health check endpoints:** Currently gated behind `IsDevelopment()` check in `ServiceDefaults/Extensions.cs`. In K8s, `ASPNETCORE_ENVIRONMENT=Development` must be set, OR the health checks must be made unconditional. Liveness/readiness probes depend on `/health` and `/alive`.
 
-**Why it's wrong:**
-- Child entities owned by aggregates don't need audit trails (OrderItem audit = Order audit)
-- Creates database bloat (CreatedAt/UpdatedAt on every table)
-- Performance overhead in interceptors
+### Pattern 3: RabbitMQ Replaces Azure Service Bus in K8s
 
-**Do this instead:**
-- Audit aggregate roots only (Order, Product, not OrderItem)
-- Use event sourcing for true audit trails if compliance requires every change
-- Shadow properties for audit if domain shouldn't know about timestamps
+**What:** MassTransit's transport is swapped from `UsingAzureServiceBus` to `UsingRabbitMq` for the K8s environment. The consumer/saga/outbox configuration is transport-agnostic and does not change.
 
-### Anti-Pattern 3: Specification Everywhere
+**Why RabbitMQ:** Azure Service Bus emulator requires Docker/Azurite and is not available as a Kubernetes-native resource. RabbitMQ runs as a StatefulSet, has a Helm chart, and integrates well with MassTransit v8/v9.
 
-**What teams do:** Wrap every LINQ query in a Specification class.
+**MassTransit v8 vs v9 note:** MassTransit v9 (current in project) transitioned to commercial licensing. v8 remains Apache 2.0 with support through end of 2026. Since the project already uses v9, the commercial license applies. For a showcase project, evaluate whether to stay on v9 or pin to v8. `MassTransit.RabbitMQ` package is part of the same release.
 
-**Why it's wrong:**
-- Overkill for simple queries (`_context.Products.FindAsync(id)`)
-- Adds indirection without value
-- Harder to debug than inline LINQ
+**Code change — ApiService Program.cs:**
+```csharp
+// Replace this (Azure SB):
+x.UsingAzureServiceBus((context, cfg) =>
+{
+    cfg.Host(builder.Configuration.GetConnectionString("messaging"));
+    cfg.ConfigureEndpoints(context);
+});
 
-**Do this instead:**
-- Use specifications for complex, reusable business queries (filtering, sorting, paging)
-- Keep simple queries inline in handlers
-- Introduce specifications when query logic repeats across handlers
+// With this (RabbitMQ):
+x.UsingRabbitMq((context, cfg) =>
+{
+    cfg.Host(builder.Configuration["RabbitMQ__Host"] ?? "localhost", "/", h =>
+    {
+        h.Username(builder.Configuration["RabbitMQ__Username"] ?? "guest");
+        h.Password(builder.Configuration["RabbitMQ__Password"] ?? "guest");
+    });
+    cfg.ConfigureEndpoints(context);
+});
+```
 
-### Anti-Pattern 4: Premature Source Generator Adoption
+**Conditional transport (dev vs K8s):** Use environment variable `TRANSPORT=RabbitMQ` in K8s deployments and let Aspire set `TRANSPORT=AzureServiceBus` for local. This avoids Aspire client integration packages loading in K8s where there is no Azure emulator.
 
-**What teams do:** Replace all StronglyTypedId records with `[StronglyTypedId] partial struct` immediately.
+**DLQ handling:** The `DeadLetterQueueService` is Azure SB specific. In K8s/RabbitMQ, MassTransit routes failed messages to `_error` queues. The `MessagingEndpoints` need a RabbitMQ-aware implementation or the feature is disabled in K8s for now.
 
-**Why it's wrong:**
-- Source generators add build complexity (diagnostics, IntelliSense lag)
-- Existing record pattern works fine
-- Migration effort doesn't justify benefits for small codebases
+### Pattern 4: GitOps with ArgoCD App-of-Apps
 
-**Do this instead:**
-- Start with manual records
-- Add source generator when you have 20+ StronglyTypedId types
-- Use for new modules, migrate old ones gradually
+**What:** A root ArgoCD `Application` (`root-app.yaml`) points to `deploy/argocd/apps/`. Each file in that directory is an ArgoCD `Application` manifest pointing to a subdirectory in `deploy/overlays/dev/`. ArgoCD automatically reconciles cluster state to match Git.
 
-### Anti-Pattern 5: Enumeration Without Behavior
+**Build order (CI/CD pipeline):**
+```
+1. GitHub Actions: dotnet test (unit + integration)
+2. GitHub Actions: docker build + push (ApiService, Gateway, Web) → ghcr.io
+3. GitHub Actions: git commit image tag updates to deploy/overlays/dev/patches/
+4. ArgoCD: detects Git change, syncs affected Application(s)
+5. K8s: rolls out new pods with updated image tags
+```
 
-**What teams do:** Convert all enums to Enumeration classes "because DDD."
+**Example root app:**
+```yaml
+# deploy/argocd/root-app.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: micro-commerce-root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-org/micro-commerce
+    targetRevision: HEAD
+    path: deploy/argocd/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
 
-**Why it's wrong:**
-- If enum has no behavior (just labels), primitive enum is simpler
-- Enumeration adds overhead (reflection, dictionary lookup)
-- JSON serialization complexity
+**Example child app:**
+```yaml
+# deploy/argocd/apps/apiservice-app.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apiservice
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-org/micro-commerce
+    targetRevision: HEAD
+    path: deploy/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: micro-commerce
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
 
-**Do this instead:**
-- Keep primitive enums for simple states (ProductStatus.Draft/Published)
-- Use Enumeration when adding behavior (OrderStatus.CanTransitionTo(), IsTerminal())
-- Migrate when enum logic scatters across handlers
+### Pattern 5: Sealed Secrets for GitOps-Safe Secret Management
 
-## Integration Checklist
+**What:** `kubeseal` CLI encrypts a plain K8s Secret using the cluster's public key. The encrypted `SealedSecret` YAML is committed to Git. The Sealed Secrets controller in the cluster decrypts it back to a real K8s Secret.
 
-### Phase 1: Foundation (Non-Breaking)
+**Workflow:**
+```bash
+# 1. Create plain secret (never committed)
+kubectl create secret generic postgres-credentials \
+  --from-literal=connection-string="Host=postgres;Database=appdb;..." \
+  --dry-run=client -o yaml | \
+  kubeseal --format yaml > deploy/overlays/dev/sealed-secrets/postgres-credentials.yaml
 
-- [ ] Add `IAuditable`, `IConcurrencyToken` interfaces to BuildingBlocks.Common
-- [ ] Add `Entity<TId>` base class to BuildingBlocks.Common
-- [ ] Add `AuditableAggregateRoot<TId>` to BuildingBlocks.Common
-- [ ] Implement `AuditInterceptor` in ApiService/Common/Persistence
-- [ ] Register `AuditInterceptor` in all DbContexts (opt-out via interface check)
-- [ ] Existing aggregates unchanged, continue working
+# 2. Commit the SealedSecret to Git — safe for public repos
+# 3. Sealed Secrets controller decrypts it when applied to cluster
+```
 
-### Phase 2: Result Pattern (Opt-In)
+**Scope:** Secrets are namespace-scoped by default — a SealedSecret for `micro-commerce` namespace can only be decrypted by the controller when applied in that namespace.
 
-- [ ] Add `Result`, `Result<T>`, `Error` to BuildingBlocks.Common
-- [ ] Add `ResultExtensions.ToHttpResult()` to ApiService/Common/Extensions
-- [ ] Implement `ResultValidationBehavior<TRequest, TResponse>` where TResponse : Result
-- [ ] Register ResultValidationBehavior in DI (coexists with ValidationBehavior)
-- [ ] Migrate 1-2 complex command handlers to Result pattern (pilot)
-- [ ] Evaluate developer experience, adjust before broader rollout
+### Pattern 6: Dockerfile Multi-Stage Build
 
-### Phase 3: Conventions (DRY Improvements)
+**ApiService and Gateway — .NET 10:**
+```dockerfile
+# Build stage — uses full SDK
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /source
+COPY --link *.slnx .
+COPY --link src/ src/
+RUN dotnet restore
+RUN dotnet publish src/MicroCommerce.ApiService/MicroCommerce.ApiService.csproj \
+    -c Release -o /app --no-restore
 
-- [ ] Implement `StronglyTypedIdConvention` for auto value converters
-- [ ] Implement `ConcurrencyTokenConvention` for auto row versioning
-- [ ] Add conventions to DbContext.ConfigureConventions in each module
-- [ ] Remove manual `.HasConversion()` calls from entity configurations
-- [ ] Test migrations to ensure no schema changes
+# Runtime stage — chiseled Ubuntu (~100MB smaller, fewer CVEs)
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled AS runtime
+WORKDIR /app
+COPY --from=build /app .
+USER $APP_UID
+ENTRYPOINT ["dotnet", "MicroCommerce.ApiService.dll"]
+```
 
-### Phase 4: Enumeration (Selective Migration)
+**Web — Next.js 16 (standalone output):**
+```dockerfile
+FROM node:22-slim AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
 
-- [ ] Add `Enumeration<TEnum>` base class to BuildingBlocks.Common
-- [ ] Implement `EnumerationValueConverter<TEnum>` for EF Core
-- [ ] Implement `EnumerationJsonConverter<TEnum>` for JSON
-- [ ] Identify enums with behavior (OrderStatus, PaymentStatus)
-- [ ] Migrate enums to Enumeration classes one at a time
-- [ ] Keep primitive enums for simple labels (ProductStatus can stay enum)
+FROM node:22-slim AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
 
-### Phase 5: Specifications (Targeted Adoption)
+FROM node:22-slim AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
 
-- [ ] Add `ISpecification<T>`, `Specification<T>`, `SpecificationEvaluator` to BuildingBlocks.Common
-- [ ] Identify complex queries with repeated logic (product filtering, order search)
-- [ ] Create specification classes for reusable queries
-- [ ] Update handlers to use SpecificationEvaluator
-- [ ] Leave simple queries inline (no specifications)
+**next.config.ts requirement:** Must set `output: 'standalone'` for the server.js entrypoint to exist.
 
-### Phase 6: Source Generators (Optional)
+**Build context:** All Dockerfiles reference `../..` (repo root) as context to access the `src/` directory. Build from repo root:
+```bash
+docker build -f src/MicroCommerce.ApiService/Dockerfile -t apiservice:latest .
+docker build -f src/MicroCommerce.Gateway/Dockerfile -t gateway:latest .
+docker build -f src/MicroCommerce.Web/Dockerfile -t web:latest src/MicroCommerce.Web/
+```
 
-- [ ] Evaluate StronglyTypedId NuGet package vs. custom generator
-- [ ] Add source generator to BuildingBlocks.Common project
-- [ ] Configure assembly-level defaults for converters
-- [ ] Add `StronglyTypedIdJsonConverterFactory` to JSON options
-- [ ] Pilot with new feature module (e.g., Payments)
-- [ ] Gradual migration of existing StronglyTypedId records
+## Data Flow
 
-## Build Order Recommendations
+### Request Flow (K8s)
 
-**Safe Migration Path (Minimal Risk):**
+```
+Browser (external)
+    |
+    ▼
+NGINX Ingress (hostname routing)
+    |── micro-commerce.local/api/* ──► Gateway (YARP) :8080
+    |                                      |
+    |                                      ▼ HTTP (ClusterIP DNS)
+    |                               ApiService :8080
+    |                                      |
+    |                                      ├──► PostgreSQL :5432
+    |                                      ├──► RabbitMQ :5672
+    |                                      └──► Keycloak :8080
+    |
+    └── micro-commerce.local/* ──────► Web (Next.js) :3000
+                                           |
+                                           ▼ server-side fetch (ClusterIP)
+                                       Gateway :8080 ──► ApiService :8080
+```
 
-1. **Phase 1 (Foundation)** — Audit interfaces and Entity base classes are additive. Deploy with confidence.
-2. **Phase 3 (Conventions)** — DRY improvements with no behavior changes. Low risk.
-3. **Phase 2 (Result Pattern)** — Pilot with 1-2 handlers, evaluate, then scale if beneficial.
-4. **Phase 4 (Enumeration)** — Migrate enums with behavior first (OrderStatus), leave simple enums alone.
-5. **Phase 5 (Specifications)** — Adopt for complex queries only, leave simple queries unchanged.
-6. **Phase 6 (Source Generators)** — Optional optimization after 20+ StronglyTypedId types.
+### Service Discovery Transition (Aspire → K8s)
 
-**Critical Dependencies:**
+| Connection | Aspire (local) | K8s (cluster) |
+|------------|---------------|---------------|
+| Gateway → ApiService | `https+http://apiservice` (Aspire SD) | `http://apiservice.micro-commerce.svc.cluster.local:8080` |
+| Web → Gateway | `services__gateway__https__0` env var | `API_URL=http://gateway.micro-commerce.svc.cluster.local:8080` |
+| ApiService → PostgreSQL | Aspire ConnectionString injection | K8s Secret → `ConnectionStrings__appdb` |
+| ApiService → RabbitMQ | `ConnectionStrings__messaging` (Azure SB) | K8s Secret → `RabbitMQ__Host`, `RabbitMQ__Username`, `RabbitMQ__Password` |
+| ApiService → Keycloak | `services__keycloak__*` (Aspire SD) | `Keycloak__Authority=http://keycloak:8080/realms/micro-commerce` |
+| All services → OTEL | Aspire Dashboard (auto-configured) | `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317` |
 
-- **AuditInterceptor** depends on `IAuditable` interface
-- **ResultValidationBehavior** depends on `Result` type
-- **Conventions** depend on marker interfaces (`IConcurrencyToken`, `StronglyTypedId<T>`)
-- **Enumeration EF Core support** depends on `EnumerationValueConverter<TEnum>`
+### Event Flow (RabbitMQ in K8s)
 
-**No Breaking Changes:** All new building blocks are opt-in. Existing code continues working unchanged.
+```
+ApiService Handler
+    ├── Saves to DB + CatalogDbContext Outbox (transactional)
+    └── DomainEventInterceptor publishes via MassTransit
+            |
+            ▼
+        RabbitMQ exchange (auto-created by MassTransit)
+            |
+            ├──► Inventory Consumer (stock reservation)
+            ├──► Ordering Consumer (saga state machine)
+            └──► _error queue (failed messages, replaces Azure DLQ)
+```
+
+## Build Order
+
+The build order below respects dependencies between artifacts:
+
+```
+Phase 1 — Foundation (no inter-dependencies)
+├── 1a. kind cluster setup + local registry (localhost:5001)
+├── 1b. NGINX Ingress controller installed
+├── 1c. Sealed Secrets controller installed
+└── 1d. ArgoCD installed in argocd namespace
+
+Phase 2 — Infrastructure Manifests + Secrets
+├── 2a. PostgreSQL StatefulSet + PVC + Service
+├── 2b. RabbitMQ StatefulSet + PVC + Service
+├── 2c. Keycloak StatefulSet + PVC + Service + realm ConfigMap
+└── 2d. SealedSecrets encrypted and committed to Git
+
+Phase 3 — Dockerfiles
+├── 3a. ApiService Dockerfile (depends on: src structure understood)
+├── 3b. Gateway Dockerfile (depends on: src structure)
+└── 3c. Web Dockerfile (depends on: next.config.ts output:standalone)
+
+Phase 4 — Application Manifests (depend on: Docker images exist)
+├── 4a. ApiService Deployment + Service + ConfigMap
+├── 4b. Gateway Deployment + Service + ConfigMap (YARP routes)
+└── 4c. Web Deployment + Service
+
+Phase 5 — CI/CD Pipeline (depends on: Dockerfiles + manifests complete)
+├── 5a. GitHub Actions: docker-build.yml (build + push to ghcr.io)
+└── 5b. GitHub Actions: update-manifests.yml (commit image tag patches)
+
+Phase 6 — GitOps (depends on: manifests + CI complete)
+├── 6a. ArgoCD root-app.yaml committed to Git
+├── 6b. ArgoCD child app manifests committed
+└── 6c. ArgoCD syncs cluster (end-to-end GitOps loop)
+
+Phase 7 — Monitoring (depends on: apps running)
+├── 7a. OTEL Collector Deployment + ConfigMap (exporters)
+└── 7b. Aspire Dashboard Deployment + Service
+```
+
+## Scaling Considerations
+
+| Scale | Architecture Adjustments |
+|-------|--------------------------|
+| 1 dev | kind cluster, all StatefulSets with 1 replica, shared resources |
+| Small team | Replace kind with cloud K8s (EKS/GKE/AKS), add HPA on ApiService |
+| Production | Separate PostgreSQL to managed service (RDS/CloudSQL), external RabbitMQ, Keycloak HA |
+
+### Scaling Priorities
+
+1. **First bottleneck:** ApiService CPU under load — add HPA with `targetCPUUtilizationPercentage: 70`.
+2. **Second bottleneck:** PostgreSQL write throughput — connection pooling via PgBouncer sidecar or managed service.
+
+## Anti-Patterns
+
+### Anti-Pattern 1: Aspire Service Discovery Notation in K8s
+
+**What people do:** Leave `https+http://apiservice` (Aspire service discovery shorthand) in YARP config when deploying to K8s.
+
+**Why it's wrong:** The `https+http://` scheme is resolved by `Microsoft.Extensions.ServiceDiscovery` which reads Aspire-injected environment variables. In K8s, those variables don't exist — the YARP proxy silently fails to route requests.
+
+**Do this instead:** Replace with a ConfigMap mounting `appsettings.json` that uses plain `http://apiservice.micro-commerce.svc.cluster.local:8080` in the YARP destinations. Use `ASPNETCORE_ENVIRONMENT=Production` (no Aspire SD) or inject environment-specific config via Kustomize ConfigMap patch.
+
+### Anti-Pattern 2: Baking Secrets into ConfigMaps
+
+**What people do:** Put connection strings, passwords, or API keys in ConfigMap data fields (they're plain text).
+
+**Why it's wrong:** ConfigMaps are not encrypted. Anyone with kubectl access to the namespace can read them. They also appear in Git history if committed.
+
+**Do this instead:** Use `secretKeyRef` in env references and SealedSecrets for the values. Separate configuration (ConfigMap) from credentials (Secret/SealedSecret).
+
+### Anti-Pattern 3: Health Checks Gated Behind IsDevelopment
+
+**What people do:** Leave `MapDefaultEndpoints()` in ServiceDefaults as-is, which only exposes `/health` and `/alive` in the `Development` environment.
+
+**Why it's wrong:** Kubernetes liveness and readiness probes require those endpoints unconditionally. Pods fail to start or appear unhealthy because the health endpoint returns 404 in non-Development environments.
+
+**Do this instead:** Either set `ASPNETCORE_ENVIRONMENT=Development` in the K8s deployment (acceptable for a showcase), or modify `ServiceDefaults/Extensions.cs` to expose health endpoints unconditionally and guard only sensitive diagnostics behind the environment check.
+
+### Anti-Pattern 4: One Giant ArgoCD Application for All Services
+
+**What people do:** Point a single ArgoCD app at `deploy/overlays/dev/` and sync everything together.
+
+**Why it's wrong:** A failing deployment for one service blocks all others. You also lose per-service sync status visibility in the ArgoCD UI.
+
+**Do this instead:** App-of-apps pattern — one ArgoCD Application per service, managed by a root app. Each service syncs independently and shows its own health status.
+
+### Anti-Pattern 5: Image Tag "latest" in Manifests
+
+**What people do:** Use `image: ghcr.io/org/apiservice:latest` in the base deployment manifest.
+
+**Why it's wrong:** ArgoCD cannot detect changes when the tag doesn't change. Kubernetes also caches `latest` pulls unpredictably. Rolling back becomes impossible.
+
+**Do this instead:** CI pipeline generates a unique tag (git SHA or `YYYY.MMDD.HHmm`) and commits it to `deploy/overlays/dev/patches/apiservice-image.yaml` as a strategic merge patch. ArgoCD detects the Git change and rolls out the new image.
+
+### Anti-Pattern 6: Skipping the MassTransit Transport Abstraction
+
+**What people do:** Conditionally compile or ifdef RabbitMQ vs Azure SB configuration.
+
+**Why it's wrong:** Creates divergent code paths that are hard to test and maintain.
+
+**Do this instead:** Use environment variable `MASSTRANSIT_TRANSPORT=RabbitMQ` (default: `AzureServiceBus` for Aspire). In Program.cs, read the variable and call either `UsingRabbitMq` or `UsingAzureServiceBus`. This keeps Aspire local dev working without changes while K8s deployments use RabbitMQ.
+
+## Integration Points
+
+### Modified Components (Existing → K8s Aware)
+
+| Component | Modification | Reason |
+|-----------|-------------|--------|
+| `ApiService/Program.cs` | Conditional transport: RabbitMQ vs Azure SB | K8s uses RabbitMQ; Aspire uses Azure SB emulator |
+| `ServiceDefaults/Extensions.cs` | Expose health endpoints unconditionally | K8s probes need `/health` and `/alive` always |
+| `Gateway/appsettings.json` | YARP destination uses K8s DNS | Aspire SD notation not valid in K8s |
+| `Web/src/lib/config.ts` | Falls back to `API_URL` env var | Already coded; K8s sets `API_URL` |
+| `Web/next.config.ts` | Add `output: 'standalone'` | Required for standalone Docker build |
+
+### New Components (K8s Specific)
+
+| Component | Type | Purpose |
+|-----------|------|---------|
+| `src/MicroCommerce.ApiService/Dockerfile` | New file | Multi-stage .NET 10 build |
+| `src/MicroCommerce.Gateway/Dockerfile` | New file | Multi-stage .NET 10 build |
+| `src/MicroCommerce.Web/Dockerfile` | New file | Multi-stage Next.js 16 standalone build |
+| `deploy/base/**` | New directory | Kustomize base manifests |
+| `deploy/overlays/dev/**` | New directory | Kind cluster overlay + patches |
+| `deploy/argocd/**` | New directory | App-of-apps GitOps config |
+| `deploy/overlays/dev/sealed-secrets/**` | New directory | Encrypted secrets safe for Git |
+| `.github/workflows/docker-build.yml` | New file | CI: build + push to ghcr.io |
+| `.github/workflows/update-manifests.yml` | New file | CI: commit image tag updates |
+
+### Internal Boundaries in K8s
+
+| Boundary | Communication | Notes |
+|----------|---------------|-------|
+| Browser ↔ Ingress | External HTTP/HTTPS | NGINX routes by path prefix |
+| Ingress ↔ Gateway | ClusterIP HTTP | Internal only, no TLS needed |
+| Ingress ↔ Web | ClusterIP HTTP | Internal only |
+| Web ↔ Gateway | ClusterIP HTTP (server-side) | Next.js SSR fetches via `API_URL` |
+| Gateway ↔ ApiService | ClusterIP HTTP | YARP upstream address |
+| ApiService ↔ PostgreSQL | ClusterIP TCP 5432 | Connection string from Secret |
+| ApiService ↔ RabbitMQ | ClusterIP AMQP 5672 | MassTransit connection from Secret |
+| ApiService ↔ Keycloak | ClusterIP HTTP 8080 | JWT validation OIDC discovery |
+| All apps ↔ OTEL Collector | ClusterIP gRPC 4317 | `OTEL_EXPORTER_OTLP_ENDPOINT` |
 
 ## Sources
 
-**DDD Building Blocks:**
-- [Seedwork (reusable base classes and interfaces for your domain model) - Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/seedwork-domain-model-base-classes-interfaces)
-- [Entity Base Class - Enterprise Craftsmanship](https://enterprisecraftsmanship.com/posts/entity-base-class/)
-- [Clean DDD lessons: audit metadata for domain entities - Medium](https://medium.com/unil-ci-software-engineering/clean-ddd-lessons-audit-metadata-for-domain-entities-5935a5c6db5b)
-
-**EF Core Audit:**
-- [How to Implement Audit Logs with EF Core Interceptors](https://oneuptime.com/blog/post/2026-01-25-audit-logs-ef-core-interceptors/view)
-- [EF Core Interceptors: SaveChangesInterceptor for Auditing Entities - Medium](https://mehmetozkaya.medium.com/ef-core-interceptors-savechangesinterceptor-for-auditing-entities-in-net-8-microservices-6923190a03b9)
-- [Tracking Every Change: Using SaveChanges Interception for EF Core Auditing](https://www.woodruff.dev/tracking-every-change-using-savechanges-interception-for-ef-core-auditing/)
-- [How to Build Custom EF Core Conventions](https://oneuptime.com/blog/post/2026-01-30-build-custom-ef-core-conventions/view)
-
-**Result Pattern:**
-- [Improving Error Handling with the Result Pattern in MediatR](https://goatreview.com/improving-error-handling-result-pattern-mediatr/)
-- [GitHub - altmann/FluentResults](https://github.com/altmann/FluentResults)
-
-**MediatR Pipeline:**
-- [CQRS Validation with MediatR Pipeline and FluentValidation](https://www.milanjovanovic.tech/blog/cqrs-validation-with-mediatr-pipeline-and-fluentvalidation)
-- [Validation without Exceptions using a MediatR Pipeline Behavior - Medium](https://medium.com/the-cloud-builders-guild/validation-without-exceptions-using-a-mediatr-pipeline-behavior-278f124836dc)
-- [Rethinking MediatR Validation: Moving from Pipeline to Domain Objects](https://goatreview.com/rethinking-mediatr-pipeline-validation-pattern/)
-
-**Enumeration Classes:**
-- [Using Enumeration classes instead of enum types - Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types)
-- [Smart Enums: Beyond Traditional Enumerations in .NET - Thinktecture AG](https://www.thinktecture.com/en/net/smart-enums-beyond-traditional-enumerations-in-dotnet/)
-
-**Specification Pattern:**
-- [How to use Specifications with the Repository Pattern](https://specification.ardalis.com/usage/use-specification-repository-pattern.html)
-- [Specification Pattern in EF Core: Flexible Data Access Without Repositories](https://antondevtips.com/blog/specification-pattern-in-ef-core-flexible-data-access-without-repositories)
-- [GitHub - ardalis/Specification](https://github.com/ardalis/Specification)
-
-**Strongly Typed IDs:**
-- [GitHub - andrewlock/StronglyTypedId](https://github.com/andrewlock/StronglyTypedId)
-- [A Better Way to Handle Entity Identification in .NET with Strongly Typed IDs](https://antondevtips.com/blog/a-better-way-to-handle-entity-identification-in-dotnet-with-strongly-typed-ids)
-- [Rebuilding StronglyTypedId as a source generator](https://andrewlock.net/rebuilding-stongly-typed-id-as-a-source-generator-1-0-0-beta-release/)
-- [Using strongly-typed entity IDs with EF Core](https://andrewlock.net/using-strongly-typed-entity-ids-to-avoid-primitive-obsession-part-3/)
-- [Value Conversions - EF Core - Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions)
+- [Kubernetes Kustomize documentation](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) — HIGH confidence (official)
+- [ArgoCD cluster bootstrapping / app-of-apps](https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/) — HIGH confidence (official)
+- [MassTransit RabbitMQ quick start](https://masstransit.io/quick-starts/rabbitmq) — HIGH confidence (official)
+- [MassTransit v9 announcement](https://masstransit.io/introduction/v9-announcement) — HIGH confidence (official)
+- [Sealed Secrets GitHub](https://github.com/bitnami-labs/sealed-secrets) — HIGH confidence (official)
+- [kind local registry](https://kind.sigs.k8s.io/docs/user/local-registry/) — HIGH confidence (official)
+- [Next.js with-docker Dockerfile](https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile) — HIGH confidence (official)
+- [.NET 10 container images](https://github.com/dotnet/dotnet-docker/discussions/6801) — HIGH confidence (official GitHub)
+- [YARP Kubernetes ingress](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/yarp/kubernetes-ingress) — HIGH confidence (official)
+- [Aspire Kubernetes integration](https://aspire.dev/integrations/compute/kubernetes/) — MEDIUM confidence (official but Aspire K8s integration is still evolving)
+- [OpenTelemetry Kubernetes collector](https://opentelemetry.io/docs/platforms/kubernetes/collector/) — HIGH confidence (official)
 
 ---
-*Architecture research for: DDD Building Blocks Integration*
-*Researched: 2026-02-14*
+*Architecture research for: Kubernetes & GitOps deployment of MicroCommerce*
+*Researched: 2026-02-25*

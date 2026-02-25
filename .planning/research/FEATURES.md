@@ -1,293 +1,317 @@
-# Feature Landscape: DDD Building Blocks
+# Feature Research
 
-**Domain:** .NET 10 modular monolith e-commerce platform - DDD infrastructure improvements
-**Researched:** 2026-02-14
-**Confidence:** HIGH (verified with official docs, EF Core patterns, OSS library standards)
+**Domain:** Kubernetes & GitOps deployment for .NET microservices e-commerce platform
+**Researched:** 2026-02-25
+**Confidence:** HIGH (verified against official Kubernetes docs, ArgoCD docs, OTEL docs, and current community sources)
 
-## Table Stakes
+## Context
 
-Features expected in a comprehensive DDD building blocks library. Missing = developers write boilerplate manually or inconsistently.
+This research covers v3.0 milestone: adding K8s deployment, ArgoCD GitOps, CI/CD image pipelines, Kustomize overlays, secrets management, and OTEL monitoring to the existing MicroCommerce platform. The existing platform already has:
 
-| Feature | Why Expected | Complexity | Dependencies | Notes |
-|---------|--------------|------------|--------------|-------|
-| **Entity Base Class** | Standardizes ID handling, equality, child entity patterns | Low | Existing BaseAggregateRoot | Already have for aggregates, need for child entities (CartItem, OrderItem) |
-| **Audit Field Interfaces** | Automatic CreatedAt/ModifiedAt/CreatedBy/ModifiedBy tracking across all entities | Medium | Entity base, SaveChangesInterceptor | Currently manual per aggregate, industry standard is interface-based automation |
-| **Optimistic Concurrency Base** | Standardizes RowVersion pattern for aggregates needing concurrency control | Low | Entity base | Currently manual [Timestamp] on Order.Version, should be opt-in base class/interface |
-| **StronglyTypedId Converters** | EF Core, System.Text.Json, TypeConverter support for all ID types | Medium | Source generators | Currently manual inheritance from StronglyTypedId<Guid>, need auto TypeConverter/JsonConverter |
-| **Specification Pattern** | Reusable, composable query logic instead of repository method explosion | High | None (standalone pattern) | Complex queries manually coded, Specification enables IRepository.Get(spec) |
-| **Enumeration/SmartEnum** | Enums with behavior, encapsulation, type safety, EF Core persistence | Low | Ardalis.SmartEnum or custom base | Currently plain enums (OrderStatus, ProductStatus), no behavior or centralized logic |
+- .NET Aspire orchestration (used for local dev, NOT deployed to K8s)
+- OpenTelemetry instrumentation wired via `MicroCommerce.ServiceDefaults`
+- Health endpoints at `/health` (readiness) and `/alive` (liveness)
+- YARP Gateway centralizing CORS, auth, rate limiting
+- 3 deployable services: ApiService, Gateway, Web (Next.js)
+- Infrastructure dependencies: PostgreSQL, Keycloak, RabbitMQ (replacing Azure SB emulator), Azure Blob Storage
 
-## Differentiators
+---
 
-Features not universally expected but provide significant value when building domain-rich applications.
+## Feature Landscape
 
-| Feature | Value Proposition | Complexity | Dependencies | Notes |
-|---------|-------------------|------------|--------------|-------|
-| **Result<T> Monad** | Railway-oriented error handling, eliminates exception-driven flow for business logic failures | Medium | None (standalone) | Replaces `throw DomainException`, enables `Result.Success(order)` or `Result.Failure("Stock unavailable")` |
-| **Guard Clauses Library** | Fluent, expressive input validation (already using Ardalis.GuardClauses) | Low | Already in use | KEEP existing usage, table stake for domain validation |
-| **Domain Event Dispatcher** | Automatic in-process event handling before SaveChanges (MediatR notifications) | Medium | MediatR, DomainEventInterceptor | Already have DomainEventInterceptor + MassTransit for out-of-process, could add in-process handlers |
-| **Soft Delete Interface** | ISoftDeletable + interceptor for logical deletion pattern | Low | SaveChangesInterceptor | Product.Archive() is manual, could be interface-driven with global query filter |
-| **Tenant ID Interface** | Multi-tenancy support via IHasTenant + global query filters | Medium | SaveChangesInterceptor, EF query filters | Not needed for current single-tenant e-commerce, but common in SaaS DDD apps |
-| **Outbox Pattern Support** | Transactional outbox for reliable domain event publishing | High | Dedicated outbox table, background processor | MassTransit handles this, would duplicate, mark as ANTI-FEATURE unless replacing MassTransit |
+### Table Stakes (Must-Have for Production-Like K8s)
 
-## Anti-Features
+Features reviewers and engineers expect in any K8s deployment. Missing these = the setup is not credible.
 
-Features to explicitly NOT build, with rationale.
+| Feature | Why Expected | Complexity | Aspire Dependency | Notes |
+|---------|--------------|------------|-------------------|-------|
+| **Dockerfiles for all 3 services** | K8s requires container images; Aspire builds images internally but does not expose Dockerfiles for external registry push | MEDIUM | Replaces Aspire's implicit build | Multi-stage: `sdk` for build, `aspnet` or chiseled runtime for prod. Next.js uses `node` build + `node:alpine` runtime. Non-root user required. |
+| **Kubernetes Deployment manifests** | Core K8s resource type; without it nothing runs | LOW | None (K8s replaces Aspire) | One Deployment per service (ApiService, Gateway, Web). `replicas: 1` for showcase. |
+| **Kubernetes Service manifests** | Pods need stable DNS for inter-service communication | LOW | Replaces Aspire's service discovery | ClusterIP for internal services (ApiService, Gateway). LoadBalancer or NodePort for kind local access. |
+| **Liveness and Readiness probes** | Without probes, K8s cannot detect unhealthy pods; bad pods receive traffic | LOW | `/alive` and `/health` already implemented | Map `/alive` to liveness, `/health` to readiness. Already wired in CLAUDE.md. No code change required. |
+| **Resource requests and limits** | Without limits, a runaway pod starves other pods; without requests, scheduler cannot place pods | LOW | None | CPU/memory requests+limits per container. ApiService: `cpu: 250m/1000m`, `memory: 256Mi/512Mi`. Gateway: `cpu: 100m/500m`. Web: `cpu: 100m/500m`. |
+| **ConfigMaps for non-secret config** | Connection strings, feature flags, OTEL endpoint, URLs must be externalized; hardcoded config fails in K8s | LOW | None | Aspire injected connection strings via service references; K8s needs explicit ConfigMaps or env vars from ConfigMap. |
+| **Secrets for sensitive values** | Passwords, client secrets, auth tokens must NOT live in ConfigMaps or manifests | LOW | None | PostgreSQL password, Keycloak client secret, RabbitMQ credentials. Base Kubernetes Secret is minimum; Sealed Secrets is the GitOps-safe upgrade. |
+| **Kustomize base manifests** | Standard tool for K8s templating without external dependencies; built into kubectl | MEDIUM | None | `k8s/base/` with all Deployment/Service/ConfigMap YAMLs. Kustomize bundles them without duplication. |
+| **Kustomize dev overlay** | Dev cluster (kind) differs from base: image tags, replica counts, resource limits may vary | LOW | None | `k8s/overlays/dev/` patches image repo/tag, sets `imagePullPolicy: Always`, adjusts resources. |
+| **GitHub Actions image build pipeline** | CI/CD without image automation means manual `docker push` before every deploy; defeats GitOps | MEDIUM | Existing `dotnet-test.yml` for tests | New `build-images.yml`: checkout, build 3 images with Docker buildx, push to `ghcr.io/${{ github.repository }}/` tagged with `${{ github.sha }}`. Triggers on push to `main`. |
+| **ghcr.io image registry** | Public free registry tied to the GitHub repo; no external account needed for a showcase | LOW | None | `GITHUB_TOKEN` automatically available in Actions. No extra secret setup. `ghcr.io/owner/micro-commerce/apiservice:sha` pattern. |
+| **ArgoCD Application manifests** | GitOps engine; without it deployment is manual kubectl apply | MEDIUM | None | ArgoCD installed in cluster. One Application per service or app-of-apps root. Watches git repo, syncs on commit. |
+| **RabbitMQ in K8s** | Azure Service Bus emulator does not run in K8s; RabbitMQ is the standard self-hosted replacement | MEDIUM | Replaces Azure SB emulator | RabbitMQ Deployment + Service manifest. MassTransit already supports RabbitMQ transport; switch `UsingAzureServiceBus` to `UsingRabbitMq`. |
+| **PostgreSQL in K8s** | Database must be deployed in dev cluster; StatefulSet for persistence | MEDIUM | Replaces Aspire's Postgres container | StatefulSet + PersistentVolumeClaim + Service. kind requires local-path provisioner for PVC. |
+| **Keycloak in K8s** | Auth must run in cluster; Realm import must be automated | MEDIUM | Replaces Aspire's Keycloak container | Deployment + ConfigMap for realm JSON mount + Service. Realm file already lives in `AppHost/Realms/`. |
+| **kind cluster setup** | Local dev environment must mirror production K8s; kind is standard for this | LOW | Replaces `dotnet run AppHost` for K8s testing | `kind create cluster --config kind-config.yaml`. Needs port mapping for NodePort access. Single-node sufficient for showcase. |
+| **OTEL Collector in K8s** | Aspire Dashboard is a developer tool, not production monitoring; a real OTEL Collector is the production equivalent | MEDIUM | Replaces Aspire's built-in dashboard | OTEL Collector Deployment + Service. Services point `OTEL_EXPORTER_OTLP_ENDPOINT` to collector. Collector can forward to Aspire Dashboard standalone container. |
+| **Aspire Dashboard as standalone container** | Aspire Dashboard runs as a standalone container (not AppHost dependency); bridges local dev observability to K8s | LOW | Complements, does not require Aspire | `mcr.microsoft.com/dotnet/aspire-dashboard:latest` image deployed as K8s Deployment. OTEL Collector forwards to it. |
+| **imagePullSecret for ghcr.io** | Private ghcr.io packages require a pull secret in the cluster | LOW | None | `kubectl create secret docker-registry ghcr-secret --docker-server=ghcr.io`. Referenced in pod spec `imagePullSecrets`. |
+| **Ingress or Gateway routing** | External traffic needs a single entry point into the cluster; raw NodePort is not viable beyond dev | MEDIUM | Replaces YARP's external-facing role | For kind: use NodePort on Gateway service for local access. For more polish: Traefik or Envoy Gateway (not Ingress NGINX — EOL March 2026). |
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| **Generic Repository** | Leaky abstraction, EF Core DbContext already is unit-of-work + repository | Use DbContext directly per feature (already doing this) |
-| **Auto-mapper for Aggregates** | Domain logic should be explicit, automapping hides business rules | Keep explicit factory methods (Order.Create, Product.Update) |
-| **Specification Builder UI** | Over-engineering, adds indirection without value | Write Specifications manually for complex queries only |
-| **Custom ORM Wrapper** | EF Core is mature, wrapping adds complexity without benefit | Use EF Core directly with building block extensions |
-| **Domain Services Base Class** | Domain services are stateless application patterns, no shared base needed | Keep as standalone classes (already doing this) |
-| **Transaction Script Helpers** | DDD is about rich domain models, transaction scripts are procedural anti-pattern | Enforce aggregate encapsulation instead |
+### Differentiators (Nice-to-Have, Showcase Value)
+
+Features that demonstrate GitOps and K8s maturity beyond bare minimum, but are not required for the cluster to function.
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| **Sealed Secrets for GitOps-safe secrets** | Encrypts K8s secrets so they can be committed to Git; demonstrates GitOps security discipline | MEDIUM | `kubeseal` CLI + controller in cluster. Encrypted SealedSecret YAML checked into repo. Decryption key stays in cluster only. Good showcase story. |
+| **ArgoCD app-of-apps pattern** | Hierarchical GitOps: one root App that manages all child Apps declaratively | MEDIUM | Root `Application` manifest points to `k8s/argocd/apps/` directory containing child Application YAMLs. Demonstrates production GitOps patterns. |
+| **Image tag update automation (GitOps loop)** | CI builds image, updates Kustomize overlay with new sha tag, ArgoCD detects git change and syncs | HIGH | Requires CI to commit back to repo (or use ArgoCD Image Updater). Closes the full GitOps loop. Strong demo value but complex to implement correctly. |
+| **OTEL Collector pipeline configuration** | Multi-stage telemetry pipeline (receivers, processors, exporters) demonstrates real observability engineering | MEDIUM | `otel-collector-config.yaml` with OTLP receiver, batch processor, debug exporter, and OTLP exporter to Aspire Dashboard. |
+| **Startup probes for slow-starting services** | Keycloak and PostgreSQL have long startup times; startup probes prevent premature liveness failures during init | LOW | `startupProbe` with higher `failureThreshold` on Keycloak and ApiService. Demonstrates K8s probe awareness. |
+| **PodDisruptionBudget** | Ensures at least 1 pod survives voluntary disruptions (rolling updates, node drain) | LOW | Meaningful only with `replicas >= 2`; for showcase with `replicas: 1` it is documentation-only value. |
+| **Namespace isolation** | Isolates all MicroCommerce resources in a dedicated K8s namespace | LOW | `namespace: micro-commerce` on all manifests. Keeps cluster clean. Low effort, high polish. |
+| **Health-based ArgoCD sync** | ArgoCD waits for health before marking sync complete; requires health checks to be correct | LOW | Default ArgoCD behavior if probes are correct; no extra work if table stakes are done right. |
+| **MassTransit transport abstraction** | Single codebase, configurable transport: Azure SB emulator for Aspire dev, RabbitMQ for K8s | MEDIUM | `IConfiguration`-driven transport selection. `MASSTRANSIT_TRANSPORT=rabbitmq` env var in K8s ConfigMap, unset for local Aspire (defaults to Azure SB). |
+
+### Anti-Features (Over-Engineering for Showcase)
+
+Features that seem relevant but add complexity without proportional value for a showcase project.
+
+| Feature | Why Requested | Why Avoid | Alternative |
+|---------|---------------|-----------|-------------|
+| **Service Mesh (Istio, Linkerd)** | mTLS between services, traffic policies, advanced observability | Adds 4+ CRDs, sidecar injection, significant operational complexity; YARP Gateway already centralizes auth and routing | Keep YARP for auth/routing; OTEL Collector for observability |
+| **Horizontal Pod Autoscaler (HPA)** | Demonstrates scaling capability | Requires Metrics Server, meaningful only under load; showcase traffic is near-zero; HPA at `replicas: 1` does nothing | Document HPA as "next step", add a single HPA manifest with commented-out thresholds |
+| **Multi-cluster deployment** | Demonstrates GitOps at scale | Massively increases infrastructure cost and complexity; a showcase has one cluster | Single kind cluster is sufficient to demonstrate all K8s and GitOps concepts |
+| **Helm charts instead of Kustomize** | Helm is widely used for packaging | Helm adds templating language, requires chart packaging; Kustomize is built into kubectl and simpler for single-project configs | Use Kustomize; note Helm as alternative in docs |
+| **External Secrets Operator (ESO)** | Enterprise-grade secrets from Vault/AWS/Azure | Requires an external secret store (Vault or cloud provider); adds infra dependency that does not run locally | Sealed Secrets is sufficient: no external dependency, works fully offline with kind |
+| **FluxCD instead of ArgoCD** | FluxCD is Kubernetes-native, no UI overhead | PROJECT.md already specifies ArgoCD; switching tools mid-milestone is waste | Stay with ArgoCD as specified |
+| **Network Policies** | Controls pod-to-pod communication | kind's default CNI (kindnet) has limited NetworkPolicy support; requires Calico or Cilium in kind; adds setup complexity | Document network policies as production hardening step; skip for showcase |
+| **Certificate management (cert-manager)** | TLS for ingress | TLS termination at ingress is production concern; kind local cluster with self-signed or no TLS is standard for dev | Skip; note cert-manager as production step |
+| **Multi-environment overlays (staging, prod)** | Demonstrates environment promotion | Only dev overlay has a running cluster (kind); staging/prod overlays would be empty placeholders | One dev overlay is sufficient; structure the repo so adding prod overlay is obvious |
+| **PostgreSQL Operator (CloudNativePG, Zalando)** | Production-grade PostgreSQL HA | Adds operator CRDs, complex HA setup; a showcase needs a running PostgreSQL, not HA PostgreSQL | Simple StatefulSet with single replica + PVC |
+| **Azure Blob Storage in K8s** | Production image storage | Azurite emulator does not run well as a K8s StatefulSet; avatar/image upload is not core to K8s demo | Either disable Blob features in K8s (use placeholder images) or use a MinIO StatefulSet as replacement |
+
+---
 
 ## Feature Dependencies
 
 ```
-Audit Interfaces → Entity Base Class → SaveChangesInterceptor (already exists)
-StronglyTypedId Converters → StronglyTypedId<T> (already exists)
-Specification Pattern → (standalone, no dependencies)
-SmartEnum → (standalone OR Ardalis.SmartEnum library)
-Result<T> → (standalone, no dependencies)
-Soft Delete → Entity Base OR Interface → SaveChangesInterceptor
-Optimistic Concurrency → Entity Base OR Interface
+[Dockerfiles]
+    └──required-by──> [GitHub Actions image pipeline]
+                           └──required-by──> [imagePullSecret in cluster]
+                                                └──required-by──> [K8s Deployments pulling from ghcr.io]
+
+[K8s Deployments]
+    └──requires──> [Kustomize base manifests]
+                       └──enhanced-by──> [Kustomize dev overlay]
+                                             └──enhanced-by──> [ArgoCD Application manifests]
+
+[RabbitMQ in K8s]
+    └──required-by──> [MassTransit transport switch]
+                           └──requires──> [Secrets for RabbitMQ credentials]
+
+[PostgreSQL StatefulSet]
+    └──required-by──> [ApiService can start]
+                           └──requires──> [ConfigMap with connection string]
+                                             └──requires──> [Secret with PostgreSQL password]
+
+[Keycloak in K8s]
+    └──required-by──> [ApiService JWT validation]
+    └──required-by──> [Gateway JWT validation]
+    └──required-by──> [Web NextAuth.js login]
+    └──requires──> [Realm ConfigMap with realm JSON]
+
+[OTEL Collector]
+    └──enhanced-by──> [Aspire Dashboard standalone container]
+    └──required-by──> [Services OTEL_EXPORTER_OTLP_ENDPOINT env var]
+
+[Sealed Secrets controller]
+    └──required-by──> [SealedSecret manifests in Git]
+    └──conflicts-with──> [Plain base64 Secrets in Git (never commit these)]
+
+[ArgoCD app-of-apps]
+    └──requires──> [ArgoCD installed in cluster]
+    └──requires──> [All K8s manifests committed to Git]
+    └──enhances──> [GitHub Actions image pipeline] (GitOps loop: CI build -> git commit -> ArgoCD sync)
+
+[kind cluster]
+    └──required-by──> [Local testing of all above]
+    └──requires──> [local-path-provisioner for PVC support]
+    └──requires──> [Port-forward or NodePort for external access]
 ```
 
-## MVP Recommendation
+### Dependency Notes
 
-**Phase 1: Foundations (Low-hanging fruit, high impact)**
-1. **Audit Field Interfaces** - ICreatable, IModifiable, IUserCreatable, IUserModifiable with SaveChangesInterceptor
-   - Eliminates repetitive `CreatedAt = DateTimeOffset.UtcNow` in every factory method
-   - Enables user tracking (CreatedBy/ModifiedBy) via IHttpContextAccessor
-   - Complexity: Medium (interceptor already exists, need interfaces + user resolution)
+- **Dockerfiles required before everything else:** Without container images, no K8s resource can start. Dockerfiles are the root dependency for the entire milestone.
+- **RabbitMQ replaces Azure Service Bus emulator:** The existing Aspire stack uses Azure Service Bus emulator. This emulator is not suitable for K8s deployment. MassTransit supports both transports; switching is a config-level change, not an architecture change.
+- **PostgreSQL PVC requires kind local-path provisioner:** kind does not provision PVCs by default in all versions. The `local-path-provisioner` must be confirmed available or explicitly installed.
+- **Keycloak realm import:** The realm JSON in `AppHost/Realms/` must be mounted as a ConfigMap volume in the Keycloak Deployment. This replaces Aspire's `.WithRealmImport()` call.
+- **OTEL without Aspire AppHost:** In production (K8s), `OTEL_EXPORTER_OTLP_ENDPOINT` must be explicitly set in ConfigMaps or Deployment env vars. Aspire auto-injects this in local dev; K8s does not.
+- **MassTransit transport switch must be backward compatible:** Local Aspire dev still uses Azure SB emulator. The transport selection must be driven by configuration, not compilation.
+- **Ingress NGINX is EOL March 2026:** Do not use Ingress NGINX. Use NodePort for kind local access, or Traefik/Envoy Gateway for more polished routing.
 
-2. **Optimistic Concurrency Interface** - IConcurrent with RowVersion property + EF config helper
-   - Currently only Order has Version, but Cart, Product, StockItem also need concurrency
-   - Complexity: Low (just standardize existing pattern)
+---
 
-3. **StronglyTypedId Source Generators** - Add Meziantou.Framework.StronglyTypedId or andrewlock/StronglyTypedId
-   - Auto-generates TypeConverter, JsonConverter, EF ValueConverter per ID type
-   - Eliminates manual EF configuration for 15+ strongly typed IDs
-   - Complexity: Medium (NuGet + attribute decoration)
+## MVP Definition
 
-**Phase 2: Behavior Enrichment**
-4. **Enumeration Classes** - Replace plain enums with Ardalis.SmartEnum
-   - OrderStatus becomes SmartEnum with behavior: `OrderStatus.Submitted.CanTransitionTo(OrderStatus.Paid)`
-   - ProductStatus gets display names, descriptions, transition rules
-   - Complexity: Low (library handles persistence, just define enums)
+### Launch With (v3.0 Core)
 
-5. **Result<T> Pattern** - Add Ardalis.Result or FluentResults
-   - Replace exceptions in commands: `Result<Order> PlaceOrder(...)` instead of throwing
-   - Enables `return Result.Invalid(validationErrors)` at application layer
-   - Complexity: Medium (refactor command handlers to return Result)
+Minimum required for the cluster to run the full application end-to-end.
 
-**Phase 3: Query Patterns**
-6. **Specification Pattern** - Custom implementation based on Ardalis.Specification patterns
-   - Complex catalog queries: `ProductsInCategoryWithReviewsSpec`, `PublishedProductsWithStockSpec`
-   - Reusable across queries and tests
-   - Complexity: High (requires generic repository abstraction or DbSet extensions)
+- [ ] Dockerfiles for ApiService, Gateway, Web — images must exist to deploy anything
+- [ ] Kustomize base manifests for all 3 services (Deployment + Service + ConfigMap) — core K8s resources
+- [ ] Kustomize dev overlay for kind cluster — image repo/tag overrides
+- [ ] PostgreSQL StatefulSet + PVC + Service — database must run in cluster
+- [ ] RabbitMQ Deployment + Service + ConfigMap — messaging must run in cluster
+- [ ] Keycloak Deployment + Service + Realm ConfigMap — auth must run in cluster
+- [ ] Secrets for PostgreSQL password, RabbitMQ credentials, Keycloak client secret
+- [ ] Liveness and readiness probes configured on all 3 app services — table stake for K8s health
+- [ ] Resource requests and limits on all containers — without this, kind cluster scheduler misbehaves
+- [ ] GitHub Actions workflow: build + push 3 images to ghcr.io on push to main
+- [ ] imagePullSecret in cluster for ghcr.io
+- [ ] MassTransit RabbitMQ transport support (configurable via env var)
+- [ ] OTEL Collector + Aspire Dashboard standalone in cluster — observability must work
+- [ ] ArgoCD Application manifests with app-of-apps root — GitOps deployment working
 
-**Defer (Not needed for current scope)**
-- Soft Delete Interface: Product.Archive() is explicit domain logic, not infrastructure concern
-- Tenant ID: Single-tenant application, premature
-- Outbox Pattern: MassTransit handles this
-- Domain Event Dispatcher (in-process): Domain events already work via interceptor + MassTransit
+### Add After Core Works (v3.0 Polish)
 
-## Implementation Notes
+Features to add once the cluster runs end-to-end.
 
-### Audit Fields
-**Interfaces:**
+- [ ] Sealed Secrets replacing plain K8s Secrets — GitOps-safe secret management
+- [ ] Namespace isolation (`micro-commerce` namespace on all resources)
+- [ ] Startup probes for Keycloak and ApiService (slow startup protection)
+- [ ] Image tag update automation (CI commits sha back to overlay, ArgoCD auto-syncs)
+- [ ] MassTransit transport abstraction (`MASSTRANSIT_TRANSPORT` env var switches between Azure SB and RabbitMQ)
+
+### Future Consideration (Post v3.0)
+
+Features to defer until core is validated and working.
+
+- [ ] HPA — meaningful only with real load; document as next step
+- [ ] Network Policies — requires non-default CNI in kind; production hardening
+- [ ] cert-manager + TLS — production hardening, not needed for showcase
+- [ ] PostgreSQL Operator (CloudNativePG) — production HA, not needed for showcase
+- [ ] Multi-environment overlays (staging, prod) — only dev cluster exists
+- [ ] MinIO for Blob Storage replacement — low demo value; disable or use placeholder images
+
+---
+
+## Feature Prioritization Matrix
+
+| Feature | Showcase Value | Implementation Cost | Priority |
+|---------|---------------|---------------------|----------|
+| Dockerfiles (3 services) | HIGH | MEDIUM | P1 |
+| Kustomize base manifests | HIGH | MEDIUM | P1 |
+| GitHub Actions image pipeline | HIGH | MEDIUM | P1 |
+| PostgreSQL StatefulSet | HIGH | MEDIUM | P1 |
+| RabbitMQ in K8s + MassTransit switch | HIGH | MEDIUM | P1 |
+| Keycloak in K8s + realm import | HIGH | MEDIUM | P1 |
+| ArgoCD app-of-apps | HIGH | MEDIUM | P1 |
+| Liveness/readiness probes | HIGH | LOW | P1 |
+| Resource limits | MEDIUM | LOW | P1 |
+| OTEL Collector + Aspire Dashboard | HIGH | MEDIUM | P1 |
+| Sealed Secrets | HIGH | MEDIUM | P2 |
+| Namespace isolation | MEDIUM | LOW | P2 |
+| Startup probes | MEDIUM | LOW | P2 |
+| Image tag update automation | HIGH | HIGH | P2 |
+| MassTransit transport abstraction | MEDIUM | MEDIUM | P2 |
+| Kustomize dev overlay | MEDIUM | LOW | P2 |
+| HPA | LOW | MEDIUM | P3 |
+| Network Policies | LOW | HIGH | P3 |
+| cert-manager TLS | LOW | MEDIUM | P3 |
+| Service Mesh | LOW | HIGH | P3 |
+| PostgreSQL Operator | LOW | HIGH | P3 |
+
+**Priority key:**
+- P1: Must have for a working K8s demo
+- P2: Should have for a credible GitOps demo
+- P3: Defer; mention as "production next steps" in docs
+
+---
+
+## Complexity Notes Per Area
+
+### Dockerfiles (MEDIUM complexity)
+
+Multi-stage builds are non-trivial for first-time .NET K8s deployments:
+- `mcr.microsoft.com/dotnet/sdk:10.0` for build stage
+- `mcr.microsoft.com/dotnet/aspnet:10.0` (or chiseled variant) for runtime
+- Must handle `COPY *.csproj` + `dotnet restore` before `COPY .` to maximize layer cache
+- Must set `ASPNETCORE_URLS=http://+:8080` and run as non-root user
+- Next.js Dockerfile is separate: node build + standalone output + `node:alpine` runtime
+
+### Kustomize (LOW-MEDIUM complexity)
+
+Kustomize is built into kubectl; no separate install for basic use. Structure:
+```
+k8s/
+  base/
+    kustomization.yaml
+    apiservice/deployment.yaml, service.yaml, configmap.yaml
+    gateway/deployment.yaml, service.yaml
+    web/deployment.yaml, service.yaml
+    postgres/statefulset.yaml, pvc.yaml, service.yaml
+    rabbitmq/deployment.yaml, service.yaml
+    keycloak/deployment.yaml, service.yaml, configmap.yaml (realm)
+    otel/collector-deployment.yaml, aspire-dashboard-deployment.yaml
+  overlays/
+    dev/
+      kustomization.yaml  (patches image tags, sets imagePullPolicy: Always)
+```
+
+### RabbitMQ Transport Switch (MEDIUM complexity)
+
+MassTransit already supports RabbitMQ. The only change is in `Program.cs`:
 ```csharp
-public interface ICreatable { DateTimeOffset CreatedAt { get; set; } }
-public interface IModifiable { DateTimeOffset ModifiedAt { get; set; } }
-public interface IUserCreatable : ICreatable { string CreatedBy { get; set; } }
-public interface IUserModifiable : IModifiable { string ModifiedBy { get; set; } }
+// Instead of: .UsingAzureServiceBus(...)
+// Use: .UsingRabbitMq((ctx, cfg) => { cfg.Host("rabbitmq://rabbitmq-service/"); })
+// Driven by: IConfiguration["MassTransit:Transport"] == "rabbitmq"
 ```
+This is a configuration change, not an architecture change. The challenge is ensuring the Azure SB emulator path still works in Aspire local dev.
 
-**Interceptor pattern (SaveChangesInterceptor):**
-```csharp
-public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
-{
-    var entries = eventData.Context.ChangeTracker.Entries()
-        .Where(e => e.State is EntityState.Added or EntityState.Modified);
+### ArgoCD App-of-Apps (MEDIUM complexity)
 
-    foreach (var entry in entries)
-    {
-        if (entry.State == EntityState.Added && entry.Entity is ICreatable creatable)
-            creatable.CreatedAt = DateTimeOffset.UtcNow;
+Two layers of ArgoCD YAML:
+1. Root `Application` pointing to `k8s/argocd/apps/` in Git
+2. Child `Application` YAMLs in that directory, each pointing to a Kustomize overlay
 
-        if (entry.State == EntityState.Modified && entry.Entity is IModifiable modifiable)
-            modifiable.ModifiedAt = DateTimeOffset.UtcNow;
-    }
-}
+The complexity is in bootstrapping: ArgoCD itself must be installed in the cluster before it can manage anything, including itself (optional: make ArgoCD manage itself).
+
+### Sealed Secrets (MEDIUM complexity)
+
+Three steps:
+1. Install `sealed-secrets-controller` in cluster
+2. Install `kubeseal` CLI
+3. For each K8s Secret: `kubeseal < secret.yaml > sealed-secret.yaml` and commit the sealed version
+
+The challenge is key management: if the cluster is destroyed, the sealing key is lost and secrets must be re-sealed. For kind dev clusters, document this limitation explicitly.
+
+### OTEL Without Aspire AppHost (MEDIUM complexity)
+
+Aspire auto-injects `OTEL_EXPORTER_OTLP_ENDPOINT` into processes it manages. In K8s, this must be explicit:
+```yaml
+env:
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: "http://otel-collector-service:4317"
+  - name: OTEL_SERVICE_NAME
+    value: "apiservice"
 ```
+The `MicroCommerce.ServiceDefaults` package already configures OTLP exporting; it just needs the endpoint env var set.
 
-### Optimistic Concurrency
-**Option 1: Interface-based**
-```csharp
-public interface IConcurrent { uint Version { get; set; } }
-```
-Then use EF model configuration convention to apply [Timestamp] globally.
-
-**Option 2: Base class** (for aggregates already extending BaseAggregateRoot)
-```csharp
-public abstract class ConcurrentAggregateRoot<TId> : BaseAggregateRoot<TId>, IConcurrent
-{
-    [Timestamp] public uint Version { get; set; }
-}
-```
-
-### StronglyTypedId Converters
-**Library choice:** Meziantou.Framework.StronglyTypedId (active, .NET 10 compatible)
-
-**Usage:**
-```csharp
-[StronglyTypedId(jsonConverter: StronglyTypedIdJsonConverter.SystemTextJson, converters: StronglyTypedIdConverter.TypeConverter | StronglyTypedIdConverter.EfCoreValueConverter)]
-public readonly partial record struct ProductId(Guid Value);
-```
-
-Source generator creates TypeConverter, JsonConverter, EF ValueConverter automatically.
-
-### Enumeration Classes
-**Library choice:** Ardalis.SmartEnum (8.2.0+, industry standard)
-
-**Migration example:**
-```csharp
-// Before: plain enum
-public enum OrderStatus { Submitted, Paid, Confirmed }
-
-// After: SmartEnum with behavior
-public class OrderStatus : SmartEnum<OrderStatus>
-{
-    public static readonly OrderStatus Submitted = new(nameof(Submitted), 1);
-    public static readonly OrderStatus Paid = new(nameof(Paid), 2);
-    public static readonly OrderStatus Confirmed = new(nameof(Confirmed), 3);
-
-    private OrderStatus(string name, int value) : base(name, value) {}
-
-    public bool CanTransitionTo(OrderStatus next) => next.Value == Value + 1; // Domain logic
-}
-```
-
-EF Core persistence via `Ardalis.SmartEnum.EFCore` package (value converter).
-
-### Result Pattern
-**Library choice:** Ardalis.Result (for consistency with Ardalis.GuardClauses, Ardalis.SmartEnum)
-
-**Usage in command handlers:**
-```csharp
-// Before: throw exception
-public async Task<Order> Handle(PlaceOrderCommand request, CancellationToken ct)
-{
-    if (cart.Items.Count == 0)
-        throw new InvalidOperationException("Cart is empty");
-    return order;
-}
-
-// After: Result<T>
-public async Task<Result<Order>> Handle(PlaceOrderCommand request, CancellationToken ct)
-{
-    if (cart.Items.Count == 0)
-        return Result.Invalid(new ValidationError("Cart cannot be empty"));
-    return Result.Success(order);
-}
-```
-
-ASP.NET Core integration via `Ardalis.Result.AspNetCore` (auto-maps to IResult/IActionResult).
-
-### Specification Pattern
-**Custom implementation** based on Ardalis.Specification patterns but adapted for EF Core DbSet extensions.
-
-**Interface:**
-```csharp
-public interface ISpecification<T>
-{
-    Expression<Func<T, bool>>? Criteria { get; }
-    List<Expression<Func<T, object>>> Includes { get; }
-    List<string> IncludeStrings { get; }
-    Expression<Func<T, object>>? OrderBy { get; }
-    Expression<Func<T, object>>? OrderByDescending { get; }
-    int? Take { get; }
-    int? Skip { get; }
-}
-```
-
-**Usage:**
-```csharp
-public class PublishedProductsInCategorySpec : Specification<Product>
-{
-    public PublishedProductsInCategorySpec(CategoryId categoryId)
-    {
-        Query.Where(p => p.CategoryId == categoryId && p.Status == ProductStatus.Published)
-             .OrderByDescending(p => p.CreatedAt);
-    }
-}
-
-// In query handler
-var products = await dbContext.Products.ApplySpecification(spec).ToListAsync();
-```
-
-## Complexity Assessment
-
-| Feature | Lines of Code | Integration Points | Risk Level |
-|---------|--------------|-------------------|------------|
-| Audit Interfaces | ~50 (interfaces + interceptor) | SaveChangesInterceptor, all aggregates | Low (existing pattern) |
-| Concurrency Base | ~20 (interface + config) | EF model builder | Low (existing pattern) |
-| StronglyTypedId Generators | ~10 (attributes) | All 15+ ID types | Low (library-driven) |
-| SmartEnum | ~200 (2 enum migrations) | OrderStatus, ProductStatus, EF configs | Medium (data migration) |
-| Result<T> | ~300 (command handler refactor) | MediatR pipeline, ASP.NET endpoints | Medium (changes error handling) |
-| Specification Pattern | ~150 (base + extensions) | Catalog/Ordering queries | High (new abstraction) |
-
-## Migration Strategy
-
-**Backward Compatibility:**
-- Audit interfaces: Add to aggregates progressively, old aggregates keep manual CreatedAt until migrated
-- Concurrency: Opt-in interface, existing Order.Version unchanged
-- StronglyTypedId: Backward compatible (same record struct, just adds converters)
-- SmartEnum: Breaking change for enums, requires data migration + frontend DTO updates
-- Result<T>: Opt-in per command, existing exception-based handlers unchanged
-- Specification: Additive, existing LINQ queries unchanged
-
-**Rollout Order:**
-1. Non-breaking (StronglyTypedId generators, Audit interfaces, Concurrency interface)
-2. Opt-in additions (Result<T> for new commands, Specifications for new complex queries)
-3. Breaking migrations (SmartEnum replacing plain enums - coordinate with frontend)
+---
 
 ## Sources
 
-### Official Documentation
-- [Microsoft - Seedwork DDD base classes](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/seedwork-domain-model-base-classes-interfaces)
-- [Microsoft - Enumeration classes over enum types](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types)
-- [Microsoft - EF Core Concurrency Handling](https://learn.microsoft.com/en-us/ef/core/saving/concurrency)
-- [Microsoft - EF Core Interceptors](https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/interceptors)
+- [Kubernetes Configuration Good Practices](https://kubernetes.io/blog/2025/11/25/configuration-good-practices/)
+- [Kubernetes Horizontal Pod Autoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/)
+- [Kustomize with ArgoCD](https://argo-cd.readthedocs.io/en/stable/user-guide/kustomize/)
+- [ArgoCD Secret Management](https://argo-cd.readthedocs.io/en/stable/operator-manual/secret-management/)
+- [ArgoCD App-of-Apps Pattern (CNCF Blog 2025)](https://www.cncf.io/blog/2025/10/07/managing-kubernetes-workloads-using-the-app-of-apps-pattern-in-argocd-2/)
+- [ArgoCD App-of-Apps vs ApplicationSet](https://bytegoblin.io/blog/argocd-deployment-patterns-app-of-apps-vs-applicationsets.mdx)
+- [Sealed Secrets for GitOps (RedHat)](https://www.redhat.com/en/blog/a-guide-to-secrets-management-with-gitops-and-kubernetes)
+- [Kubernetes Secrets Management 2025 (Atmosly)](https://atmosly.com/blog/kubernetes-secrets-management-vault-vs-sealed-secrets-vs-external-secrets-2025)
+- [OpenTelemetry Collector on Kubernetes](https://opentelemetry.io/docs/platforms/kubernetes/collector/)
+- [OTEL with .NET Aspire (Microsoft Learn)](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-otlp-example)
+- [Aspire Dashboard as Standalone Container](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/telemetry)
+- [GitHub Actions + ArgoCD K8s Deployment](https://sheraziqbal.medium.com/practical-guide-deploying-to-kubernetes-using-github-actions-argocd-cd5c47c92e63)
+- [Build and Push Docker to GHCR (GitHub Actions)](https://github.com/marketplace/actions/build-docker-image-and-push-to-ghcr-docker-hub-or-aws-ecr)
+- [Ingress NGINX Retirement (Kubernetes.io)](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/)
+- [Ingress NGINX EOL March 2026](https://www.chkk.io/blog/ingress-nginx-deprecation)
+- [MassTransit RabbitMQ Configuration](https://masstransit.io/documentation/transports/rabbitmq)
+- [RabbitMQ Cluster Kubernetes Operator](https://github.com/rabbitmq/cluster-operator)
+- [kind - Local Kubernetes](https://kind.sigs.k8s.io/)
+- [.NET Container Best Practices 2025](https://developersvoice.com/blog/cloud/dotnet-containers-aot-sbom/)
+- [Kustomize Tutorial (DevOpsCube)](https://devopscube.com/kustomize-tutorial/)
 
-### DDD Patterns
-- [Enterprise Craftsmanship - Entity Base Class](https://enterprisecraftsmanship.com/posts/entity-base-class/)
-- [Enterprise Craftsmanship - Specification Pattern C# Implementation](https://enterprisecraftsmanship.com/posts/specification-pattern-c-implementation/)
-- [Medium - Clean DDD Lessons: Audit Metadata](https://medium.com/unil-ci-software-engineering/clean-ddd-lessons-audit-metadata-for-domain-entities-5935a5c6db5b)
-- [ByteAether - Automated Auditing with EF Core](https://byteaether.github.io/2025/building-an-enterprise-data-access-layer-automated-auditing/)
-- [Milan Jovanovic - EF Core Interceptors](https://www.milanjovanovic.tech/blog/how-to-use-ef-core-interceptors)
-
-### Libraries & Implementations
-- [Ardalis SmartEnum GitHub](https://github.com/ardalis/SmartEnum)
-- [Ardalis Result GitHub](https://github.com/ardalis/Result)
-- [Andrew Lock - StronglyTypedId Source Generator](https://github.com/andrewlock/StronglyTypedId)
-- [Meziantou StronglyTypedId NuGet](https://www.nuget.org/packages/Meziantou.Framework.StronglyTypedId)
-- [FluentResults GitHub](https://github.com/altmann/FluentResults)
-
-### Result Pattern Comparisons
-- [NikolaTech - Result Pattern in .NET](https://www.nikolatech.net/blogs/result-pattern-manage-errors-in-dotnet)
-- [Anton DevTips - Replace Exceptions with Result Pattern](https://antondevtips.com/blog/how-to-replace-exceptions-with-result-pattern-in-dotnet)
-
-### Specification Pattern
-- [DevIQ - Specification Pattern](https://deviq.com/design-patterns/specification-pattern/)
-- [Ardalis Specification - Use with Repository Pattern](https://specification.ardalis.com/usage/use-specification-repository-pattern.html)
-- [Medium - Specification Pattern in DDD .NET Core](https://medium.com/@cizu64/the-query-specification-pattern-in-ddd-net-core-25f1ec580f32)
-
-### Concurrency & Audit
-- [Learn EF Core - Concurrency Management](https://www.learnentityframeworkcore.com/concurrency)
-- [Medium - Optimistic Locking in .NET](https://medium.com/@imaanmzr/optimistic-locking-in-net-bd677916ef60)
-- [Medium - Audit Automation with EF Core](https://medium.com/@bananicabananica/audit-automation-with-ef-core-2f629fb77523)
-- [Digital Drummer - EF Core Audit Fields](https://digitaldrummerj.me/ef-core-audit-columns/)
+---
+*Feature research for: Kubernetes & GitOps deployment — MicroCommerce v3.0*
+*Researched: 2026-02-25*
