@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A showcase e-commerce platform demonstrating modern .NET microservices architecture with best practices. Users can browse products, manage profiles, write verified reviews, save wishlists, add items to cart, and complete purchases through a polished Next.js storefront backed by a modular monolith with event-driven architecture, CQRS, and DDD tactical patterns.
+A showcase e-commerce platform demonstrating modern .NET microservices architecture with DDD tactical patterns. Users can browse products, manage profiles, write verified reviews, save wishlists, add items to cart, and complete purchases through a polished Next.js storefront backed by a modular monolith with event-driven architecture, CQRS, and a comprehensive DDD building block foundation (strongly-typed IDs, SmartEnums, Result pattern, Specifications, interceptor-driven audit/concurrency/soft-delete).
 
 ## Core Value
 
@@ -38,18 +38,23 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - ✓ E2E test coverage for user features (guest, authenticated, navigation) — v1.1
 - ✓ DDD audit (71 findings) with value object migration to record structs — v1.1
 - ✓ CQRS compliance fixes and aggregate boundary enforcement — v1.1
+- ✓ Entity hierarchy (Entity<TId>, AuditableAggregateRoot<TId>) with typed ID child entities — v2.0
+- ✓ Vogen source-generated strongly-typed IDs (14 types) with auto EF Core + JSON converters — v2.0
+- ✓ EF Core conventions for StronglyTypedId auto-conversion and ConcurrencyToken auto-config — v2.0
+- ✓ SmartEnum state machines for OrderStatus (8 states) and ProductStatus (3 states) — v2.0
+- ✓ Result pattern (FluentResults) with dual MediatR validation pipeline and HTTP mapping — v2.0
+- ✓ Specification pattern (Ardalis.Specification) with 8 composable query specs — v2.0
+- ✓ AuditInterceptor auto-setting CreatedAt/UpdatedAt on IAuditable entities — v2.0
+- ✓ ConcurrencyInterceptor with explicit Version column replacing xmin — v2.0
+- ✓ SoftDeleteInterceptor infrastructure wired (ready for future entity adoption) — v2.0
+- ✓ Integration testing with Testcontainers + WebApplicationFactory (182 tests) — v2.0
+- ✓ Full building block adoption across all 7 feature modules — v2.0
+- ✓ OpenAPI schema transformers for Vogen IDs and SmartEnums — v2.0
+- ✓ Obsolete ValueObject base class and StronglyTypedIdConvention removed — v2.0
 
 ### Active
 
-## Current Milestone: v2.0 DDD Foundation
-
-**Goal:** Strengthen and modernize DDD building blocks with full adoption across all features
-
-**Target features:**
-- Extract common patterns (Entity base, audit fields, concurrency) into BuildingBlocks
-- Add new DDD building blocks (Result type, Enumeration class, Specification pattern)
-- Clean up and modernize (remove obsolete ValueObject, improve StronglyTypedId with converters, add source generators)
-- Adopt all new building blocks across every existing feature
+(No active milestone — run `/gsd:new-milestone` to start next)
 
 ### Out of Scope
 
@@ -63,10 +68,13 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - Public user profiles — privacy concern; profiles are private to account owner
 - AI review summaries — requires LLM integration, cost analysis
 - Review image moderation — requires moderation service
+- Generic Repository wrapper — EF Core DbContext already is unit-of-work + repository
+- Event sourcing primitives — adds complexity without proportional demo value
+- CreatedBy/ModifiedBy user tracking — requires IHttpContextAccessor integration, defer to future
 
 ## Context
 
-**Shipped v1.1 User Features** with ~585K LOC across .NET 10 backend and Next.js 16 frontend.
+**Shipped v2.0 DDD Foundation** with 27K LOC C# backend and Next.js 16 frontend. 182 tests (144 unit + 38 integration).
 
 **Tech stack:**
 - Backend: .NET 10, ASP.NET Core Minimal APIs, .NET Aspire 13.1.0
@@ -76,16 +84,18 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - Messaging: Azure Service Bus (MassTransit) with emulator
 - Gateway: YARP reverse proxy with JWT, rate limiting, CORS
 - Patterns: CQRS (MediatR), DDD, Event-Driven, Vertical Slice Architecture
-- Testing: xUnit, FluentAssertions, Testcontainers, Playwright
+- DDD Building Blocks: Vogen StronglyTypedId, SmartEnum, FluentResults, Ardalis.Specification, EF Core Interceptors
+- Testing: xUnit, FluentAssertions, Testcontainers, WebApplicationFactory
 
-**Architecture:** Modular monolith with clear bounded contexts (Catalog, Cart, Ordering, Inventory, Profiles, Reviews, Wishlists, Messaging). Ready for gradual service extraction.
+**Architecture:** Modular monolith with clear bounded contexts (Catalog, Cart, Ordering, Inventory, Profiles, Reviews, Wishlists, Messaging). Full DDD building block foundation adopted across all modules. Ready for gradual service extraction.
 
 **Known tech debt:**
 - Hardcoded configuration (stock thresholds, shipping rates, CORS origins)
 - Placeholder images (placehold.co URLs)
 - Cross-context DbContext injection in Reviews and Wishlists modules (bounded context isolation violation)
-- Strongly-typed IDs inconsistently applied at module boundaries (primitive Guid used cross-context)
-- ValueObject base class deprecated but not removed (zero consumers, marked [Obsolete])
+- ProductStatus missing `[JsonConverter]` attribute (server-side works, latent client-side gap)
+- DomainEventInterceptor uses scoped DI (not wired via AddInterceptors — needs IPublishEndpoint)
+- ISoftDeletable has zero entity adopters (infrastructure ready, no entities implement it yet)
 
 ## Constraints
 
@@ -120,6 +130,14 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 | ComplexProperty for struct value objects | Avoids EF Core shadow primary key generation from OwnsOne | ✓ Good — cleaner mapping |
 | Vernon's aggregate rules as audit standard | 4 rules for aggregate design validation | ✓ Good — caught 21 critical violations |
 | Reference by identity only (Vernon Rule 3) | Product references Category by CategoryId, not navigation property | ✓ Good — proper aggregate isolation |
+| Vogen for StronglyTypedId | Source-generated record structs vs hand-rolled base class | ✓ Good — zero runtime overhead, auto converters |
+| SmartEnum for status types | Behavior-rich enumerations vs plain enum + switch | ✓ Good — state transitions encapsulated, no magic strings |
+| FluentResults for explicit errors | Result<T> vs exceptions for domain errors | ✓ Good — 4 handlers adopted, HTTP mapping clean |
+| Ardalis.Specification for queries | Composable specs vs inline LINQ | ✓ Good — 8 specs, chained composition works |
+| Stateless interceptors as singletons | new() instances vs DI-resolved scoped | ✓ Good — no constructor deps, simpler wiring |
+| Interceptor order: SoftDelete → Concurrency → Audit | SoftDelete before Audit so UpdatedAt set on soft-deleted entities | ✓ Good — correct behavioral ordering |
+| Testcontainers over in-memory DB | Real PostgreSQL vs EF InMemory provider | ✓ Good — catches real SQL/EF issues, 38 integration tests |
+| Order skips AuditableAggregateRoot | Domain-specific CreatedAt/PaidAt semantics | ✓ Good — intentional, documented design choice |
 
 ---
-*Last updated: 2026-02-14 after v2.0 milestone started*
+*Last updated: 2026-02-25 after v2.0 milestone completed*

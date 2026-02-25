@@ -2,17 +2,16 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-14)
+See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 22 Complete (1 of 1 plans done)
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 22 of 22 (Wire Interceptors to DbContexts) — Complete
-Plan: 1 of 1 completed
-Status: Phase 22-01 Complete — SoftDeleteInterceptor, ConcurrencyInterceptor, and AuditInterceptor wired to all 8 DbContext registrations; dead AddScoped registrations removed; ApiWebApplicationFactory mirrored; 5 InterceptorBehaviorTests pass; 182 total tests pass. ENTITY-02, ENTITY-04, ENTITY-05, ADOPT-03 requirements satisfied.
-Last activity: 2026-02-25 — Completed 22-01: Wire all 3 interceptors to all 8 DbContexts + 5 integration tests proving runtime behavior.
+Milestone: v2.0 DDD Foundation — SHIPPED 2026-02-25
+Status: All 3 milestones complete (v1.0, v1.1, v2.0). 26/26 v2.0 requirements satisfied.
+Last activity: 2026-02-25 — Completed v2.0 milestone: 9 phases, 18 plans, 182 tests passing.
 
 Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] 100% (90/90 plans completed)
 
