@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ContainerRepository>baotoq/micro-commerce/gateway</ContainerRepository>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\MicroCommerce.ServiceDefaults\MicroCommerce.ServiceDefaults.csproj" />
   </ItemGroup>
