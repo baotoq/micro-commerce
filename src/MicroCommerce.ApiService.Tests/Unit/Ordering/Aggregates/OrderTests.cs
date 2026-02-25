@@ -482,44 +482,44 @@ public sealed class OrderTests
         order.ClearDomainEvents();
 
         // Walk the order through state transitions to reach target status
-        switch (targetStatus)
+        // SmartEnum cannot be used as case labels (not compile-time constants), so use if/else if
+        if (targetStatus == OrderStatus.Submitted)
         {
-            case OrderStatus.Submitted:
-                // Already in Submitted state
-                break;
-
-            case OrderStatus.StockReserved:
-                order.MarkStockReserved();
-                break;
-
-            case OrderStatus.Paid:
-                order.MarkAsPaid();
-                break;
-
-            case OrderStatus.Confirmed:
-                order.MarkAsPaid();
-                order.Confirm();
-                break;
-
-            case OrderStatus.Shipped:
-                order.MarkAsPaid();
-                order.Confirm();
-                order.Ship();
-                break;
-
-            case OrderStatus.Delivered:
-                order.MarkAsPaid();
-                order.Confirm();
-                order.Ship();
-                order.Deliver();
-                break;
-
-            case OrderStatus.Failed:
-                order.MarkAsFailed("Test failure");
-                break;
-
-            default:
-                throw new ArgumentException($"Unsupported target status: {targetStatus}");
+            // Already in Submitted state
+        }
+        else if (targetStatus == OrderStatus.StockReserved)
+        {
+            order.MarkStockReserved();
+        }
+        else if (targetStatus == OrderStatus.Paid)
+        {
+            order.MarkAsPaid();
+        }
+        else if (targetStatus == OrderStatus.Confirmed)
+        {
+            order.MarkAsPaid();
+            order.Confirm();
+        }
+        else if (targetStatus == OrderStatus.Shipped)
+        {
+            order.MarkAsPaid();
+            order.Confirm();
+            order.Ship();
+        }
+        else if (targetStatus == OrderStatus.Delivered)
+        {
+            order.MarkAsPaid();
+            order.Confirm();
+            order.Ship();
+            order.Deliver();
+        }
+        else if (targetStatus == OrderStatus.Failed)
+        {
+            order.MarkAsFailed("Test failure");
+        }
+        else
+        {
+            throw new ArgumentException($"Unsupported target status: {targetStatus}");
         }
 
         order.ClearDomainEvents();
