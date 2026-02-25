@@ -43,8 +43,8 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 
 ### Adoption
 
-- [ ] **ADOPT-01**: Migrate all child entities across 7 modules to Entity base class
-- [ ] **ADOPT-02**: Migrate all aggregates to AuditableAggregateRoot or apply IAuditable where appropriate
+- [x] **ADOPT-01**: Migrate all child entities across 7 modules to Entity base class
+- [x] **ADOPT-02**: Migrate all aggregates to AuditableAggregateRoot or apply IAuditable where appropriate
 - [ ] **ADOPT-03**: Migrate existing optimistic concurrency (Order, Cart, StockItem) from xmin to IConcurrencyToken with explicit Version
 - [ ] **ADOPT-04**: Migrate all StronglyTypedId types to use source generator, remove manual converter configurations
 - [ ] **ADOPT-05**: Adopt Result pattern in 2+ command handlers as pilot (e.g., SubmitOrder, ProcessPayment)
@@ -101,8 +101,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOD-03 | Phase 16 | Pending |
 | MOD-04 | Phase 21 | Pending |
 | TEST-01 | Phase 20 | Complete |
-| ADOPT-01 | Phase 21 | Pending |
-| ADOPT-02 | Phase 21 | Pending |
+| ADOPT-01 | Phase 21 | Complete |
+| ADOPT-02 | Phase 21 | Complete |
 | ADOPT-03 | Phase 21 | Pending |
 | ADOPT-04 | Phase 21 | Pending |
 | ADOPT-05 | Phase 21 | Pending |

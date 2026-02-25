@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 20 complete (2 of 2 plans done)
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 21 in progress (1 of 4 plans done)
 
 ## Current Position
 
-Phase: 20 of 21 (Integration Testing Infrastructure) — Complete
-Plan: 2 of 2 completed
-Status: Phase 20 Complete — All 7 features have representative integration tests. ProductBuilder/OrderBuilder fluent builders added. UpdateOrderStatusHandlerTests demonstrates FluentResults pattern. All 178 tests pass (34 integration + 144 unit).
-Last activity: 2026-02-25 — Completed 20-02: feature tests for Profiles/Reviews/Wishlists + handler-level test + test data builders. All 178 tests green.
+Phase: 21 of 21 (Adoption - Full Building Block Integration) — In Progress
+Plan: 1 of 4 completed
+Status: Phase 21-01 Complete — All 5 child entities inherit Entity<TId>, 5 aggregates inherit AuditableAggregateRoot<TId>. Cart.LastModifiedAt renamed to UpdatedAt. Manual timestamp assignments removed. EF migrations added. All 177 tests pass.
+Last activity: 2026-02-25 — Completed 21-01: Entity and AuditableAggregateRoot adoption across all feature modules.
 
-Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■░░░░] 90% (85/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■■░░░] 92% (86/96 plans completed)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 79 (v1.0: 49, v1.1: 23, v2.0: 7)
+- Total plans completed: 80 (v1.0: 49, v1.1: 23, v2.0: 8)
 - Average duration: 22 min
-- Total execution time: 27.97 hours
+- Total execution time: 28.47 hours
 
 **By Milestone:**
 
@@ -98,6 +98,10 @@ Recent decisions affecting v2.0:
 - [Phase 20-02]: UpdateOrderStatusHandlerTests resolves IMediator from DI (not direct handler instantiation) for full DI pipeline
 - [Phase 20-02]: Handle_NonExistentOrder_ThrowsNotFoundException because handler throws NotFoundException (not Result.Fail) for missing orders — exception middleware converts to 404 at endpoint boundary
 - [Phase 20-02]: ReviewsEndpoints.GetProductReviews page/pageSize params need defaults (same pattern as CatalogEndpoints fixed in 20-01)
+- [Phase 21-01]: Entity<TId> EF Core constructors must be private (not protected) in sealed classes — protected members in sealed types cause CS0628 compile error
+- [Phase 21-01]: Order kept as BaseAggregateRoot<OrderId> — domain-specific CreatedAt/PaidAt timestamps more meaningful than generic UpdatedAt for order lifecycle
+- [Phase 21-01]: Cart.LastModifiedAt renamed to inherited UpdatedAt from AuditableAggregateRoot — requires EF migration (column rename) and test updates
+- [Phase 21-01]: Unit test timestamp assertions removed for migrated aggregates — AuditInterceptor handles CreatedAt/UpdatedAt at infrastructure layer, not domain layer
 
 ### Roadmap Evolution
 
@@ -117,6 +121,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 20-02-PLAN.md (feature tests for Profiles/Reviews/Wishlists, handler-level tests, test data builders, all 178 tests green)
+Stopped at: Completed 21-01-PLAN.md (Entity<TId> for 5 child entities, AuditableAggregateRoot<TId> for 5 aggregates, EF migrations, 177 tests green)
 Resume file: None
-Next step: Phase 21 (final phase of v2.0 DDD Foundation)
+Next step: Phase 21 Plan 02 (next plan in the phase)
