@@ -12,7 +12,7 @@ Requirements for Kubernetes & GitOps deployment milestone. Each maps to roadmap 
 - [x] **CONT-01**: ApiService has a multi-stage Dockerfile with layer-cached restore and chiseled runtime image
 - [x] **CONT-02**: Gateway has a multi-stage Dockerfile with layer-cached restore and chiseled runtime image
 - [x] **CONT-03**: Web (Next.js) has a multi-stage Dockerfile with standalone output and node:alpine runtime
-- [ ] **CONT-04**: All 3 images are pushed to ghcr.io with SHA-based tags
+- [x] **CONT-04**: All 3 images are pushed to ghcr.io with SHA-based tags
 
 ### K8s Infrastructure
 
@@ -38,7 +38,7 @@ Requirements for Kubernetes & GitOps deployment milestone. Each maps to roadmap 
 
 ### CI/CD Pipeline
 
-- [ ] **CICD-01**: GitHub Actions workflow builds and pushes all 3 images to ghcr.io on push to master
+- [x] **CICD-01**: GitHub Actions workflow builds and pushes all 3 images to ghcr.io on push to master
 - [ ] **CICD-02**: CI commits updated SHA image tags to Kustomize dev overlay, triggering ArgoCD sync
 
 ### GitOps
@@ -92,8 +92,8 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 | CONT-01 | Phase 23 | Complete |
 | CONT-02 | Phase 23 | Complete |
 | CONT-03 | Phase 23 | Complete |
-| CONT-04 | Phase 23 | Pending |
-| CICD-01 | Phase 23 | Pending |
+| CONT-04 | Phase 23 | Complete |
+| CICD-01 | Phase 23 | Complete |
 | INFRA-01 | Phase 24 | Pending |
 | INFRA-02 | Phase 24 | Pending |
 | INFRA-03 | Phase 24 | Pending |

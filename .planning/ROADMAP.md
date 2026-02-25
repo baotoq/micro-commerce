@@ -59,7 +59,7 @@
 
 **Milestone Goal:** Deploy the full MicroCommerce stack to a kind-based Kubernetes cluster using GitOps via ArgoCD, with GitHub Actions CI building and pushing images to ghcr.io, Kustomize managing manifests, and Sealed Secrets handling credentials safely in Git.
 
-- [ ] **Phase 23: Dockerfiles and Container Image Pipeline** - Build production-ready images for all three services and push them to ghcr.io via GitHub Actions
+- [x] **Phase 23: Dockerfiles and Container Image Pipeline** - Build production-ready images for all three services and push them to ghcr.io via GitHub Actions (completed 2026-02-25)
 - [ ] **Phase 24: Infrastructure Manifests and Secrets** - Deploy PostgreSQL, RabbitMQ, and Keycloak in the kind cluster with Sealed Secrets for all credentials
 - [ ] **Phase 25: Application Manifests and MassTransit Transport** - Deploy ApiService, Gateway, and Web with Kustomize base/overlay structure and RabbitMQ transport support
 - [ ] **Phase 26: ArgoCD GitOps** - Install ArgoCD and wire app-of-apps to manage all cluster resources from Git
@@ -164,7 +164,7 @@
 | 20. Integration Testing Infrastructure | v2.0 | 2/2 | Complete | 2026-02-25 |
 | 21. Adoption - Full Building Block Integration | v2.0 | 3/3 | Complete | 2026-02-25 |
 | 22. Wire Interceptors to DbContexts | v2.0 | 1/1 | Complete | 2026-02-25 |
-| 23. Dockerfiles and Container Image Pipeline | 2/3 | In Progress|  | - |
+| 23. Dockerfiles and Container Image Pipeline | 3/3 | Complete   | 2026-02-25 | - |
 | 24. Infrastructure Manifests and Secrets | v3.0 | 0/TBD | Not started | - |
 | 25. Application Manifests and MassTransit Transport | v3.0 | 0/TBD | Not started | - |
 | 26. ArgoCD GitOps | v3.0 | 0/TBD | Not started | - |
