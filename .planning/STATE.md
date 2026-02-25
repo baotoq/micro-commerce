@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 21 in progress (1 of 4 plans done)
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 21 in progress (2 of 4 plans done)
 
 ## Current Position
 
 Phase: 21 of 21 (Adoption - Full Building Block Integration) — In Progress
-Plan: 1 of 4 completed
-Status: Phase 21-01 Complete — All 5 child entities inherit Entity<TId>, 5 aggregates inherit AuditableAggregateRoot<TId>. Cart.LastModifiedAt renamed to UpdatedAt. Manual timestamp assignments removed. EF migrations added. All 177 tests pass.
-Last activity: 2026-02-25 — Completed 21-01: Entity and AuditableAggregateRoot adoption across all feature modules.
+Plan: 2 of 4 completed
+Status: Phase 21-02 Complete — All 6 entities with xmin [Timestamp] uint migrated to IConcurrencyToken int Version. 6 EF Core migrations generated (AddExplicitVersionColumn). WishlistItem gains Entity<WishlistItemId>. All 177 tests pass.
+Last activity: 2026-02-25 — Completed 21-02: IConcurrencyToken adoption for Cart, Order, StockItem, UserProfile, Review, WishlistItem.
 
-Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■■░░░] 92% (86/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■■░░░] 93% (87/96 plans completed)
 
 ## Performance Metrics
 
@@ -102,6 +102,8 @@ Recent decisions affecting v2.0:
 - [Phase 21-01]: Order kept as BaseAggregateRoot<OrderId> — domain-specific CreatedAt/PaidAt timestamps more meaningful than generic UpdatedAt for order lifecycle
 - [Phase 21-01]: Cart.LastModifiedAt renamed to inherited UpdatedAt from AuditableAggregateRoot — requires EF migration (column rename) and test updates
 - [Phase 21-01]: Unit test timestamp assertions removed for migrated aggregates — AuditInterceptor handles CreatedAt/UpdatedAt at infrastructure layer, not domain layer
+- [Phase 21-02]: xmin to version migration uses AddColumn (not RenameColumn): PostgreSQL system column cannot be renamed; EF Core auto-generates incorrect RenameColumn that must be manually corrected to AddColumn
+- [Phase 21-02]: WishlistItem gains Entity<WishlistItemId> base class alongside IConcurrencyToken — consistent with ADOPT-01 scope for standalone entities with Id
 
 ### Roadmap Evolution
 
@@ -121,6 +123,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 21-01-PLAN.md (Entity<TId> for 5 child entities, AuditableAggregateRoot<TId> for 5 aggregates, EF migrations, 177 tests green)
+Stopped at: Completed 21-02-PLAN.md (IConcurrencyToken int Version for 6 entities, 6 EF Core migrations, 177 tests green)
 Resume file: None
-Next step: Phase 21 Plan 02 (next plan in the phase)
+Next step: Phase 21 Plan 03 (next plan in the phase)
