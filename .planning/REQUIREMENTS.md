@@ -9,9 +9,9 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 
 ### Entity Infrastructure
 
-- [ ] **ENTITY-01**: Entity base class with typed ID for child entities (CartItem, OrderItem, StockReservation, StockAdjustment)
+- [x] **ENTITY-01**: Entity base class with typed ID for child entities (CartItem, OrderItem, StockReservation, StockAdjustment)
 - [ ] **ENTITY-02**: IAuditable interface with CreatedAt/UpdatedAt, auto-set via AuditInterceptor on SaveChanges
-- [ ] **ENTITY-03**: AuditableAggregateRoot extending BaseAggregateRoot with IAuditable for aggregates needing timestamps
+- [x] **ENTITY-03**: AuditableAggregateRoot extending BaseAggregateRoot with IAuditable for aggregates needing timestamps
 - [ ] **ENTITY-04**: IConcurrencyToken interface with explicit Version column, replacing xmin where used
 - [ ] **ENTITY-05**: ISoftDeletable interface with IsDeleted/DeletedAt, global query filter via EF Core, SoftDeleteInterceptor
 
@@ -32,9 +32,9 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 
 ### Modernization
 
-- [ ] **MOD-01**: EF Core conventions for StronglyTypedId auto value converters (eliminate manual HasConversion)
-- [ ] **MOD-02**: EF Core conventions for concurrency token auto-configuration on IConcurrencyToken entities
-- [ ] **MOD-03**: Remove obsolete ValueObject base class and any dead infrastructure code
+- [x] **MOD-01**: EF Core conventions for StronglyTypedId auto value converters (eliminate manual HasConversion)
+- [x] **MOD-02**: EF Core conventions for concurrency token auto-configuration on IConcurrencyToken entities
+- [x] **MOD-03**: Remove obsolete ValueObject base class and any dead infrastructure code
 - [x] **MOD-04**: OpenAPI schema filters for StronglyTypedId (primitive display) and Enumeration (string display)
 
 ### Testing
@@ -45,7 +45,7 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 
 - [x] **ADOPT-01**: Migrate all child entities across 7 modules to Entity base class
 - [x] **ADOPT-02**: Migrate all aggregates to AuditableAggregateRoot or apply IAuditable where appropriate
-- [x] **ADOPT-03**: Migrate existing optimistic concurrency (Order, Cart, StockItem) from xmin to IConcurrencyToken with explicit Version
+- [ ] **ADOPT-03**: Migrate existing optimistic concurrency (Order, Cart, StockItem) from xmin to IConcurrencyToken with explicit Version
 - [x] **ADOPT-04**: Migrate all StronglyTypedId types to use source generator, remove manual converter configurations
 - [x] **ADOPT-05**: Adopt Result pattern in 2+ command handlers as pilot (e.g., SubmitOrder, ProcessPayment)
 - [x] **ADOPT-06**: Apply Specification pattern to complex catalog and ordering queries
@@ -82,12 +82,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ENTITY-01 | Phase 15 | Pending |
-| ENTITY-02 | Phase 15 | Pending |
-| ENTITY-03 | Phase 15 | Pending |
-| ENTITY-04 | Phase 15 | Pending |
-| ENTITY-05 | Phase 15 | Pending |
-| PRIM-01 | Phase 20 | Complete |
+| ENTITY-01 | Phase 15 | Complete |
+| ENTITY-02 | Phase 22 | Pending |
+| ENTITY-03 | Phase 15 | Complete |
+| ENTITY-04 | Phase 22 | Pending |
+| ENTITY-05 | Phase 22 | Pending |
+| PRIM-01 | Phase 16.1 | Complete |
 | PRIM-02 | Phase 18 | Complete |
 | PRIM-03 | Phase 18 | Complete |
 | PRIM-04 | Phase 18 | Complete |
@@ -96,14 +96,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | QUERY-01 | Phase 19 | Complete |
 | QUERY-02 | Phase 19 | Complete |
 | QUERY-03 | Phase 19 | Complete |
-| MOD-01 | Phase 16 | Pending |
-| MOD-02 | Phase 16 | Pending |
-| MOD-03 | Phase 16 | Pending |
+| MOD-01 | Phase 16 | Complete |
+| MOD-02 | Phase 16 | Complete |
+| MOD-03 | Phase 16 | Complete |
 | MOD-04 | Phase 21 | Complete |
 | TEST-01 | Phase 20 | Complete |
 | ADOPT-01 | Phase 21 | Complete |
 | ADOPT-02 | Phase 21 | Complete |
-| ADOPT-03 | Phase 21 | Complete |
+| ADOPT-03 | Phase 22 | Pending |
 | ADOPT-04 | Phase 21 | Complete |
 | ADOPT-05 | Phase 21 | Complete |
 | ADOPT-06 | Phase 21 | Complete |
@@ -116,4 +116,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after v2.0 roadmap creation*
+*Last updated: 2026-02-25 after v2.0 milestone audit gap closure*

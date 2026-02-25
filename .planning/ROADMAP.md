@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 MVP** — Phases 1-10 (shipped 2026-02-13) — [archive](milestones/v1.0-ROADMAP.md)
 - ✅ **v1.1 User Features** — Phases 11-14.3 (shipped 2026-02-14) — [archive](milestones/v1.1-ROADMAP.md)
-- 🚧 **v2.0 DDD Foundation** — Phases 15-21 (in progress)
+- 🚧 **v2.0 DDD Foundation** — Phases 15-22 (in progress)
 
 ## Phases
 
@@ -166,10 +166,27 @@ Plans:
 - [ ] 21-02-PLAN.md — IConcurrencyToken migration (xmin to int Version) + EF Core migrations for 6 DbContexts
 - [ ] 21-03-PLAN.md — Result pattern expansion (ChangeProductStatus, UpdateCartItem) + OpenAPI schema transformers + final verification
 
+#### Phase 22: Wire Interceptors to DbContexts (Gap Closure)
+**Goal**: Wire AuditInterceptor, ConcurrencyInterceptor, and SoftDeleteInterceptor to all 8 DbContexts via AddInterceptors() so cross-cutting behaviors fire at runtime
+**Depends on**: Phase 21 (all building blocks adopted; interceptors exist but are not wired)
+**Requirements**: ENTITY-02, ENTITY-04, ENTITY-05, ADOPT-03
+**Gap Closure**: Closes all gaps from v2.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. All 3 interceptors (Audit, Concurrency, SoftDelete) passed to AddInterceptors() in all 8 DbContext registrations in Program.cs
+  2. AuditInterceptor auto-sets CreatedAt on insert and UpdatedAt on update for IAuditable entities
+  3. ConcurrencyInterceptor initializes Version=1 on insert and increments on update for IConcurrencyToken entities
+  4. SoftDeleteInterceptor converts hard deletes to soft deletes for ISoftDeletable entities (infrastructure verified even if no entity uses it yet)
+  5. Integration test verifies interceptor behavior: timestamps set, Version increments, concurrent update rejected with 409
+  6. All existing 177 tests pass with no regressions
+**Plans**: 1 plan
+
+Plans:
+- [ ] 22-01-PLAN.md — Add AddInterceptors() to all 8 DbContext registrations + integration tests for interceptor behavior
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21
+Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21 → 22
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -182,6 +199,7 @@ Phases execute in numeric order: 15 → 16 → 17 → 18 → 19 → 20 → 21
 | 19. Specification | 2/2 | Complete    | 2026-02-24 | - |
 | 20. Integration Testing | 2/2 | Complete    | 2026-02-25 | - |
 | 21. Adoption | 3/3 | Complete    | 2026-02-25 | - |
+| 22. Wire Interceptors | 0/1 | Pending | - | - |
 
 ---
 *Roadmap created: 2026-01-29*
