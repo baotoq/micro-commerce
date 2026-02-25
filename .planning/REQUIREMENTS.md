@@ -35,7 +35,7 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 - [ ] **MOD-01**: EF Core conventions for StronglyTypedId auto value converters (eliminate manual HasConversion)
 - [ ] **MOD-02**: EF Core conventions for concurrency token auto-configuration on IConcurrencyToken entities
 - [ ] **MOD-03**: Remove obsolete ValueObject base class and any dead infrastructure code
-- [ ] **MOD-04**: OpenAPI schema filters for StronglyTypedId (primitive display) and Enumeration (string display)
+- [x] **MOD-04**: OpenAPI schema filters for StronglyTypedId (primitive display) and Enumeration (string display)
 
 ### Testing
 
@@ -46,10 +46,10 @@ Requirements for DDD Foundation milestone. Each maps to roadmap phases.
 - [x] **ADOPT-01**: Migrate all child entities across 7 modules to Entity base class
 - [x] **ADOPT-02**: Migrate all aggregates to AuditableAggregateRoot or apply IAuditable where appropriate
 - [x] **ADOPT-03**: Migrate existing optimistic concurrency (Order, Cart, StockItem) from xmin to IConcurrencyToken with explicit Version
-- [ ] **ADOPT-04**: Migrate all StronglyTypedId types to use source generator, remove manual converter configurations
-- [ ] **ADOPT-05**: Adopt Result pattern in 2+ command handlers as pilot (e.g., SubmitOrder, ProcessPayment)
-- [ ] **ADOPT-06**: Apply Specification pattern to complex catalog and ordering queries
-- [ ] **ADOPT-07**: All existing tests pass after migration with no regressions
+- [x] **ADOPT-04**: Migrate all StronglyTypedId types to use source generator, remove manual converter configurations
+- [x] **ADOPT-05**: Adopt Result pattern in 2+ command handlers as pilot (e.g., SubmitOrder, ProcessPayment)
+- [x] **ADOPT-06**: Apply Specification pattern to complex catalog and ordering queries
+- [x] **ADOPT-07**: All existing tests pass after migration with no regressions
 
 ## Future Requirements
 
@@ -99,15 +99,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOD-01 | Phase 16 | Pending |
 | MOD-02 | Phase 16 | Pending |
 | MOD-03 | Phase 16 | Pending |
-| MOD-04 | Phase 21 | Pending |
+| MOD-04 | Phase 21 | Complete |
 | TEST-01 | Phase 20 | Complete |
 | ADOPT-01 | Phase 21 | Complete |
 | ADOPT-02 | Phase 21 | Complete |
 | ADOPT-03 | Phase 21 | Complete |
-| ADOPT-04 | Phase 21 | Pending |
-| ADOPT-05 | Phase 21 | Pending |
-| ADOPT-06 | Phase 21 | Pending |
-| ADOPT-07 | Phase 21 | Pending |
+| ADOPT-04 | Phase 21 | Complete |
+| ADOPT-05 | Phase 21 | Complete |
+| ADOPT-06 | Phase 21 | Complete |
+| ADOPT-07 | Phase 21 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 26 total

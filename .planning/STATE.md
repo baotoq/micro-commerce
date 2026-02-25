@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** A user can complete a purchase end-to-end
-**Current focus:** Milestone v2.0 DDD Foundation — Phase 21 in progress (2 of 4 plans done)
+**Current focus:** Milestone v2.0 DDD Foundation — Phase 21 Complete (3 of 3 plans done)
 
 ## Current Position
 
-Phase: 21 of 21 (Adoption - Full Building Block Integration) — In Progress
-Plan: 2 of 4 completed
-Status: Phase 21-02 Complete — All 6 entities with xmin [Timestamp] uint migrated to IConcurrencyToken int Version. 6 EF Core migrations generated (AddExplicitVersionColumn). WishlistItem gains Entity<WishlistItemId>. All 177 tests pass.
-Last activity: 2026-02-25 — Completed 21-02: IConcurrencyToken adoption for Cart, Order, StockItem, UserProfile, Review, WishlistItem.
+Phase: 21 of 21 (Adoption - Full Building Block Integration) — Complete
+Plan: 3 of 3 completed
+Status: Phase 21-03 Complete — Result pattern adopted in ChangeProductStatus and UpdateCartItem handlers; VogenIdSchemaTransformer and SmartEnumSchemaTransformer created for OpenAPI; all ADOPT-04/05/06/07 and MOD-04 requirements verified; 177 tests pass. v2.0 DDD Foundation milestone complete.
+Last activity: 2026-02-25 — Completed 21-03: Result pattern for 2 more handlers + OpenAPI schema transformers for Vogen IDs and SmartEnums.
 
-Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■■░░░] 93% (87/96 plans completed)
+Progress: [■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] 100% (90/90 plans completed)
 
 ## Performance Metrics
 
@@ -104,6 +104,9 @@ Recent decisions affecting v2.0:
 - [Phase 21-01]: Unit test timestamp assertions removed for migrated aggregates — AuditInterceptor handles CreatedAt/UpdatedAt at infrastructure layer, not domain layer
 - [Phase 21-02]: xmin to version migration uses AddColumn (not RenameColumn): PostgreSQL system column cannot be renamed; EF Core auto-generates incorrect RenameColumn that must be manually corrected to AddColumn
 - [Phase 21-02]: WishlistItem gains Entity<WishlistItemId> base class alongside IConcurrencyToken — consistent with ADOPT-01 scope for standalone entities with Id
+- [Phase 21-03]: Microsoft.OpenApi 2.0.0 (used by AspNetCore.OpenApi 10.x) uses JsonSchemaType enum for schema.Type (not string), JsonNode/JsonValue.Create() for schema.Enum items (not OpenApiString), types in root Microsoft.OpenApi namespace (not Microsoft.OpenApi.Models)
+- [Phase 21-03]: UpdateCartItemCommandHandler uses NotFoundException for missing cart (404 via exception middleware) — consistent with handler boundary pattern (not found = 404, domain rule failure = 422 Result.Fail)
+- [Phase 21-03]: VogenIdSchemaTransformer uses dual detection: ValueObjectAttribute name check + IsValueType/Guid Value fallback for robustness against Vogen version differences
 
 ### Roadmap Evolution
 
@@ -123,6 +126,6 @@ None. All v1.1 issues resolved. Clean slate for v2.0.
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 21-02-PLAN.md (IConcurrencyToken int Version for 6 entities, 6 EF Core migrations, 177 tests green)
+Stopped at: Completed 21-03-PLAN.md (Result pattern for ChangeProductStatus+UpdateCartItem, OpenAPI schema transformers for Vogen IDs and SmartEnums, all Phase 21 requirements verified, 177 tests green)
 Resume file: None
-Next step: Phase 21 Plan 03 (next plan in the phase)
+Next step: Phase 21 complete. v2.0 DDD Foundation milestone complete.
