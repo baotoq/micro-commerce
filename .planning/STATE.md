@@ -70,6 +70,9 @@ Recent decisions affecting v3.0:
 - [Phase 24]: [Phase 24-01]: PGDATA subdirectory avoids initdb directory-not-empty error from kind local-path-provisioner
 - [Phase 24]: [Phase 24-01]: Offset ports (3xxxx) for kind cluster avoid conflicts with Aspire local dev services
 - [Phase 24]: [Phase 24-01]: Separate headless + NodePort services for PostgreSQL -- headless for StatefulSet DNS, NodePort for kind port mapping chain
+- [Phase 24]: [Phase 24-02]: Keycloak startup probe on management port 9000 with 15s initial delay and 60s probing window for slow first-boot realm import
+- [Phase 24]: [Phase 24-02]: Realm JSON copied from AppHost/Realms to K8s manifests for self-contained deployment; configMapGenerator for hash-suffixed ConfigMap
+- [Phase 24]: [Phase 24-02]: Separate NodePort services for kind external access; KC_BOOTSTRAP_ADMIN_USERNAME/PASSWORD (not deprecated KEYCLOAK_ADMIN)
 
 ### Pending Todos
 
@@ -84,6 +87,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 23-03-PLAN.md (GitHub Actions Container Image Workflow) -- Phase 23 complete
+Stopped at: Completed 24-02-PLAN.md (RabbitMQ and Keycloak Manifests)
 Resume file: None
-Next step: Plan Phase 24 (Infrastructure Manifests and Secrets)
+Next step: Execute 24-03-PLAN.md (Bootstrap Script and Sealed Secrets)
