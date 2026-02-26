@@ -3,3 +3,14 @@ kind: Kustomization
 
 resources:
 - ../../base
+
+images:
+- name: apiservice
+  newName: apiservice
+  newTag: dev
+- name: gateway
+  newName: gateway
+  newTag: dev
+- name: web
+  newName: web
+  newTag: dev

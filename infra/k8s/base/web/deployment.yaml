@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: web:dev
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: HOSTNAME
+          value: "0.0.0.0"
+        - name: PORT
+          value: "3000"
+        - name: AUTH_SECRET
+          value: "k8s-dev-auth-secret-change-in-production"
+        - name: AUTH_TRUST_HOST
+          value: "true"
+        - name: AUTH_URL
+          value: "http://localhost:38800"
+        - name: KEYCLOAK_ISSUER
+          value: "http://keycloak.micro-commerce.svc.cluster.local:8080/realms/micro-commerce"
+        - name: KEYCLOAK_CLIENT_ID
+          value: "nextjs-app"
+        - name: KEYCLOAK_CLIENT_SECRET
+          value: "nextjs-app-secret"
+        - name: services__gateway__https__0
+          value: "http://gateway:8080"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 100m
+          limits:
+            memory: 256Mi
+            cpu: 250m

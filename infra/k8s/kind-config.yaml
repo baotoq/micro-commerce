@@ -16,3 +16,7 @@ nodes:
   - containerPort: 30080
     hostPort: 38080
     protocol: TCP
+  # Gateway (NodePort 30800 -> host 38800)
+  - containerPort: 30800
+    hostPort: 38800
+    protocol: TCP

@@ -8,3 +8,6 @@ resources:
 - postgres/
 - rabbitmq/
 - keycloak/
+- apiservice/
+- gateway/
+- web/
