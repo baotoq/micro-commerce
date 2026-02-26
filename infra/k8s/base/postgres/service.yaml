@@ -1,0 +1,28 @@
+# Headless service for StatefulSet (required for stable DNS)
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: micro-commerce
+spec:
+  clusterIP: None
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+# NodePort for local access via kind port mapping
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-nodeport
+  namespace: micro-commerce
+spec:
+  type: NodePort
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+    nodePort: 30432
