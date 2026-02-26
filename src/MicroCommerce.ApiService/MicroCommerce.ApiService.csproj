@@ -32,6 +32,7 @@
     <PackageReference Include="MassTransit" Version="9.0.0" />
     <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="9.0.0" />
     <PackageReference Include="MassTransit.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="9.0.0" />
 
     <!-- EF Core for PostgreSQL -->
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />

@@ -95,13 +95,21 @@ builder.AddNpgsqlDbContext<WishlistsDbContext>("appdb", configureDbContextOption
     options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
-// Azure Blob Storage for product images
-builder.AddAzureBlobServiceClient("blobs");
+// Conditional transport: RabbitMQ for K8s, Azure Service Bus for Aspire (default)
+string massTransitTransport = builder.Configuration["MASSTRANSIT_TRANSPORT"] ?? "AzureServiceBus";
+bool useRabbitMq = massTransitTransport.Equals("RabbitMQ", StringComparison.OrdinalIgnoreCase);
 
-// Azure Service Bus client for DLQ management (Aspire integration registers ServiceBusClient)
-builder.AddAzureServiceBusClient("messaging");
+// Azure SDK registrations are only needed when using Azure Service Bus transport
+if (!useRabbitMq)
+{
+    // Azure Blob Storage for product images
+    builder.AddAzureBlobServiceClient("blobs");
 
-// MassTransit with Azure Service Bus and EF Core outbox
+    // Azure Service Bus client for DLQ management (Aspire integration registers ServiceBusClient)
+    builder.AddAzureServiceBusClient("messaging");
+}
+
+// MassTransit with conditional transport and EF Core outbox
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumers(typeof(Program).Assembly);
@@ -150,11 +158,26 @@ builder.Services.AddMassTransit(x =>
         cfg.UseEntityFrameworkOutbox<CatalogDbContext>(context);
     });
 
-    x.UsingAzureServiceBus((context, cfg) =>
+    if (useRabbitMq)
     {
-        cfg.Host(builder.Configuration.GetConnectionString("messaging"));
-        cfg.ConfigureEndpoints(context);
-    });
+        x.UsingRabbitMq((context, cfg) =>
+        {
+            cfg.Host(builder.Configuration["RabbitMQ:Host"] ?? "localhost", "/", h =>
+            {
+                h.Username(builder.Configuration["RabbitMQ:Username"] ?? "guest");
+                h.Password(builder.Configuration["RabbitMQ:Password"] ?? "guest");
+            });
+            cfg.ConfigureEndpoints(context);
+        });
+    }
+    else
+    {
+        x.UsingAzureServiceBus((context, cfg) =>
+        {
+            cfg.Host(builder.Configuration.GetConnectionString("messaging"));
+            cfg.ConfigureEndpoints(context);
+        });
+    }
 });
 
 builder.Services.AddScoped<DomainEventInterceptor>();
@@ -189,12 +212,9 @@ builder.Services.AddAuthentication()
             // The 'azp' (authorized party) claim will be 'nextjs-app'
             options.TokenValidationParameters.ValidateAudience = false;
 
-            // For development only - disable HTTPS metadata validation
-            // In production, use explicit Authority configuration instead
-            if (builder.Environment.IsDevelopment())
-            {
-                options.RequireHttpsMetadata = false;
-            }
+            // Disable HTTPS metadata validation — K8s cluster runs Keycloak over HTTP internally.
+            // This is acceptable for local kind cluster and non-public deployments.
+            options.RequireHttpsMetadata = false;
         });
 builder.Services.AddAuthorizationBuilder();
 
@@ -224,8 +244,15 @@ builder.Services.AddHostedService<InventoryDataSeeder>();
 // Cart services
 builder.Services.AddHostedService<CartExpirationService>();
 
-// Messaging services
-builder.Services.AddScoped<IDeadLetterQueueService, DeadLetterQueueService>();
+// Messaging services — use no-op implementation when Azure Service Bus is unavailable
+if (useRabbitMq)
+{
+    builder.Services.AddScoped<IDeadLetterQueueService, NoOpDeadLetterQueueService>();
+}
+else
+{
+    builder.Services.AddScoped<IDeadLetterQueueService, DeadLetterQueueService>();
+}
 
 // Profile services
 builder.Services.AddScoped<IAvatarImageService, AvatarImageService>();

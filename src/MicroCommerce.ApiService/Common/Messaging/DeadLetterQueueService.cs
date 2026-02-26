@@ -194,3 +194,25 @@ public sealed class DeadLetterQueueService : IDeadLetterQueueService
             queueName);
     }
 }
+
+/// <summary>
+/// No-op DLQ service for non-Azure Service Bus environments (e.g., RabbitMQ in K8s).
+/// Returns empty results for all operations.
+/// </summary>
+public sealed class NoOpDeadLetterQueueService : IDeadLetterQueueService
+{
+    public Task<IReadOnlyList<DeadLetterMessageDto>> PeekDeadLettersAsync(
+        string queueName, int maxMessages = 20, CancellationToken ct = default)
+        => Task.FromResult<IReadOnlyList<DeadLetterMessageDto>>([]);
+
+    public Task RetryDeadLetterAsync(
+        string queueName, long sequenceNumber, CancellationToken ct = default)
+        => Task.CompletedTask;
+
+    public Task<int> PurgeDeadLettersAsync(
+        string queueName, CancellationToken ct = default)
+        => Task.FromResult(0);
+
+    public Task<IReadOnlyList<string>> GetQueueNamesAsync(CancellationToken ct = default)
+        => Task.FromResult<IReadOnlyList<string>>([]);
+}
