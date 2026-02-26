@@ -88,11 +88,12 @@
   2. PostgreSQL data persists across pod restarts (PVC-backed StatefulSet)
   3. Keycloak admin UI is reachable and the MicroCommerce realm is pre-loaded from a ConfigMap
   4. No plaintext credentials exist in any committed YAML file; all secrets are SealedSecret objects
-  5. ApiService startup probe prevents liveness failure during the slow first-boot EF Core migration
-**Plans**: 3 plans
-- [ ] 24-01-PLAN.md -- Kind cluster config, Kustomize scaffold, PostgreSQL StatefulSet
-- [ ] 24-02-PLAN.md -- RabbitMQ Deployment, Keycloak Deployment with realm import
-- [ ] 24-03-PLAN.md -- Bootstrap script with SealedSecrets integration
+  5. Keycloak startup probe is configured with sufficient timeout (15s delay + 60s probing window) to survive slow first-boot realm import
+**Plans**: 4 plans
+- [x] 24-01-PLAN.md -- Kind cluster config, Kustomize scaffold, PostgreSQL StatefulSet
+- [x] 24-02-PLAN.md -- RabbitMQ Deployment, Keycloak Deployment with realm import
+- [x] 24-03-PLAN.md -- Bootstrap script with SealedSecrets integration
+- [ ] 24-04-PLAN.md -- Gap closure: fix ROADMAP misalignment on success criterion #5
 
 ### Phase 25: Application Manifests and MassTransit Transport
 **Goal**: ApiService, Gateway, and Web are deployed via Kustomize and communicate correctly using K8s DNS and RabbitMQ messaging
@@ -104,6 +105,7 @@
   3. All pods report liveness and readiness as healthy (`kubectl get pods -n micro-commerce` shows all Running/Ready)
   4. All resources are in the `micro-commerce` namespace and have CPU/memory resource limits set
   5. Setting `MASSTRANSIT_TRANSPORT=AzureServiceBus` (Aspire dev path) and `RabbitMQ` (K8s path) both produce working configurations
+  6. ApiService startup probe prevents liveness failure during slow first-boot EF Core migration (deferred from Phase 24 INFRA-05)
 **Plans**: TBD
 
 ### Phase 26: ArgoCD GitOps
