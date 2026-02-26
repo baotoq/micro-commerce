@@ -45,7 +45,7 @@ Requirements for Kubernetes & GitOps deployment milestone. Each maps to roadmap 
 
 - [ ] **GOPS-01**: ArgoCD is installed in the kind cluster and manages all services
 - [ ] **GOPS-02**: App-of-apps root Application manages per-service child Applications
-- [ ] **GOPS-03**: Sealed Secrets controller encrypts all credentials; SealedSecret YAMLs committed to Git
+- [x] **GOPS-03**: Sealed Secrets controller encrypts all credentials; SealedSecret YAMLs committed to Git
 
 ### Observability
 
@@ -99,7 +99,7 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 | INFRA-03 | Phase 24 | Complete |
 | INFRA-04 | Phase 24 | Complete |
 | INFRA-05 | Phase 24 | Complete |
-| GOPS-03 | Phase 24 | Pending |
+| GOPS-03 | Phase 24 | Complete |
 | MFST-01 | Phase 25 | Pending |
 | MFST-02 | Phase 25 | Pending |
 | MFST-03 | Phase 25 | Pending |
