@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apiservice
+  labels:
+    app: apiservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apiservice
+  template:
+    metadata:
+      labels:
+        app: apiservice
+    spec:
+      containers:
+      - name: apiservice
+        image: apiservice:dev
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: password
+        - name: ConnectionStrings__appdb
+          value: "Host=postgres.micro-commerce.svc.cluster.local;Database=appdb;Username=$(POSTGRES_USERNAME);Password=$(POSTGRES_PASSWORD)"
+        - name: MASSTRANSIT_TRANSPORT
+          value: RabbitMQ
+        - name: RabbitMQ__Host
+          value: rabbitmq.micro-commerce.svc.cluster.local
+        - name: RABBITMQ_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: username
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: password
+        - name: RabbitMQ__Username
+          value: "$(RABBITMQ_USERNAME)"
+        - name: RabbitMQ__Password
+          value: "$(RABBITMQ_PASSWORD)"
+        - name: ConnectionStrings__keycloak
+          value: "http://keycloak.micro-commerce.svc.cluster.local:8080"
+        startupProbe:
+          httpGet:
+            path: /alive
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 30
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 8080
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 250m
+          limits:
+            memory: 512Mi
+            cpu: 500m

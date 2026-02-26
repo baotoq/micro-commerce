@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: gateway:dev
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
+        - name: ReverseProxy__Clusters__apiservice__Destinations__default__Address
+          value: "http://apiservice:8080"
+        - name: ConnectionStrings__keycloak
+          value: "http://keycloak.micro-commerce.svc.cluster.local:8080"
+        - name: Cors__Origins__0
+          value: "http://localhost:38800"
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 8080
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 100m
+          limits:
+            memory: 256Mi
+            cpu: 250m
