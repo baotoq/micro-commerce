@@ -11,9 +11,9 @@ MicroCommerce is a showcase e-commerce platform demonstrating modern .NET micros
 - **Frontend:** Next.js 16, React 19, TypeScript 5, Tailwind CSS v4, TanStack React Query v5, Radix UI
 - **Auth:** Keycloak (backend JWT + NextAuth.js v5 frontend)
 - **Database:** PostgreSQL (schema-per-feature, shared database `appdb`)
-- **Messaging:** Azure Service Bus (MassTransit 9.0) with emulator for dev
+- **Messaging:** Azure Service Bus (MassTransit 9.0) with emulator for dev; RabbitMQ for Kubernetes deployments
 - **Patterns:** CQRS (MediatR), DDD, Event-Driven, Vertical Slice Architecture
-- **Key Libraries:** Vogen (strongly typed IDs), Ardalis.SmartEnum, Ardalis.Specification, FluentValidation, FluentResults
+- **Key Libraries:** Vogen (strongly typed IDs), Ardalis.SmartEnum, Ardalis.Specification, Ardalis.GuardClauses, FluentValidation, FluentResults
 
 ## Project Structure
 
@@ -32,6 +32,7 @@ src/
       Messaging/                      # Dead letter queue UI
     Common/                           # Shared infrastructure
       Behaviors/                      # MediatR pipeline (validation, result validation)
+      Messaging/                      # DeadLetterQueueService, DomainEventFaultConsumer
       Persistence/                    # BaseDbContext, interceptors, conventions, OutboxDbContext
       Exceptions/                     # Global exception handling
       Extensions/                     # FluentResults -> HTTP mapping
@@ -48,6 +49,8 @@ src/
     src/hooks/                        # Custom hooks (TanStack Query)
     src/lib/                          # API client, utilities
     src/types/                        # Type augmentations (next-auth.d.ts)
+    src/auth.ts                       # NextAuth.js configuration
+    src/middleware.ts                  # Next.js middleware (auth route protection)
     e2e/                              # Playwright E2E tests
   BuildingBlocks/BuildingBlocks.Common/ # DDD primitives (aggregates, events, value objects)
 ```
@@ -117,6 +120,7 @@ Features/{Name}/
   Domain/
     Entities/                     # Aggregate roots and entities
     Events/                       # Domain events
+    ValueObjects/                 # Strongly typed IDs, value objects (Money, ProductName, etc.)
   Application/
     Commands/                     # Write operations (MediatR IRequest)
     Queries/                      # Read operations (MediatR IRequest)
@@ -140,6 +144,7 @@ Features/{Name}/
 - **Schema-per-Feature:** All DbContexts share one `appdb` PostgreSQL database with separate schemas (catalog, cart, ordering, inventory, profiles, reviews, wishlists, outbox)
 - **MassTransit Outbox:** OutboxDbContext in `outbox` schema provides transactional messaging (inbox deduplication + outbox delivery)
 - **Checkout Saga:** CheckoutStateMachine orchestrates stock reservation -> payment -> confirm/fail with EF Core-persisted state
+- **Transport Switching:** MassTransit uses Azure Service Bus in Aspire/dev and RabbitMQ in Kubernetes (conditional in `Program.cs`)
 - **Circuit Breaker + Retry:** Global MassTransit config with exponential backoff [1s, 5s, 25s], circuit breaker at 15% failure rate
 - **Guest Cart:** Cookie-based buyer identity (`BuyerIdentity.GetOrCreateBuyerId`), merges with authenticated cart on login
 - **FluentResults:** Railway-oriented error handling in some handlers, processed by ResultValidationBehavior (returns 422 on failure)
@@ -166,8 +171,9 @@ cd src/MicroCommerce.Web && npx playwright test
 ## CI/CD
 
 - `.github/workflows/dotnet-test.yml` — runs unit + integration tests on push to master
+- `.github/workflows/container-images.yml` — builds and pushes Docker images on `master` pushes and `v*.*.*` tags
 - `.github/workflows/release.yml` — publishes NuGet package + Docker images on `v*.*.*` tags
-- `.github/dependabot.yml` — weekly NuGet dependency updates
+- `.github/dependabot.yml` — weekly NuGet and devcontainer dependency updates
 
 ## Important Notes
 

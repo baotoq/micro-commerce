@@ -44,6 +44,8 @@ Inspired by **[Microsoft eShop](https://github.com/dotnet/eShop)**, this project
 - [Available Commands](#available-commands)
 - [CI/CD](#cicd)
 - [Troubleshooting](#troubleshooting)
+- [Kubernetes Deployment](#kubernetes-deployment)
+- [Dev Container](#dev-container)
 - [Star History](#star-history)
 - [License](#license)
 
