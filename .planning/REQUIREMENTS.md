@@ -98,7 +98,7 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 | INFRA-02 | Phase 24 | Complete |
 | INFRA-03 | Phase 24 | Complete |
 | INFRA-04 | Phase 24 | Complete |
-| INFRA-05 | Phase 24 + 25 | Partial (Keycloak done P24, ApiService P25) |
+| INFRA-05 | Phase 24 + 25 | Complete |
 | GOPS-03 | Phase 24 | Complete |
 | MFST-01 | Phase 25 | Complete |
 | MFST-02 | Phase 25 | Complete |

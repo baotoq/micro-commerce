@@ -61,7 +61,7 @@
 
 - [x] **Phase 23: Dockerfiles and Container Image Pipeline** - Build production-ready images for all three services and push them to ghcr.io via GitHub Actions (completed 2026-02-25)
 - [x] **Phase 24: Infrastructure Manifests and Secrets** - Deploy PostgreSQL, RabbitMQ, and Keycloak in the kind cluster with Sealed Secrets for all credentials (completed 2026-02-26)
-- [ ] **Phase 25: Application Manifests and MassTransit Transport** - Deploy ApiService, Gateway, and Web with Kustomize base/overlay structure and RabbitMQ transport support
+- [x] **Phase 25: Application Manifests and MassTransit Transport** - Deploy ApiService, Gateway, and Web with Kustomize base/overlay structure and RabbitMQ transport support (completed 2026-02-26)
 - [ ] **Phase 26: ArgoCD GitOps** - Install ArgoCD and wire app-of-apps to manage all cluster resources from Git
 - [ ] **Phase 27: CI/CD GitOps Loop Closure** - Extend CI to commit SHA image tags back to the overlay, completing the full GitOps loop
 - [ ] **Phase 28: Observability** - Deploy OTEL Collector and standalone Aspire Dashboard for in-cluster monitoring
@@ -107,9 +107,9 @@
   5. Setting `MASSTRANSIT_TRANSPORT=AzureServiceBus` (Aspire dev path) and `RabbitMQ` (K8s path) both produce working configurations
   6. ApiService startup probe prevents liveness failure during slow first-boot EF Core migration (deferred from Phase 24 INFRA-05)
 **Plans**: 3 plans
-- [ ] 25-01-PLAN.md -- MassTransit RabbitMQ transport switching, health endpoint fix, conditional Azure SDK
-- [ ] 25-02-PLAN.md -- ApiService, Gateway, Web K8s Deployment/Service manifests, Kustomize base/overlay
-- [ ] 25-03-PLAN.md -- Bootstrap script extension with app image build, kind load, and full stack deployment
+- [x] 25-01-PLAN.md -- MassTransit RabbitMQ transport switching, health endpoint fix, conditional Azure SDK
+- [x] 25-02-PLAN.md -- ApiService, Gateway, Web K8s Deployment/Service manifests, Kustomize base/overlay
+- [x] 25-03-PLAN.md -- Bootstrap script extension with app image build, kind load, and full stack deployment
 
 ### Phase 26: ArgoCD GitOps
 **Goal**: ArgoCD manages all cluster resources from Git using app-of-apps, replacing manual kubectl apply
@@ -174,7 +174,7 @@
 | 22. Wire Interceptors to DbContexts | v2.0 | 1/1 | Complete | 2026-02-25 |
 | 23. Dockerfiles and Container Image Pipeline | 3/3 | Complete    | 2026-02-25 | - |
 | 24. Infrastructure Manifests and Secrets | 4/4 | Complete    | 2026-02-26 | - |
-| 25. Application Manifests and MassTransit Transport | 2/3 | In Progress|  | - |
+| 25. Application Manifests and MassTransit Transport | 3/3 | Complete | 2026-02-26 | - |
 | 26. ArgoCD GitOps | v3.0 | 0/TBD | Not started | - |
 | 27. CI/CD GitOps Loop Closure | v3.0 | 0/TBD | Not started | - |
 | 28. Observability | v3.0 | 0/TBD | Not started | - |
