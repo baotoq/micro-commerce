@@ -14,22 +14,22 @@ builder.Services.AddAuthentication()
         options =>
         {
             options.TokenValidationParameters.ValidateAudience = false;
-            if (builder.Environment.IsDevelopment())
-            {
-                options.RequireHttpsMetadata = false;
-            }
+            // Disable HTTPS metadata validation -- K8s cluster runs Keycloak over HTTP internally.
+            options.RequireHttpsMetadata = false;
         });
 
 // Authorization policies
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("authenticated", policy => policy.RequireAuthenticatedUser());
 
-// CORS policy - centralized at gateway level
+// CORS policy - centralized at gateway level, configurable via Cors:Origins
+string[] corsOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>()
+    ?? ["http://localhost:3000", "http://localhost:3001"];
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
+        policy.WithOrigins(corsOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
