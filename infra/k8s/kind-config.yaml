@@ -1,0 +1,18 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: micro-commerce
+nodes:
+- role: control-plane
+  extraPortMappings:
+  # PostgreSQL (NodePort 30432 -> host 35432)
+  - containerPort: 30432
+    hostPort: 35432
+    protocol: TCP
+  # RabbitMQ Management UI (NodePort 30672 -> host 35672)
+  - containerPort: 30672
+    hostPort: 35672
+    protocol: TCP
+  # Keycloak (NodePort 30080 -> host 38080)
+  - containerPort: 30080
+    hostPort: 38080
+    protocol: TCP
