@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Kubernetes & GitOps
 status: unknown
-last_updated: "2026-02-25T18:12:23.600Z"
+last_updated: "2026-02-26T08:43:17.209Z"
 progress:
-  total_phases: 1
+  total_phases: 2
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 6
+  completed_plans: 5
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** A user can complete a purchase end-to-end — now deployed to Kubernetes via GitOps
-**Current focus:** v3.0 Kubernetes & GitOps — Phase 23: Dockerfiles and Container Image Pipeline
+**Current focus:** v3.0 Kubernetes & GitOps — Phase 24: Infrastructure Manifests and Secrets
 
 ## Current Position
 
-Phase: 23 of 28 (Dockerfiles and Container Image Pipeline) -- COMPLETE
-Plan: 3 of 3
-Status: Phase Complete
-Last activity: 2026-02-26 — Completed 23-03 (GitHub Actions Container Image Workflow)
+Phase: 24 of 28 (Infrastructure Manifests and Secrets)
+Plan: 2 of 3
+Status: Executing
+Last activity: 2026-02-26 — Completed 24-02 (RabbitMQ and Keycloak Manifests)
 
 Progress: [████████████████████░░░░░░░░░░] 71% (23/28 phases complete across all milestones — 1/6 v3.0 phases complete)
 
@@ -43,10 +43,12 @@ Progress: [████████████████████░░░
 | v1.0 MVP | 10 | 49 | 18.8h | 16 days |
 | v1.1 User Features | 7 | 23 | 8.8h | 2 days |
 | v2.0 DDD Foundation | 7 | 9 | 40 min | 11 days |
-| v3.0 K8s & GitOps | 1/6 | 3/TBD | 6 min | In progress |
+| v3.0 K8s & GitOps | 1/6 | 5/TBD | 8 min | In progress |
 | Phase 23 P03 | 2min | 2 tasks | 1 file |
 | Phase 23 P02 | 2min | 2 tasks | 3 files |
 | Phase 23 P01 | 2min | 2 tasks | 3 files |
+| Phase 24-01 P01 | 1min | 2 tasks | 7 files |
+| Phase 24-02 P02 | 1min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -65,6 +67,9 @@ Recent decisions affecting v3.0:
 - [Phase 23]: Next.js Dockerfile uses AUTH_SECRET=placeholder-for-docker-build to prevent next-auth v5 build failures; real secret injected at K8s runtime
 - [Phase 23]: Use noble-chiseled-extra base image (not plain noble-chiseled) for .NET containers because InvariantGlobalization is not set
 - [Phase 23]: Separate container-images.yml workflow from release.yml -- GITHUB_TOKEN for ghcr.io auth, .NET multi-arch via per-arch publish + imagetools merge
+- [Phase 24]: [Phase 24-01]: PGDATA subdirectory avoids initdb directory-not-empty error from kind local-path-provisioner
+- [Phase 24]: [Phase 24-01]: Offset ports (3xxxx) for kind cluster avoid conflicts with Aspire local dev services
+- [Phase 24]: [Phase 24-01]: Separate headless + NodePort services for PostgreSQL -- headless for StatefulSet DNS, NodePort for kind port mapping chain
 
 ### Pending Todos
 

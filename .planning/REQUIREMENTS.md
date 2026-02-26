@@ -16,10 +16,10 @@ Requirements for Kubernetes & GitOps deployment milestone. Each maps to roadmap 
 
 ### K8s Infrastructure
 
-- [ ] **INFRA-01**: PostgreSQL runs as a StatefulSet with PersistentVolumeClaim in the kind cluster
+- [x] **INFRA-01**: PostgreSQL runs as a StatefulSet with PersistentVolumeClaim in the kind cluster
 - [ ] **INFRA-02**: RabbitMQ runs as a Deployment with Service in the kind cluster
 - [ ] **INFRA-03**: Keycloak runs as a Deployment with realm JSON imported via ConfigMap
-- [ ] **INFRA-04**: kind cluster can be created from a config file with port mappings for local access
+- [x] **INFRA-04**: kind cluster can be created from a config file with port mappings for local access
 - [ ] **INFRA-05**: Startup probes protect Keycloak and ApiService from premature liveness failures
 
 ### Application Manifests
@@ -94,10 +94,10 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 | CONT-03 | Phase 23 | Complete |
 | CONT-04 | Phase 23 | Complete |
 | CICD-01 | Phase 23 | Complete |
-| INFRA-01 | Phase 24 | Pending |
+| INFRA-01 | Phase 24 | Complete |
 | INFRA-02 | Phase 24 | Pending |
 | INFRA-03 | Phase 24 | Pending |
-| INFRA-04 | Phase 24 | Pending |
+| INFRA-04 | Phase 24 | Complete |
 | INFRA-05 | Phase 24 | Pending |
 | GOPS-03 | Phase 24 | Pending |
 | MFST-01 | Phase 25 | Pending |
