@@ -24,12 +24,12 @@ Requirements for Kubernetes & GitOps deployment milestone. Each maps to roadmap 
 
 ### Application Manifests
 
-- [ ] **MFST-01**: ApiService, Gateway, and Web have Deployment + Service + ConfigMap manifests
+- [x] **MFST-01**: ApiService, Gateway, and Web have Deployment + Service + ConfigMap manifests
 - [ ] **MFST-02**: All app services have liveness (`/alive`) and readiness (`/health`) probes configured
-- [ ] **MFST-03**: All containers have CPU and memory resource requests and limits
-- [ ] **MFST-04**: Kustomize base directory contains all environment-neutral manifests
-- [ ] **MFST-05**: Kustomize dev overlay patches image tags and resource limits for kind
-- [ ] **MFST-06**: All resources are namespaced under `micro-commerce`
+- [x] **MFST-03**: All containers have CPU and memory resource requests and limits
+- [x] **MFST-04**: Kustomize base directory contains all environment-neutral manifests
+- [x] **MFST-05**: Kustomize dev overlay patches image tags and resource limits for kind
+- [x] **MFST-06**: All resources are namespaced under `micro-commerce`
 
 ### MassTransit Transport
 
@@ -100,12 +100,12 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 | INFRA-04 | Phase 24 | Complete |
 | INFRA-05 | Phase 24 + 25 | Partial (Keycloak done P24, ApiService P25) |
 | GOPS-03 | Phase 24 | Complete |
-| MFST-01 | Phase 25 | Pending |
+| MFST-01 | Phase 25 | Complete |
 | MFST-02 | Phase 25 | Pending |
-| MFST-03 | Phase 25 | Pending |
-| MFST-04 | Phase 25 | Pending |
-| MFST-05 | Phase 25 | Pending |
-| MFST-06 | Phase 25 | Pending |
+| MFST-03 | Phase 25 | Complete |
+| MFST-04 | Phase 25 | Complete |
+| MFST-05 | Phase 25 | Complete |
+| MFST-06 | Phase 25 | Complete |
 | TRAN-01 | Phase 25 | Pending |
 | TRAN-02 | Phase 25 | Pending |
 | GOPS-01 | Phase 26 | Pending |

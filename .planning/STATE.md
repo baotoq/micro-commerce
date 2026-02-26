@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Kubernetes & GitOps
-status: unknown
-last_updated: "2026-02-26T09:10:40.572Z"
+status: in-progress
+last_updated: "2026-02-26T09:53:15Z"
 progress:
   total_phases: 2
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 8
+  completed_plans: 8
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** A user can complete a purchase end-to-end — now deployed to Kubernetes via GitOps
-**Current focus:** v3.0 Kubernetes & GitOps — Phase 24: Infrastructure Manifests and Secrets
+**Current focus:** v3.0 Kubernetes & GitOps — Phase 25: Application Manifests and MassTransit Transport
 
 ## Current Position
 
-Phase: 24 of 28 (Infrastructure Manifests and Secrets) -- COMPLETE
-Plan: 4 of 4
-Status: Phase Complete
-Last activity: 2026-02-26 — Completed 24-04 (Gap closure: ROADMAP misalignment fix)
+Phase: 25 of 28 (Application Manifests and MassTransit Transport)
+Plan: 2 of 3
+Status: In Progress
+Last activity: 2026-02-26 — Completed 25-02 (Application K8s Manifests)
 
 Progress: [█████████████████████░░░░░░░░░] 75% (24/28 phases complete across all milestones — 2/6 v3.0 phases complete)
 
@@ -43,7 +43,7 @@ Progress: [█████████████████████░░
 | v1.0 MVP | 10 | 49 | 18.8h | 16 days |
 | v1.1 User Features | 7 | 23 | 8.8h | 2 days |
 | v2.0 DDD Foundation | 7 | 9 | 40 min | 11 days |
-| v3.0 K8s & GitOps | 2/6 | 7/TBD | 10 min | In progress |
+| v3.0 K8s & GitOps | 2/6 | 8/TBD | 12 min | In progress |
 | Phase 23 P03 | 2min | 2 tasks | 1 file |
 | Phase 23 P02 | 2min | 2 tasks | 3 files |
 | Phase 23 P01 | 2min | 2 tasks | 3 files |
@@ -51,6 +51,7 @@ Progress: [█████████████████████░░
 | Phase 24-02 P02 | 1min | 2 tasks | 7 files |
 | Phase 24-03 P03 | 1min | 2 tasks | 1 file |
 | Phase 24-04 P04 | 1min | 2 tasks | 2 files |
+| Phase 25-02 P02 | 2min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,10 @@ Recent decisions affecting v3.0:
 - [Phase 24]: [Phase 24-03]: seal_secret helper function centralizes kubeseal invocation; dev defaults postgres/guest/admin for local-only kind cluster
 - [Phase 24]: [Phase 24-03]: Bootstrap script idempotent (skips existing cluster); Keycloak 180s pod wait timeout for realm import
 - [Phase 24]: [Phase 24-04]: ROADMAP criterion #5 corrected from ApiService to Keycloak startup probe; ApiService probe deferred to Phase 25 criterion #6
+- [Phase 25]: [Phase 25-02]: Env var substitution pattern: define secretKeyRef env vars BEFORE connection strings so K8s $(VAR) substitution works
+- [Phase 25]: [Phase 25-02]: Gateway dual Service: ClusterIP for internal, NodePort 30800 for kind host access at 38800
+- [Phase 25]: [Phase 25-02]: Web uses plaintext dev secrets matching Phase 23 Dockerfile approach; production would use SealedSecrets
+- [Phase 25]: [Phase 25-02]: ApiService startup probe 160s window (10s initial + 30x5s) for EF Core migrations on first boot
 
 ### Pending Todos
 
@@ -93,6 +98,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 24-04-PLAN.md (Gap closure: ROADMAP misalignment fix) -- Phase 24 fully complete
+Stopped at: Completed 25-02-PLAN.md (Application K8s Manifests)
 Resume file: None
-Next step: Plan Phase 25 (Application K8s Manifests)
+Next step: Execute 25-03 (MassTransit Transport Abstraction) or 25-01 if not yet done

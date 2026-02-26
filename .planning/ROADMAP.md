@@ -174,7 +174,7 @@
 | 22. Wire Interceptors to DbContexts | v2.0 | 1/1 | Complete | 2026-02-25 |
 | 23. Dockerfiles and Container Image Pipeline | 3/3 | Complete    | 2026-02-25 | - |
 | 24. Infrastructure Manifests and Secrets | 4/4 | Complete    | 2026-02-26 | - |
-| 25. Application Manifests and MassTransit Transport | v3.0 | 0/3 | Not started | - |
+| 25. Application Manifests and MassTransit Transport | 2/3 | In Progress|  | - |
 | 26. ArgoCD GitOps | v3.0 | 0/TBD | Not started | - |
 | 27. CI/CD GitOps Loop Closure | v3.0 | 0/TBD | Not started | - |
 | 28. Observability | v3.0 | 0/TBD | Not started | - |
