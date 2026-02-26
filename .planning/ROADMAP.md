@@ -89,7 +89,10 @@
   3. Keycloak admin UI is reachable and the MicroCommerce realm is pre-loaded from a ConfigMap
   4. No plaintext credentials exist in any committed YAML file; all secrets are SealedSecret objects
   5. ApiService startup probe prevents liveness failure during the slow first-boot EF Core migration
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 24-01-PLAN.md -- Kind cluster config, Kustomize scaffold, PostgreSQL StatefulSet
+- [ ] 24-02-PLAN.md -- RabbitMQ Deployment, Keycloak Deployment with realm import
+- [ ] 24-03-PLAN.md -- Bootstrap script with SealedSecrets integration
 
 ### Phase 25: Application Manifests and MassTransit Transport
 **Goal**: ApiService, Gateway, and Web are deployed via Kustomize and communicate correctly using K8s DNS and RabbitMQ messaging
