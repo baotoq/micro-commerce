@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Kubernetes & GitOps
-status: in-progress
-last_updated: "2026-02-26T09:53:15Z"
+status: unknown
+last_updated: "2026-02-26T09:55:39.308Z"
 progress:
-  total_phases: 2
+  total_phases: 3
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 10
+  completed_plans: 9
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 Phase: 25 of 28 (Application Manifests and MassTransit Transport)
 Plan: 2 of 3
 Status: In Progress
-Last activity: 2026-02-26 — Completed 25-02 (Application K8s Manifests)
+Last activity: 2026-02-26 — Completed 25-01 (MassTransit Transport Switching and Health Endpoints)
 
 Progress: [█████████████████████░░░░░░░░░] 75% (24/28 phases complete across all milestones — 2/6 v3.0 phases complete)
 
@@ -51,6 +51,7 @@ Progress: [█████████████████████░░
 | Phase 24-02 P02 | 1min | 2 tasks | 7 files |
 | Phase 24-03 P03 | 1min | 2 tasks | 1 file |
 | Phase 24-04 P04 | 1min | 2 tasks | 2 files |
+| Phase 25-01 P01 | 3min | 2 tasks | 5 files |
 | Phase 25-02 P02 | 2min | 2 tasks | 12 files |
 
 ## Accumulated Context
@@ -80,6 +81,9 @@ Recent decisions affecting v3.0:
 - [Phase 24]: [Phase 24-03]: seal_secret helper function centralizes kubeseal invocation; dev defaults postgres/guest/admin for local-only kind cluster
 - [Phase 24]: [Phase 24-03]: Bootstrap script idempotent (skips existing cluster); Keycloak 180s pod wait timeout for realm import
 - [Phase 24]: [Phase 24-04]: ROADMAP criterion #5 corrected from ApiService to Keycloak startup probe; ApiService probe deferred to Phase 25 criterion #6
+- [Phase 25]: [Phase 25-01]: MASSTRANSIT_TRANSPORT env var controls transport: RabbitMQ for K8s, AzureServiceBus (default) for Aspire
+- [Phase 25]: [Phase 25-01]: NoOp DLQ service returns empty results in RabbitMQ mode; health endpoints unconditional for K8s probes
+- [Phase 25]: [Phase 25-01]: CORS origins configurable via Cors:Origins config section with localhost fallback
 - [Phase 25]: [Phase 25-02]: Env var substitution pattern: define secretKeyRef env vars BEFORE connection strings so K8s $(VAR) substitution works
 - [Phase 25]: [Phase 25-02]: Gateway dual Service: ClusterIP for internal, NodePort 30800 for kind host access at 38800
 - [Phase 25]: [Phase 25-02]: Web uses plaintext dev secrets matching Phase 23 Dockerfile approach; production would use SealedSecrets
@@ -98,6 +102,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 25-02-PLAN.md (Application K8s Manifests)
+Stopped at: Completed 25-01-PLAN.md (MassTransit Transport Switching and Health Endpoints)
 Resume file: None
-Next step: Execute 25-03 (MassTransit Transport Abstraction) or 25-01 if not yet done
+Next step: Execute 25-03-PLAN.md
