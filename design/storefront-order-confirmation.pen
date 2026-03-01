@@ -1,0 +1,810 @@
+{
+  "version": "2.8",
+  "variables": {
+    "--accent": {
+      "type": "color",
+      "value": "#EFF6FF"
+    },
+    "--accent-foreground": {
+      "type": "color",
+      "value": "#2563EB"
+    },
+    "--background": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--border": {
+      "type": "color",
+      "value": "#E5E7EB"
+    },
+    "--border-subtle": {
+      "type": "color",
+      "value": "#F3F4F6"
+    },
+    "--card": {
+      "type": "color",
+      "value": "#F9FAFB"
+    },
+    "--card-foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--destructive": {
+      "type": "color",
+      "value": "#EF4444"
+    },
+    "--destructive-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--error": {
+      "type": "color",
+      "value": "#EF4444"
+    },
+    "--error-bg": {
+      "type": "color",
+      "value": "#FEF2F2"
+    },
+    "--error-foreground": {
+      "type": "color",
+      "value": "#991B1B"
+    },
+    "--font-primary": {
+      "type": "string",
+      "value": [
+        {
+          "value": "DM Sans"
+        },
+        {
+          "value": "Inter"
+        }
+      ]
+    },
+    "--font-secondary": {
+      "type": "string",
+      "value": [
+        {
+          "value": "DM Sans"
+        },
+        {
+          "value": "Inter"
+        }
+      ]
+    },
+    "--foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--info": {
+      "type": "color",
+      "value": "#3B82F6"
+    },
+    "--info-bg": {
+      "type": "color",
+      "value": "#EFF6FF"
+    },
+    "--info-foreground": {
+      "type": "color",
+      "value": "#1E40AF"
+    },
+    "--muted": {
+      "type": "color",
+      "value": "#F3F4F6"
+    },
+    "--muted-foreground": {
+      "type": "color",
+      "value": "#6B7280"
+    },
+    "--primary": {
+      "type": "color",
+      "value": "#2563EB"
+    },
+    "--primary-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--radius-lg": {
+      "type": "number",
+      "value": [
+        {
+          "value": 12
+        },
+        {
+          "value": 8
+        }
+      ]
+    },
+    "--radius-md": {
+      "type": "number",
+      "value": [
+        {
+          "value": 8
+        },
+        {
+          "value": 6
+        }
+      ]
+    },
+    "--radius-pill": {
+      "type": "number",
+      "value": 9999
+    },
+    "--radius-sm": {
+      "type": "number",
+      "value": [
+        {
+          "value": 6
+        },
+        {
+          "value": 4
+        }
+      ]
+    },
+    "--radius-xl": {
+      "type": "number",
+      "value": [
+        {
+          "value": 16
+        },
+        {
+          "value": 12
+        }
+      ]
+    },
+    "--secondary": {
+      "type": "color",
+      "value": "#F3F4F6"
+    },
+    "--secondary-foreground": {
+      "type": "color",
+      "value": "#374151"
+    },
+    "--sidebar-accent": {
+      "type": "color",
+      "value": "#1F2937"
+    },
+    "--sidebar-bg": {
+      "type": "color",
+      "value": "#111827"
+    },
+    "--sidebar-foreground": {
+      "type": "color",
+      "value": "#F9FAFB"
+    },
+    "--sidebar-muted": {
+      "type": "color",
+      "value": "#374151"
+    },
+    "--star": {
+      "type": "color",
+      "value": "#FBBF24"
+    },
+    "--success": {
+      "type": "color",
+      "value": "#22C55E"
+    },
+    "--success-bg": {
+      "type": "color",
+      "value": "#F0FDF4"
+    },
+    "--success-foreground": {
+      "type": "color",
+      "value": "#166534"
+    },
+    "--warning": {
+      "type": "color",
+      "value": "#F59E0B"
+    },
+    "--warning-bg": {
+      "type": "color",
+      "value": "#FFFBEB"
+    },
+    "--warning-foreground": {
+      "type": "color",
+      "value": "#92400E"
+    },
+    "--input": {
+      "type": "color",
+      "value": "#E5E7EB"
+    },
+    "--popover": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--popover-foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--ring": {
+      "type": "color",
+      "value": "#2563EB"
+    },
+    "--sidebar": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--sidebar-accent-foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--sidebar-border": {
+      "type": "color",
+      "value": "#E5E7EB"
+    },
+    "--white": {
+      "type": "color",
+      "value": "#FFFFFF"
+    }
+  },
+  "children": [
+    {
+      "type": "frame",
+      "id": "81Nnt",
+      "x": 0,
+      "y": 0,
+      "name": "Button/Default",
+      "reusable": true,
+      "height": 40,
+      "fill": "$--primary",
+      "cornerRadius": 6,
+      "gap": 6,
+      "padding": [
+        8,
+        16
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "jkfJe",
+          "name": "btnPIcon",
+          "width": 16,
+          "height": 16,
+          "iconFontName": "plus",
+          "iconFontFamily": "lucide",
+          "fill": "$--primary-foreground"
+        },
+        {
+          "type": "text",
+          "id": "44c7u",
+          "name": "btnPLabel",
+          "fill": "$--primary-foreground",
+          "content": "Button",
+          "lineHeight": 1.4285714285714286,
+          "textAlign": "center",
+          "textAlignVertical": "middle",
+          "fontFamily": "$--font-primary",
+          "fontSize": 14,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "EYZBI",
+      "x": 0,
+      "y": 60,
+      "name": "Button/Outline",
+      "reusable": true,
+      "height": 40,
+      "fill": "$--background",
+      "cornerRadius": 6,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$--border"
+      },
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000000d",
+        "offset": {
+          "x": 0,
+          "y": 1
+        },
+        "blur": 1.75
+      },
+      "gap": 6,
+      "padding": [
+        8,
+        16
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "voH6y",
+          "name": "btnOIcon",
+          "width": 16,
+          "height": 16,
+          "iconFontName": "plus",
+          "iconFontFamily": "lucide",
+          "fill": "$--foreground"
+        },
+        {
+          "type": "text",
+          "id": "e6FUF",
+          "name": "btnOLabel",
+          "fill": "$--foreground",
+          "content": "Button",
+          "lineHeight": 1.4285714285714286,
+          "textAlign": "center",
+          "textAlignVertical": "middle",
+          "fontFamily": "$--font-primary",
+          "fontSize": 14,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "wbMwJ",
+      "x": 200,
+      "y": 35,
+      "name": "Badge/Warning",
+      "reusable": true,
+      "fill": "$--warning-bg",
+      "cornerRadius": 16,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "transparent"
+      },
+      "padding": [
+        2,
+        8
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "HlkMr",
+          "name": "badgeWText",
+          "fill": "$--warning-foreground",
+          "content": "Pending",
+          "lineHeight": 1.3333333333333333,
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "tq0rT",
+      "x": 350,
+      "y": 80,
+      "name": "SearchBar",
+      "reusable": true,
+      "height": 40,
+      "fill": "$--background",
+      "cornerRadius": "$--radius-pill",
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$--border"
+      },
+      "gap": 8,
+      "padding": [
+        10,
+        12
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "gSQde",
+          "name": "searchIcon",
+          "width": 16,
+          "height": 16,
+          "iconFontName": "search",
+          "iconFontFamily": "lucide",
+          "fill": "$--muted-foreground"
+        },
+        {
+          "type": "text",
+          "id": "jmzcf",
+          "name": "searchText",
+          "fill": "#9CA3AF",
+          "content": "Search products...",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "78Jb1",
+      "x": 350,
+      "y": 190,
+      "name": "Avatar/Text",
+      "reusable": true,
+      "width": 40,
+      "height": 40,
+      "fill": "$--muted",
+      "cornerRadius": 9999,
+      "layout": "vertical",
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "bFHAK",
+          "name": "avatarText",
+          "fill": "$--foreground",
+          "content": "JD",
+          "lineHeight": 1.4285714285714286,
+          "textAlign": "center",
+          "textAlignVertical": "middle",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "aLYXq",
+      "x": 0,
+      "y": 6313,
+      "name": "Storefront — Order Confirmation",
+      "width": 1440,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "At3ZN",
+          "name": "confHdr",
+          "width": "fill_container",
+          "height": 64,
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 1
+            },
+            "fill": "$--border"
+          },
+          "padding": [
+            0,
+            40
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "UiE4x",
+              "name": "logoArea",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "lI7tg",
+                  "name": "logoIcon",
+                  "width": 24,
+                  "height": 24,
+                  "iconFontName": "shopping-bag",
+                  "iconFontFamily": "lucide",
+                  "fill": "$--primary"
+                },
+                {
+                  "type": "text",
+                  "id": "D4CDx",
+                  "name": "logoText",
+                  "fill": "$--foreground",
+                  "content": "MicroCommerce",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "fXbPA",
+              "type": "ref",
+              "ref": "tq0rT",
+              "width": 400,
+              "name": "headerCenter"
+            },
+            {
+              "type": "frame",
+              "id": "O2Wyc",
+              "name": "headerRight",
+              "gap": 20,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "MnCOg",
+                  "name": "wishIcon",
+                  "width": 22,
+                  "height": 22,
+                  "iconFontName": "heart",
+                  "iconFontFamily": "lucide",
+                  "fill": "$--muted-foreground"
+                },
+                {
+                  "type": "frame",
+                  "id": "QIXuL",
+                  "name": "cartFrame",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "u4RcB",
+                      "name": "cartIcon",
+                      "width": 22,
+                      "height": 22,
+                      "iconFontName": "shopping-cart",
+                      "iconFontFamily": "lucide",
+                      "fill": "$--muted-foreground"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Fo6ZD",
+                      "name": "cartBadge",
+                      "width": 20,
+                      "height": 20,
+                      "fill": "$--primary",
+                      "cornerRadius": "$--radius-pill",
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Sb1l5",
+                          "fill": "$--primary-foreground",
+                          "content": "3",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "0i6fo",
+                  "type": "ref",
+                  "ref": "78Jb1",
+                  "name": "headerAvatar"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "OF3xR",
+          "name": "confBody",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": [
+            64,
+            80
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "8R9so",
+              "name": "confIcon",
+              "width": 72,
+              "height": 72,
+              "fill": "$--success-bg",
+              "cornerRadius": "$--radius-pill",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "TTZxo",
+                  "width": 36,
+                  "height": 36,
+                  "iconFontName": "check",
+                  "iconFontFamily": "lucide",
+                  "fill": "$--success"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "xnm0t",
+              "name": "confTitle",
+              "fill": "$--foreground",
+              "content": "Order Confirmed!",
+              "fontFamily": "Inter",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "hOZv7",
+              "name": "confSubtitle",
+              "fill": "$--muted-foreground",
+              "textGrowth": "fixed-width",
+              "width": 500,
+              "content": "Thank you for your purchase. Your order #MC-2026-0142 has been placed successfully.",
+              "lineHeight": 1.5,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "sT5Ad",
+              "name": "confCard",
+              "width": 600,
+              "fill": "$--card",
+              "cornerRadius": "$--radius-lg",
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "$--border"
+              },
+              "layout": "vertical",
+              "gap": 16,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "FAAAs",
+                  "name": "confRow1",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "lXHSy",
+                      "fill": "$--muted-foreground",
+                      "content": "Order Number",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yLuZm",
+                      "fill": "$--foreground",
+                      "content": "#MC-2026-0142",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "vbeL9",
+                  "name": "confRow2",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "E3jkh",
+                      "fill": "$--muted-foreground",
+                      "content": "Date",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Kc1CA",
+                      "fill": "$--foreground",
+                      "content": "March 1, 2026",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "kDWOA",
+                  "name": "confRow3",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "iyRmd",
+                      "fill": "$--muted-foreground",
+                      "content": "Total",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YHkSL",
+                      "fill": "$--foreground",
+                      "content": "$666.00",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "9dsre",
+                  "name": "confRow4",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "jD8h6",
+                      "fill": "$--muted-foreground",
+                      "content": "Status",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "id": "Wl3UN",
+                      "type": "ref",
+                      "ref": "wbMwJ",
+                      "descendants": {
+                        "HlkMr": {
+                          "content": "Processing"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "u6QGF",
+              "name": "confActions",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "uweBj",
+                  "type": "ref",
+                  "ref": "81Nnt",
+                  "name": "viewOrderBtn",
+                  "descendants": {
+                    "jkfJe": {
+                      "enabled": false
+                    },
+                    "44c7u": {
+                      "content": "View Order Details"
+                    }
+                  }
+                },
+                {
+                  "id": "yUNcm",
+                  "type": "ref",
+                  "ref": "EYZBI",
+                  "name": "continueBtn",
+                  "descendants": {
+                    "voH6y": {
+                      "enabled": false
+                    },
+                    "e6FUF": {
+                      "content": "Continue Shopping"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

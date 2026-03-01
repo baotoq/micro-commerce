@@ -6,11 +6,11 @@
       "id": "81Nnt",
       "x": 0,
       "y": 0,
-      "name": "Component/Button/Primary",
+      "name": "Button/Default",
       "reusable": true,
       "height": 40,
       "fill": "$--primary",
-      "cornerRadius": "$--radius-md",
+      "cornerRadius": 6,
       "gap": 6,
       "padding": [
         8,
@@ -36,6 +36,8 @@
           "fill": "$--primary-foreground",
           "content": "Button",
           "lineHeight": 1.4285714285714286,
+          "textAlign": "center",
+          "textAlignVertical": "middle",
           "fontFamily": "$--font-primary",
           "fontSize": 14,
           "fontWeight": "500"
@@ -47,11 +49,11 @@
       "id": "EYZBI",
       "x": 0,
       "y": 60,
-      "name": "Component/Button/Outline",
+      "name": "Button/Outline",
       "reusable": true,
       "height": 40,
       "fill": "$--background",
-      "cornerRadius": "$--radius-md",
+      "cornerRadius": 6,
       "stroke": {
         "align": "inside",
         "thickness": 1,
@@ -92,6 +94,8 @@
           "fill": "$--foreground",
           "content": "Button",
           "lineHeight": 1.4285714285714286,
+          "textAlign": "center",
+          "textAlignVertical": "middle",
           "fontFamily": "$--font-primary",
           "fontSize": 14,
           "fontWeight": "500"
@@ -103,10 +107,14 @@
       "id": "r60Eu",
       "x": 0,
       "y": 120,
-      "name": "Component/Button/Ghost",
+      "name": "Button/Ghost",
       "reusable": true,
       "height": 40,
-      "cornerRadius": "$--radius-md",
+      "cornerRadius": 6,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1
+      },
       "gap": 6,
       "padding": [
         8,
@@ -123,15 +131,17 @@
           "height": 16,
           "iconFontName": "plus",
           "iconFontFamily": "lucide",
-          "fill": "$--muted-foreground"
+          "fill": "$--foreground"
         },
         {
           "type": "text",
           "id": "R1l8W",
           "name": "btnGLabel",
-          "fill": "$--muted-foreground",
+          "fill": "$--foreground",
           "content": "Button",
           "lineHeight": 1.4285714285714286,
+          "textAlign": "center",
+          "textAlignVertical": "middle",
           "fontFamily": "$--font-primary",
           "fontSize": 14,
           "fontWeight": "500"
@@ -143,11 +153,11 @@
       "id": "Xv59X",
       "x": 0,
       "y": 180,
-      "name": "Component/Button/Destructive",
+      "name": "Button/Destructive",
       "reusable": true,
       "height": 40,
       "fill": "$--destructive",
-      "cornerRadius": "$--radius-md",
+      "cornerRadius": 6,
       "gap": 6,
       "padding": [
         8,
@@ -173,6 +183,8 @@
           "fill": "$--destructive-foreground",
           "content": "Delete",
           "lineHeight": 1.4285714285714286,
+          "textAlign": "center",
+          "textAlignVertical": "middle",
           "fontFamily": "$--font-primary",
           "fontSize": 14,
           "fontWeight": "500"
@@ -184,10 +196,15 @@
       "id": "yHlql",
       "x": 200,
       "y": 0,
-      "name": "Component/Badge/Success",
+      "name": "Badge/Success",
       "reusable": true,
       "fill": "$--success-bg",
       "cornerRadius": 16,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "transparent"
+      },
       "padding": [
         2,
         8
@@ -213,10 +230,15 @@
       "id": "wbMwJ",
       "x": 200,
       "y": 35,
-      "name": "Component/Badge/Warning",
+      "name": "Badge/Warning",
       "reusable": true,
       "fill": "$--warning-bg",
       "cornerRadius": 16,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "transparent"
+      },
       "padding": [
         2,
         8
@@ -242,10 +264,15 @@
       "id": "57Obk",
       "x": 200,
       "y": 70,
-      "name": "Component/Badge/Error",
+      "name": "Badge/Error",
       "reusable": true,
       "fill": "$--error-bg",
       "cornerRadius": 16,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "transparent"
+      },
       "padding": [
         2,
         8
@@ -271,10 +298,15 @@
       "id": "gUr3v",
       "x": 200,
       "y": 105,
-      "name": "Component/Badge/Info",
+      "name": "Badge/Info",
       "reusable": true,
       "fill": "$--info-bg",
       "cornerRadius": 16,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "transparent"
+      },
       "padding": [
         2,
         8
@@ -300,10 +332,15 @@
       "id": "UC0UR",
       "x": 200,
       "y": 140,
-      "name": "Component/Badge/Gray",
+      "name": "Badge/Gray",
       "reusable": true,
       "fill": "$--muted",
       "cornerRadius": 16,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "transparent"
+      },
       "padding": [
         2,
         8
@@ -329,7 +366,7 @@
       "id": "bFNlE",
       "x": 350,
       "y": 0,
-      "name": "Component/InputGroup",
+      "name": "Input Group/Default",
       "reusable": true,
       "layout": "vertical",
       "gap": 6,
@@ -337,9 +374,11 @@
         {
           "type": "text",
           "id": "307Nt",
-          "name": "inputLabel",
+          "name": "Label Text",
           "fill": "$--foreground",
           "content": "Label",
+          "lineHeight": 1.4285714285714286,
+          "textAlignVertical": "middle",
           "fontFamily": "Inter",
           "fontSize": 14,
           "fontWeight": "500"
@@ -347,15 +386,15 @@
         {
           "type": "frame",
           "id": "zutxN",
-          "name": "inputField",
+          "name": "Input",
           "width": "fill_container",
           "height": 40,
           "fill": "$--background",
-          "cornerRadius": "$--radius-md",
+          "cornerRadius": 6,
           "stroke": {
             "align": "inside",
             "thickness": 1,
-            "fill": "$--border"
+            "fill": "$--input"
           },
           "gap": 8,
           "padding": [
@@ -378,9 +417,11 @@
             {
               "type": "text",
               "id": "Srx5v",
-              "name": "inputText",
-              "fill": "#9CA3AF",
+              "name": "Input Value",
+              "fill": "$--muted-foreground",
               "content": "Placeholder...",
+              "lineHeight": 1.4285714285714286,
+              "textAlignVertical": "middle",
               "fontFamily": "Inter",
               "fontSize": 14,
               "fontWeight": "normal"
@@ -394,7 +435,7 @@
       "id": "tq0rT",
       "x": 350,
       "y": 80,
-      "name": "Component/SearchBar",
+      "name": "SearchBar",
       "reusable": true,
       "height": 40,
       "fill": "$--background",
@@ -438,7 +479,7 @@
       "id": "ZXayQ",
       "x": 350,
       "y": 140,
-      "name": "Component/StarRating",
+      "name": "StarRating",
       "reusable": true,
       "gap": 2,
       "children": [
@@ -509,12 +550,12 @@
       "id": "lmQ2P",
       "x": 650,
       "y": 0,
-      "name": "Component/ProductCard",
+      "name": "ProductCard",
       "reusable": true,
       "clip": true,
       "width": 260,
       "fill": "$--background",
-      "cornerRadius": "$--radius-lg",
+      "cornerRadius": 8,
       "stroke": {
         "align": "inside",
         "thickness": 1,
@@ -611,12 +652,13 @@
       "id": "78Jb1",
       "x": 350,
       "y": 190,
-      "name": "Component/Avatar",
+      "name": "Avatar/Text",
       "reusable": true,
-      "width": 36,
-      "height": 36,
-      "fill": "$--primary",
-      "cornerRadius": "$--radius-pill",
+      "width": 40,
+      "height": 40,
+      "fill": "$--muted",
+      "cornerRadius": 9999,
+      "layout": "vertical",
       "justifyContent": "center",
       "alignItems": "center",
       "children": [
@@ -624,10 +666,13 @@
           "type": "text",
           "id": "bFHAK",
           "name": "avatarText",
-          "fill": "$--primary-foreground",
+          "fill": "$--foreground",
           "content": "JD",
+          "lineHeight": 1.4285714285714286,
+          "textAlign": "center",
+          "textAlignVertical": "middle",
           "fontFamily": "Inter",
-          "fontSize": 13,
+          "fontSize": 14,
           "fontWeight": "600"
         }
       ]
@@ -637,9 +682,9 @@
       "id": "QVHq8",
       "x": 350,
       "y": 240,
-      "name": "Component/SidebarNavItem",
+      "name": "SidebarNavItem",
       "reusable": true,
-      "cornerRadius": "$--radius-md",
+      "cornerRadius": 6,
       "gap": 12,
       "padding": [
         10,
@@ -664,7 +709,8 @@
           "fill": "$--sidebar-foreground",
           "content": "Dashboard",
           "fontFamily": "Inter",
-          "fontSize": 14
+          "fontSize": 14,
+          "fontWeight": "normal"
         }
       ]
     },
@@ -673,10 +719,10 @@
       "id": "YmKQf",
       "x": 350,
       "y": 290,
-      "name": "Component/SidebarNavItem/Active",
+      "name": "SidebarNavItem/Active",
       "reusable": true,
       "fill": "$--sidebar-accent",
-      "cornerRadius": "$--radius-md",
+      "cornerRadius": 6,
       "gap": 12,
       "padding": [
         10,
@@ -928,7 +974,8 @@
           "fill": "$--muted-foreground",
           "content": "Reviews",
           "fontFamily": "Inter",
-          "fontSize": 14
+          "fontSize": 14,
+          "fontWeight": "normal"
         },
         {
           "type": "rectangle",
@@ -1104,7 +1151,8 @@
           "fill": "$--muted-foreground",
           "content": "Payment",
           "fontFamily": "Inter",
-          "fontSize": 14
+          "fontSize": 14,
+          "fontWeight": "normal"
         }
       ]
     },
@@ -7485,6 +7533,49 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "ZLnAN",
+      "x": 0,
+      "y": 240,
+      "name": "Button/Secondary",
+      "reusable": true,
+      "height": 40,
+      "fill": "$--secondary",
+      "cornerRadius": 6,
+      "gap": 6,
+      "padding": [
+        8,
+        16
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "eVR8O",
+          "name": "btnSIcon",
+          "width": 16,
+          "height": 16,
+          "iconFontName": "plus",
+          "iconFontFamily": "lucide",
+          "fill": "$--secondary-foreground"
+        },
+        {
+          "type": "text",
+          "id": "8qyDs",
+          "name": "btnSLabel",
+          "fill": "$--secondary-foreground",
+          "content": "Button",
+          "lineHeight": 1.4285714285714286,
+          "textAlign": "center",
+          "textAlignVertical": "middle",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "500"
+        }
+      ]
     }
   ],
   "variables": {
@@ -7693,6 +7784,34 @@
     "--input": {
       "type": "color",
       "value": "#E5E7EB"
+    },
+    "--popover": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--popover-foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--ring": {
+      "type": "color",
+      "value": "#2563EB"
+    },
+    "--sidebar": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--sidebar-accent-foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--sidebar-border": {
+      "type": "color",
+      "value": "#E5E7EB"
+    },
+    "--white": {
+      "type": "color",
+      "value": "#FFFFFF"
     }
   }
 }

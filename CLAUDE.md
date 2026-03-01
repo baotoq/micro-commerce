@@ -15,6 +15,35 @@ MicroCommerce is a showcase e-commerce platform demonstrating modern .NET micros
 - **Patterns:** CQRS (MediatR), DDD, Event-Driven, Vertical Slice Architecture
 - **Key Libraries:** Vogen (strongly typed IDs), Ardalis.SmartEnum, Ardalis.Specification, Ardalis.GuardClauses, FluentValidation, FluentResults
 
+## UI Design Files (`design/`)
+
+Design files are split by page for reduced AI context. Each file is self-contained with its referenced components + shared variables.
+
+| File | Contents |
+|---|---|
+| `design/design-system.pen` | All 26 reusable components (buttons, badges, inputs, cards, nav items, etc.) |
+| `design/storefront-homepage.pen` | Homepage screen (hero, categories, featured products, footer) |
+| `design/storefront-catalog.pen` | Product catalog with filters and grid |
+| `design/storefront-product-detail.pen` | Product detail page with tabs |
+| `design/storefront-cart.pen` | Shopping cart page |
+| `design/storefront-checkout.pen` | Checkout flow |
+| `design/storefront-order-confirmation.pen` | Order confirmation page |
+| `design/storefront-order-history.pen` | Order history list |
+| `design/storefront-profile.pen` | User profile page |
+| `design/auth-login.pen` | Login/auth page |
+| `design/admin-dashboard.pen` | Admin dashboard with sidebar |
+
+Legacy monolithic file: `pencil-new.pen` (kept as reference)
+
+### Design → Code Workflow
+
+```
+"Generate React code from design/storefront-homepage.pen"
+"Create a TypeScript component from design/design-system.pen"
+"Export design/storefront-cart.pen as a Next.js page component"
+"Generate code using Shadcn UI components from design/storefront-checkout.pen"
+```
+
 ## Project Structure
 
 ```

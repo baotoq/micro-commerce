@@ -111,6 +111,16 @@
 - [x] 25-02-PLAN.md -- ApiService, Gateway, Web K8s Deployment/Service manifests, Kustomize base/overlay
 - [x] 25-03-PLAN.md -- Bootstrap script extension with app image build, kind load, and full stack deployment
 
+### Phase 25.1: Update UI based on pencil-new.pen design with shadcn (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 25
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 25.1 to break down)
+
 ### Phase 26: ArgoCD GitOps
 **Goal**: ArgoCD manages all cluster resources from Git using app-of-apps, replacing manual kubectl apply
 **Depends on**: Phase 25
