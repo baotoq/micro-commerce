@@ -6,19 +6,18 @@ export default function AccountLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold tracking-tight">My Account</h1>
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-10">
+      <h1 className="mb-8 text-2xl font-bold tracking-tight text-foreground">
+        My Account
+      </h1>
 
-      <div className="grid gap-8 lg:grid-cols-[256px_1fr]">
-        <aside className="hidden lg:block">
+      <div className="flex flex-col gap-8 lg:flex-row">
+        {/* Sidebar - horizontal on mobile, vertical on desktop */}
+        <aside className="w-full shrink-0 lg:w-[280px]">
           <AccountSidebar />
         </aside>
 
-        <div className="lg:hidden mb-6">
-          <AccountSidebar />
-        </div>
-
-        <main>{children}</main>
+        <main className="min-w-0 flex-1">{children}</main>
       </div>
     </div>
   );
