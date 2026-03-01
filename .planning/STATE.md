@@ -98,7 +98,7 @@ None.
 
 ### Roadmap Evolution
 
-- Phase 25.1 inserted after Phase 25: Update UI based on pencil-new.pen design with shadcn (URGENT)
+- Phase 25.1 inserted after Phase 25: Update UI based on @design/*.pen design with shadcn (URGENT)
 
 ### Blockers/Concerns
 
