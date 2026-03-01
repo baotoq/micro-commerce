@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Kubernetes & GitOps
-status: unknown
-last_updated: "2026-02-26T10:06:47.204Z"
+status: in-progress
+last_updated: "2026-03-01T17:42:34Z"
 progress:
   total_phases: 3
   completed_phases: 3
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** A user can complete a purchase end-to-end — now deployed to Kubernetes via GitOps
-**Current focus:** v3.0 Kubernetes & GitOps — Phase 26: ArgoCD GitOps
+**Current focus:** Phase 25.1 — Update UI based on design/*.pen files with shadcn
 
 ## Current Position
 
-Phase: 26 of 28 (ArgoCD GitOps)
-Plan: 0 of TBD
-Status: Not Started
-Last activity: 2026-02-26 — Completed Phase 25 (Application Manifests and MassTransit Transport)
+Phase: 25.1 (Update UI based on pencil design with shadcn)
+Plan: 1 of 11 complete
+Status: In Progress
+Last activity: 2026-03-02 — Completed Plan 01 (Theme/Globals Foundation)
 
-Progress: [█████████████████████████░░░░░] 83% (25/28 phases complete across all milestones — 3/6 v3.0 phases complete)
+Progress: [█████████████████████████░░░░░] 83% (25/28 phases complete across all milestones — Phase 25.1 inserted: 1/11 plans done)
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [███████████████████████
 | Phase 25-01 P01 | 3min | 2 tasks | 5 files |
 | Phase 25-02 P02 | 2min | 2 tasks | 12 files |
 | Phase 25-03 P03 | 2min | 2 tasks | 1 file |
+| Phase 25.1-01 P01 | 2min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,9 @@ Recent decisions affecting v3.0:
 - [Phase 25]: [Phase 25-02]: ApiService startup probe 160s window (10s initial + 30x5s) for EF Core migrations on first boot
 - [Phase 25]: [Phase 25-03]: Infrastructure-first bootstrap: Step 7 applies base/ for infra, Step 11 applies overlays/dev/ for full stack (idempotent)
 - [Phase 25]: [Phase 25-03]: ContainerRegistry='' overrides ghcr.io default for local-only kind images; dotnet publish /t:PublishContainer for .NET, docker build for Web
+- [Phase 25.1]: [Phase 25.1-01]: Removed dark mode section entirely (not kept inert) per locked design decision
+- [Phase 25.1]: [Phase 25.1-01]: Used exact oklch values from RESEARCH.md for design-system.pen color consistency
+- [Phase 25.1]: [Phase 25.1-01]: Biome auto-formatted comment alignment in globals.css (cosmetic only)
 
 ### Pending Todos
 
@@ -108,7 +112,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-26
-Stopped at: Completed Phase 25 (Application Manifests and MassTransit Transport) - all 3 plans done
+Last session: 2026-03-02
+Stopped at: Completed 25.1-01-PLAN.md (Theme/Globals Foundation)
 Resume file: None
-Next step: Plan Phase 26 (ArgoCD GitOps)
+Next step: Execute 25.1-02-PLAN.md (Homepage)
