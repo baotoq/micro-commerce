@@ -111,15 +111,25 @@
 - [x] 25-02-PLAN.md -- ApiService, Gateway, Web K8s Deployment/Service manifests, Kustomize base/overlay
 - [x] 25-03-PLAN.md -- Bootstrap script extension with app image build, kind load, and full stack deployment
 
-### Phase 25.1: Update UI based on pencil-new.pen design with shadcn (INSERTED)
+### Phase 25.1: Update UI based on pencil design with shadcn (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
+**Goal:** Refresh all storefront and admin UI screens to match the split per-page pencil design files using existing shadcn/ui primitives and Tailwind CSS. Visual update only -- no new backend features, API endpoints, or routes.
+**Requirements**: UI-THEME, UI-HOME, UI-CATALOG, UI-PRODUCT-DETAIL, UI-CART, UI-CHECKOUT, UI-ORDER-CONFIRM, UI-ORDER-HISTORY, UI-PROFILE, UI-AUTH-LOGIN, UI-ADMIN
 **Depends on:** Phase 25
-**Plans:** 0 plans
+**Plans:** 11 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 25.1 to break down)
+- [ ] 25.1-01-PLAN.md -- Theme/globals: CSS variable color palette + DM Sans font swap
+- [ ] 25.1-02-PLAN.md -- Homepage: hero, category pills, product cards, header, footer
+- [ ] 25.1-03-PLAN.md -- Product Catalog: sidebar filters, product grid, pagination
+- [ ] 25.1-04-PLAN.md -- Product Detail: image gallery, tabs, quantity stepper, reviews
+- [ ] 25.1-05-PLAN.md -- Shopping Cart: item rows, cart summary sidebar
+- [ ] 25.1-06-PLAN.md -- Checkout: step indicator, shipping/payment forms, order sidebar
+- [ ] 25.1-07-PLAN.md -- Order Confirmation: success banner, order details
+- [ ] 25.1-08-PLAN.md -- Order History: order list table, detail with status stepper
+- [ ] 25.1-09-PLAN.md -- User Profile: account sidebar, profile form, addresses
+- [ ] 25.1-10-PLAN.md -- Auth Login: branded Keycloak login page
+- [ ] 25.1-11-PLAN.md -- Admin Dashboard: dark sidebar layout, stat cards, tables
 
 ### Phase 26: ArgoCD GitOps
 **Goal**: ArgoCD manages all cluster resources from Git using app-of-apps, replacing manual kubectl apply
