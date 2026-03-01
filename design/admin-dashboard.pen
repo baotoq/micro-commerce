@@ -1,241 +1,5 @@
 {
   "version": "2.8",
-  "variables": {
-    "--accent": {
-      "type": "color",
-      "value": "#EFF6FF"
-    },
-    "--accent-foreground": {
-      "type": "color",
-      "value": "#2563EB"
-    },
-    "--background": {
-      "type": "color",
-      "value": "#FFFFFF"
-    },
-    "--border": {
-      "type": "color",
-      "value": "#E5E7EB"
-    },
-    "--border-subtle": {
-      "type": "color",
-      "value": "#F3F4F6"
-    },
-    "--card": {
-      "type": "color",
-      "value": "#F9FAFB"
-    },
-    "--card-foreground": {
-      "type": "color",
-      "value": "#1A1A1A"
-    },
-    "--destructive": {
-      "type": "color",
-      "value": "#EF4444"
-    },
-    "--destructive-foreground": {
-      "type": "color",
-      "value": "#FFFFFF"
-    },
-    "--error": {
-      "type": "color",
-      "value": "#EF4444"
-    },
-    "--error-bg": {
-      "type": "color",
-      "value": "#FEF2F2"
-    },
-    "--error-foreground": {
-      "type": "color",
-      "value": "#991B1B"
-    },
-    "--font-primary": {
-      "type": "string",
-      "value": [
-        {
-          "value": "DM Sans"
-        },
-        {
-          "value": "Inter"
-        }
-      ]
-    },
-    "--font-secondary": {
-      "type": "string",
-      "value": [
-        {
-          "value": "DM Sans"
-        },
-        {
-          "value": "Inter"
-        }
-      ]
-    },
-    "--foreground": {
-      "type": "color",
-      "value": "#1A1A1A"
-    },
-    "--info": {
-      "type": "color",
-      "value": "#3B82F6"
-    },
-    "--info-bg": {
-      "type": "color",
-      "value": "#EFF6FF"
-    },
-    "--info-foreground": {
-      "type": "color",
-      "value": "#1E40AF"
-    },
-    "--muted": {
-      "type": "color",
-      "value": "#F3F4F6"
-    },
-    "--muted-foreground": {
-      "type": "color",
-      "value": "#6B7280"
-    },
-    "--primary": {
-      "type": "color",
-      "value": "#2563EB"
-    },
-    "--primary-foreground": {
-      "type": "color",
-      "value": "#FFFFFF"
-    },
-    "--radius-lg": {
-      "type": "number",
-      "value": [
-        {
-          "value": 12
-        },
-        {
-          "value": 8
-        }
-      ]
-    },
-    "--radius-md": {
-      "type": "number",
-      "value": [
-        {
-          "value": 8
-        },
-        {
-          "value": 6
-        }
-      ]
-    },
-    "--radius-pill": {
-      "type": "number",
-      "value": 9999
-    },
-    "--radius-sm": {
-      "type": "number",
-      "value": [
-        {
-          "value": 6
-        },
-        {
-          "value": 4
-        }
-      ]
-    },
-    "--radius-xl": {
-      "type": "number",
-      "value": [
-        {
-          "value": 16
-        },
-        {
-          "value": 12
-        }
-      ]
-    },
-    "--secondary": {
-      "type": "color",
-      "value": "#F3F4F6"
-    },
-    "--secondary-foreground": {
-      "type": "color",
-      "value": "#374151"
-    },
-    "--sidebar-accent": {
-      "type": "color",
-      "value": "#1F2937"
-    },
-    "--sidebar-bg": {
-      "type": "color",
-      "value": "#111827"
-    },
-    "--sidebar-foreground": {
-      "type": "color",
-      "value": "#F9FAFB"
-    },
-    "--sidebar-muted": {
-      "type": "color",
-      "value": "#374151"
-    },
-    "--star": {
-      "type": "color",
-      "value": "#FBBF24"
-    },
-    "--success": {
-      "type": "color",
-      "value": "#22C55E"
-    },
-    "--success-bg": {
-      "type": "color",
-      "value": "#F0FDF4"
-    },
-    "--success-foreground": {
-      "type": "color",
-      "value": "#166534"
-    },
-    "--warning": {
-      "type": "color",
-      "value": "#F59E0B"
-    },
-    "--warning-bg": {
-      "type": "color",
-      "value": "#FFFBEB"
-    },
-    "--warning-foreground": {
-      "type": "color",
-      "value": "#92400E"
-    },
-    "--input": {
-      "type": "color",
-      "value": "#E5E7EB"
-    },
-    "--popover": {
-      "type": "color",
-      "value": "#FFFFFF"
-    },
-    "--popover-foreground": {
-      "type": "color",
-      "value": "#1A1A1A"
-    },
-    "--ring": {
-      "type": "color",
-      "value": "#2563EB"
-    },
-    "--sidebar": {
-      "type": "color",
-      "value": "#FFFFFF"
-    },
-    "--sidebar-accent-foreground": {
-      "type": "color",
-      "value": "#1A1A1A"
-    },
-    "--sidebar-border": {
-      "type": "color",
-      "value": "#E5E7EB"
-    },
-    "--white": {
-      "type": "color",
-      "value": "#FFFFFF"
-    }
-  },
   "children": [
     {
       "type": "frame",
@@ -426,8 +190,8 @@
     {
       "type": "frame",
       "id": "sGGeU",
-      "x": 0,
-      "y": 9180,
+      "x": -401,
+      "y": 681,
       "name": "Admin — Dashboard",
       "width": 1440,
       "height": 800,
@@ -1026,5 +790,241 @@
         }
       ]
     }
-  ]
+  ],
+  "variables": {
+    "--accent": {
+      "type": "color",
+      "value": "#EFF6FF"
+    },
+    "--accent-foreground": {
+      "type": "color",
+      "value": "#2563EB"
+    },
+    "--background": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--border": {
+      "type": "color",
+      "value": "#E5E7EB"
+    },
+    "--border-subtle": {
+      "type": "color",
+      "value": "#F3F4F6"
+    },
+    "--card": {
+      "type": "color",
+      "value": "#F9FAFB"
+    },
+    "--card-foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--destructive": {
+      "type": "color",
+      "value": "#EF4444"
+    },
+    "--destructive-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--error": {
+      "type": "color",
+      "value": "#EF4444"
+    },
+    "--error-bg": {
+      "type": "color",
+      "value": "#FEF2F2"
+    },
+    "--error-foreground": {
+      "type": "color",
+      "value": "#991B1B"
+    },
+    "--font-primary": {
+      "type": "string",
+      "value": [
+        {
+          "value": "DM Sans"
+        },
+        {
+          "value": "Inter"
+        }
+      ]
+    },
+    "--font-secondary": {
+      "type": "string",
+      "value": [
+        {
+          "value": "DM Sans"
+        },
+        {
+          "value": "Inter"
+        }
+      ]
+    },
+    "--foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--info": {
+      "type": "color",
+      "value": "#3B82F6"
+    },
+    "--info-bg": {
+      "type": "color",
+      "value": "#EFF6FF"
+    },
+    "--info-foreground": {
+      "type": "color",
+      "value": "#1E40AF"
+    },
+    "--muted": {
+      "type": "color",
+      "value": "#F3F4F6"
+    },
+    "--muted-foreground": {
+      "type": "color",
+      "value": "#6B7280"
+    },
+    "--primary": {
+      "type": "color",
+      "value": "#2563EB"
+    },
+    "--primary-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--radius-lg": {
+      "type": "number",
+      "value": [
+        {
+          "value": 12
+        },
+        {
+          "value": 8
+        }
+      ]
+    },
+    "--radius-md": {
+      "type": "number",
+      "value": [
+        {
+          "value": 8
+        },
+        {
+          "value": 6
+        }
+      ]
+    },
+    "--radius-pill": {
+      "type": "number",
+      "value": 9999
+    },
+    "--radius-sm": {
+      "type": "number",
+      "value": [
+        {
+          "value": 6
+        },
+        {
+          "value": 4
+        }
+      ]
+    },
+    "--radius-xl": {
+      "type": "number",
+      "value": [
+        {
+          "value": 16
+        },
+        {
+          "value": 12
+        }
+      ]
+    },
+    "--secondary": {
+      "type": "color",
+      "value": "#F3F4F6"
+    },
+    "--secondary-foreground": {
+      "type": "color",
+      "value": "#374151"
+    },
+    "--sidebar-accent": {
+      "type": "color",
+      "value": "#1F2937"
+    },
+    "--sidebar-bg": {
+      "type": "color",
+      "value": "#111827"
+    },
+    "--sidebar-foreground": {
+      "type": "color",
+      "value": "#F9FAFB"
+    },
+    "--sidebar-muted": {
+      "type": "color",
+      "value": "#374151"
+    },
+    "--star": {
+      "type": "color",
+      "value": "#FBBF24"
+    },
+    "--success": {
+      "type": "color",
+      "value": "#22C55E"
+    },
+    "--success-bg": {
+      "type": "color",
+      "value": "#F0FDF4"
+    },
+    "--success-foreground": {
+      "type": "color",
+      "value": "#166534"
+    },
+    "--warning": {
+      "type": "color",
+      "value": "#F59E0B"
+    },
+    "--warning-bg": {
+      "type": "color",
+      "value": "#FFFBEB"
+    },
+    "--warning-foreground": {
+      "type": "color",
+      "value": "#92400E"
+    },
+    "--input": {
+      "type": "color",
+      "value": "#E5E7EB"
+    },
+    "--popover": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--popover-foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--ring": {
+      "type": "color",
+      "value": "#2563EB"
+    },
+    "--sidebar": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--sidebar-accent-foreground": {
+      "type": "color",
+      "value": "#1A1A1A"
+    },
+    "--sidebar-border": {
+      "type": "color",
+      "value": "#E5E7EB"
+    },
+    "--white": {
+      "type": "color",
+      "value": "#FFFFFF"
+    }
+  }
 }
