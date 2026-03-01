@@ -96,6 +96,10 @@ Recent decisions affecting v3.0:
 
 None.
 
+### Roadmap Evolution
+
+- Phase 25.1 inserted after Phase 25: Update UI based on pencil-new.pen design with shadcn (URGENT)
+
 ### Blockers/Concerns
 
 - **Keycloak realm import approach**: Operator `KeycloakRealmImport` CR runs once (IGNORE_EXISTING). May need upsert-via-Admin-API script for idempotent realm config. Resolve in Phase 24 planning.
