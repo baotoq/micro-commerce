@@ -2,7 +2,13 @@
 
 import { Check, X } from "lucide-react";
 
-const STEPS = ["Submitted", "Paid", "Confirmed", "Shipped", "Delivered"] as const;
+const STEPS = [
+  "Submitted",
+  "Paid",
+  "Confirmed",
+  "Shipped",
+  "Delivered",
+] as const;
 
 function mapToCustomerStep(status: string): {
   activeIndex: number;
@@ -55,12 +61,12 @@ export function OrderStatusStepper({
                 <div
                   className={`flex size-8 shrink-0 items-center justify-center rounded-full border-2 transition-colors sm:size-10 ${
                     isCompleted
-                      ? "border-green-500 bg-green-500 text-white"
+                      ? "border-success bg-success text-white"
                       : isCurrentFailed
-                        ? "border-red-500 bg-red-500 text-white"
+                        ? "border-error bg-error text-white"
                         : isCurrent
-                          ? "animate-pulse border-blue-500 bg-blue-500 text-white"
-                          : "border-zinc-200 bg-white text-zinc-400"
+                          ? "animate-pulse border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-muted-foreground"
                   }`}
                 >
                   {isCompleted ? (
@@ -76,12 +82,12 @@ export function OrderStatusStepper({
                 <span
                   className={`mt-2 text-center text-[10px] font-medium sm:text-xs ${
                     isCompleted
-                      ? "text-green-600"
+                      ? "text-success-foreground"
                       : isCurrentFailed
-                        ? "text-red-600"
+                        ? "text-error-foreground"
                         : isCurrent
-                          ? "text-blue-600"
-                          : "text-zinc-400"
+                          ? "text-primary"
+                          : "text-muted-foreground"
                   }`}
                 >
                   {step}
@@ -92,7 +98,7 @@ export function OrderStatusStepper({
               {!isLast && (
                 <div
                   className={`mx-1 h-0.5 flex-1 sm:mx-2 ${
-                    isCompleted ? "bg-green-500" : "bg-zinc-200"
+                    isCompleted ? "bg-success" : "bg-border"
                   }`}
                 />
               )}
@@ -103,7 +109,7 @@ export function OrderStatusStepper({
 
       {/* Failure reason */}
       {isFailed && failureReason && (
-        <p className="mt-4 rounded-lg bg-red-50 px-4 py-2 text-center text-sm text-red-600">
+        <p className="mt-4 rounded-lg bg-error-bg px-4 py-2 text-center text-sm text-error-foreground">
           {failureReason}
         </p>
       )}

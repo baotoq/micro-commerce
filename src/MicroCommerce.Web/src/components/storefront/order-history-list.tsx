@@ -1,14 +1,21 @@
 "use client";
 
-import Image from "next/image";
+import { Package } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Package, ChevronRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useOrdersByBuyer } from "@/hooks/use-orders";
 
 const TABS = [
@@ -23,21 +30,21 @@ const TABS = [
 function getStatusBadgeClass(status: string): string {
   switch (status) {
     case "Submitted":
-      return "bg-yellow-100 text-yellow-800";
     case "Confirmed":
-      return "bg-blue-100 text-blue-800";
-    case "Paid":
-      return "bg-green-100 text-green-800";
+    case "Processing":
+      return "bg-info-bg text-info-foreground";
     case "Shipped":
-      return "bg-purple-100 text-purple-800";
+    case "In Transit":
+      return "bg-warning-bg text-warning-foreground";
+    case "Paid":
     case "Delivered":
-      return "bg-green-100 text-green-800";
+    case "Completed":
+      return "bg-success-bg text-success-foreground";
     case "Failed":
-      return "bg-red-100 text-red-800";
     case "Cancelled":
-      return "bg-zinc-100 text-zinc-600";
+      return "bg-error-bg text-error-foreground";
     default:
-      return "bg-zinc-100 text-zinc-600";
+      return "bg-secondary text-secondary-foreground";
   }
 }
 
@@ -86,8 +93,8 @@ export function OrderHistoryList() {
             onClick={() => handleTabChange(tab)}
             className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               activeTab === tab
-                ? "bg-zinc-900 text-white"
-                : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground hover:bg-muted"
             }`}
           >
             {tab}
@@ -98,29 +105,27 @@ export function OrderHistoryList() {
       {/* Order list */}
       {isLoading ? (
         <div className="space-y-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="py-4">
-              <CardContent className="flex items-center gap-4">
-                <div className="flex -space-x-2">
-                  <Skeleton className="size-10 rounded-full" />
-                  <Skeleton className="size-10 rounded-full" />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-48" />
-                </div>
-                <Skeleton className="h-6 w-20 rounded-full" />
-              </CardContent>
-            </Card>
-          ))}
+          {["skeleton-1", "skeleton-2", "skeleton-3", "skeleton-4"].map(
+            (id) => (
+              <Card key={id} className="py-4">
+                <CardContent className="flex items-center gap-4">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-48" />
+                  </div>
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                </CardContent>
+              </Card>
+            ),
+          )}
         </div>
       ) : !data || data.items.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Package className="mb-4 size-12 text-zinc-300" />
-          <h3 className="text-lg font-semibold text-zinc-900">
+          <Package className="mb-4 size-12 text-muted-foreground/50" />
+          <h3 className="text-lg font-semibold text-foreground">
             No orders yet
           </h3>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             When you place an order, it will appear here.
           </p>
           <Button asChild className="mt-6 rounded-full" size="lg">
@@ -129,62 +134,91 @@ export function OrderHistoryList() {
         </div>
       ) : (
         <>
-          <div className="space-y-4">
+          {/* Desktop table view */}
+          <div className="hidden overflow-hidden rounded-lg border border-border md:block">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted hover:bg-muted">
+                  <TableHead className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Order
+                  </TableHead>
+                  <TableHead className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Date
+                  </TableHead>
+                  <TableHead className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Status
+                  </TableHead>
+                  <TableHead className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Total
+                  </TableHead>
+                  <TableHead className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Actions
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.items.map((order) => (
+                  <TableRow key={order.id} className="hover:bg-muted/30">
+                    <TableCell className="px-5 py-3.5">
+                      <span className="text-sm font-medium text-primary">
+                        {order.orderNumber}
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-5 py-3.5 text-sm text-foreground">
+                      {formatDate(order.createdAt)}
+                    </TableCell>
+                    <TableCell className="px-5 py-3.5">
+                      <Badge
+                        className={`${getStatusBadgeClass(order.status)} border-0 text-xs font-semibold`}
+                      >
+                        {order.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-5 py-3.5 text-sm font-semibold text-foreground">
+                      {formatPrice(order.total)}
+                    </TableCell>
+                    <TableCell className="px-5 py-3.5">
+                      <Link
+                        href={`/orders/${order.id}`}
+                        className="text-[13px] font-medium text-primary hover:underline"
+                      >
+                        View
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile card view */}
+          <div className="space-y-3 md:hidden">
             {data.items.map((order) => (
               <Link key={order.id} href={`/orders/${order.id}`}>
                 <Card className="cursor-pointer py-4 transition-shadow hover:shadow-md">
-                  <CardContent className="flex items-center gap-4">
-                    {/* Thumbnails */}
-                    <div className="flex -space-x-2">
-                      {order.itemThumbnails.slice(0, 3).map((thumb, i) => (
-                        <div
-                          key={i}
-                          className="relative size-10 shrink-0 overflow-hidden rounded-full border-2 border-white bg-zinc-100"
-                        >
-                          {thumb ? (
-                            <Image
-                              src={thumb}
-                              alt=""
-                              fill
-                              className="object-cover"
-                              sizes="40px"
-                            />
-                          ) : (
-                            <div className="flex size-full items-center justify-center text-[8px] text-zinc-400">
-                              N/A
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                      {order.itemCount > 3 && (
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-white bg-zinc-100 text-xs font-medium text-zinc-500">
-                          +{order.itemCount - 3}
-                        </div>
-                      )}
+                  <CardContent className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-primary">
+                        {order.orderNumber}
+                      </span>
+                      <Badge
+                        className={`${getStatusBadgeClass(order.status)} border-0 text-xs font-semibold`}
+                      >
+                        {order.status}
+                      </Badge>
                     </div>
-
-                    {/* Order info */}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="truncate text-sm font-semibold text-zinc-900">
-                          {order.orderNumber}
-                        </p>
-                        <Badge
-                          className={`${getStatusBadgeClass(order.status)} border-0`}
-                        >
-                          {order.status}
-                        </Badge>
-                      </div>
-                      <p className="mt-0.5 text-xs text-zinc-500">
-                        {formatDate(order.createdAt)} &middot;{" "}
-                        {order.itemCount}{" "}
-                        {order.itemCount === 1 ? "item" : "items"} &middot;{" "}
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {formatDate(order.createdAt)}
+                      </span>
+                      <span className="font-semibold text-foreground">
                         {formatPrice(order.total)}
-                      </p>
+                      </span>
                     </div>
-
-                    {/* Arrow */}
-                    <ChevronRight className="size-4 shrink-0 text-zinc-400" />
+                    <p className="text-xs text-muted-foreground">
+                      {order.itemCount}{" "}
+                      {order.itemCount === 1 ? "item" : "items"}
+                    </p>
                   </CardContent>
                 </Card>
               </Link>
@@ -203,7 +237,7 @@ export function OrderHistoryList() {
               >
                 Previous
               </Button>
-              <span className="text-sm text-zinc-500">
+              <span className="text-sm text-muted-foreground">
                 Page {page} of {totalPages}
               </span>
               <Button
