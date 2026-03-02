@@ -11,3 +11,5 @@ resources:
 - apiservice/
 - gateway/
 - web/
+- otel-collector/
+- aspire-dashboard/
