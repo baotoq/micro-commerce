@@ -5,7 +5,7 @@
 - ✅ **v1.0 MVP** — Phases 1-10 (shipped 2026-02-13) — [archive](milestones/v1.0-ROADMAP.md)
 - ✅ **v1.1 User Features** — Phases 11-14.3 (shipped 2026-02-14) — [archive](milestones/v1.1-ROADMAP.md)
 - ✅ **v2.0 DDD Foundation** — Phases 15-22 (shipped 2026-02-25) — [archive](milestones/v2.0-ROADMAP.md)
-- 🚧 **v3.0 Kubernetes & GitOps** — Phases 23-28 (in progress)
+- 🚧 **v3.0 Kubernetes & GitOps** — Phases 23-29 (in progress)
 
 ## Phases
 
@@ -65,6 +65,7 @@
 - [x] **Phase 26: ArgoCD GitOps** - Install ArgoCD and wire app-of-apps to manage all cluster resources from Git (completed 2026-03-02)
 - [x] **Phase 27: CI/CD GitOps Loop Closure** - Extend CI to commit SHA image tags back to the overlay, completing the full GitOps loop (completed 2026-03-02)
 - [x] **Phase 28: Observability** - Deploy OTEL Collector and standalone Aspire Dashboard for in-cluster monitoring (completed 2026-03-02)
+- [ ] **Phase 29: K8s Client-Side API & Bootstrap Polish** - Fix client-side API wiring for K8s, polish bootstrap script, align REQUIREMENTS.md (gap closure)
 
 ## Phase Details
 
@@ -167,9 +168,20 @@ Plans:
 - [ ] 28-01-PLAN.md -- OTEL Collector and Aspire Dashboard Kubernetes base manifests
 - [ ] 28-02-PLAN.md -- Wire OTEL to app services, ArgoCD Applications, kind port mapping
 
+### Phase 29: K8s Client-Side API & Bootstrap Polish
+**Goal**: Client-side interactive features (cart, checkout, product browsing) work correctly in the K8s deployment, bootstrap script is complete, and REQUIREMENTS.md reflects delivered state
+**Depends on**: Phase 28
+**Requirements**: K8S-API-01, K8S-BOOT-01, K8S-DOCS-01
+**Gap Closure**: Closes MISSING-02 (high), MISSING-01 (low), and documentation gaps from v3.0 audit
+**Success Criteria** (what must be TRUE):
+  1. Client-side TanStack Query API calls in the Next.js storefront reach the Gateway when running in the K8s cluster (not localhost:5200)
+  2. bootstrap.sh waits for otel-collector and aspire-dashboard pods before printing "Full stack ready!" and prints the Aspire Dashboard URL
+  3. REQUIREMENTS.md OBSV-01/OBSV-02 checkboxes are checked and all 11 UI-* requirements appear in the traceability table
+**Plans**: TBD
+
 ## Progress
 
-**Execution Order:** 23 → 24 → 25 → 26 → 27 → 28
+**Execution Order:** 23 → 24 → 25 → 26 → 27 → 28 → 29
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -205,6 +217,7 @@ Plans:
 | 26. ArgoCD GitOps | 2/2 | Complete    | 2026-03-02 | - |
 | 27. CI/CD GitOps Loop Closure | 1/1 | Complete    | 2026-03-02 | - |
 | 28. Observability | 2/2 | Complete    | 2026-03-02 | - |
+| 29. K8s Client-Side API & Bootstrap Polish | 0/0 | Pending    | - | - |
 
 ---
 *Roadmap created: 2026-01-29*

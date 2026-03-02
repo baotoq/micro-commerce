@@ -49,8 +49,28 @@ Requirements for Kubernetes & GitOps deployment milestone. Each maps to roadmap 
 
 ### Observability
 
-- [ ] **OBSV-01**: OTEL Collector receives OTLP from all app services and forwards to Aspire Dashboard
-- [ ] **OBSV-02**: Aspire Dashboard runs as a standalone container in K8s accessible for dev monitoring
+- [x] **OBSV-01**: OTEL Collector receives OTLP from all app services and forwards to Aspire Dashboard
+- [x] **OBSV-02**: Aspire Dashboard runs as a standalone container in K8s accessible for dev monitoring
+
+### Gap Closure (Phase 29)
+
+- [ ] **K8S-API-01**: Client-side API calls in the Next.js storefront use runtime config to reach the Gateway in K8s instead of hardcoded localhost:5200
+- [ ] **K8S-BOOT-01**: bootstrap.sh waits for observability pods and prints Aspire Dashboard URL in access info
+- [ ] **K8S-DOCS-01**: REQUIREMENTS.md checkboxes and traceability table reflect all delivered work
+
+### UI Refresh (Phase 25.1)
+
+- [x] **UI-THEME**: CSS variable color palette with oklch values and DM Sans font
+- [x] **UI-HOME**: Homepage with hero banner, category pills, featured product cards, header, footer
+- [x] **UI-CATALOG**: Product catalog with sidebar filters, product grid, pagination
+- [x] **UI-PRODUCT-DETAIL**: Product detail with image gallery, tabs, quantity stepper, reviews
+- [x] **UI-CART**: Shopping cart with item rows, quantity stepper, cart summary sidebar
+- [x] **UI-CHECKOUT**: Checkout with step indicator, shipping/payment forms, order sidebar
+- [x] **UI-ORDER-CONFIRM**: Order confirmation with success banner and order details
+- [x] **UI-ORDER-HISTORY**: Order history list with status badges and order detail stepper
+- [x] **UI-PROFILE**: User profile with account sidebar, profile form, addresses
+- [x] **UI-AUTH-LOGIN**: Branded Keycloak login page with SSO redirect
+- [x] **UI-ADMIN**: Admin dashboard with dark navy sidebar, stat cards, tables
 
 ## Future Requirements
 
@@ -111,14 +131,28 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 | GOPS-01 | Phase 26 | Complete |
 | GOPS-02 | Phase 26 | Complete |
 | CICD-02 | Phase 27 | Complete |
-| OBSV-01 | Phase 28 | Pending |
-| OBSV-02 | Phase 28 | Pending |
+| OBSV-01 | Phase 28 | Complete |
+| OBSV-02 | Phase 28 | Complete |
+| UI-THEME | Phase 25.1 | Complete |
+| UI-HOME | Phase 25.1 | Complete |
+| UI-CATALOG | Phase 25.1 | Complete |
+| UI-PRODUCT-DETAIL | Phase 25.1 | Complete |
+| UI-CART | Phase 25.1 | Complete |
+| UI-CHECKOUT | Phase 25.1 | Complete |
+| UI-ORDER-CONFIRM | Phase 25.1 | Complete |
+| UI-ORDER-HISTORY | Phase 25.1 | Complete |
+| UI-PROFILE | Phase 25.1 | Complete |
+| UI-AUTH-LOGIN | Phase 25.1 | Complete |
+| UI-ADMIN | Phase 25.1 | Complete |
+| K8S-API-01 | Phase 29 | Pending |
+| K8S-BOOT-01 | Phase 29 | Pending |
+| K8S-DOCS-01 | Phase 29 | Pending |
 
 **Coverage:**
-- v3.0 requirements: 24 total
-- Mapped to phases: 24
+- v3.0 requirements: 38 total (24 core + 11 UI + 3 gap closure)
+- Mapped to phases: 38
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-02-25 — traceability filled after roadmap creation (Phases 23-28)*
+*Last updated: 2026-03-02 — OBSV checkboxes fixed, UI-* traceability added, Phase 29 gap closure requirements added*
