@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "f824d3450eb8",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/27-cicd-gitops-loop-closure/27-RESEARCH.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/f8/24d3450eb8/0/metadata.json",
+      "transcript": "/f8/24d3450eb8/0/full.jsonl",
+      "context": "/f8/24d3450eb8/0/context.md",
+      "content_hash": "/f8/24d3450eb8/0/content_hash.txt",
+      "prompt": "/f8/24d3450eb8/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 23482,
+    "cache_read_tokens": 284229,
+    "output_tokens": 1415,
+    "api_call_count": 6
+  }
+}
