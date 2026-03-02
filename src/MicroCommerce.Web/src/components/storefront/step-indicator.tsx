@@ -18,7 +18,10 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
   return (
     <>
       {/* Desktop step indicator */}
-      <div className="hidden items-center gap-4 sm:flex" aria-label="Checkout steps">
+      <nav
+        className="hidden items-center gap-4 sm:flex"
+        aria-label="Checkout steps"
+      >
         {steps.map((step, index) => {
           const stepNumber = index + 1;
           const isCompleted = stepNumber < currentStep;
@@ -30,7 +33,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                 <div
                   className={cn(
                     "h-0.5 w-12 shrink-0 lg:w-20",
-                    isCompleted ? "bg-primary" : "bg-border"
+                    isCompleted ? "bg-primary" : "bg-border",
                   )}
                   aria-hidden="true"
                 />
@@ -44,7 +47,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                       "border-2 border-primary bg-primary text-primary-foreground",
                     !isCompleted &&
                       !isActive &&
-                      "bg-muted text-muted-foreground"
+                      "bg-muted text-muted-foreground",
                   )}
                   aria-current={isActive ? "step" : undefined}
                 >
@@ -59,7 +62,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                     "text-sm",
                     isActive && "font-medium text-foreground",
                     isCompleted && "font-medium text-foreground",
-                    !isCompleted && !isActive && "text-muted-foreground"
+                    !isCompleted && !isActive && "text-muted-foreground",
                   )}
                 >
                   {step.label}
@@ -68,10 +71,10 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
             </div>
           );
         })}
-      </div>
+      </nav>
 
       {/* Mobile step indicator */}
-      <p className="text-sm text-muted-foreground sm:hidden" aria-label="Checkout steps">
+      <p className="text-sm text-muted-foreground sm:hidden">
         Step {currentStep} of {steps.length}: {steps[currentStep - 1]?.label}
       </p>
     </>

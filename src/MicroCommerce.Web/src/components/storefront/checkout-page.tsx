@@ -1,17 +1,16 @@
 "use client";
 
+import { ArrowLeft, ArrowRight, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, ShoppingCart } from "lucide-react";
 import { useCallback, useState } from "react";
-
+import { CheckoutLoginGate } from "@/components/storefront/checkout-login-gate";
+import { OrderSidebar } from "@/components/storefront/order-sidebar";
+import { PaymentSection } from "@/components/storefront/payment-section";
+import { ShippingSection } from "@/components/storefront/shipping-section";
+import { StepIndicator } from "@/components/storefront/step-indicator";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckoutLoginGate } from "@/components/storefront/checkout-login-gate";
-import { StepIndicator } from "@/components/storefront/step-indicator";
-import { ShippingSection } from "@/components/storefront/shipping-section";
-import { PaymentSection } from "@/components/storefront/payment-section";
-import { OrderSidebar } from "@/components/storefront/order-sidebar";
 import { useCart } from "@/hooks/use-cart";
 import type { ShippingAddressDto } from "@/lib/api";
 
