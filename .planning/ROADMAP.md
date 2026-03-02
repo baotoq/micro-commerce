@@ -119,17 +119,17 @@
 **Plans:** 11/11 plans complete
 
 Plans:
-- [ ] 25.1-01-PLAN.md -- Theme/globals: CSS variable color palette + DM Sans font swap
-- [ ] 25.1-02-PLAN.md -- Homepage: hero, category pills, product cards, header, footer
-- [ ] 25.1-03-PLAN.md -- Product Catalog: sidebar filters, product grid, pagination
-- [ ] 25.1-04-PLAN.md -- Product Detail: image gallery, tabs, quantity stepper, reviews
-- [ ] 25.1-05-PLAN.md -- Shopping Cart: item rows, cart summary sidebar
-- [ ] 25.1-06-PLAN.md -- Checkout: step indicator, shipping/payment forms, order sidebar
-- [ ] 25.1-07-PLAN.md -- Order Confirmation: success banner, order details
-- [ ] 25.1-08-PLAN.md -- Order History: order list table, detail with status stepper
-- [ ] 25.1-09-PLAN.md -- User Profile: account sidebar, profile form, addresses
+- [x] 25.1-01-PLAN.md -- Theme/globals: CSS variable color palette + DM Sans font swap
+- [x] 25.1-02-PLAN.md -- Homepage: hero, category pills, product cards, header, footer
+- [x] 25.1-03-PLAN.md -- Product Catalog: sidebar filters, product grid, pagination
+- [x] 25.1-04-PLAN.md -- Product Detail: image gallery, tabs, quantity stepper, reviews
+- [x] 25.1-05-PLAN.md -- Shopping Cart: item rows, cart summary sidebar
+- [x] 25.1-06-PLAN.md -- Checkout: step indicator, shipping/payment forms, order sidebar
+- [x] 25.1-07-PLAN.md -- Order Confirmation: success banner, order details
+- [x] 25.1-08-PLAN.md -- Order History: order list table, detail with status stepper
+- [x] 25.1-09-PLAN.md -- User Profile: account sidebar, profile form, addresses
 - [x] 25.1-10-PLAN.md -- Auth Login: branded Keycloak login page
-- [ ] 25.1-11-PLAN.md -- Admin Dashboard: dark sidebar layout, stat cards, tables
+- [x] 25.1-11-PLAN.md -- Admin Dashboard: dark sidebar layout, stat cards, tables
 
 ### Phase 26: ArgoCD GitOps
 **Goal**: ArgoCD manages all cluster resources from Git using app-of-apps, replacing manual kubectl apply
