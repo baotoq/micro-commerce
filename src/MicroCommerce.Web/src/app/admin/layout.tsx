@@ -1,13 +1,88 @@
-import Link from "next/link";
+"use client";
+
 import {
-  Package,
+  AlertTriangle,
   FolderTree,
   LayoutDashboard,
-  AlertTriangle,
+  Package,
   ShoppingBag,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+
+const NAV_ITEMS = [
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/products", label: "Products", icon: Package },
+  { href: "/admin/categories", label: "Categories", icon: FolderTree },
+  { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/dead-letters", label: "Dead Letters", icon: AlertTriangle },
+];
+
+function AdminSidebarContent() {
+  const pathname = usePathname();
+
+  return (
+    <Sidebar>
+      <SidebarHeader className="px-4 py-5">
+        <Link href="/admin" className="flex items-center gap-2 px-2">
+          <ShoppingBag className="h-[22px] w-[22px] text-primary" />
+          <span className="text-base font-bold text-sidebar-foreground">
+            MicroCommerce
+          </span>
+          <Badge
+            variant="secondary"
+            className="bg-sidebar-accent text-[#9CA3AF] text-xs"
+          >
+            Admin
+          </Badge>
+        </Link>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarMenu>
+            {NAV_ITEMS.map((item) => {
+              const isActive = item.exact
+                ? pathname === item.href
+                : pathname.startsWith(item.href);
+              return (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.label}
+                  >
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
 
 export default function AdminLayout({
   children,
@@ -16,67 +91,34 @@ export default function AdminLayout({
 }) {
   return (
     <QueryProvider>
-      <div className="min-h-screen bg-gray-50">
-        {/* Top nav */}
-        <header className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex">
-                <div className="flex-shrink-0 flex items-center">
-                  <Link href="/admin" className="text-xl font-bold text-gray-900">
-                    MicroCommerce Admin
-                  </Link>
-                </div>
-                <nav className="hidden sm:ml-8 sm:flex sm:space-x-8">
-                  <Link
-                    href="/admin"
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-                  >
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="/admin/products"
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-                  >
-                    <Package className="w-4 h-4 mr-2" />
-                    Products
-                  </Link>
-                  <Link
-                    href="/admin/categories"
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-                  >
-                    <FolderTree className="w-4 h-4 mr-2" />
-                    Categories
-                  </Link>
-                  <Link
-                    href="/admin/orders"
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-                  >
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    Orders
-                  </Link>
-                  <Link
-                    href="/admin/dead-letters"
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-                  >
-                    <AlertTriangle className="w-4 h-4 mr-2" />
-                    Dead Letters
-                  </Link>
-                </nav>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Main content */}
-        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          {children}
-        </main>
-
-        <Toaster position="top-right" />
+      <div
+        style={
+          {
+            "--sidebar": "oklch(0.178 0.02 256.788)",
+            "--sidebar-foreground": "oklch(0.985 0.002 247.839)",
+            "--sidebar-accent": "oklch(0.237 0.02 256.788)",
+            "--sidebar-accent-foreground": "oklch(0.985 0.002 247.839)",
+            "--sidebar-primary": "oklch(0.546 0.245 262.881)",
+            "--sidebar-primary-foreground": "oklch(1 0 0)",
+            "--sidebar-border": "oklch(0.295 0.02 256.788)",
+          } as React.CSSProperties
+        }
+      >
+        <SidebarProvider>
+          <AdminSidebarContent />
+          <SidebarInset>
+            <header className="flex h-14 items-center gap-2 border-b px-6">
+              <SidebarTrigger className="-ml-2" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <span className="text-sm font-medium text-muted-foreground">
+                Admin Panel
+              </span>
+            </header>
+            <main className="flex-1 overflow-auto p-6">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
       </div>
+      <Toaster position="top-right" />
     </QueryProvider>
   );
 }
-
