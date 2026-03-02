@@ -64,7 +64,7 @@
 - [x] **Phase 25: Application Manifests and MassTransit Transport** - Deploy ApiService, Gateway, and Web with Kustomize base/overlay structure and RabbitMQ transport support (completed 2026-02-26)
 - [x] **Phase 26: ArgoCD GitOps** - Install ArgoCD and wire app-of-apps to manage all cluster resources from Git (completed 2026-03-02)
 - [x] **Phase 27: CI/CD GitOps Loop Closure** - Extend CI to commit SHA image tags back to the overlay, completing the full GitOps loop (completed 2026-03-02)
-- [ ] **Phase 28: Observability** - Deploy OTEL Collector and standalone Aspire Dashboard for in-cluster monitoring
+- [x] **Phase 28: Observability** - Deploy OTEL Collector and standalone Aspire Dashboard for in-cluster monitoring (completed 2026-03-02)
 
 ## Phase Details
 
@@ -204,7 +204,7 @@ Plans:
 | 25. Application Manifests and MassTransit Transport | 3/3 | Complete    | 2026-02-26 | - |
 | 26. ArgoCD GitOps | 2/2 | Complete    | 2026-03-02 | - |
 | 27. CI/CD GitOps Loop Closure | 1/1 | Complete    | 2026-03-02 | - |
-| 28. Observability | 1/2 | In Progress|  | - |
+| 28. Observability | 2/2 | Complete   | 2026-03-02 | - |
 
 ---
 *Roadmap created: 2026-01-29*
