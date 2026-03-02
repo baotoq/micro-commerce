@@ -1,13 +1,16 @@
 "use client";
 
+import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { CartItemRow } from "@/components/storefront/cart-item-row";
 import { CartSummary } from "@/components/storefront/cart-summary";
-import { useCart, useUpdateCartItem, useRemoveCartItem } from "@/hooks/use-cart";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useCart,
+  useRemoveCartItem,
+  useUpdateCartItem,
+} from "@/hooks/use-cart";
 
 export function CartPage() {
   const { data: cart, isLoading } = useCart();
@@ -19,49 +22,64 @@ export function CartPage() {
   }
 
   const items = cart?.items ?? [];
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <ShoppingCart className="mb-4 size-12 text-zinc-300" />
-        <h2 className="text-xl font-semibold text-zinc-900">
-          Your cart is empty
-        </h2>
-        <p className="mt-2 text-sm text-zinc-500">
-          Looks like you haven&apos;t added anything yet.
-        </p>
-        <Button asChild className="mt-6 rounded-full" size="lg">
-          <Link href="/">Continue shopping</Link>
-        </Button>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-10 lg:px-20">
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="mb-6 flex size-20 items-center justify-center rounded-full bg-muted">
+            <ShoppingBag className="size-10 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">
+            Your cart is empty
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Looks like you haven&apos;t added anything yet.
+          </p>
+          <Button asChild className="mt-6" size="lg">
+            <Link href="/">Continue Shopping</Link>
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1 className="mb-8 text-2xl font-bold tracking-tight text-zinc-900">
-        Cart
-      </h1>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-10 lg:px-20">
+      {/* Page body: items + summary */}
+      <div className="flex flex-col gap-10 lg:flex-row">
+        {/* Cart items - main column */}
+        <div className="flex-1 space-y-6">
+          {/* Cart title */}
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-foreground">
+              Shopping Cart
+            </h1>
+            <span className="text-base text-muted-foreground">
+              ({itemCount} {itemCount === 1 ? "item" : "items"})
+            </span>
+          </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Items list */}
-        <div className="space-y-4 lg:col-span-2">
-          {items.map((item) => (
-            <CartItemRow
-              key={item.id}
-              item={item}
-              onUpdateQuantity={(quantity) =>
-                updateItem.mutate({ itemId: item.id, quantity })
-              }
-              onRemove={() => removeItem.mutate(item.id)}
-              isUpdating={updateItem.isPending}
-              isRemoving={removeItem.isPending}
-            />
-          ))}
+          {/* Items list in bordered container */}
+          <div className="overflow-hidden rounded-lg border border-border">
+            {items.map((item) => (
+              <CartItemRow
+                key={item.id}
+                item={item}
+                onUpdateQuantity={(quantity) =>
+                  updateItem.mutate({ itemId: item.id, quantity })
+                }
+                onRemove={() => removeItem.mutate(item.id)}
+                isUpdating={updateItem.isPending}
+                isRemoving={removeItem.isPending}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Order summary */}
-        <div>
+        {/* Order summary sidebar */}
+        <div className="w-full shrink-0 lg:w-[380px]">
           <CartSummary items={items} />
         </div>
       </div>
@@ -71,26 +89,34 @@ export function CartPage() {
 
 function CartPageSkeleton() {
   return (
-    <div>
-      <Skeleton className="mb-8 h-8 w-20" />
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex gap-4 rounded-lg border border-zinc-200 p-4"
-            >
-              <Skeleton className="size-16 shrink-0 rounded-md" />
-              <div className="flex flex-1 flex-col gap-2">
-                <Skeleton className="h-4 w-2/3" />
-                <Skeleton className="h-4 w-20" />
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-10 lg:px-20">
+      <div className="flex flex-col gap-10 lg:flex-row">
+        <div className="flex-1 space-y-6">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-5 w-20" />
+          </div>
+          <div className="overflow-hidden rounded-lg border border-border">
+            {["sk-1", "sk-2", "sk-3"].map((key) => (
+              <div
+                key={key}
+                className="flex items-center gap-4 border-b border-border p-5 last:border-b-0"
+              >
+                <Skeleton className="size-[100px] shrink-0 rounded-md" />
+                <div className="flex flex-1 flex-col gap-2">
+                  <Skeleton className="h-4 w-2/3" />
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <Skeleton className="h-9 w-[120px] rounded-md" />
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="size-9 rounded-md" />
               </div>
-              <Skeleton className="h-8 w-24" />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-        <div>
-          <Skeleton className="h-48 rounded-xl" />
+        <div className="w-full shrink-0 lg:w-[380px]">
+          <Skeleton className="h-72 rounded-lg" />
         </div>
       </div>
     </div>

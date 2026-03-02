@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { AlertCircle, MessageSquare } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -32,21 +32,21 @@ function formatDate(dateString: string): string {
 function getStatusBadgeClass(status: string): string {
   switch (status) {
     case "Submitted":
-      return "bg-yellow-100 text-yellow-800";
     case "Confirmed":
-      return "bg-blue-100 text-blue-800";
-    case "Paid":
-      return "bg-green-100 text-green-800";
+    case "Processing":
+      return "bg-info-bg text-info-foreground";
     case "Shipped":
-      return "bg-purple-100 text-purple-800";
+    case "In Transit":
+      return "bg-warning-bg text-warning-foreground";
+    case "Paid":
     case "Delivered":
-      return "bg-green-100 text-green-800";
+    case "Completed":
+      return "bg-success-bg text-success-foreground";
     case "Failed":
-      return "bg-red-100 text-red-800";
     case "Cancelled":
-      return "bg-zinc-100 text-zinc-600";
+      return "bg-error-bg text-error-foreground";
     default:
-      return "bg-zinc-100 text-zinc-600";
+      return "bg-secondary text-secondary-foreground";
   }
 }
 
@@ -64,11 +64,11 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
   if (isError || !order) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <AlertCircle className="mb-4 size-12 text-zinc-300" />
-        <h2 className="text-xl font-semibold text-zinc-900">
+        <AlertCircle className="mb-4 size-12 text-muted-foreground/50" />
+        <h2 className="text-xl font-semibold text-foreground">
           Order not found
         </h2>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-muted-foreground">
           We couldn&apos;t find this order. It may have been removed or the link
           is incorrect.
         </p>
@@ -83,13 +83,15 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="text-xl font-bold tracking-tight text-zinc-900">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">
           {order.orderNumber}
         </h2>
-        <Badge className={`${getStatusBadgeClass(order.status)} border-0`}>
+        <Badge
+          className={`${getStatusBadgeClass(order.status)} border-0 text-xs font-semibold`}
+        >
           {order.status}
         </Badge>
-        <span className="text-sm text-zinc-500">
+        <span className="text-sm text-muted-foreground">
           {formatDate(order.createdAt)}
         </span>
       </div>
@@ -112,7 +114,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
         <CardContent className="space-y-4">
           {order.items.map((item) => (
             <div key={item.id} className="flex gap-4">
-              <div className="relative size-16 shrink-0 overflow-hidden rounded-md border border-zinc-200 bg-zinc-100">
+              <div className="relative size-16 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
                 {item.imageUrl ? (
                   <Image
                     src={item.imageUrl}
@@ -122,29 +124,31 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                     sizes="64px"
                   />
                 ) : (
-                  <div className="flex size-full items-center justify-center text-xs text-zinc-400">
+                  <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
                     N/A
                   </div>
                 )}
               </div>
               <div className="flex flex-1 items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-zinc-900">
+                  <p className="text-sm font-medium text-foreground">
                     {item.productName}
                   </p>
-                  <p className="text-sm text-zinc-500">
+                  <p className="text-sm text-muted-foreground">
                     {item.quantity} x {formatPrice(item.unitPrice)}
                   </p>
                 </div>
-                <p className="shrink-0 text-sm font-medium text-zinc-900">
+                <p className="shrink-0 text-sm font-medium text-foreground">
                   {formatPrice(item.lineTotal)}
                 </p>
               </div>
             </div>
           ))}
         </CardContent>
-        {["Paid", "Confirmed", "Shipped", "Delivered"].includes(order.status) && (
-          <div className="border-t border-zinc-200 px-6 py-4">
+        {["Paid", "Confirmed", "Shipped", "Delivered"].includes(
+          order.status,
+        ) && (
+          <div className="border-t border-border px-6 py-4">
             <Button asChild variant="outline" className="w-full rounded-full">
               <Link href={`/orders/${order.id}/review`}>
                 <MessageSquare className="mr-2 size-4" />
@@ -161,14 +165,18 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
           <CardTitle className="text-base">Shipping Address</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-zinc-700">
+          <div className="text-sm text-foreground">
             <p className="font-medium">{order.shippingAddress.name}</p>
-            <p>{order.shippingAddress.street}</p>
-            <p>
+            <p className="text-muted-foreground">
+              {order.shippingAddress.street}
+            </p>
+            <p className="text-muted-foreground">
               {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
               {order.shippingAddress.zipCode}
             </p>
-            <p>{order.shippingAddress.email}</p>
+            <p className="text-muted-foreground">
+              {order.shippingAddress.email}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -180,21 +188,25 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between text-sm">
-            <span className="text-zinc-500">Subtotal</span>
-            <span>{formatPrice(order.subtotal)}</span>
+            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-foreground">
+              {formatPrice(order.subtotal)}
+            </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-zinc-500">Shipping</span>
-            <span>{formatPrice(order.shippingCost)}</span>
+            <span className="text-muted-foreground">Shipping</span>
+            <span className="text-foreground">
+              {formatPrice(order.shippingCost)}
+            </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-zinc-500">Tax</span>
-            <span>{formatPrice(order.tax)}</span>
+            <span className="text-muted-foreground">Tax</span>
+            <span className="text-foreground">{formatPrice(order.tax)}</span>
           </div>
 
           <Separator />
 
-          <div className="flex justify-between text-base font-semibold">
+          <div className="flex justify-between text-base font-semibold text-foreground">
             <span>Total</span>
             <span>{formatPrice(order.total)}</span>
           </div>

@@ -1,15 +1,15 @@
 "use client";
 
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { AlertCircle, ArrowLeft } from "lucide-react";
 
+import { ReviewFormDialog } from "@/components/reviews/review-form-dialog";
+import { StarRatingDisplay } from "@/components/reviews/star-rating-display";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrderWithPolling } from "@/hooks/use-orders";
-import { useMyReview, useCanReview } from "@/hooks/use-reviews";
-import { ReviewFormDialog } from "@/components/reviews/review-form-dialog";
-import { StarRatingDisplay } from "@/components/reviews/star-rating-display";
+import { useCanReview, useMyReview } from "@/hooks/use-reviews";
 
 interface OrderReviewPageProps {
   orderId: string;
@@ -38,13 +38,14 @@ function OrderItemReviewRow({
   unitPrice,
 }: OrderItemReviewRowProps) {
   const { data: myReview, isLoading: reviewLoading } = useMyReview(productId);
-  const { data: canReviewData, isLoading: canReviewLoading } = useCanReview(productId);
+  const { data: canReviewData, isLoading: canReviewLoading } =
+    useCanReview(productId);
 
   const isLoading = reviewLoading || canReviewLoading;
 
   if (isLoading) {
     return (
-      <div className="flex gap-4 border-b border-zinc-200 pb-6">
+      <div className="flex gap-4 border-b border-border pb-6">
         <Skeleton className="size-16 shrink-0 rounded-md" />
         <div className="flex flex-1 flex-col gap-2">
           <Skeleton className="h-5 w-48" />
@@ -59,8 +60,8 @@ function OrderItemReviewRow({
   const canReview = canReviewData?.hasPurchased && !canReviewData?.hasReviewed;
 
   return (
-    <div className="flex gap-4 border-b border-zinc-200 pb-6">
-      <div className="relative size-16 shrink-0 overflow-hidden rounded-md border border-zinc-200 bg-zinc-100">
+    <div className="flex gap-4 border-b border-border pb-6">
+      <div className="relative size-16 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -70,15 +71,15 @@ function OrderItemReviewRow({
             sizes="64px"
           />
         ) : (
-          <div className="flex size-full items-center justify-center text-xs text-zinc-400">
+          <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
             N/A
           </div>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2">
         <div>
-          <p className="text-sm font-medium text-zinc-900">{productName}</p>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm font-medium text-foreground">{productName}</p>
+          <p className="text-sm text-muted-foreground">
             {quantity} x {formatPrice(unitPrice)}
           </p>
         </div>
@@ -113,7 +114,7 @@ function OrderItemReviewRow({
             }
           />
         ) : (
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-muted-foreground">
             Purchase verification required to review
           </p>
         )}
@@ -145,11 +146,11 @@ export function OrderReviewPage({ orderId }: OrderReviewPageProps) {
   if (isError || !order) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <AlertCircle className="mb-4 size-12 text-zinc-300" />
-        <h2 className="text-xl font-semibold text-zinc-900">
+        <AlertCircle className="mb-4 size-12 text-muted-foreground/50" />
+        <h2 className="text-xl font-semibold text-foreground">
           Order not found
         </h2>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-muted-foreground">
           We couldn&apos;t find this order. It may have been removed or the link
           is incorrect.
         </p>
@@ -164,16 +165,16 @@ export function OrderReviewPage({ orderId }: OrderReviewPageProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Review Products
         </h1>
-        <p className="text-sm text-zinc-500">{order.orderNumber}</p>
+        <p className="text-sm text-muted-foreground">{order.orderNumber}</p>
       </div>
 
       {/* Back link */}
       <Link
         href={`/orders/${orderId}`}
-        className="inline-flex items-center gap-2 text-sm text-zinc-600 hover:text-zinc-900"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
         Back to order

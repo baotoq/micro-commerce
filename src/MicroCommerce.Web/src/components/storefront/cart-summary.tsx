@@ -3,12 +3,6 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { CartItemDto } from "@/lib/api";
 
@@ -28,33 +22,51 @@ export function CartSummary({ items }: CartSummaryProps) {
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <Card className="sticky top-20">
-      <CardHeader>
-        <CardTitle>Order Summary</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-zinc-500">
-            Subtotal ({itemCount} {itemCount === 1 ? "item" : "items"})
-          </span>
-          <span className="font-medium text-zinc-900">
-            {formatPrice(subtotal)}
-          </span>
-        </div>
+    <div className="sticky top-20 rounded-lg border border-border bg-card p-6 space-y-5">
+      <h2 className="text-lg font-bold text-foreground">Order Summary</h2>
 
-        <Separator />
+      {/* Subtotal */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-muted-foreground">
+          Subtotal ({itemCount} {itemCount === 1 ? "item" : "items"})
+        </span>
+        <span className="text-sm font-medium text-foreground">
+          {formatPrice(subtotal)}
+        </span>
+      </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-base font-semibold text-zinc-900">Total</span>
-          <span className="text-base font-semibold text-zinc-900">
-            {formatPrice(subtotal)}
-          </span>
-        </div>
+      {/* Shipping */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-muted-foreground">Shipping</span>
+        <span className="text-sm font-medium text-success-foreground">
+          Free
+        </span>
+      </div>
 
-        <Button asChild className="w-full rounded-full" size="lg">
-          <Link href="/checkout">Proceed to Checkout</Link>
-        </Button>
-      </CardContent>
-    </Card>
+      <Separator />
+
+      {/* Total */}
+      <div className="flex items-center justify-between">
+        <span className="text-base font-bold text-foreground">Total</span>
+        <span className="text-xl font-bold text-foreground">
+          {formatPrice(subtotal)}
+        </span>
+      </div>
+
+      {/* Checkout CTA */}
+      <Button asChild className="w-full h-12 text-base font-semibold" size="lg">
+        <Link href="/checkout">Proceed to Checkout</Link>
+      </Button>
+
+      {/* Continue Shopping link */}
+      <div className="text-center">
+        <Link
+          href="/"
+          className="text-[13px] font-medium text-primary hover:underline"
+        >
+          or Continue Shopping
+        </Link>
+      </div>
+    </div>
   );
 }
