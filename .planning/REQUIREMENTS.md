@@ -39,7 +39,7 @@ Requirements for Kubernetes & GitOps deployment milestone. Each maps to roadmap 
 ### CI/CD Pipeline
 
 - [x] **CICD-01**: GitHub Actions workflow builds and pushes all 3 images to ghcr.io on push to master
-- [ ] **CICD-02**: CI commits updated SHA image tags to Kustomize dev overlay, triggering ArgoCD sync
+- [x] **CICD-02**: CI commits updated SHA image tags to Kustomize dev overlay, triggering ArgoCD sync
 
 ### GitOps
 
@@ -110,7 +110,7 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 | TRAN-02 | Phase 25 | Complete |
 | GOPS-01 | Phase 26 | Complete |
 | GOPS-02 | Phase 26 | Complete |
-| CICD-02 | Phase 27 | Pending |
+| CICD-02 | Phase 27 | Complete |
 | OBSV-01 | Phase 28 | Pending |
 | OBSV-02 | Phase 28 | Pending |
 
