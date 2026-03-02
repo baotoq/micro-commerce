@@ -1,14 +1,14 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
+milestone: v3.0
 milestone_name: Kubernetes & GitOps
-status: in-progress
-last_updated: "2026-03-02T11:03:00Z"
+status: unknown
+last_updated: "2026-03-02T11:06:15.517Z"
 progress:
-  total_phases: 3
+  total_phases: 4
   completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 21
+  completed_plans: 14
 ---
 
 # Project State
@@ -55,7 +55,9 @@ Progress: [███████████████████████
 | Phase 25-02 P02 | 2min | 2 tasks | 12 files |
 | Phase 25-03 P03 | 2min | 2 tasks | 1 file |
 | Phase 25.1-01 P01 | 2min | 3 tasks | 2 files |
+| Phase 25.1-07 P07 | 3min | 1 task | 1 file |
 | Phase 25.1-10 P10 | 1min | 1 task | 1 file |
+| Phase 25.1 P07 | 3min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -99,6 +101,8 @@ Recent decisions affecting v3.0:
 - [Phase 25.1]: [Phase 25.1-10]: Email/password fields as disabled visual chrome; actual auth via Keycloak SSO redirect
 - [Phase 25.1]: [Phase 25.1-10]: Both Sign In and SSO buttons trigger signIn('keycloak') for consistent flow
 - [Phase 25.1]: [Phase 25.1-10]: Sign up link redirects to Keycloak since registration handled by identity provider
+- [Phase 25.1]: [Phase 25.1-07]: Kept Order Items and Shipping Address cards beyond minimal design for richer post-purchase detail
+- [Phase 25.1]: [Phase 25.1-07]: Centered flex column layout with gap-8 matching design confBody padding pattern
 
 ### Pending Todos
 
