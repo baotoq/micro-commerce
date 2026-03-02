@@ -65,7 +65,7 @@
 - [x] **Phase 26: ArgoCD GitOps** - Install ArgoCD and wire app-of-apps to manage all cluster resources from Git (completed 2026-03-02)
 - [x] **Phase 27: CI/CD GitOps Loop Closure** - Extend CI to commit SHA image tags back to the overlay, completing the full GitOps loop (completed 2026-03-02)
 - [x] **Phase 28: Observability** - Deploy OTEL Collector and standalone Aspire Dashboard for in-cluster monitoring (completed 2026-03-02)
-- [ ] **Phase 29: K8s Client-Side API & Bootstrap Polish** - Fix client-side API wiring for K8s, polish bootstrap script, align REQUIREMENTS.md (gap closure)
+- [x] **Phase 29: K8s Client-Side API & Bootstrap Polish** - Fix client-side API wiring for K8s, polish bootstrap script, align REQUIREMENTS.md (gap closure) (completed 2026-03-02)
 
 ## Phase Details
 
@@ -221,7 +221,7 @@ Plans:
 | 26. ArgoCD GitOps | 2/2 | Complete    | 2026-03-02 | - |
 | 27. CI/CD GitOps Loop Closure | 1/1 | Complete    | 2026-03-02 | - |
 | 28. Observability | 2/2 | Complete    | 2026-03-02 | - |
-| 29. K8s Client-Side API & Bootstrap Polish | 0/2 | In Progress    | - | - |
+| 29. K8s Client-Side API & Bootstrap Polish | 2/2 | Complete   | 2026-03-02 | - |
 
 ---
 *Roadmap created: 2026-01-29*

@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Kubernetes & GitOps
 status: unknown
-last_updated: "2026-03-02T15:10:18.210Z"
+last_updated: "2026-03-02T17:06:10.723Z"
 progress:
-  total_phases: 7
-  completed_phases: 7
-  total_plans: 27
-  completed_plans: 27
+  total_phases: 8
+  completed_phases: 8
+  total_plans: 29
+  completed_plans: 29
 ---
 
 # Project State
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 
 ## Current Position
 
-Phase: 27 (CI/CD GitOps Loop Closure)
-Plan: 01 of 01 complete
-Status: Complete
-Last activity: 2026-03-02 — Completed Plan 01 (update-manifests job closes GitOps loop)
+Phase: 29 (K8s Client-Side API & Bootstrap Polish)
+Plan: 02 of 02 complete
+Status: In Progress
+Last activity: 2026-03-02 — Completed Plan 02 (bootstrap polish & requirements closure)
 
-Progress: Phase 27: 1/1 plans done
+Progress: Phase 29: 2/2 plans done
 
 ## Performance Metrics
 
@@ -67,6 +67,8 @@ Progress: Phase 27: 1/1 plans done
 | Phase 25.1-11 P11 | 6min | 3 tasks | 10 files |
 | Phase 25.1-03 P03 | 6min | 2 tasks | 3 files |
 | Phase 25.1-12 P12 | 2min | 1 task | 1 file |
+| Phase 29-01 P01 | 3min | 1 task | 1 file |
+| Phase 29-02 P02 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -137,6 +139,7 @@ Recent decisions affecting v3.0:
 - [Phase 27]: [Phase 27-01]: kustomize edit set image for safe YAML manipulation instead of sed
 - [Phase 27]: [Phase 27-01]: GITHUB_TOKEN + [skip ci] double protection against infinite workflow loops
 - [Phase 27]: [Phase 27-01]: git diff --staged --quiet for idempotent no-change handling
+- [Phase 29]: [Phase 29-02]: 120s timeout for observability pod waits matches other non-infrastructure services
 
 ### Pending Todos
 
@@ -155,6 +158,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed Phase 27 Plan 01 (update-manifests job closes GitOps loop)
+Stopped at: Completed Phase 29 Plan 02 (bootstrap polish & requirements closure)
 Resume file: None
-Next step: Phase 27 complete (1/1 plans). Continue with Phase 28 (Observability).
+Next step: Phase 29 complete (2/2 plans). All v3.0 requirements satisfied.
