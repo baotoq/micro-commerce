@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Kubernetes & GitOps
 status: unknown
-last_updated: "2026-03-02T11:07:52.754Z"
+last_updated: "2026-03-02T11:08:21.396Z"
 progress:
   total_phases: 4
   completed_phases: 3
@@ -62,6 +62,7 @@ Progress: [███████████████████████
 | Phase 25.1 P05 | 4min | 2 tasks | 3 files |
 | Phase 25.1-06 P06 | 4min | 2 tasks | 8 files |
 | Phase 25.1 P08 | 5min | 2 tasks | 6 files |
+| Phase 25.1 P02 | 5min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -115,6 +116,9 @@ Recent decisions affecting v3.0:
 - [Phase 25.1]: [Phase 25.1-06]: Added form id='shipping-form' for external submit button integration from checkout-page
 - [Phase 25.1]: [Phase 25.1-06]: Used nav element for step indicator to support aria-label attribute per Biome a11y rules
 - [Phase 25.1]: [Phase 25.1-06]: Radio card pattern with has-[[data-state=checked]] for active styling on shipping method selection
+- [Phase 25.1]: [Phase 25.1-08]: Consistent getStatusBadgeClass pattern across order-history-list and order-detail for unified semantic status coloring
+- [Phase 25.1]: [Phase 25.1-02]: Created CategoryPillsRow as separate client component with icon mapping for reusable category navigation
+- [Phase 25.1]: [Phase 25.1-02]: Used theme semantic colors (success-bg, warning-bg) for ProductCard stock badges instead of hardcoded amber/emerald
 
 ### Pending Todos
 
@@ -133,6 +137,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 25.1-06-PLAN.md (Checkout)
+Stopped at: Completed 25.1-08-PLAN.md (Order History)
 Resume file: None
 Next step: Continue remaining plans in Phase 25.1
