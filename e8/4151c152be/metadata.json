@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "e84151c152be",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/26-argocd-gitops/26-RESEARCH.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e8/4151c152be/0/metadata.json",
+      "transcript": "/e8/4151c152be/0/full.jsonl",
+      "context": "/e8/4151c152be/0/context.md",
+      "content_hash": "/e8/4151c152be/0/content_hash.txt",
+      "prompt": "/e8/4151c152be/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 15,
+    "cache_creation_tokens": 106227,
+    "cache_read_tokens": 624935,
+    "output_tokens": 2887,
+    "api_call_count": 14
+  }
+}

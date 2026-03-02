@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "e84151c152be",
+  "session_id": "83c8cdaa-9e07-470d-a305-ec5b7ba03185",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T13:55:19.22779Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/26-argocd-gitops/26-RESEARCH.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "8f5b1ffc579a",
+  "token_usage": {
+    "input_tokens": 15,
+    "cache_creation_tokens": 106227,
+    "cache_read_tokens": 624935,
+    "output_tokens": 2887,
+    "api_call_count": 14
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T13:55:19.048239Z",
+    "agent_lines": 0,
+    "human_added": 457,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 457,
+    "agent_percentage": 0
+  }
+}
