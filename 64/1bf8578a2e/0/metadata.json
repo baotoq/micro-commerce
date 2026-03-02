@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "641bf8578a2e",
+  "session_id": "bf2b62dc-52ef-45d0-b0f4-880cb32c5b74",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T16:51:05.767775Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/29-k8s-client-side-api-and-bootstrap-polish/29-VALIDATION.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "8fb85d60d4fe",
+  "checkpoint_transcript_start": 144,
+  "transcript_lines_at_start": 144,
+  "token_usage": {
+    "input_tokens": 4,
+    "cache_creation_tokens": 4151,
+    "cache_read_tokens": 233062,
+    "output_tokens": 1663,
+    "api_call_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T16:51:05.602878Z",
+    "agent_lines": 75,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 75,
+    "agent_percentage": 100
+  }
+}
