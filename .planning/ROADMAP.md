@@ -204,7 +204,7 @@ Plans:
 | 25. Application Manifests and MassTransit Transport | 3/3 | Complete    | 2026-02-26 | - |
 | 26. ArgoCD GitOps | 2/2 | Complete    | 2026-03-02 | - |
 | 27. CI/CD GitOps Loop Closure | 1/1 | Complete    | 2026-03-02 | - |
-| 28. Observability | 2/2 | Complete   | 2026-03-02 | - |
+| 28. Observability | 2/2 | Complete    | 2026-03-02 | - |
 
 ---
 *Roadmap created: 2026-01-29*
