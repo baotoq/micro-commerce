@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "cd48f53f2ade",
+  "session_id": "6a9e82b7-148a-4650-834f-63e9f6c7029a",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T17:02:30.640562Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "infra/k8s/bootstrap.sh"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "a7867314a521",
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 21489,
+    "cache_read_tokens": 173970,
+    "output_tokens": 1762,
+    "api_call_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T17:02:30.52698Z",
+    "agent_lines": 0,
+    "human_added": 7,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 7,
+    "agent_percentage": 0
+  }
+}
