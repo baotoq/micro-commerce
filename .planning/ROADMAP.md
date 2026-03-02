@@ -62,7 +62,7 @@
 - [x] **Phase 23: Dockerfiles and Container Image Pipeline** - Build production-ready images for all three services and push them to ghcr.io via GitHub Actions (completed 2026-02-25)
 - [x] **Phase 24: Infrastructure Manifests and Secrets** - Deploy PostgreSQL, RabbitMQ, and Keycloak in the kind cluster with Sealed Secrets for all credentials (completed 2026-02-26)
 - [x] **Phase 25: Application Manifests and MassTransit Transport** - Deploy ApiService, Gateway, and Web with Kustomize base/overlay structure and RabbitMQ transport support (completed 2026-02-26)
-- [ ] **Phase 26: ArgoCD GitOps** - Install ArgoCD and wire app-of-apps to manage all cluster resources from Git
+- [x] **Phase 26: ArgoCD GitOps** - Install ArgoCD and wire app-of-apps to manage all cluster resources from Git (completed 2026-03-02)
 - [ ] **Phase 27: CI/CD GitOps Loop Closure** - Extend CI to commit SHA image tags back to the overlay, completing the full GitOps loop
 - [ ] **Phase 28: Observability** - Deploy OTEL Collector and standalone Aspire Dashboard for in-cluster monitoring
 
@@ -198,7 +198,7 @@ Plans:
 | 23. Dockerfiles and Container Image Pipeline | 3/3 | Complete    | 2026-02-25 | - |
 | 24. Infrastructure Manifests and Secrets | 4/4 | Complete    | 2026-02-26 | - |
 | 25. Application Manifests and MassTransit Transport | 3/3 | Complete    | 2026-02-26 | - |
-| 26. ArgoCD GitOps | 1/2 | In Progress|  | - |
+| 26. ArgoCD GitOps | 2/2 | Complete   | 2026-03-02 | - |
 | 27. CI/CD GitOps Loop Closure | v3.0 | 0/TBD | Not started | - |
 | 28. Observability | v3.0 | 0/TBD | Not started | - |
 
