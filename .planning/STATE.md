@@ -58,6 +58,7 @@ Progress: [███████████████████████
 | Phase 25.1-07 P07 | 3min | 1 task | 1 file |
 | Phase 25.1-10 P10 | 1min | 1 task | 1 file |
 | Phase 25.1 P07 | 3min | 1 tasks | 1 files |
+| Phase 25.1-09 P09 | 4min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,9 @@ Recent decisions affecting v3.0:
 - [Phase 25.1]: [Phase 25.1-10]: Sign up link redirects to Keycloak since registration handled by identity provider
 - [Phase 25.1]: [Phase 25.1-07]: Kept Order Items and Shipping Address cards beyond minimal design for richer post-purchase detail
 - [Phase 25.1]: [Phase 25.1-07]: Centered flex column layout with gap-8 matching design confBody padding pattern
+- [Phase 25.1]: [Phase 25.1-09]: Button elements for dialog triggers instead of div with role=button for Biome a11y compliance
+- [Phase 25.1]: [Phase 25.1-09]: Address cards use inline text links (Edit/Delete) matching design; vertical list instead of grid
+- [Phase 25.1]: [Phase 25.1-09]: Semantic color tokens replace hardcoded zinc/red throughout account components
 
 ### Pending Todos
 
