@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "aa710f012fc3",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/REQUIREMENTS.md",
+    ".planning/v3.0-MILESTONE-AUDIT.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/aa/710f012fc3/0/metadata.json",
+      "transcript": "/aa/710f012fc3/0/full.jsonl",
+      "context": "/aa/710f012fc3/0/context.md",
+      "content_hash": "/aa/710f012fc3/0/content_hash.txt",
+      "prompt": "/aa/710f012fc3/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 2,
+    "cache_creation_tokens": 388,
+    "cache_read_tokens": 291040,
+    "output_tokens": 260,
+    "api_call_count": 2
+  }
+}
