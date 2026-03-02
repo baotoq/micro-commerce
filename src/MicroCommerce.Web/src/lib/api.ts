@@ -1,4 +1,20 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5200';
+// Runtime-resolved API base URL (fetched once from /api/config)
+let _configPromise: Promise<string> | null = null;
+
+function getApiBase(): Promise<string> {
+  if (!_configPromise) {
+    _configPromise =
+      typeof window !== "undefined"
+        ? fetch("/api/config")
+            .then((r) => r.json())
+            .then((d) => d.apiBaseUrl as string)
+            .catch(() => "http://localhost:5200")
+        : Promise.resolve(
+            process.env.NEXT_PUBLIC_API_URL || "http://localhost:5200"
+          );
+  }
+  return _configPromise;
+}
 
 // Product types
 export interface ProductDto {
@@ -67,6 +83,7 @@ export interface UpdateCategoryRequest {
 
 // Product API functions
 export async function getProducts(params: GetProductsParams = {}): Promise<ProductListDto> {
+  const apiBase = await getApiBase();
   const searchParams = new URLSearchParams();
   if (params.page) searchParams.set('page', params.page.toString());
   if (params.pageSize) searchParams.set('pageSize', params.pageSize.toString());
@@ -76,7 +93,7 @@ export async function getProducts(params: GetProductsParams = {}): Promise<Produ
   if (params.sortBy) searchParams.set('sortBy', params.sortBy);
   if (params.sortDirection) searchParams.set('sortDirection', params.sortDirection);
 
-  const response = await fetch(`${API_BASE}/api/catalog/products?${searchParams}`, {
+  const response = await fetch(`${apiBase}/api/catalog/products?${searchParams}`, {
     cache: 'no-store',
   });
 
@@ -88,7 +105,8 @@ export async function getProducts(params: GetProductsParams = {}): Promise<Produ
 }
 
 export async function getProductById(id: string): Promise<ProductDto> {
-  const response = await fetch(`${API_BASE}/api/catalog/products/${id}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/products/${id}`, {
     cache: 'no-store',
   });
 
@@ -100,7 +118,8 @@ export async function getProductById(id: string): Promise<ProductDto> {
 }
 
 export async function createProduct(data: CreateProductRequest): Promise<{ id: string }> {
-  const response = await fetch(`${API_BASE}/api/catalog/products`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/products`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -115,7 +134,8 @@ export async function createProduct(data: CreateProductRequest): Promise<{ id: s
 }
 
 export async function updateProduct(id: string, data: UpdateProductRequest): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/catalog/products/${id}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/products/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -128,7 +148,8 @@ export async function updateProduct(id: string, data: UpdateProductRequest): Pro
 }
 
 export async function changeProductStatus(id: string, status: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/catalog/products/${id}/status`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/products/${id}/status`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status }),
@@ -140,7 +161,8 @@ export async function changeProductStatus(id: string, status: string): Promise<v
 }
 
 export async function archiveProduct(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/catalog/products/${id}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/products/${id}`, {
     method: 'DELETE',
   });
 
@@ -151,10 +173,11 @@ export async function archiveProduct(id: string): Promise<void> {
 
 // Image upload
 export async function uploadImage(file: File): Promise<string> {
+  const apiBase = await getApiBase();
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch(`${API_BASE}/api/catalog/images`, {
+  const response = await fetch(`${apiBase}/api/catalog/images`, {
     method: 'POST',
     body: formData,
   });
@@ -170,7 +193,8 @@ export async function uploadImage(file: File): Promise<string> {
 
 // Category API functions
 export async function getCategories(): Promise<CategoryDto[]> {
-  const response = await fetch(`${API_BASE}/api/catalog/categories`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/categories`, {
     cache: 'no-store',
   });
 
@@ -182,7 +206,8 @@ export async function getCategories(): Promise<CategoryDto[]> {
 }
 
 export async function getCategoryById(id: string): Promise<CategoryDto> {
-  const response = await fetch(`${API_BASE}/api/catalog/categories/${id}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/categories/${id}`, {
     cache: 'no-store',
   });
 
@@ -194,7 +219,8 @@ export async function getCategoryById(id: string): Promise<CategoryDto> {
 }
 
 export async function createCategory(data: CreateCategoryRequest): Promise<{ id: string }> {
-  const response = await fetch(`${API_BASE}/api/catalog/categories`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/categories`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -209,7 +235,8 @@ export async function createCategory(data: CreateCategoryRequest): Promise<{ id:
 }
 
 export async function updateCategory(id: string, data: UpdateCategoryRequest): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/catalog/categories/${id}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/categories/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -222,7 +249,8 @@ export async function updateCategory(id: string, data: UpdateCategoryRequest): P
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/catalog/categories/${id}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/catalog/categories/${id}`, {
     method: 'DELETE',
   });
 
@@ -266,7 +294,8 @@ export interface AdjustStockRequest {
 
 // Inventory API functions
 export async function getStockByProductId(productId: string): Promise<StockInfoDto | null> {
-  const response = await fetch(`${API_BASE}/api/inventory/stock/${productId}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/inventory/stock/${productId}`, {
     cache: 'no-store',
   });
 
@@ -286,8 +315,9 @@ export async function getStockLevels(productIds: string[]): Promise<StockInfoDto
     return [];
   }
 
+  const apiBase = await getApiBase();
   const response = await fetch(
-    `${API_BASE}/api/inventory/stock?productIds=${productIds.join(',')}`,
+    `${apiBase}/api/inventory/stock?productIds=${productIds.join(',')}`,
     { cache: 'no-store' }
   );
 
@@ -299,7 +329,8 @@ export async function getStockLevels(productIds: string[]): Promise<StockInfoDto
 }
 
 export async function adjustStock(productId: string, data: AdjustStockRequest): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/inventory/stock/${productId}/adjust`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/inventory/stock/${productId}/adjust`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -312,7 +343,8 @@ export async function adjustStock(productId: string, data: AdjustStockRequest): 
 }
 
 export async function getAdjustmentHistory(productId: string): Promise<AdjustmentDto[]> {
-  const response = await fetch(`${API_BASE}/api/inventory/stock/${productId}/adjustments`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/inventory/stock/${productId}/adjustments`, {
     cache: 'no-store',
   });
 
@@ -359,7 +391,8 @@ export interface UpdateCartItemRequest {
 
 // Cart API functions
 export async function getCart(): Promise<CartDto | null> {
-  const response = await fetch(`${API_BASE}/api/cart`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/cart`, {
     credentials: "include",
     cache: "no-store",
   });
@@ -376,7 +409,8 @@ export async function getCart(): Promise<CartDto | null> {
 }
 
 export async function addToCart(data: AddToCartRequest): Promise<AddToCartResponse> {
-  const response = await fetch(`${API_BASE}/api/cart/items`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/cart/items`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -392,7 +426,8 @@ export async function addToCart(data: AddToCartRequest): Promise<AddToCartRespon
 }
 
 export async function updateCartItemQuantity(itemId: string, quantity: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/cart/items/${itemId}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/cart/items/${itemId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -406,7 +441,8 @@ export async function updateCartItemQuantity(itemId: string, quantity: number): 
 }
 
 export async function removeCartItem(itemId: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/cart/items/${itemId}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/cart/items/${itemId}`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -417,7 +453,8 @@ export async function removeCartItem(itemId: string): Promise<void> {
 }
 
 export async function mergeCart(accessToken: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/cart/merge`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/cart/merge`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${accessToken}`,
@@ -450,11 +487,12 @@ export async function getDeadLetterMessages(
   queueName?: string,
   maxMessages?: number
 ): Promise<DeadLetterMessagesResponse> {
+  const apiBase = await getApiBase();
   const searchParams = new URLSearchParams();
   if (queueName) searchParams.set('queueName', queueName);
   if (maxMessages) searchParams.set('maxMessages', maxMessages.toString());
 
-  const response = await fetch(`${API_BASE}/api/messaging/dead-letters?${searchParams}`, {
+  const response = await fetch(`${apiBase}/api/messaging/dead-letters?${searchParams}`, {
     cache: 'no-store',
   });
 
@@ -469,7 +507,8 @@ export async function retryDeadLetterMessage(
   queueName: string,
   sequenceNumber: number
 ): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/messaging/dead-letters/retry`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/messaging/dead-letters/retry`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ queueName, sequenceNumber }),
@@ -482,7 +521,8 @@ export async function retryDeadLetterMessage(
 }
 
 export async function purgeDeadLetterMessages(queueName: string): Promise<number> {
-  const response = await fetch(`${API_BASE}/api/messaging/dead-letters/purge`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/messaging/dead-letters/purge`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ queueName }),
@@ -556,7 +596,8 @@ export interface SimulatePaymentResult {
 
 // Ordering API functions
 export async function submitOrder(data: SubmitOrderRequest): Promise<string> {
-  const response = await fetch(`${API_BASE}/api/ordering/checkout`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/ordering/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -575,7 +616,8 @@ export async function simulatePayment(
   orderId: string,
   data: SimulatePaymentRequest
 ): Promise<SimulatePaymentResult> {
-  const response = await fetch(`${API_BASE}/api/ordering/orders/${orderId}/pay`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/ordering/orders/${orderId}/pay`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -591,7 +633,8 @@ export async function simulatePayment(
 }
 
 export async function getOrderById(orderId: string): Promise<OrderDto> {
-  const response = await fetch(`${API_BASE}/api/ordering/orders/${orderId}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/ordering/orders/${orderId}`, {
     credentials: "include",
     cache: "no-store",
   });
@@ -640,13 +683,14 @@ export async function getOrdersByBuyer(params: {
   page?: number;
   pageSize?: number;
 }): Promise<OrderListDto> {
+  const apiBase = await getApiBase();
   const searchParams = new URLSearchParams();
   if (params.status) searchParams.set("status", params.status);
   if (params.page) searchParams.set("page", params.page.toString());
   if (params.pageSize) searchParams.set("pageSize", params.pageSize.toString());
 
   const response = await fetch(
-    `${API_BASE}/api/ordering/orders/my?${searchParams}`,
+    `${apiBase}/api/ordering/orders/my?${searchParams}`,
     {
       credentials: "include",
       cache: "no-store",
@@ -665,13 +709,14 @@ export async function getAllOrders(params: {
   page?: number;
   pageSize?: number;
 }): Promise<OrderListDto> {
+  const apiBase = await getApiBase();
   const searchParams = new URLSearchParams();
   if (params.status) searchParams.set("status", params.status);
   if (params.page) searchParams.set("page", params.page.toString());
   if (params.pageSize) searchParams.set("pageSize", params.pageSize.toString());
 
   const response = await fetch(
-    `${API_BASE}/api/ordering/orders?${searchParams}`,
+    `${apiBase}/api/ordering/orders?${searchParams}`,
     {
       cache: "no-store",
     }
@@ -687,11 +732,12 @@ export async function getAllOrders(params: {
 export async function getOrderDashboard(
   timeRange?: string
 ): Promise<OrderDashboardDto> {
+  const apiBase = await getApiBase();
   const searchParams = new URLSearchParams();
   if (timeRange) searchParams.set("timeRange", timeRange);
 
   const response = await fetch(
-    `${API_BASE}/api/ordering/dashboard?${searchParams}`,
+    `${apiBase}/api/ordering/dashboard?${searchParams}`,
     {
       cache: "no-store",
     }
@@ -708,8 +754,9 @@ export async function updateOrderStatus(
   orderId: string,
   newStatus: string
 ): Promise<void> {
+  const apiBase = await getApiBase();
   const response = await fetch(
-    `${API_BASE}/api/ordering/orders/${orderId}/status`,
+    `${apiBase}/api/ordering/orders/${orderId}/status`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -770,12 +817,13 @@ export interface UpdateAddressRequest {
 
 // Profile API functions
 export async function getMyProfile(accessToken?: string): Promise<ProfileDto> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = {};
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/profiles/me`, {
+  const response = await fetch(`${apiBase}/api/profiles/me`, {
     credentials: "include",
     cache: "no-store",
     headers,
@@ -789,12 +837,13 @@ export async function getMyProfile(accessToken?: string): Promise<ProfileDto> {
 }
 
 export async function updateProfile(data: UpdateProfileRequest, accessToken?: string): Promise<void> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/profiles/me`, {
+  const response = await fetch(`${apiBase}/api/profiles/me`, {
     method: "PUT",
     headers,
     credentials: "include",
@@ -808,6 +857,7 @@ export async function updateProfile(data: UpdateProfileRequest, accessToken?: st
 }
 
 export async function uploadAvatar(file: File, accessToken?: string): Promise<string> {
+  const apiBase = await getApiBase();
   const formData = new FormData();
   formData.append("file", file);
 
@@ -816,7 +866,7 @@ export async function uploadAvatar(file: File, accessToken?: string): Promise<st
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/profiles/me/avatar`, {
+  const response = await fetch(`${apiBase}/api/profiles/me/avatar`, {
     method: "POST",
     headers,
     credentials: "include",
@@ -833,12 +883,13 @@ export async function uploadAvatar(file: File, accessToken?: string): Promise<st
 }
 
 export async function removeAvatar(accessToken?: string): Promise<void> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = {};
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/profiles/me/avatar`, {
+  const response = await fetch(`${apiBase}/api/profiles/me/avatar`, {
     method: "DELETE",
     headers,
     credentials: "include",
@@ -850,12 +901,13 @@ export async function removeAvatar(accessToken?: string): Promise<void> {
 }
 
 export async function addAddress(data: AddAddressRequest, accessToken?: string): Promise<{ id: string }> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/profiles/me/addresses`, {
+  const response = await fetch(`${apiBase}/api/profiles/me/addresses`, {
     method: "POST",
     headers,
     credentials: "include",
@@ -871,12 +923,13 @@ export async function addAddress(data: AddAddressRequest, accessToken?: string):
 }
 
 export async function updateAddress(addressId: string, data: UpdateAddressRequest, accessToken?: string): Promise<void> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/profiles/me/addresses/${addressId}`, {
+  const response = await fetch(`${apiBase}/api/profiles/me/addresses/${addressId}`, {
     method: "PUT",
     headers,
     credentials: "include",
@@ -890,12 +943,13 @@ export async function updateAddress(addressId: string, data: UpdateAddressReques
 }
 
 export async function deleteAddress(addressId: string, accessToken?: string): Promise<void> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = {};
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/profiles/me/addresses/${addressId}`, {
+  const response = await fetch(`${apiBase}/api/profiles/me/addresses/${addressId}`, {
     method: "DELETE",
     headers,
     credentials: "include",
@@ -907,12 +961,13 @@ export async function deleteAddress(addressId: string, accessToken?: string): Pr
 }
 
 export async function setDefaultAddress(addressId: string, accessToken?: string): Promise<void> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = {};
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/profiles/me/addresses/${addressId}/default`, {
+  const response = await fetch(`${apiBase}/api/profiles/me/addresses/${addressId}/default`, {
     method: "PATCH",
     headers,
     credentials: "include",
@@ -972,11 +1027,12 @@ export interface UpdateReviewRequest {
 
 // Review API functions
 export async function getProductReviews(productId: string, page = 1, pageSize = 5): Promise<ReviewListDto> {
+  const apiBase = await getApiBase();
   const searchParams = new URLSearchParams();
   searchParams.set("page", page.toString());
   searchParams.set("pageSize", pageSize.toString());
 
-  const response = await fetch(`${API_BASE}/api/reviews/products/${productId}?${searchParams}`, {
+  const response = await fetch(`${apiBase}/api/reviews/products/${productId}?${searchParams}`, {
     cache: "no-store",
   });
 
@@ -988,12 +1044,13 @@ export async function getProductReviews(productId: string, page = 1, pageSize = 
 }
 
 export async function getMyReview(productId: string, token?: string): Promise<ReviewDto | null> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = {};
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/reviews/products/${productId}/mine`, {
+  const response = await fetch(`${apiBase}/api/reviews/products/${productId}/mine`, {
     credentials: "include",
     cache: "no-store",
     headers,
@@ -1011,12 +1068,13 @@ export async function getMyReview(productId: string, token?: string): Promise<Re
 }
 
 export async function canReview(productId: string, token?: string): Promise<CanReviewDto> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = {};
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/reviews/products/${productId}/can-review`, {
+  const response = await fetch(`${apiBase}/api/reviews/products/${productId}/can-review`, {
     credentials: "include",
     cache: "no-store",
     headers,
@@ -1030,12 +1088,13 @@ export async function canReview(productId: string, token?: string): Promise<CanR
 }
 
 export async function createReview(productId: string, data: CreateReviewRequest, token?: string): Promise<{ id: string }> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/reviews/products/${productId}`, {
+  const response = await fetch(`${apiBase}/api/reviews/products/${productId}`, {
     method: "POST",
     headers,
     credentials: "include",
@@ -1051,12 +1110,13 @@ export async function createReview(productId: string, data: CreateReviewRequest,
 }
 
 export async function updateReview(reviewId: string, data: UpdateReviewRequest, token?: string): Promise<void> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/reviews/${reviewId}`, {
+  const response = await fetch(`${apiBase}/api/reviews/${reviewId}`, {
     method: "PUT",
     headers,
     credentials: "include",
@@ -1070,12 +1130,13 @@ export async function updateReview(reviewId: string, data: UpdateReviewRequest, 
 }
 
 export async function deleteReview(reviewId: string, token?: string): Promise<void> {
+  const apiBase = await getApiBase();
   const headers: Record<string, string> = {};
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/reviews/${reviewId}`, {
+  const response = await fetch(`${apiBase}/api/reviews/${reviewId}`, {
     method: "DELETE",
     headers,
     credentials: "include",
@@ -1088,7 +1149,8 @@ export async function deleteReview(reviewId: string, token?: string): Promise<vo
 
 // Wishlist API functions
 export async function getUserWishlist(token: string): Promise<WishlistItemDto[]> {
-  const response = await fetch(`${API_BASE}/api/wishlist`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/wishlist`, {
     headers: {
       "Authorization": `Bearer ${token}`,
     },
@@ -1103,7 +1165,8 @@ export async function getUserWishlist(token: string): Promise<WishlistItemDto[]>
 }
 
 export async function getWishlistCount(token: string): Promise<number> {
-  const response = await fetch(`${API_BASE}/api/wishlist/count`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/wishlist/count`, {
     headers: {
       "Authorization": `Bearer ${token}`,
     },
@@ -1118,7 +1181,8 @@ export async function getWishlistCount(token: string): Promise<number> {
 }
 
 export async function getWishlistProductIds(token: string): Promise<string[]> {
-  const response = await fetch(`${API_BASE}/api/wishlist/product-ids`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/wishlist/product-ids`, {
     headers: {
       "Authorization": `Bearer ${token}`,
     },
@@ -1133,7 +1197,8 @@ export async function getWishlistProductIds(token: string): Promise<string[]> {
 }
 
 export async function addToWishlist(token: string, productId: string): Promise<{ id: string }> {
-  const response = await fetch(`${API_BASE}/api/wishlist/${productId}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/wishlist/${productId}`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${token}`,
@@ -1149,7 +1214,8 @@ export async function addToWishlist(token: string, productId: string): Promise<{
 }
 
 export async function removeFromWishlist(token: string, productId: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/wishlist/${productId}`, {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/wishlist/${productId}`, {
     method: "DELETE",
     headers: {
       "Authorization": `Bearer ${token}`,
@@ -1160,4 +1226,3 @@ export async function removeFromWishlist(token: string, productId: string): Prom
     throw new Error("Failed to remove from wishlist");
   }
 }
-
