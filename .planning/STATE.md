@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 
 ## Current Position
 
-Phase: 26 (ArgoCD GitOps)
-Plan: 02 of 02 complete
+Phase: 27 (CI/CD GitOps Loop Closure)
+Plan: 01 of 01 complete
 Status: Complete
-Last activity: 2026-03-02 — Completed Plan 02 (Bootstrap script ArgoCD integration)
+Last activity: 2026-03-02 — Completed Plan 01 (update-manifests job closes GitOps loop)
 
-Progress: Phase 26: 2/2 plans done
+Progress: Phase 27: 1/1 plans done
 
 ## Performance Metrics
 
@@ -43,7 +43,7 @@ Progress: Phase 26: 2/2 plans done
 | v1.0 MVP | 10 | 49 | 18.8h | 16 days |
 | v1.1 User Features | 7 | 23 | 8.8h | 2 days |
 | v2.0 DDD Foundation | 7 | 9 | 40 min | 11 days |
-| v3.0 K8s & GitOps | 3/6 | 11/TBD | 19 min | In progress |
+| v3.0 K8s & GitOps | 4/6 | 12/TBD | 22 min | In progress |
 | Phase 23 P03 | 2min | 2 tasks | 1 file |
 | Phase 23 P02 | 2min | 2 tasks | 3 files |
 | Phase 23 P01 | 2min | 2 tasks | 3 files |
@@ -133,6 +133,10 @@ Recent decisions affecting v3.0:
 - [Phase 25.1]: [Phase 25.1-03]: Grid uses 3 columns on desktop (not 4) to accommodate sidebar filter width
 - [Phase 25.1]: [Phase 25.1-12]: Kept Heart icon import since it is used decoratively in card footer price row
 - [Phase 25.1]: [Phase 25.1-12]: Biome auto-formatted import order to place @/hooks after @/components alphabetically
+- [Phase 27]: [Phase 27-01]: imranismail/setup-kustomize@v2 required because ubuntu-latest runners lack standalone kustomize CLI
+- [Phase 27]: [Phase 27-01]: kustomize edit set image for safe YAML manipulation instead of sed
+- [Phase 27]: [Phase 27-01]: GITHUB_TOKEN + [skip ci] double protection against infinite workflow loops
+- [Phase 27]: [Phase 27-01]: git diff --staged --quiet for idempotent no-change handling
 
 ### Pending Todos
 
@@ -151,6 +155,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 25.1-12-PLAN.md (Gap closure: wire ProductCard Add to Cart)
+Stopped at: Completed Phase 27 Plan 01 (update-manifests job closes GitOps loop)
 Resume file: None
-Next step: Phase 25.1 fully complete (12/12 plans). Continue with Phase 26 (ArgoCD GitOps).
+Next step: Phase 27 complete (1/1 plans). Continue with Phase 28 (Observability).

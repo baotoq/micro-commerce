@@ -63,7 +63,7 @@
 - [x] **Phase 24: Infrastructure Manifests and Secrets** - Deploy PostgreSQL, RabbitMQ, and Keycloak in the kind cluster with Sealed Secrets for all credentials (completed 2026-02-26)
 - [x] **Phase 25: Application Manifests and MassTransit Transport** - Deploy ApiService, Gateway, and Web with Kustomize base/overlay structure and RabbitMQ transport support (completed 2026-02-26)
 - [x] **Phase 26: ArgoCD GitOps** - Install ArgoCD and wire app-of-apps to manage all cluster resources from Git (completed 2026-03-02)
-- [ ] **Phase 27: CI/CD GitOps Loop Closure** - Extend CI to commit SHA image tags back to the overlay, completing the full GitOps loop
+- [x] **Phase 27: CI/CD GitOps Loop Closure** - Extend CI to commit SHA image tags back to the overlay, completing the full GitOps loop (completed 2026-03-02)
 - [ ] **Phase 28: Observability** - Deploy OTEL Collector and standalone Aspire Dashboard for in-cluster monitoring
 
 ## Phase Details
@@ -199,7 +199,7 @@ Plans:
 | 24. Infrastructure Manifests and Secrets | 4/4 | Complete    | 2026-02-26 | - |
 | 25. Application Manifests and MassTransit Transport | 3/3 | Complete    | 2026-02-26 | - |
 | 26. ArgoCD GitOps | 2/2 | Complete    | 2026-03-02 | - |
-| 27. CI/CD GitOps Loop Closure | v3.0 | 0/TBD | Not started | - |
+| 27. CI/CD GitOps Loop Closure | 1/1 | Complete   | 2026-03-02 | - |
 | 28. Observability | v3.0 | 0/TBD | Not started | - |
 
 ---
