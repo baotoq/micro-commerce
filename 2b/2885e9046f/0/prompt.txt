@@ -1,0 +1,109 @@
+<objective>
+Verify milestone achieved its definition of done. Check requirements coverage, cross-phase integration, and end-to-end flows.
+
+**This command IS the orchestrator.** Reads existing VERIFICATION.md files (phases already verified during execute-phase), aggregates tech debt and deferred gaps, then spawns integration checker for cross-phase wiring.
+</objective>
+
+<execution_context>
+@/Users/baotoq/.claude/get-shit-done/workflows/audit-milestone.md
+</execution_context>
+
+<context>
+Version:  (optional — defaults to current milestone)
+
+Core planning files are resolved in-workflow (`init milestone-op`) and loaded only as needed.
+
+**Completed Work:**
+Glob: .planning/phases/*/*-SUMMARY.md
+Glob: .planning/phases/*/*-VERIFICATION.md
+</context>
+
+<process>
+Execute the audit-milestone workflow from @/Users/baotoq/.claude/get-shit-done/workflows/audit-milestone.md end-to-end.
+Preserve all workflow gates (scope determination, verification reading, integration check, requirements coverage, routing).
+</process>
+
+---
+
+<objective>
+Create all phases necessary to close gaps identified by `/gsd:audit-milestone`.
+
+Reads MILESTONE-AUDIT.md, groups gaps into logical phases, creates phase entries in ROADMAP.md, and offers to plan each phase.
+
+One command creates all fix phases — no manual `/gsd:add-phase` per gap.
+</objective>
+
+<execution_context>
+@/Users/baotoq/.claude/get-shit-done/workflows/plan-milestone-gaps.md
+</execution_context>
+
+<context>
+**Audit results:**
+Glob: .planning/v*-MILESTONE-AUDIT.md (use most recent)
+
+Original intent and current planning state are loaded on demand inside the workflow.
+</context>
+
+<process>
+Execute the plan-milestone-gaps workflow from @/Users/baotoq/.claude/get-shit-done/workflows/plan-milestone-gaps.md end-to-end.
+Preserve all workflow gates (audit loading, prioritization, phase grouping, user confirmation, roadmap updates).
+</process>
+
+---
+
+<objective>
+Create executable phase prompts (PLAN.md files) for a roadmap phase with integrated research and verification.
+
+**Default flow:** Research (if needed) → Plan → Verify → Done
+
+**Orchestrator role:** Parse arguments, validate phase, research domain (unless skipped), spawn gsd-planner, verify with gsd-plan-checker, iterate until pass or max iterations, present results.
+</objective>
+
+<execution_context>
+@/Users/baotoq/.claude/get-shit-done/workflows/plan-phase.md
+@/Users/baotoq/.claude/get-shit-done/references/ui-brand.md
+</execution_context>
+
+<context>
+Phase number: 29 (optional — auto-detects next unplanned phase if omitted)
+
+**Flags:**
+- `--research` — Force re-research even if RESEARCH.md exists
+- `--skip-research` — Skip research, go straight to planning
+- `--gaps` — Gap closure mode (reads VERIFICATION.md, skips research)
+- `--skip-verify` — Skip verification loop
+- `--prd <file>` — Use a PRD/acceptance criteria file instead of discuss-phase. Parses requirements into CONTEXT.md automatically. Skips discuss-phase entirely.
+
+Normalize phase input in step 2 before any directory lookups.
+</context>
+
+<process>
+Execute the plan-phase workflow from @/Users/baotoq/.claude/get-shit-done/workflows/plan-phase.md end-to-end.
+Preserve all workflow gates (validation, research, planning, verification loop, routing).
+</process>
+
+---
+
+<objective>
+Create all phases necessary to close gaps identified by `/gsd:audit-milestone`.
+
+Reads MILESTONE-AUDIT.md, groups gaps into logical phases, creates phase entries in ROADMAP.md, and offers to plan each phase.
+
+One command creates all fix phases — no manual `/gsd:add-phase` per gap.
+</objective>
+
+<execution_context>
+@/Users/baotoq/.claude/get-shit-done/workflows/plan-milestone-gaps.md
+</execution_context>
+
+<context>
+**Audit results:**
+Glob: .planning/v*-MILESTONE-AUDIT.md (use most recent)
+
+Original intent and current planning state are loaded on demand inside the workflow.
+</context>
+
+<process>
+Execute the plan-milestone-gaps workflow from @/Users/baotoq/.claude/get-shit-done/workflows/plan-milestone-gaps.md end-to-end.
+Preserve all workflow gates (audit loading, prioritization, phase grouping, user confirmation, roadmap updates).
+</process>
