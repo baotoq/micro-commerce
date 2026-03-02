@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Kubernetes & GitOps
 status: unknown
-last_updated: "2026-03-02T11:07:08.755Z"
+last_updated: "2026-03-02T11:07:52.754Z"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 21
-  completed_plans: 16
+  completed_plans: 19
 ---
 
 # Project State
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 25.1 (Update UI based on pencil design with shadcn)
-Plan: 10 of 11 complete
+Plan: 2 of 11 complete
 Status: In Progress
-Last activity: 2026-03-02 — Completed Plan 10 (Auth Login)
+Last activity: 2026-03-02 — Completed Plan 02 (Homepage)
 
-Progress: [█████████████████████████████░] 83% (25/28 phases complete across all milestones — Phase 25.1 inserted: 10/11 plans done)
+Progress: [█████████████████████████░░░░░] 83% (25/28 phases complete across all milestones — Phase 25.1 inserted: 2/11 plans done)
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [███████████████████████
 | Phase 25.1-09 P09 | 4min | 2 tasks | 10 files |
 | Phase 25.1 P05 | 4min | 2 tasks | 3 files |
 | Phase 25.1-06 P06 | 4min | 2 tasks | 8 files |
+| Phase 25.1 P08 | 5min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -110,6 +111,10 @@ Recent decisions affecting v3.0:
 - [Phase 25.1]: [Phase 25.1-09]: Address cards use inline text links (Edit/Delete) matching design; vertical list instead of grid
 - [Phase 25.1]: [Phase 25.1-09]: Semantic color tokens replace hardcoded zinc/red throughout account components
 - [Phase 25.1]: QuantityStepper reuse: cart-item-row uses imported QuantityStepper from Plan 04 with disabled prop for busy state
+- [Phase 25.1]: [Phase 25.1-06]: Kept single 'name' field instead of splitting to first/last name to avoid ShippingAddressDto API change
+- [Phase 25.1]: [Phase 25.1-06]: Added form id='shipping-form' for external submit button integration from checkout-page
+- [Phase 25.1]: [Phase 25.1-06]: Used nav element for step indicator to support aria-label attribute per Biome a11y rules
+- [Phase 25.1]: [Phase 25.1-06]: Radio card pattern with has-[[data-state=checked]] for active styling on shipping method selection
 
 ### Pending Todos
 
@@ -128,6 +133,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 25.1-10-PLAN.md (Auth Login)
+Stopped at: Completed 25.1-06-PLAN.md (Checkout)
 Resume file: None
-Next step: Execute 25.1-11-PLAN.md (Admin Dashboard)
+Next step: Continue remaining plans in Phase 25.1
