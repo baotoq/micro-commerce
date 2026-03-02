@@ -177,7 +177,11 @@ Plans:
   1. Client-side TanStack Query API calls in the Next.js storefront reach the Gateway when running in the K8s cluster (not localhost:5200)
   2. bootstrap.sh waits for otel-collector and aspire-dashboard pods before printing "Full stack ready!" and prints the Aspire Dashboard URL
   3. REQUIREMENTS.md OBSV-01/OBSV-02 checkboxes are checked and all 11 UI-* requirements appear in the traceability table
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 29-01-PLAN.md -- Runtime API base URL resolution in api.ts via /api/config
+- [ ] 29-02-PLAN.md -- Bootstrap observability pod waits, Aspire Dashboard URL, REQUIREMENTS.md update
 
 ## Progress
 
@@ -217,7 +221,7 @@ Plans:
 | 26. ArgoCD GitOps | 2/2 | Complete    | 2026-03-02 | - |
 | 27. CI/CD GitOps Loop Closure | 1/1 | Complete    | 2026-03-02 | - |
 | 28. Observability | 2/2 | Complete    | 2026-03-02 | - |
-| 29. K8s Client-Side API & Bootstrap Polish | 0/0 | Pending    | - | - |
+| 29. K8s Client-Side API & Bootstrap Polish | 0/2 | In Progress    | - | - |
 
 ---
 *Roadmap created: 2026-01-29*
