@@ -139,6 +139,9 @@ Recent decisions affecting v3.0:
 - [Phase 27]: [Phase 27-01]: kustomize edit set image for safe YAML manipulation instead of sed
 - [Phase 27]: [Phase 27-01]: GITHUB_TOKEN + [skip ci] double protection against infinite workflow loops
 - [Phase 27]: [Phase 27-01]: git diff --staged --quiet for idempotent no-change handling
+- [Phase 29]: [Phase 29-01]: Promise-based singleton caches the Promise itself (not resolved value) to prevent race conditions from concurrent component mounts
+- [Phase 29]: [Phase 29-01]: typeof window guard prevents SSR from fetching its own /api/config route handler via HTTP
+- [Phase 29]: [Phase 29-01]: Server-side fallback uses NEXT_PUBLIC_API_URL for backward compatibility, catch fallback to localhost:5200 for offline dev
 - [Phase 29]: [Phase 29-02]: 120s timeout for observability pod waits matches other non-infrastructure services
 
 ### Pending Todos
@@ -158,6 +161,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed Phase 29 Plan 02 (bootstrap polish & requirements closure)
+Stopped at: Completed Phase 29 Plan 01 (runtime API base URL resolution in api.ts)
 Resume file: None
 Next step: Phase 29 complete (2/2 plans). All v3.0 requirements satisfied.

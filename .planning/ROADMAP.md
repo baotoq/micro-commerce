@@ -180,8 +180,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 29-01-PLAN.md -- Runtime API base URL resolution in api.ts via /api/config
-- [ ] 29-02-PLAN.md -- Bootstrap observability pod waits, Aspire Dashboard URL, REQUIREMENTS.md update
+- [x] 29-01-PLAN.md -- Runtime API base URL resolution in api.ts via /api/config
+- [x] 29-02-PLAN.md -- Bootstrap observability pod waits, Aspire Dashboard URL, REQUIREMENTS.md update
 
 ## Progress
 
