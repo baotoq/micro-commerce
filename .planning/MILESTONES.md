@@ -1,5 +1,28 @@
 # Milestones
 
+## v3.0 Kubernetes & GitOps (Shipped: 2026-03-03)
+
+**Phases completed:** 8 phases, 29 plans
+**Timeline:** 5 days (2026-02-26 → 2026-03-03)
+**Stats:** 45 feat commits, 226 files, +41,530 / -4,331 lines
+**Requirements:** 38/38 satisfied (100%)
+
+**Key accomplishments:**
+- Three production-ready Docker images (ApiService chiseled .NET, Gateway chiseled .NET, Web standalone Node.js) built and pushed to ghcr.io via GitHub Actions CI
+- K8s infrastructure: PostgreSQL StatefulSet, RabbitMQ, Keycloak running in kind cluster with Sealed Secrets for all credentials
+- All services deployed via Kustomize with health probes, resource limits, and MassTransit RabbitMQ transport switching
+- Complete UI refresh: 11 storefront and admin pages restyled with shadcn/ui, oklch color tokens, and DM Sans typography
+- GitOps pipeline: ArgoCD app-of-apps manages all cluster resources; CI auto-commits SHA image tags triggering zero-touch deployments
+- Observability: OTEL Collector + Aspire Dashboard provide distributed tracing and metrics in K8s without .NET Aspire AppHost
+- Runtime API URL resolution for client-side features in K8s deployment via getApiBase() singleton
+
+**Archives:**
+- [v3.0 Roadmap](milestones/v3.0-ROADMAP.md)
+- [v3.0 Requirements](milestones/v3.0-REQUIREMENTS.md)
+- [v3.0 Audit](milestones/v3.0-MILESTONE-AUDIT.md)
+
+---
+
 ## v1.0 MVP (Shipped: 2026-02-13)
 
 **Phases completed:** 10 phases, 49 plans

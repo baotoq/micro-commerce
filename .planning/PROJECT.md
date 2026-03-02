@@ -51,20 +51,22 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - ✓ Full building block adoption across all 7 feature modules — v2.0
 - ✓ OpenAPI schema transformers for Vogen IDs and SmartEnums — v2.0
 - ✓ Obsolete ValueObject base class and StronglyTypedIdConvention removed — v2.0
+- ✓ Dockerfiles for ApiService (chiseled .NET), Gateway (chiseled .NET), Web (standalone Node.js) — v3.0
+- ✓ Kustomize manifests (base + dev overlay) for all services and infrastructure — v3.0
+- ✓ Full stack deployment in K8s: apps + PostgreSQL + Keycloak + RabbitMQ — v3.0
+- ✓ RabbitMQ transport support for MassTransit (MASSTRANSIT_TRANSPORT env var switching) — v3.0
+- ✓ GitHub Actions CI pipeline building and pushing images to ghcr.io — v3.0
+- ✓ ArgoCD with app-of-apps pattern for GitOps deployment (self-heal + prune) — v3.0
+- ✓ Sealed Secrets for K8s secret management — v3.0
+- ✓ CI/CD GitOps loop: CI commits SHA tags → ArgoCD auto-syncs — v3.0
+- ✓ OTEL Collector + Aspire Dashboard deployed in K8s for monitoring — v3.0
+- ✓ Local kind cluster as dev environment with bootstrap.sh — v3.0
+- ✓ Complete UI refresh: 11 pages restyled with shadcn/ui, oklch tokens, DM Sans — v3.0
+- ✓ Runtime API URL resolution for client-side K8s deployment — v3.0
 
 ### Active
 
-**Current Milestone: v3.0 Kubernetes & GitOps**
-
-- [ ] Dockerfiles for ApiService, Gateway, and Web
-- [ ] Kustomize manifests (base + dev overlay) for all services and infrastructure
-- [ ] Full stack deployment in K8s: apps + PostgreSQL + Keycloak + RabbitMQ
-- [ ] RabbitMQ transport support for MassTransit (replacing Azure SB emulator in K8s)
-- [ ] GitHub Actions CI pipeline building and pushing images to ghcr.io
-- [ ] ArgoCD with app-of-apps pattern for GitOps deployment
-- [ ] Sealed Secrets for K8s secret management
-- [ ] OTEL Collector + Aspire Dashboard deployed in K8s for monitoring
-- [ ] Local kind cluster as dev environment
+(No active milestone — use `/gsd:new-milestone` to start next)
 
 ### Out of Scope
 
@@ -84,36 +86,40 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 
 ## Context
 
-**Shipped v2.0 DDD Foundation** with 27K LOC C# backend and Next.js 16 frontend. 182 tests (144 unit + 38 integration).
+**Shipped v3.0 Kubernetes & GitOps** with 25.6K LOC C# backend, 15.7K LOC TypeScript frontend, 1.3K LOC K8s manifests. Full stack deployed to kind cluster via ArgoCD GitOps.
 
 **Tech stack:**
 - Backend: .NET 10, ASP.NET Core Minimal APIs, .NET Aspire 13.1.0
-- Frontend: Next.js 16, React 19, TypeScript 5, shadcn/ui
-- Auth: Keycloak (backend JWT + NextAuth.js frontend)
+- Frontend: Next.js 16, React 19, TypeScript 5, shadcn/ui, Tailwind CSS v4
+- Auth: Keycloak (backend JWT + NextAuth.js v5 frontend)
 - Database: PostgreSQL (per-feature isolation, 8 DbContexts)
-- Messaging: Azure Service Bus (MassTransit) with emulator
+- Messaging: MassTransit 9.0 (Azure Service Bus for Aspire dev, RabbitMQ for K8s)
 - Gateway: YARP reverse proxy with JWT, rate limiting, CORS
+- Deployment: Kubernetes (kind), Kustomize, ArgoCD, Sealed Secrets, GitHub Actions CI
+- Observability: OpenTelemetry → OTEL Collector → Aspire Dashboard
 - Patterns: CQRS (MediatR), DDD, Event-Driven, Vertical Slice Architecture
 - DDD Building Blocks: Vogen StronglyTypedId, SmartEnum, FluentResults, Ardalis.Specification, EF Core Interceptors
-- Testing: xUnit, FluentAssertions, Testcontainers, WebApplicationFactory
+- Testing: xUnit, FluentAssertions, Testcontainers, WebApplicationFactory, Playwright
 
-**Architecture:** Modular monolith with clear bounded contexts (Catalog, Cart, Ordering, Inventory, Profiles, Reviews, Wishlists, Messaging). Full DDD building block foundation adopted across all modules. Ready for gradual service extraction.
+**Architecture:** Modular monolith with clear bounded contexts (Catalog, Cart, Ordering, Inventory, Profiles, Reviews, Wishlists, Messaging). Full DDD building block foundation adopted across all modules. Deployed to Kubernetes via GitOps with full CI/CD automation.
 
 **Known tech debt:**
-- Hardcoded configuration (stock thresholds, shipping rates, CORS origins)
-- Placeholder images (placehold.co URLs)
+- Hardcoded configuration (stock thresholds, shipping rates)
+- Placeholder images (placehold.co URLs; Azurite images won't resolve in K8s — needs STOR-01)
 - Cross-context DbContext injection in Reviews and Wishlists modules (bounded context isolation violation)
 - ProductStatus missing `[JsonConverter]` attribute (server-side works, latent client-side gap)
 - DomainEventInterceptor uses scoped DI (not wired via AddInterceptors — needs IPublishEndpoint)
 - ISoftDeletable has zero entity adopters (infrastructure ready, no entities implement it yet)
+- AUTH_URL=localhost:38800 works for local kind dev only (needs adjustment for remote clusters)
+- Hero image placeholder (gray bg-muted div)
 
 ## Constraints
 
 - **Tech Stack**: .NET 10 + Aspire for backend, Next.js 16 for frontend — committed
 - **Identity**: Keycloak — integrated, don't duplicate auth
-- **Message Broker**: Azure Service Bus emulator — Aspire ecosystem alignment
+- **Message Broker**: MassTransit with Azure SB (Aspire) / RabbitMQ (K8s)
 - **Database**: PostgreSQL — in deployment manifests
-- **Deployment**: Kubernetes with FluxCD
+- **Deployment**: Kubernetes with ArgoCD GitOps
 
 ## Key Decisions
 
@@ -149,5 +155,14 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 | Testcontainers over in-memory DB | Real PostgreSQL vs EF InMemory provider | ✓ Good — catches real SQL/EF issues, 38 integration tests |
 | Order skips AuditableAggregateRoot | Domain-specific CreatedAt/PaidAt semantics | ✓ Good — intentional, documented design choice |
 
+| .NET chiseled containers | Smallest secure images for ApiService/Gateway | ✓ Good — non-root by default, noble-chiseled-extra for ICU |
+| Kustomize over Helm | Simpler for single-project, built into kubectl | ✓ Good — base/overlay structure clean |
+| ArgoCD app-of-apps | Single root Application manages all services | ✓ Good — self-heal + prune on all 8 child apps |
+| Sealed Secrets | Encrypt credentials for Git storage | ✓ Good — bootstrap generates sealed-secret.yaml at runtime |
+| MassTransit transport switching | MASSTRANSIT_TRANSPORT env var for Azure SB vs RabbitMQ | ✓ Good — same consumers/saga work on both |
+| NodePort for kind access | Avoid Ingress NGINX (EOL March 2026) | ✓ Good — simple port mapping chain |
+| Runtime API URL resolution | getApiBase() singleton fetching /api/config at runtime | ✓ Good — single Docker image for all environments |
+| OTEL Collector + Aspire Dashboard | Standalone observability without .NET Aspire AppHost | ✓ Good — distributed tracing visible in K8s |
+
 ---
-*Last updated: 2026-02-25 after v3.0 milestone started*
+*Last updated: 2026-03-03 after v3.0 milestone completed*
