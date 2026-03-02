@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-import { ProductCard, ProductCardSkeleton } from "@/components/storefront/product-card";
+import {
+  ProductCard,
+  ProductCardSkeleton,
+} from "@/components/storefront/product-card";
 import { getProducts, type ProductDto } from "@/lib/api";
 
 interface RelatedProductsProps {
@@ -13,7 +16,7 @@ interface RelatedProductsProps {
 
 export function RelatedProducts({
   categoryId,
-  categoryName,
+  categoryName: _categoryName,
   currentProductId,
 }: RelatedProductsProps) {
   const [products, setProducts] = useState<ProductDto[]>([]);
@@ -57,12 +60,12 @@ export function RelatedProducts({
   if (loading) {
     return (
       <section>
-        <h2 className="mb-6 text-xl font-semibold tracking-tight text-zinc-900">
-          More from {categoryName}
+        <h2 className="mb-6 text-xl font-semibold tracking-tight text-foreground">
+          You Might Also Like
         </h2>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <ProductCardSkeleton key={i} />
+            <ProductCardSkeleton key={`skeleton-${i}`} />
           ))}
         </div>
       </section>
@@ -75,8 +78,8 @@ export function RelatedProducts({
 
   return (
     <section>
-      <h2 className="mb-6 text-xl font-semibold tracking-tight text-zinc-900">
-        More from {categoryName}
+      <h2 className="mb-6 text-xl font-semibold tracking-tight text-foreground">
+        You Might Also Like
       </h2>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
         {products.map((product) => (

@@ -1,12 +1,16 @@
 "use client";
 
 import { CheckCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export function VerifiedBadge() {
   return (
-    <div className="flex items-center gap-1 text-xs text-emerald-600">
-      <CheckCircle className="size-3.5" />
-      <span>Verified Purchase</span>
-    </div>
+    <Badge
+      variant="secondary"
+      className="border-success/20 bg-success-bg text-success-foreground gap-1 text-xs font-medium"
+    >
+      <CheckCircle className="size-3" />
+      Verified Purchase
+    </Badge>
   );
 }

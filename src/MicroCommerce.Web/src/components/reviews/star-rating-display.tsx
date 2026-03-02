@@ -9,7 +9,12 @@ interface StarRatingDisplayProps {
   size?: "sm" | "md";
 }
 
-export function StarRatingDisplay({ rating, count, showCount = false, size = "md" }: StarRatingDisplayProps) {
+export function StarRatingDisplay({
+  rating,
+  count,
+  showCount = false,
+  size = "md",
+}: StarRatingDisplayProps) {
   const stars = [];
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
@@ -19,28 +24,24 @@ export function StarRatingDisplay({ rating, count, showCount = false, size = "md
     if (i <= fullStars) {
       // Full star
       stars.push(
-        <Star key={i} className={`${iconSize} fill-yellow-400 text-yellow-400`} />
+        <Star key={i} className={`${iconSize} fill-star text-star`} />,
       );
     } else if (i === fullStars + 1 && hasHalfStar) {
       // Half star (approximated with lighter fill)
       stars.push(
-        <Star key={i} className={`${iconSize} fill-yellow-200 text-yellow-400`} />
+        <Star key={i} className={`${iconSize} fill-star/50 text-star`} />,
       );
     } else {
       // Empty star
-      stars.push(
-        <Star key={i} className={`${iconSize} text-zinc-300`} />
-      );
+      stars.push(<Star key={i} className={`${iconSize} text-border`} />);
     }
   }
 
   return (
     <div className="flex items-center gap-1.5">
-      <div className="flex items-center gap-0.5">
-        {stars}
-      </div>
+      <div className="flex items-center gap-0.5">{stars}</div>
       {showCount && count !== undefined && (
-        <span className="text-sm text-zinc-600">
+        <span className="text-sm text-muted-foreground">
           {rating.toFixed(1)} ({count} {count === 1 ? "review" : "reviews"})
         </span>
       )}

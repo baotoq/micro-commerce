@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { StarRatingInput } from "./star-rating-input";
 import { useCreateReview, useUpdateReview } from "@/hooks/use-reviews";
 import type { ReviewDto } from "@/lib/api";
+import { StarRatingInput } from "./star-rating-input";
 
 interface ReviewFormDialogProps {
   productId: string;
@@ -16,7 +21,12 @@ interface ReviewFormDialogProps {
   onSuccess?: () => void;
 }
 
-export function ReviewFormDialog({ productId, existingReview, trigger, onSuccess }: ReviewFormDialogProps) {
+export function ReviewFormDialog({
+  productId,
+  existingReview,
+  trigger,
+  onSuccess,
+}: ReviewFormDialogProps) {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(existingReview?.rating || 0);
   const [text, setText] = useState(existingReview?.text || "");
@@ -64,7 +74,7 @@ export function ReviewFormDialog({ productId, existingReview, trigger, onSuccess
             onSuccess?.();
             setErrors({});
           },
-        }
+        },
       );
     } else {
       createReview.mutate(data, {
@@ -92,7 +102,19 @@ export function ReviewFormDialog({ productId, existingReview, trigger, onSuccess
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <div onClick={() => setOpen(true)}>{trigger}</div>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => setOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen(true);
+          }
+        }}
+      >
+        {trigger}
+      </div>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Review" : "Write a Review"}</DialogTitle>
@@ -101,7 +123,9 @@ export function ReviewFormDialog({ productId, existingReview, trigger, onSuccess
           <div className="space-y-2">
             <Label>Rating</Label>
             <StarRatingInput value={rating} onChange={setRating} />
-            {errors.rating && <p className="text-sm text-red-500">{errors.rating}</p>}
+            {errors.rating && (
+              <p className="text-sm text-error">{errors.rating}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -115,10 +139,12 @@ export function ReviewFormDialog({ productId, existingReview, trigger, onSuccess
               className="resize-none"
             />
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-500">
+              <span className="text-xs text-muted-foreground">
                 {text.length}/1000 characters
               </span>
-              {errors.text && <p className="text-sm text-red-500">{errors.text}</p>}
+              {errors.text && (
+                <p className="text-sm text-error">{errors.text}</p>
+              )}
             </div>
           </div>
 
@@ -134,7 +160,11 @@ export function ReviewFormDialog({ productId, existingReview, trigger, onSuccess
                   ? "Update Review"
                   : "Submit Review"}
             </Button>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
           </div>
