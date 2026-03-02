@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "ad7fc1bc8b30",
+  "session_id": "6a9e82b7-148a-4650-834f-63e9f6c7029a",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T17:07:34.530954Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/STATE.md",
+    ".planning/phases/29-k8s-client-side-api-and-bootstrap-polish/29-01-SUMMARY.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "a7867314a521",
+  "checkpoint_transcript_start": 249,
+  "transcript_lines_at_start": 249,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T17:07:34.292532Z",
+    "agent_lines": 99,
+    "human_added": 2,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 101,
+    "agent_percentage": 98.01980198019803
+  }
+}

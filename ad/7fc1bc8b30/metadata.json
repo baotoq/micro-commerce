@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "ad7fc1bc8b30",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/STATE.md",
+    ".planning/phases/29-k8s-client-side-api-and-bootstrap-polish/29-01-SUMMARY.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ad/7fc1bc8b30/0/metadata.json",
+      "transcript": "/ad/7fc1bc8b30/0/full.jsonl",
+      "context": "/ad/7fc1bc8b30/0/context.md",
+      "content_hash": "/ad/7fc1bc8b30/0/content_hash.txt",
+      "prompt": "/ad/7fc1bc8b30/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  }
+}
