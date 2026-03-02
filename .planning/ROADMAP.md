@@ -140,7 +140,9 @@ Plans:
   1. ArgoCD UI is reachable in the kind cluster and shows all services as Synced and Healthy
   2. Deleting a deployment manually causes ArgoCD to automatically restore it within one sync cycle
   3. The app-of-apps root Application manages each service as an independent child Application
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 26-01-PLAN.md -- ArgoCD manifests, child Applications, Kustomize per-service restructure
+- [ ] 26-02-PLAN.md -- Bootstrap script ArgoCD integration and GitOps handoff
 
 ### Phase 27: CI/CD GitOps Loop Closure
 **Goal**: A push to master automatically flows through CI image build, Git tag commit, and ArgoCD cluster rollout without manual intervention
@@ -196,7 +198,7 @@ Plans:
 | 23. Dockerfiles and Container Image Pipeline | 3/3 | Complete    | 2026-02-25 | - |
 | 24. Infrastructure Manifests and Secrets | 4/4 | Complete    | 2026-02-26 | - |
 | 25. Application Manifests and MassTransit Transport | 3/3 | Complete    | 2026-02-26 | - |
-| 26. ArgoCD GitOps | v3.0 | 0/TBD | Not started | - |
+| 26. ArgoCD GitOps | v3.0 | 0/2 | Not started | - |
 | 27. CI/CD GitOps Loop Closure | v3.0 | 0/TBD | Not started | - |
 | 28. Observability | v3.0 | 0/TBD | Not started | - |
 
