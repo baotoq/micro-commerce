@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "746a64d6cb74",
+  "session_id": "de378dc7-0b56-4070-a42e-c4ceaf641131",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T14:26:30.261997Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/27-cicd-gitops-loop-closure/27-VALIDATION.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "887520e4aa41",
+  "checkpoint_transcript_start": 136,
+  "transcript_lines_at_start": 136,
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 3888,
+    "cache_read_tokens": 332483,
+    "output_tokens": 1419,
+    "api_call_count": 6
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T14:26:30.134761Z",
+    "agent_lines": 72,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 72,
+    "agent_percentage": 100
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "746a64d6cb74",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/27-cicd-gitops-loop-closure/27-VALIDATION.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/74/6a64d6cb74/0/metadata.json",
+      "transcript": "/74/6a64d6cb74/0/full.jsonl",
+      "context": "/74/6a64d6cb74/0/context.md",
+      "content_hash": "/74/6a64d6cb74/0/content_hash.txt",
+      "prompt": "/74/6a64d6cb74/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 3888,
+    "cache_read_tokens": 332483,
+    "output_tokens": 1419,
+    "api_call_count": 6
+  }
+}
