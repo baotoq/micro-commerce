@@ -6,8 +6,12 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Profile</h2>
-        <p className="mt-1 text-sm text-zinc-500">Manage your display name and avatar</p>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          Profile
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Manage your display name and avatar
+        </p>
       </div>
       <ProfileForm />
     </div>

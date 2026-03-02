@@ -1,21 +1,20 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { HeroBanner } from '@/components/storefront/hero-banner';
-import { ProductFilters } from '@/components/storefront/product-filters';
-import { ProductGrid } from '@/components/storefront/product-grid';
+import { HeroBanner } from "@/components/storefront/hero-banner";
+import { ProductFilters } from "@/components/storefront/product-filters";
+import { ProductGrid } from "@/components/storefront/product-grid";
 
 function parseSortParam(sort: string | undefined): {
   sortBy?: string;
   sortDirection?: string;
 } {
   switch (sort) {
-    case 'price-asc':
-      return { sortBy: 'price', sortDirection: 'asc' };
-    case 'price-desc':
-      return { sortBy: 'price', sortDirection: 'desc' };
-    case 'name-asc':
-      return { sortBy: 'name', sortDirection: 'asc' };
-    case 'newest':
+    case "price-asc":
+      return { sortBy: "price", sortDirection: "asc" };
+    case "price-desc":
+      return { sortBy: "price", sortDirection: "desc" };
+    case "name-asc":
+      return { sortBy: "name", sortDirection: "asc" };
     default:
       return {};
   }
@@ -38,30 +37,36 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <HeroBanner />
 
       {/* Products Section */}
-      <section id="products" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-900">
+      <section
+        id="products"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10"
+      >
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             All Products
           </h2>
-          <p className="mt-2 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Explore our collection of premium electronics
           </p>
         </div>
 
-        <div className="mb-8">
+        {/* Two-column layout: sidebar filters + product grid */}
+        <div className="flex gap-8">
           <Suspense fallback={null}>
             <ProductFilters />
           </Suspense>
-        </div>
 
-        <Suspense fallback={null}>
-          <ProductGrid
-            categoryId={params.category}
-            search={params.search}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-          />
-        </Suspense>
+          <div className="min-w-0 flex-1">
+            <Suspense fallback={null}>
+              <ProductGrid
+                categoryId={params.category}
+                search={params.search}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+              />
+            </Suspense>
+          </div>
+        </div>
       </section>
     </div>
   );

@@ -1,9 +1,10 @@
 "use client";
 
+import { Loader2, Upload, User } from "lucide-react";
 import { useRef } from "react";
-import { User, Upload, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useUploadAvatar, useRemoveAvatar } from "@/hooks/use-profile";
+import { Button } from "@/components/ui/button";
+import { useRemoveAvatar, useUploadAvatar } from "@/hooks/use-profile";
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
@@ -39,17 +40,18 @@ export function AvatarUpload({ currentAvatarUrl }: AvatarUploadProps) {
   const isPending = uploadMutation.isPending || removeMutation.isPending;
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex items-center gap-4">
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
         disabled={isPending}
-        className="group relative h-20 w-20 rounded-full transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="group relative shrink-0 rounded-full transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        aria-label="Upload avatar"
       >
-        <Avatar className="h-20 w-20">
+        <Avatar className="h-24 w-24">
           <AvatarImage src={currentAvatarUrl || undefined} alt="Avatar" />
-          <AvatarFallback>
-            <User className="h-10 w-10 text-zinc-400" />
+          <AvatarFallback className="bg-muted">
+            <User className="h-10 w-10 text-muted-foreground" />
           </AvatarFallback>
         </Avatar>
 
@@ -72,15 +74,28 @@ export function AvatarUpload({ currentAvatarUrl }: AvatarUploadProps) {
         className="hidden"
       />
 
-      {currentAvatarUrl && !isPending && (
-        <button
+      <div className="flex flex-col gap-1.5">
+        <Button
           type="button"
-          onClick={() => removeMutation.mutate()}
-          className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
+          variant="outline"
+          size="sm"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isPending}
         >
-          Remove
-        </button>
-      )}
+          Change Photo
+        </Button>
+        {currentAvatarUrl && !isPending && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => removeMutation.mutate()}
+            className="text-muted-foreground hover:text-destructive"
+          >
+            Remove
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

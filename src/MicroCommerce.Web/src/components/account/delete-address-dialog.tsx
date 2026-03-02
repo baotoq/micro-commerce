@@ -19,7 +19,11 @@ interface DeleteAddressDialogProps {
   trigger: React.ReactNode;
 }
 
-export function DeleteAddressDialog({ addressId, addressName, trigger }: DeleteAddressDialogProps) {
+export function DeleteAddressDialog({
+  addressId,
+  addressName,
+  trigger,
+}: DeleteAddressDialogProps) {
   const [open, setOpen] = useState(false);
   const deleteAddress = useDeleteAddress();
 
@@ -33,12 +37,19 @@ export function DeleteAddressDialog({ addressId, addressName, trigger }: DeleteA
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <div onClick={() => setOpen(true)}>{trigger}</div>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="appearance-none text-left"
+      >
+        {trigger}
+      </button>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Address?</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete '{addressName}'? This action cannot be undone.
+            Are you sure you want to delete &ldquo;{addressName}&rdquo;? This
+            action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -46,7 +57,7 @@ export function DeleteAddressDialog({ addressId, addressName, trigger }: DeleteA
           <AlertDialogAction
             onClick={handleDelete}
             disabled={deleteAddress.isPending}
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             {deleteAddress.isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
