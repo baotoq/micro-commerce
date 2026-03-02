@@ -54,6 +54,10 @@ spec:
           value: "$(RABBITMQ_PASSWORD)"
         - name: ConnectionStrings__keycloak
           value: "http://keycloak.micro-commerce.svc.cluster.local:8080"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector:4317"
+        - name: OTEL_SERVICE_NAME
+          value: "apiservice"
         startupProbe:
           httpGet:
             path: /alive

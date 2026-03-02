@@ -28,6 +28,10 @@ spec:
           value: "http://keycloak.micro-commerce.svc.cluster.local:8080"
         - name: Cors__Origins__0
           value: "http://localhost:38800"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector:4317"
+        - name: OTEL_SERVICE_NAME
+          value: "gateway"
         livenessProbe:
           httpGet:
             path: /alive
