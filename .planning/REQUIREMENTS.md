@@ -54,9 +54,9 @@ Requirements for Kubernetes & GitOps deployment milestone. Each maps to roadmap 
 
 ### Gap Closure (Phase 29)
 
-- [ ] **K8S-API-01**: Client-side API calls in the Next.js storefront use runtime config to reach the Gateway in K8s instead of hardcoded localhost:5200
-- [ ] **K8S-BOOT-01**: bootstrap.sh waits for observability pods and prints Aspire Dashboard URL in access info
-- [ ] **K8S-DOCS-01**: REQUIREMENTS.md checkboxes and traceability table reflect all delivered work
+- [x] **K8S-API-01**: Client-side API calls in the Next.js storefront use runtime config to reach the Gateway in K8s instead of hardcoded localhost:5200
+- [x] **K8S-BOOT-01**: bootstrap.sh waits for observability pods and prints Aspire Dashboard URL in access info
+- [x] **K8S-DOCS-01**: REQUIREMENTS.md checkboxes and traceability table reflect all delivered work
 
 ### UI Refresh (Phase 25.1)
 
@@ -144,9 +144,9 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 | UI-PROFILE | Phase 25.1 | Complete |
 | UI-AUTH-LOGIN | Phase 25.1 | Complete |
 | UI-ADMIN | Phase 25.1 | Complete |
-| K8S-API-01 | Phase 29 | Pending |
-| K8S-BOOT-01 | Phase 29 | Pending |
-| K8S-DOCS-01 | Phase 29 | Pending |
+| K8S-API-01 | Phase 29 | Complete |
+| K8S-BOOT-01 | Phase 29 | Complete |
+| K8S-DOCS-01 | Phase 29 | Complete |
 
 **Coverage:**
 - v3.0 requirements: 38 total (24 core + 11 UI + 3 gap closure)
@@ -155,4 +155,4 @@ Deferred to post-v3.0. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-03-02 — OBSV checkboxes fixed, UI-* traceability added, Phase 29 gap closure requirements added*
+*Last updated: 2026-03-02 — Phase 29 gap closure requirements checked*
