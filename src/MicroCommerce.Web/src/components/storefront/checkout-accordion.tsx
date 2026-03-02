@@ -1,10 +1,9 @@
 "use client";
 
-import { Accordion } from "radix-ui";
 import { Check, ChevronDown } from "lucide-react";
-
-import { ShippingSection } from "@/components/storefront/shipping-section";
+import { Accordion } from "radix-ui";
 import { PaymentSection } from "@/components/storefront/payment-section";
+import { ShippingSection } from "@/components/storefront/shipping-section";
 import type { ShippingAddressDto } from "@/lib/api";
 
 interface CheckoutAccordionProps {
@@ -36,7 +35,7 @@ export function CheckoutAccordion({
       {/* Shipping Section */}
       <Accordion.Item
         value="shipping"
-        className="rounded-lg border border-zinc-200 bg-white"
+        className="rounded-lg border border-border bg-card"
       >
         <Accordion.Header>
           <Accordion.Trigger className="flex w-full items-center justify-between px-6 py-4 text-left">
@@ -44,21 +43,17 @@ export function CheckoutAccordion({
               <span
                 className={`flex size-7 items-center justify-center rounded-full text-sm font-medium ${
                   isShippingComplete
-                    ? "bg-green-100 text-green-700"
-                    : "bg-zinc-100 text-zinc-600"
+                    ? "bg-success-bg text-success-foreground"
+                    : "bg-muted text-muted-foreground"
                 }`}
               >
-                {isShippingComplete ? (
-                  <Check className="size-4" />
-                ) : (
-                  "1"
-                )}
+                {isShippingComplete ? <Check className="size-4" /> : "1"}
               </span>
-              <span className="text-base font-medium text-zinc-900">
+              <span className="text-base font-medium text-foreground">
                 Shipping Information
               </span>
             </div>
-            <ChevronDown className="size-4 text-zinc-400 transition-transform data-[state=open]:rotate-180" />
+            <ChevronDown className="size-4 text-muted-foreground transition-transform data-[state=open]:rotate-180" />
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
@@ -72,7 +67,7 @@ export function CheckoutAccordion({
       <Accordion.Item
         value="payment"
         disabled={!isShippingComplete}
-        className={`rounded-lg border border-zinc-200 bg-white ${
+        className={`rounded-lg border border-border bg-card ${
           !isShippingComplete ? "opacity-50" : ""
         }`}
       >
@@ -82,12 +77,14 @@ export function CheckoutAccordion({
             disabled={!isShippingComplete}
           >
             <div className="flex items-center gap-3">
-              <span className="flex size-7 items-center justify-center rounded-full bg-zinc-100 text-sm font-medium text-zinc-600">
+              <span className="flex size-7 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
                 2
               </span>
-              <span className="text-base font-medium text-zinc-900">Payment</span>
+              <span className="text-base font-medium text-foreground">
+                Payment
+              </span>
             </div>
-            <ChevronDown className="size-4 text-zinc-400 transition-transform data-[state=open]:rotate-180" />
+            <ChevronDown className="size-4 text-muted-foreground transition-transform data-[state=open]:rotate-180" />
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
