@@ -161,7 +161,11 @@ Plans:
   1. The Aspire Dashboard UI is reachable in the kind cluster and shows live traces from ApiService and Gateway
   2. A completed checkout flow produces a distributed trace visible end-to-end in the Dashboard spanning ApiService, the saga, and RabbitMQ consumers
   3. OTEL Collector pod stays healthy under normal load (no OOM kills, no dropped telemetry in logs)
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 28-01-PLAN.md -- OTEL Collector and Aspire Dashboard Kubernetes base manifests
+- [ ] 28-02-PLAN.md -- Wire OTEL to app services, ArgoCD Applications, kind port mapping
 
 ## Progress
 
