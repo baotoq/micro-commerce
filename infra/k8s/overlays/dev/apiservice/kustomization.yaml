@@ -4,9 +4,9 @@ kind: Kustomization
 namespace: micro-commerce
 
 resources:
-- ../../base/postgres
-- ../../base/rabbitmq
-- ../../base/keycloak
-- apiservice/
-- gateway/
-- web/
+- ../../../base/apiservice
+
+images:
+- name: apiservice
+  newName: apiservice
+  newTag: dev

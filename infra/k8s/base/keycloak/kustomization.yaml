@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
 - deployment.yaml
 - service.yaml
-- sealed-secret.yaml
 
 configMapGenerator:
 - name: keycloak-realm
