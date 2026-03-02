@@ -3,13 +3,13 @@
 import { CheckCircle, Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { toast } from "sonner";
 import { StarRatingDisplay } from "@/components/reviews/star-rating-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WishlistToggleButton } from "@/components/wishlist/wishlist-toggle-button";
+import { useAddToCart } from "@/hooks/use-cart";
 import type { ProductDto, StockInfoDto } from "@/lib/api";
 
 interface ProductCardProps {
@@ -55,6 +55,7 @@ function StockBadge({ stockInfo }: { stockInfo?: StockInfoDto }) {
 
 export function ProductCard({ product, stockInfo }: ProductCardProps) {
   const isOutOfStock = stockInfo ? stockInfo.availableQuantity === 0 : false;
+  const addToCart = useAddToCart();
 
   return (
     <Link href={`/products/${product.id}`} className="group block">
@@ -107,8 +108,15 @@ export function ProductCard({ product, stockInfo }: ProductCardProps) {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  toast("Cart coming soon!");
+                  addToCart.mutate({
+                    productId: product.id,
+                    productName: product.name,
+                    unitPrice: product.price,
+                    imageUrl: product.imageUrl,
+                    quantity: 1,
+                  });
                 }}
+                disabled={addToCart.isPending}
               >
                 <ShoppingCart className="mr-1 size-4" />
                 Add to Cart
@@ -143,12 +151,27 @@ export function ProductCard({ product, stockInfo }: ProductCardProps) {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              toast("Cart coming soon!");
+              addToCart.mutate({
+                productId: product.id,
+                productName: product.name,
+                unitPrice: product.price,
+                imageUrl: product.imageUrl,
+                quantity: 1,
+              });
             }}
-            disabled={isOutOfStock}
+            disabled={isOutOfStock || addToCart.isPending}
           >
-            <ShoppingCart className="mr-1.5 size-4" />
-            Add to Cart
+            {addToCart.isPending ? (
+              <>
+                <ShoppingCart className="mr-1.5 size-4 animate-pulse" />
+                Adding...
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="mr-1.5 size-4" />
+                Add to Cart
+              </>
+            )}
           </Button>
         </CardContent>
       </Card>
