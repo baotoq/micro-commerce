@@ -159,6 +159,12 @@ kubectl wait --for=condition=ready pod -l app=gateway -n "$NAMESPACE" --timeout=
 info "Waiting for Web..."
 kubectl wait --for=condition=ready pod -l app=web -n "$NAMESPACE" --timeout=120s
 
+info "Waiting for OTEL Collector..."
+kubectl wait --for=condition=ready pod -l app=otel-collector -n "$NAMESPACE" --timeout=120s
+
+info "Waiting for Aspire Dashboard..."
+kubectl wait --for=condition=ready pod -l app=aspire-dashboard -n "$NAMESPACE" --timeout=120s
+
 # --- Step 14: Print access info ---
 ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath='{.data.password}' | base64 --decode)
@@ -172,6 +178,7 @@ echo "  RabbitMQ Management: http://localhost:35672 (user: guest, pass: guest)"
 echo "  Keycloak Admin:      http://localhost:38080 (user: admin, pass: admin)"
 echo "  Gateway (API):       http://localhost:38800"
 echo "  ArgoCD UI:           http://localhost:38443 (user: admin, pass: ${ARGOCD_PASSWORD})"
+echo "  Aspire Dashboard:    http://localhost:38888"
 echo ""
 echo "Storefront: http://localhost:38800 (via Gateway)"
 echo ""
