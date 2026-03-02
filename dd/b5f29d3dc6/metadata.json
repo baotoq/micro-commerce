@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "ddb5f29d3dc6",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".claude/settings.json",
+    ".planning/phases/25.1-update-ui-based-on-pencil-new-pen-design-with-shadcn/25.1-VERIFICATION.md",
+    "src/MicroCommerce.Web/src/app/(storefront)/account/security/page.tsx",
+    "src/MicroCommerce.Web/src/components/ui/button.tsx",
+    "src/MicroCommerce.Web/src/components/ui/sheet.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/dd/b5f29d3dc6/0/metadata.json",
+      "transcript": "/dd/b5f29d3dc6/0/full.jsonl",
+      "context": "/dd/b5f29d3dc6/0/context.md",
+      "content_hash": "/dd/b5f29d3dc6/0/content_hash.txt",
+      "prompt": "/dd/b5f29d3dc6/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 64,
+    "cache_creation_tokens": 122930,
+    "cache_read_tokens": 2008114,
+    "output_tokens": 16764,
+    "api_call_count": 31
+  }
+}
