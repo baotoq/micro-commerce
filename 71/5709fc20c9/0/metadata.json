@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "715709fc20c9",
+  "session_id": "bf2b62dc-52ef-45d0-b0f4-880cb32c5b74",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T16:49:45.077345Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/29-k8s-client-side-api-and-bootstrap-polish/29-RESEARCH.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "8fb85d60d4fe",
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 26314,
+    "cache_read_tokens": 302059,
+    "output_tokens": 2136,
+    "api_call_count": 6
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T16:49:44.923972Z",
+    "agent_lines": 0,
+    "human_added": 342,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 342,
+    "agent_percentage": 0
+  }
+}
