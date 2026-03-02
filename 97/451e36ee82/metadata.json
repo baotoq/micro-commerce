@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "97451e36ee82",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/ROADMAP.md",
+    ".planning/phases/25.1-update-ui-based-on-pencil-new-pen-design-with-shadcn/25.1-12-PLAN.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/97/451e36ee82/0/metadata.json",
+      "transcript": "/97/451e36ee82/0/full.jsonl",
+      "context": "/97/451e36ee82/0/context.md",
+      "content_hash": "/97/451e36ee82/0/content_hash.txt",
+      "prompt": "/97/451e36ee82/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 10703,
+    "cache_read_tokens": 381583,
+    "output_tokens": 1412,
+    "api_call_count": 4
+  }
+}
