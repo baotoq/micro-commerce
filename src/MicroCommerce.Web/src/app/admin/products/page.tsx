@@ -1,35 +1,37 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Package } from 'lucide-react';
-import { ProductsTable } from '@/components/admin/products-table';
-import { ProductFilters } from '@/components/admin/product-filters';
-import { Pagination } from '@/components/admin/pagination';
-import { ProductDrawer } from '@/components/admin/product-drawer';
-import { StockAdjustDialog } from '@/components/admin/stock-adjust-dialog';
-import { AdjustmentHistoryDialog } from '@/components/admin/adjustment-history-dialog';
+import { Package, Plus } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { AdjustmentHistoryDialog } from "@/components/admin/adjustment-history-dialog";
+import { Pagination } from "@/components/admin/pagination";
+import { ProductDrawer } from "@/components/admin/product-drawer";
+import { ProductFilters } from "@/components/admin/product-filters";
+import { ProductsTable } from "@/components/admin/products-table";
+import { StockAdjustDialog } from "@/components/admin/stock-adjust-dialog";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
-  getProducts,
+  type CategoryDto,
   getCategories,
+  getProducts,
   getStockLevels,
-  ProductDto,
-  ProductListDto,
-  CategoryDto,
-  StockInfoDto,
-} from '@/lib/api';
+  type ProductDto,
+  type ProductListDto,
+  type StockInfoDto,
+} from "@/lib/api";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<ProductListDto | null>(null);
   const [categories, setCategories] = useState<CategoryDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stockLevels, setStockLevels] = useState<Record<string, StockInfoDto>>({});
+  const [stockLevels, setStockLevels] = useState<Record<string, StockInfoDto>>(
+    {},
+  );
 
   // Filter state
-  const [search, setSearch] = useState('');
-  const [categoryId, setCategoryId] = useState('all');
-  const [status, setStatus] = useState('all');
+  const [search, setSearch] = useState("");
+  const [categoryId, setCategoryId] = useState("all");
+  const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
 
   // Drawer state
@@ -54,7 +56,7 @@ export default function ProductsPage() {
       }
       setStockLevels(map);
     } catch (error) {
-      console.error('Failed to fetch stock levels:', error);
+      console.error("Failed to fetch stock levels:", error);
     }
   }, []);
 
@@ -64,8 +66,8 @@ export default function ProductsPage() {
       const data = await getProducts({
         page,
         pageSize: 20,
-        categoryId: categoryId !== 'all' ? categoryId : undefined,
-        status: status !== 'all' ? status : undefined,
+        categoryId: categoryId !== "all" ? categoryId : undefined,
+        status: status !== "all" ? status : undefined,
         search: search || undefined,
       });
       setProducts(data);
@@ -73,7 +75,7 @@ export default function ProductsPage() {
       const productIds = data.items.map((p) => p.id);
       fetchStockLevels(productIds);
     } catch (error) {
-      console.error('Failed to fetch products:', error);
+      console.error("Failed to fetch products:", error);
     } finally {
       setLoading(false);
     }
@@ -84,7 +86,7 @@ export default function ProductsPage() {
       const data = await getCategories();
       setCategories(data);
     } catch (error) {
-      console.error('Failed to fetch categories:', error);
+      console.error("Failed to fetch categories:", error);
     }
   }, []);
 
@@ -93,9 +95,12 @@ export default function ProductsPage() {
   }, [fetchCategories]);
 
   useEffect(() => {
-    const debounce = setTimeout(() => {
-      fetchProducts();
-    }, search ? 300 : 0); // Debounce search
+    const debounce = setTimeout(
+      () => {
+        fetchProducts();
+      },
+      search ? 300 : 0,
+    ); // Debounce search
 
     return () => clearTimeout(debounce);
   }, [fetchProducts, search]);
@@ -135,9 +140,9 @@ export default function ProductsPage() {
 
   // Helper to find product name by ID
   const getProductName = (productId: string | null) => {
-    if (!productId || !products) return '';
+    if (!productId || !products) return "";
     const product = products.items.find((p) => p.id === productId);
-    return product?.name || '';
+    return product?.name || "";
   };
 
   const getCurrentStock = (productId: string | null) => {
@@ -150,8 +155,8 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-500">Manage your product catalog</p>
+          <h1 className="text-2xl font-bold text-foreground">Products</h1>
+          <p className="text-muted-foreground">Manage your product catalog</p>
         </div>
         <Button onClick={handleAddNew}>
           <Plus className="mr-2 h-4 w-4" />
@@ -171,7 +176,7 @@ export default function ProductsPage() {
       />
 
       {/* Table */}
-      <div className="bg-white rounded-lg border">
+      <div className="rounded-lg border bg-card">
         {loading ? (
           <div className="p-6 space-y-4">
             {[...Array(5)].map((_, i) => (
@@ -195,16 +200,18 @@ export default function ProductsPage() {
           />
         ) : (
           <div className="p-12 text-center">
-            <div className="text-gray-400 mb-4">
-              <Package className="h-12 w-12 mx-auto" />
+            <div className="mb-4 text-muted-foreground">
+              <Package className="mx-auto h-12 w-12" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900">No products found</h3>
-            <p className="text-gray-500 mt-1">
-              {search || categoryId !== 'all' || status !== 'all'
-                ? 'Try adjusting your filters'
-                : 'Get started by adding your first product'}
+            <h3 className="text-lg font-medium text-foreground">
+              No products found
+            </h3>
+            <p className="mt-1 text-muted-foreground">
+              {search || categoryId !== "all" || status !== "all"
+                ? "Try adjusting your filters"
+                : "Get started by adding your first product"}
             </p>
-            {!search && categoryId === 'all' && status === 'all' && (
+            {!search && categoryId === "all" && status === "all" && (
               <Button onClick={handleAddNew} className="mt-4">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Product

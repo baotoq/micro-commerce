@@ -1,21 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import {
-  ShoppingCart,
-  DollarSign,
-  TrendingUp,
-  Clock,
-} from "lucide-react";
-
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
 import {
   Select,
@@ -24,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -32,10 +27,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 
-import { useOrderDashboard, useAllOrders } from "@/hooks/use-orders";
+import { useAllOrders, useOrderDashboard } from "@/hooks/use-orders";
 
 const chartConfig = {
   count: { label: "Orders", color: "hsl(var(--chart-1))" },
@@ -49,13 +42,13 @@ const TIME_RANGE_OPTIONS = [
 ] as const;
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  Submitted: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  Confirmed: "bg-blue-100 text-blue-800 border-blue-200",
-  Paid: "bg-green-100 text-green-800 border-green-200",
-  Shipped: "bg-purple-100 text-purple-800 border-purple-200",
-  Delivered: "bg-green-100 text-green-800 border-green-200",
-  Failed: "bg-red-100 text-red-800 border-red-200",
-  Cancelled: "bg-gray-100 text-gray-800 border-gray-200",
+  Submitted: "bg-warning-bg text-warning-foreground border-transparent",
+  Confirmed: "bg-info-bg text-info-foreground border-transparent",
+  Paid: "bg-success-bg text-success-foreground border-transparent",
+  Shipped: "bg-accent text-accent-foreground border-transparent",
+  Delivered: "bg-success-bg text-success-foreground border-transparent",
+  Failed: "bg-error-bg text-error-foreground border-transparent",
+  Cancelled: "bg-muted text-muted-foreground border-transparent",
 };
 
 function formatCurrency(value: number): string {
@@ -82,20 +75,6 @@ function formatFullDate(dateString: string): string {
   });
 }
 
-function StatCardSkeleton() {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-4 w-4 rounded" />
-      </CardHeader>
-      <CardContent>
-        <Skeleton className="h-8 w-32" />
-      </CardContent>
-    </Card>
-  );
-}
-
 function ChartSkeleton() {
   return (
     <Card>
@@ -117,8 +96,8 @@ function TableSkeleton() {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-10 w-full" />
+          {["s1", "s2", "s3", "s4", "s5"].map((key) => (
+            <Skeleton key={key} className="h-10 w-full" />
           ))}
         </div>
       </CardContent>
@@ -152,75 +131,7 @@ export function OrderDashboard() {
         </Select>
       </div>
 
-      {/* Section 1: Stat Cards */}
-      {isDashboardLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCardSkeleton />
-          <StatCardSkeleton />
-          <StatCardSkeleton />
-          <StatCardSkeleton />
-        </div>
-      ) : dashboard ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Orders
-              </CardTitle>
-              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {dashboard.totalOrders.toLocaleString()}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Revenue
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(dashboard.revenue)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Average Order Value
-              </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(dashboard.averageOrderValue)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Pending Orders
-              </CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {dashboard.pendingOrders.toLocaleString()}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      ) : null}
-
-      {/* Section 2: Orders Per Day Chart */}
+      {/* Orders Per Day Chart */}
       {isDashboardLoading ? (
         <ChartSkeleton />
       ) : dashboard && dashboard.ordersPerDay.length > 0 ? (
@@ -229,7 +140,10 @@ export function OrderDashboard() {
             <CardTitle>Orders Per Day (Last 7 Days)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+            <ChartContainer
+              config={chartConfig}
+              className="min-h-[300px] w-full"
+            >
               <BarChart data={dashboard.ordersPerDay}>
                 <CartesianGrid vertical={false} />
                 <XAxis
@@ -238,7 +152,11 @@ export function OrderDashboard() {
                   axisLine={false}
                   tickFormatter={(value: string) => formatDate(value)}
                 />
-                <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
+                <YAxis
+                  allowDecimals={false}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
@@ -246,11 +164,7 @@ export function OrderDashboard() {
                     />
                   }
                 />
-                <Bar
-                  dataKey="count"
-                  fill="var(--color-count)"
-                  radius={4}
-                />
+                <Bar dataKey="count" fill="var(--color-count)" radius={4} />
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -261,14 +175,14 @@ export function OrderDashboard() {
             <CardTitle>Orders Per Day (Last 7 Days)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+            <div className="flex h-[300px] items-center justify-center text-muted-foreground">
               No orders yet
             </div>
           </CardContent>
         </Card>
       ) : null}
 
-      {/* Section 3: Recent Orders Table */}
+      {/* Recent Orders Table */}
       {isOrdersLoading ? (
         <TableSkeleton />
       ) : recentOrders && recentOrders.items.length > 0 ? (
@@ -279,21 +193,31 @@ export function OrderDashboard() {
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Order Number</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Items</TableHead>
-                  <TableHead>Date</TableHead>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="text-xs font-semibold uppercase text-muted-foreground">
+                    Order Number
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase text-muted-foreground">
+                    Status
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase text-muted-foreground">
+                    Total
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase text-muted-foreground">
+                    Items
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase text-muted-foreground">
+                    Date
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {recentOrders.items.map((order) => (
-                  <TableRow key={order.id}>
+                  <TableRow key={order.id} className="hover:bg-muted/30">
                     <TableCell>
                       <Link
                         href={`/admin/orders/${order.id}`}
-                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                        className="font-medium text-primary hover:underline"
                       >
                         {order.orderNumber}
                       </Link>
@@ -303,7 +227,7 @@ export function OrderDashboard() {
                         variant="outline"
                         className={
                           STATUS_BADGE_STYLES[order.status] ??
-                          "bg-gray-100 text-gray-800 border-gray-200"
+                          "bg-muted text-muted-foreground border-transparent"
                         }
                       >
                         {order.status}
@@ -326,7 +250,7 @@ export function OrderDashboard() {
             <CardTitle>Recent Orders</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-center h-32 text-muted-foreground">
+            <div className="flex h-32 items-center justify-center text-muted-foreground">
               No orders yet
             </div>
           </CardContent>

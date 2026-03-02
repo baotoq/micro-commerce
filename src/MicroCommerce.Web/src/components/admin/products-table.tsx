@@ -1,7 +1,24 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
+import {
+  Archive,
+  Eye,
+  EyeOff,
+  History,
+  MoreHorizontal,
+  Package,
+  Pencil,
+} from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -9,17 +26,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Pencil, Archive, Eye, EyeOff, Package, History } from 'lucide-react';
-import { ProductDto, StockInfoDto, changeProductStatus, archiveProduct } from '@/lib/api';
+  archiveProduct,
+  changeProductStatus,
+  type ProductDto,
+  type StockInfoDto,
+} from "@/lib/api";
 
 interface ProductsTableProps {
   products: ProductDto[];
@@ -41,13 +54,13 @@ export function ProductsTable({
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleStatusChange = async (product: ProductDto) => {
-    const newStatus = product.status === 'Published' ? 'Draft' : 'Published';
+    const newStatus = product.status === "Published" ? "Draft" : "Published";
     setLoading(product.id);
     try {
       await changeProductStatus(product.id, newStatus);
       onRefresh();
     } catch (error) {
-      console.error('Failed to change status:', error);
+      console.error("Failed to change status:", error);
     } finally {
       setLoading(null);
     }
@@ -60,27 +73,35 @@ export function ProductsTable({
       await archiveProduct(product.id);
       onRefresh();
     } catch (error) {
-      console.error('Failed to archive:', error);
+      console.error("Failed to archive:", error);
     } finally {
       setLoading(null);
     }
   };
 
   const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
       currency: currency,
     }).format(price);
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Published':
-        return <Badge className="bg-green-100 text-green-800">Published</Badge>;
-      case 'Draft':
+      case "Published":
+        return (
+          <Badge className="bg-success-bg text-success-foreground border-transparent">
+            Published
+          </Badge>
+        );
+      case "Draft":
         return <Badge variant="secondary">Draft</Badge>;
-      case 'Archived':
-        return <Badge variant="outline" className="text-gray-500">Archived</Badge>;
+      case "Archived":
+        return (
+          <Badge variant="outline" className="text-muted-foreground">
+            Archived
+          </Badge>
+        );
       default:
         return <Badge>{status}</Badge>;
     }
@@ -90,46 +111,56 @@ export function ProductsTable({
     const stock = stockLevels[productId];
 
     if (!stock) {
-      return <span className="text-gray-400">-</span>;
+      return <span className="text-muted-foreground">-</span>;
     }
 
     if (stock.availableQuantity === 0) {
-      return (
-        <Badge variant="destructive">Out of Stock</Badge>
-      );
+      return <Badge variant="destructive">Out of Stock</Badge>;
     }
 
     if (stock.isLowStock) {
       return (
-        <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
+        <Badge className="border-warning bg-warning-bg text-warning-foreground">
           Only {stock.availableQuantity} left
         </Badge>
       );
     }
 
     return (
-      <Badge variant="secondary">
-        In Stock ({stock.availableQuantity})
-      </Badge>
+      <Badge variant="secondary">In Stock ({stock.availableQuantity})</Badge>
     );
   };
 
   return (
     <Table>
       <TableHeader>
-        <TableRow>
-          <TableHead className="w-[80px]">Image</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Category</TableHead>
-          <TableHead className="text-right">Price</TableHead>
-          <TableHead>Stock</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="w-[70px]">Actions</TableHead>
+        <TableRow className="bg-muted/50">
+          <TableHead className="w-[80px] text-xs font-semibold uppercase text-muted-foreground">
+            Image
+          </TableHead>
+          <TableHead className="text-xs font-semibold uppercase text-muted-foreground">
+            Name
+          </TableHead>
+          <TableHead className="text-xs font-semibold uppercase text-muted-foreground">
+            Category
+          </TableHead>
+          <TableHead className="text-right text-xs font-semibold uppercase text-muted-foreground">
+            Price
+          </TableHead>
+          <TableHead className="text-xs font-semibold uppercase text-muted-foreground">
+            Stock
+          </TableHead>
+          <TableHead className="text-xs font-semibold uppercase text-muted-foreground">
+            Status
+          </TableHead>
+          <TableHead className="w-[70px] text-xs font-semibold uppercase text-muted-foreground">
+            Actions
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {products.map((product) => (
-          <TableRow key={product.id}>
+          <TableRow key={product.id} className="hover:bg-muted/30">
             <TableCell>
               {product.imageUrl ? (
                 <Image
@@ -140,28 +171,34 @@ export function ProductsTable({
                   className="rounded object-cover"
                 />
               ) : (
-                <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400">
-                  <Package className="w-6 h-6" />
+                <div className="flex h-12 w-12 items-center justify-center rounded bg-muted text-muted-foreground">
+                  <Package className="h-6 w-6" />
                 </div>
               )}
             </TableCell>
             <TableCell>
               <div>
-                <div className="font-medium">{product.name}</div>
+                <div className="font-medium text-foreground">
+                  {product.name}
+                </div>
                 {product.sku && (
-                  <div className="text-sm text-gray-500">SKU: {product.sku}</div>
+                  <div className="text-sm text-muted-foreground">
+                    SKU: {product.sku}
+                  </div>
                 )}
               </div>
             </TableCell>
-            <TableCell>{product.categoryName}</TableCell>
-            <TableCell className="text-right">
+            <TableCell className="text-foreground">
+              {product.categoryName}
+            </TableCell>
+            <TableCell className="text-right text-foreground">
               {formatPrice(product.price, product.priceCurrency)}
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
-                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  className="cursor-pointer transition-opacity hover:opacity-80"
                   onClick={() => onAdjustStock(product.id)}
                   title="Adjust stock"
                 >
@@ -174,7 +211,7 @@ export function ProductsTable({
                   onClick={() => onViewHistory(product.id)}
                   title="View adjustment history"
                 >
-                  <History className="h-3.5 w-3.5 text-gray-400" />
+                  <History className="h-3.5 w-3.5 text-muted-foreground" />
                 </Button>
               </div>
             </TableCell>
@@ -195,9 +232,11 @@ export function ProductsTable({
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit
                   </DropdownMenuItem>
-                  {product.status !== 'Archived' && (
-                    <DropdownMenuItem onClick={() => handleStatusChange(product)}>
-                      {product.status === 'Published' ? (
+                  {product.status !== "Archived" && (
+                    <DropdownMenuItem
+                      onClick={() => handleStatusChange(product)}
+                    >
+                      {product.status === "Published" ? (
                         <>
                           <EyeOff className="mr-2 h-4 w-4" />
                           Unpublish
@@ -210,10 +249,10 @@ export function ProductsTable({
                       )}
                     </DropdownMenuItem>
                   )}
-                  {product.status !== 'Archived' && (
+                  {product.status !== "Archived" && (
                     <DropdownMenuItem
                       onClick={() => handleArchive(product)}
-                      className="text-red-600"
+                      className="text-destructive"
                     >
                       <Archive className="mr-2 h-4 w-4" />
                       Archive

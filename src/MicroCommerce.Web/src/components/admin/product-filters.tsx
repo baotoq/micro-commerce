@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Input } from '@/components/ui/input';
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Search } from 'lucide-react';
-import { CategoryDto } from '@/lib/api';
+} from "@/components/ui/select";
+import type { CategoryDto } from "@/lib/api";
 
 interface ProductFiltersProps {
   categories: CategoryDto[];
@@ -31,9 +31,9 @@ export function ProductFilters({
   onStatusChange,
 }: ProductFiltersProps) {
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
+    <div className="flex flex-col gap-4 sm:flex-row">
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search products..."
           value={search}
@@ -68,4 +68,3 @@ export function ProductFilters({
     </div>
   );
 }
-

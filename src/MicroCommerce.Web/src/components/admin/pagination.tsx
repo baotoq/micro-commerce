@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PaginationProps {
   page: number;
@@ -10,14 +10,19 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function Pagination({ page, pageSize, totalCount, onPageChange }: PaginationProps) {
+export function Pagination({
+  page,
+  pageSize,
+  totalCount,
+  onPageChange,
+}: PaginationProps) {
   const totalPages = Math.ceil(totalCount / pageSize);
   const startItem = (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, totalCount);
 
   return (
     <div className="flex items-center justify-between">
-      <div className="text-sm text-gray-500">
+      <div className="text-sm text-muted-foreground">
         Showing {startItem} to {endItem} of {totalCount} products
       </div>
       <div className="flex items-center gap-2">
@@ -30,7 +35,7 @@ export function Pagination({ page, pageSize, totalCount, onPageChange }: Paginat
           <ChevronLeft className="h-4 w-4" />
           Previous
         </Button>
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-muted-foreground">
           Page {page} of {totalPages}
         </span>
         <Button
@@ -46,4 +51,3 @@ export function Pagination({ page, pageSize, totalCount, onPageChange }: Paginat
     </div>
   );
 }
-
