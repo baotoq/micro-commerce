@@ -6,6 +6,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 CLUSTER_NAME="micro-commerce"
 NAMESPACE="micro-commerce"
 SEALED_SECRETS_VERSION="v0.27.3"
+ARGOCD_VERSION="v3.3.2"
 
 # Color output
 GREEN='\033[0;32m'
@@ -40,7 +41,7 @@ kubectl rollout status deployment/sealed-secrets-controller -n kube-system --tim
 info "Creating namespace '${NAMESPACE}'..."
 kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
-# --- Step 6: Seal dev secrets ---
+# --- Step 6: Seal dev secrets and apply directly ---
 info "Sealing dev secrets..."
 
 seal_secret() {
@@ -76,21 +77,31 @@ seal_secret "keycloak-credentials" \
   --from-literal=admin-username=admin \
   --from-literal=admin-password=admin
 
-# --- Step 7: Apply infrastructure manifests ---
-info "Applying infrastructure manifests..."
-kubectl apply -k "$SCRIPT_DIR/base/"
+info "Applying sealed secrets..."
+kubectl apply -f "$SCRIPT_DIR/base/postgres/sealed-secret.yaml"
+kubectl apply -f "$SCRIPT_DIR/base/rabbitmq/sealed-secret.yaml"
+kubectl apply -f "$SCRIPT_DIR/base/keycloak/sealed-secret.yaml"
 
-# --- Step 8: Wait for pods ---
-info "Waiting for PostgreSQL..."
-kubectl wait --for=condition=ready pod -l app=postgres -n "$NAMESPACE" --timeout=120s
+# --- Step 7: Install ArgoCD ---
+info "Installing ArgoCD ${ARGOCD_VERSION}..."
+kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+kubectl apply -n argocd --server-side --force-conflicts \
+  -f "https://raw.githubusercontent.com/argoproj/argo-cd/${ARGOCD_VERSION}/manifests/install.yaml"
 
-info "Waiting for RabbitMQ..."
-kubectl wait --for=condition=ready pod -l app=rabbitmq -n "$NAMESPACE" --timeout=120s
+# --- Step 8: Wait for ArgoCD to be ready ---
+info "Waiting for ArgoCD to be ready..."
+kubectl rollout status deployment argocd-server -n argocd --timeout=120s
+kubectl rollout status deployment argocd-repo-server -n argocd --timeout=120s
+kubectl rollout status deployment argocd-applicationset-controller -n argocd --timeout=120s
 
-info "Waiting for Keycloak (may take up to 3 minutes for realm import)..."
-kubectl wait --for=condition=ready pod -l app=keycloak -n "$NAMESPACE" --timeout=180s
+# --- Step 9: Configure ArgoCD for local access ---
+info "Configuring ArgoCD for local access..."
+kubectl apply -f "$SCRIPT_DIR/argocd/argocd-cmd-params-cm.yaml"
+kubectl rollout restart deployment argocd-server -n argocd
+kubectl rollout status deployment argocd-server -n argocd --timeout=120s
+kubectl apply -f "$SCRIPT_DIR/argocd/argocd-server-nodeport.yaml"
 
-# --- Step 9: Build application container images ---
+# --- Step 10: Build application container images ---
 info "Building application container images..."
 
 info "  Building ApiService..."
@@ -116,17 +127,29 @@ docker build \
   "$PROJECT_ROOT/src/MicroCommerce.Web" \
   --quiet
 
-# --- Step 10: Load images into kind ---
+# --- Step 11: Load images into kind ---
 info "Loading images into kind cluster..."
 kind load docker-image apiservice:dev --name "$CLUSTER_NAME"
 kind load docker-image gateway:dev --name "$CLUSTER_NAME"
 kind load docker-image web:dev --name "$CLUSTER_NAME"
 
-# --- Step 11: Apply application manifests ---
-info "Applying application manifests..."
-kubectl apply -k "$SCRIPT_DIR/overlays/dev/"
+# --- Step 12: Apply ArgoCD root app-of-apps ---
+info "Applying ArgoCD root app-of-apps..."
+kubectl apply -f "$SCRIPT_DIR/argocd/root-app.yaml"
 
-# --- Step 12: Wait for application pods ---
+# --- Step 13: Wait for ArgoCD to sync all applications ---
+info "Waiting for ArgoCD to sync all applications..."
+sleep 10
+
+info "Waiting for PostgreSQL..."
+kubectl wait --for=condition=ready pod -l app=postgres -n "$NAMESPACE" --timeout=120s
+
+info "Waiting for RabbitMQ..."
+kubectl wait --for=condition=ready pod -l app=rabbitmq -n "$NAMESPACE" --timeout=120s
+
+info "Waiting for Keycloak (may take up to 3 minutes for realm import)..."
+kubectl wait --for=condition=ready pod -l app=keycloak -n "$NAMESPACE" --timeout=180s
+
 info "Waiting for ApiService (may take up to 3 minutes for first-boot migrations)..."
 kubectl wait --for=condition=ready pod -l app=apiservice -n "$NAMESPACE" --timeout=180s
 
@@ -136,7 +159,10 @@ kubectl wait --for=condition=ready pod -l app=gateway -n "$NAMESPACE" --timeout=
 info "Waiting for Web..."
 kubectl wait --for=condition=ready pod -l app=web -n "$NAMESPACE" --timeout=120s
 
-# --- Step 13: Print access info ---
+# --- Step 14: Print access info ---
+ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath='{.data.password}' | base64 --decode)
+
 echo ""
 info "Full stack ready!"
 echo ""
@@ -145,11 +171,13 @@ echo "  PostgreSQL:          localhost:35432 (user: postgres, pass: postgres, db
 echo "  RabbitMQ Management: http://localhost:35672 (user: guest, pass: guest)"
 echo "  Keycloak Admin:      http://localhost:38080 (user: admin, pass: admin)"
 echo "  Gateway (API):       http://localhost:38800"
+echo "  ArgoCD UI:           http://localhost:38443 (user: admin, pass: ${ARGOCD_PASSWORD})"
 echo ""
 echo "Storefront: http://localhost:38800 (via Gateway)"
 echo ""
 echo "Useful commands:"
 echo "  kubectl get pods -n ${NAMESPACE}"
+echo "  kubectl get applications -n argocd"
 echo "  kubectl logs -f deployment/apiservice -n ${NAMESPACE}"
 echo "  kubectl logs -f deployment/gateway -n ${NAMESPACE}"
 echo "  kubectl logs -f deployment/web -n ${NAMESPACE}"
