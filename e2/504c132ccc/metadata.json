@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "e2504c132ccc",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/v3.0-MILESTONE-AUDIT.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e2/504c132ccc/0/metadata.json",
+      "transcript": "/e2/504c132ccc/0/full.jsonl",
+      "context": "/e2/504c132ccc/0/context.md",
+      "content_hash": "/e2/504c132ccc/0/content_hash.txt",
+      "prompt": "/e2/504c132ccc/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 21,
+    "cache_creation_tokens": 63245,
+    "cache_read_tokens": 1048496,
+    "output_tokens": 12359,
+    "api_call_count": 15
+  }
+}
