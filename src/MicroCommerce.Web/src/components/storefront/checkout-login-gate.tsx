@@ -5,13 +5,21 @@ import { signIn, useSession } from "next-auth/react";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface CheckoutLoginGateProps {
   onContinueAsGuest: () => void;
 }
 
-export function CheckoutLoginGate({ onContinueAsGuest }: CheckoutLoginGateProps) {
+export function CheckoutLoginGate({
+  onContinueAsGuest,
+}: CheckoutLoginGateProps) {
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -28,10 +36,10 @@ export function CheckoutLoginGate({ onContinueAsGuest }: CheckoutLoginGateProps)
     <div className="flex items-center justify-center py-16">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">How would you like to checkout?</CardTitle>
-          <p className="text-sm text-zinc-500">
+          <CardTitle className="text-xl">Sign in to continue</CardTitle>
+          <CardDescription>
             Sign in for a faster experience or continue as a guest.
-          </p>
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <Button
@@ -43,6 +51,16 @@ export function CheckoutLoginGate({ onContinueAsGuest }: CheckoutLoginGateProps)
             <LogIn className="mr-2 size-4" />
             Sign In
           </Button>
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                or continue as guest
+              </span>
+            </div>
+          </div>
           <Button
             className="w-full"
             size="lg"
