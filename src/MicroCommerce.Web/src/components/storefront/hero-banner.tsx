@@ -1,31 +1,44 @@
-import Link from 'next/link';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function HeroBanner() {
   return (
-    <section className="relative overflow-hidden bg-white">
-      {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-zinc-50 to-white" />
-
-      <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium uppercase tracking-widest text-zinc-400">
-            New arrivals
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
-            The Latest in Tech
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#EFF6FF] to-[#F0FDF4]">
+      <div className="mx-auto flex max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:px-20 lg:py-0">
+        {/* Left: Content */}
+        <div className="flex flex-1 flex-col gap-6 py-16 lg:py-20">
+          <span className="inline-flex w-fit rounded-full bg-accent px-3.5 py-1.5 text-[13px] font-medium text-accent-foreground">
+            New Collection 2026
+          </span>
+          <h1 className="max-w-[500px] text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+            Discover Your Style
           </h1>
-          <p className="mt-6 text-lg leading-relaxed text-zinc-500">
-            Discover our curated collection of premium electronics.
-            From laptops to accessories, find everything you need.
+          <p className="max-w-[480px] text-base leading-relaxed text-muted-foreground">
+            Explore our curated collection of premium products. From everyday
+            essentials to luxury finds, shop with confidence.
           </p>
-          <div className="mt-10">
-            <Link
-              href="#products"
-              className="inline-flex items-center rounded-full bg-zinc-900 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-700"
+          <div className="flex items-center gap-3">
+            <Button
+              asChild
+              size="lg"
+              className="h-12 px-7 text-base font-semibold"
             >
-              Browse Products
-            </Link>
+              <Link href="#products">Shop Now</Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-12 px-7 text-base font-semibold"
+            >
+              <Link href="#products">Browse Catalog</Link>
+            </Button>
           </div>
+        </div>
+
+        {/* Right: Hero image placeholder */}
+        <div className="hidden lg:block">
+          <div className="h-[340px] w-[500px] overflow-hidden rounded-xl bg-muted" />
         </div>
       </div>
     </section>

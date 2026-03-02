@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Kubernetes & GitOps
 status: in-progress
-last_updated: "2026-03-01T17:42:34Z"
+last_updated: "2026-03-02T11:03:00Z"
 progress:
   total_phases: 3
   completed_phases: 3
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 25.1 (Update UI based on pencil design with shadcn)
-Plan: 1 of 11 complete
+Plan: 10 of 11 complete
 Status: In Progress
-Last activity: 2026-03-02 — Completed Plan 01 (Theme/Globals Foundation)
+Last activity: 2026-03-02 — Completed Plan 10 (Auth Login)
 
-Progress: [█████████████████████████░░░░░] 83% (25/28 phases complete across all milestones — Phase 25.1 inserted: 1/11 plans done)
+Progress: [█████████████████████████████░] 83% (25/28 phases complete across all milestones — Phase 25.1 inserted: 10/11 plans done)
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [███████████████████████
 | Phase 25-02 P02 | 2min | 2 tasks | 12 files |
 | Phase 25-03 P03 | 2min | 2 tasks | 1 file |
 | Phase 25.1-01 P01 | 2min | 3 tasks | 2 files |
+| Phase 25.1-10 P10 | 1min | 1 task | 1 file |
 
 ## Accumulated Context
 
@@ -95,6 +96,9 @@ Recent decisions affecting v3.0:
 - [Phase 25.1]: [Phase 25.1-01]: Removed dark mode section entirely (not kept inert) per locked design decision
 - [Phase 25.1]: [Phase 25.1-01]: Used exact oklch values from RESEARCH.md for design-system.pen color consistency
 - [Phase 25.1]: [Phase 25.1-01]: Biome auto-formatted comment alignment in globals.css (cosmetic only)
+- [Phase 25.1]: [Phase 25.1-10]: Email/password fields as disabled visual chrome; actual auth via Keycloak SSO redirect
+- [Phase 25.1]: [Phase 25.1-10]: Both Sign In and SSO buttons trigger signIn('keycloak') for consistent flow
+- [Phase 25.1]: [Phase 25.1-10]: Sign up link redirects to Keycloak since registration handled by identity provider
 
 ### Pending Todos
 
@@ -113,6 +117,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 25.1-01-PLAN.md (Theme/Globals Foundation)
+Stopped at: Completed 25.1-10-PLAN.md (Auth Login)
 Resume file: None
-Next step: Execute 25.1-02-PLAN.md (Homepage)
+Next step: Execute 25.1-11-PLAN.md (Admin Dashboard)

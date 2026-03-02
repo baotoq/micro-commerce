@@ -1,15 +1,29 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { ShoppingCart, Menu, X, ClipboardList, User, Heart } from 'lucide-react';
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { useSession, signIn } from 'next-auth/react';
-import { useQueryClient } from '@tanstack/react-query';
-
-import { useCartItemCount } from '@/hooks/use-cart';
-import { useWishlistCount } from '@/hooks/use-wishlist';
-import { SearchBar } from './search-bar';
-import { mergeCart } from '@/lib/api';
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  ClipboardList,
+  Heart,
+  Menu,
+  ShoppingBag,
+  ShoppingCart,
+  User,
+} from "lucide-react";
+import Link from "next/link";
+import { signIn, useSession } from "next-auth/react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { useCartItemCount } from "@/hooks/use-cart";
+import { useWishlistCount } from "@/hooks/use-wishlist";
+import { mergeCart } from "@/lib/api";
+import { SearchBar } from "./search-bar";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,136 +55,167 @@ export function Header() {
     }
   }, [session, queryClient]);
 
+  const userInitials = session?.user?.name
+    ? session.user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : null;
+
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/80 backdrop-blur-xl">
-      <nav className="mx-auto flex h-12 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
         {/* Left: Logo */}
-        <div className="flex shrink-0 items-center">
-          <Link href="/" className="text-sm font-semibold tracking-tight text-zinc-900">
+        <div className="flex shrink-0 items-center gap-2">
+          <ShoppingBag className="size-6 text-primary" />
+          <Link
+            href="/"
+            className="text-lg font-bold tracking-tight text-foreground"
+          >
             MicroCommerce
           </Link>
         </div>
 
         {/* Center: Search bar (desktop) */}
         <div className="hidden flex-1 justify-center sm:flex">
-          <Suspense fallback={null}>
-            <SearchBar />
-          </Suspense>
-        </div>
-
-        {/* Right: Icons */}
-        <div className="flex shrink-0 items-center gap-4">
-          {session ? (
-            <Link
-              href="/account"
-              className="hidden text-zinc-500 transition-colors hover:text-zinc-900 sm:block"
-              aria-label="My account"
-            >
-              <User className="h-4 w-4" />
-            </Link>
-          ) : (
-            <button
-              onClick={() => signIn("keycloak")}
-              className="hidden text-zinc-500 transition-colors hover:text-zinc-900 sm:block"
-              aria-label="Sign in"
-            >
-              <User className="h-4 w-4" />
-            </button>
-          )}
-          <Link
-            href="/orders"
-            className="hidden text-zinc-500 transition-colors hover:text-zinc-900 sm:block"
-            aria-label="My orders"
-          >
-            <ClipboardList className="h-4 w-4" />
-          </Link>
-          <Link
-            href="/wishlist"
-            className="hidden text-zinc-500 transition-colors hover:text-zinc-900 sm:block relative"
-            aria-label="Wishlist"
-          >
-            <Heart className="h-4 w-4" />
-            {wishlistCount > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-zinc-900 text-[9px] font-medium text-white">
-                {wishlistCount > 99 ? '99+' : wishlistCount}
-              </span>
-            )}
-          </Link>
-          <Link
-            href="/cart"
-            className="relative text-zinc-500 transition-colors hover:text-zinc-900"
-            aria-label="Shopping cart"
-          >
-            <ShoppingCart className={`h-4 w-4 transition-transform duration-300 ${bounce ? 'scale-125' : 'scale-100'}`} />
-            {cartCount > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-zinc-900 text-[9px] font-medium text-white">
-                {cartCount > 99 ? '99+' : cartCount}
-              </span>
-            )}
-          </Link>
-
-          {/* Mobile menu toggle */}
-          <button
-            type="button"
-            className="sm:hidden text-zinc-500 transition-colors hover:text-zinc-900"
-            aria-label="Toggle menu"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="border-t border-zinc-200/80 bg-white sm:hidden">
-          <div className="space-y-3 px-4 py-3">
+          <div className="w-full max-w-[400px]">
             <Suspense fallback={null}>
               <SearchBar />
             </Suspense>
-            <Link
-              href="/"
-              className="block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Products
-            </Link>
-            {session ? (
-              <Link
-                href="/account"
-                className="block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Account
-              </Link>
-            ) : (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  signIn("keycloak");
-                }}
-                className="block w-full text-left text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
-              >
-                Sign In
-              </button>
-            )}
-            <Link
-              href="/wishlist"
-              className="block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Wishlist
-            </Link>
-            <Link
-              href="/orders"
-              className="block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Orders
-            </Link>
           </div>
         </div>
-      )}
+
+        {/* Right: Icons */}
+        <div className="flex shrink-0 items-center gap-5">
+          <Link
+            href="/wishlist"
+            className="relative hidden text-muted-foreground transition-colors hover:text-foreground sm:block"
+            aria-label="Wishlist"
+          >
+            <Heart className="size-[22px]" />
+            {wishlistCount > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+                {wishlistCount > 99 ? "99+" : wishlistCount}
+              </span>
+            )}
+          </Link>
+
+          <Link
+            href="/cart"
+            className="relative flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Shopping cart"
+          >
+            <ShoppingCart
+              className={`size-[22px] transition-transform duration-300 ${bounce ? "scale-125" : "scale-100"}`}
+            />
+            {cartCount > 0 && (
+              <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
+          </Link>
+
+          {session ? (
+            <Link
+              href="/account"
+              className="hidden sm:block"
+              aria-label="My account"
+            >
+              <Avatar className="size-10">
+                <AvatarFallback className="bg-muted text-sm font-semibold text-foreground">
+                  {userInitials ?? <User className="size-4" />}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => signIn("keycloak")}
+              className="hidden sm:block"
+              aria-label="Sign in"
+            >
+              <Avatar className="size-10">
+                <AvatarFallback className="bg-muted text-foreground">
+                  <User className="size-4" />
+                </AvatarFallback>
+              </Avatar>
+            </button>
+          )}
+
+          {/* Mobile menu toggle */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <button
+                type="button"
+                className="text-muted-foreground transition-colors hover:text-foreground sm:hidden"
+                aria-label="Open menu"
+              >
+                <Menu className="size-5" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72">
+              <SheetHeader>
+                <SheetTitle>Menu</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4 flex flex-col gap-1 px-4">
+                <Suspense fallback={null}>
+                  <SearchBar />
+                </Suspense>
+                <div className="mt-4 flex flex-col gap-3">
+                  <Link
+                    href="/"
+                    className="flex items-center gap-3 text-sm font-medium text-foreground transition-colors hover:text-primary"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <ShoppingBag className="size-4" />
+                    Products
+                  </Link>
+                  {session ? (
+                    <Link
+                      href="/account"
+                      className="flex items-center gap-3 text-sm font-medium text-foreground transition-colors hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <User className="size-4" />
+                      Account
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        signIn("keycloak");
+                      }}
+                      className="flex items-center gap-3 text-left text-sm font-medium text-foreground transition-colors hover:text-primary"
+                    >
+                      <User className="size-4" />
+                      Sign In
+                    </button>
+                  )}
+                  <Link
+                    href="/wishlist"
+                    className="flex items-center gap-3 text-sm font-medium text-foreground transition-colors hover:text-primary"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Heart className="size-4" />
+                    Wishlist
+                  </Link>
+                  <Link
+                    href="/orders"
+                    className="flex items-center gap-3 text-sm font-medium text-foreground transition-colors hover:text-primary"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <ClipboardList className="size-4" />
+                    Orders
+                  </Link>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </nav>
     </header>
   );
 }

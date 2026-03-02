@@ -116,7 +116,7 @@
 **Goal:** Refresh all storefront and admin UI screens to match the split per-page pencil design files using existing shadcn/ui primitives and Tailwind CSS. Visual update only -- no new backend features, API endpoints, or routes.
 **Requirements**: UI-THEME, UI-HOME, UI-CATALOG, UI-PRODUCT-DETAIL, UI-CART, UI-CHECKOUT, UI-ORDER-CONFIRM, UI-ORDER-HISTORY, UI-PROFILE, UI-AUTH-LOGIN, UI-ADMIN
 **Depends on:** Phase 25
-**Plans:** 1/11 plans executed
+**Plans:** 10/11 plans executed
 
 Plans:
 - [ ] 25.1-01-PLAN.md -- Theme/globals: CSS variable color palette + DM Sans font swap
@@ -128,7 +128,7 @@ Plans:
 - [ ] 25.1-07-PLAN.md -- Order Confirmation: success banner, order details
 - [ ] 25.1-08-PLAN.md -- Order History: order list table, detail with status stepper
 - [ ] 25.1-09-PLAN.md -- User Profile: account sidebar, profile form, addresses
-- [ ] 25.1-10-PLAN.md -- Auth Login: branded Keycloak login page
+- [x] 25.1-10-PLAN.md -- Auth Login: branded Keycloak login page
 - [ ] 25.1-11-PLAN.md -- Admin Dashboard: dark sidebar layout, stat cards, tables
 
 ### Phase 26: ArgoCD GitOps

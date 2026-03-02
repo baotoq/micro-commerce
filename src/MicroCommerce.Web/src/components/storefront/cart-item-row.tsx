@@ -1,8 +1,9 @@
 "use client";
 
-import { Minus, Package, Plus, Trash2 } from "lucide-react";
+import { Package, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { QuantityStepper } from "@/components/storefront/quantity-stepper";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -79,30 +80,13 @@ export function CartItemRow({
         </p>
       </div>
 
-      {/* Quantity stepper - inline implementation matching design-system.pen QuantityStepper */}
-      <div className="inline-flex h-9 items-center rounded-md border border-border">
-        <button
-          type="button"
-          onClick={() => onUpdateQuantity(item.quantity - 1)}
-          disabled={item.quantity <= 1 || isBusy}
-          className="flex h-full w-9 items-center justify-center text-foreground transition-colors hover:bg-muted disabled:opacity-50"
-          aria-label="Decrease quantity"
-        >
-          <Minus className="size-3.5" />
-        </button>
-        <span className="flex h-full w-12 items-center justify-center border-x border-border text-sm font-medium tabular-nums">
-          {item.quantity}
-        </span>
-        <button
-          type="button"
-          onClick={() => onUpdateQuantity(item.quantity + 1)}
-          disabled={item.quantity >= 99 || isBusy}
-          className="flex h-full w-9 items-center justify-center text-foreground transition-colors hover:bg-muted disabled:opacity-50"
-          aria-label="Increase quantity"
-        >
-          <Plus className="size-3.5" />
-        </button>
-      </div>
+      {/* Quantity stepper */}
+      <QuantityStepper
+        value={item.quantity}
+        onDecrement={() => onUpdateQuantity(item.quantity - 1)}
+        onIncrement={() => onUpdateQuantity(item.quantity + 1)}
+        disabled={isBusy}
+      />
 
       {/* Line total */}
       <p className="w-24 text-right text-base font-bold text-foreground max-md:hidden">

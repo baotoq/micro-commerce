@@ -30,7 +30,7 @@ export function SearchBar() {
       }
       router.replace(`?${params.toString()}`, { scroll: false });
     },
-    [router, searchParams]
+    [router, searchParams],
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,23 +64,23 @@ export function SearchBar() {
   }, []);
 
   return (
-    <div className="relative w-full max-w-xs">
-      <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+    <div className="relative w-full">
+      <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         type="text"
         placeholder="Search products..."
         value={value}
         onChange={handleChange}
-        className="h-8 rounded-full border-zinc-200 bg-zinc-50 pl-8 pr-8 text-xs placeholder:text-zinc-400 focus-visible:border-zinc-300 focus-visible:ring-zinc-200/50"
+        className="h-10 rounded-full border-border bg-background pl-9 pr-9 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/20"
       />
       {value && (
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 transition-colors hover:text-zinc-600"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
           aria-label="Clear search"
         >
-          <X className="h-3.5 w-3.5" />
+          <X className="size-4" />
         </button>
       )}
     </div>
