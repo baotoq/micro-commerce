@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "22ccb1bb0d8b",
+  "session_id": "6a9e82b7-148a-4650-834f-63e9f6c7029a",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T17:04:23.899452Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/MicroCommerce.Web/src/lib/api.ts"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "a7867314a521",
+  "checkpoint_transcript_start": 116,
+  "transcript_lines_at_start": 116,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T17:04:23.752246Z",
+    "agent_lines": 117,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 117,
+    "agent_percentage": 100
+  }
+}
