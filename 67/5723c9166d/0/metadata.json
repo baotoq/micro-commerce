@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "675723c9166d",
+  "session_id": "a125703b-3f6d-403e-807d-083d04744f21",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T11:48:38.598522Z",
+  "branch": "master",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".planning/phases/25.1-update-ui-based-on-pencil-new-pen-design-with-shadcn/25.1-VERIFICATION.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "850b458799c3",
+  "token_usage": {
+    "input_tokens": 88,
+    "cache_creation_tokens": 162917,
+    "cache_read_tokens": 3581768,
+    "output_tokens": 22355,
+    "api_call_count": 46
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T11:48:38.028579Z",
+    "agent_lines": 81,
+    "human_added": 1,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 82,
+    "agent_percentage": 98.78048780487805
+  }
+}
