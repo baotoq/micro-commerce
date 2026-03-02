@@ -1,0 +1,34 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "3d50b889c8c1",
+  "session_id": "3ff5df90-448e-4ed5-b95f-d6d4b72de583",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T14:08:31.651395Z",
+  "branch": "master",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "infra/k8s/argocd/apps/apiservice.yaml",
+    "infra/k8s/argocd/apps/gateway.yaml",
+    "infra/k8s/argocd/apps/keycloak.yaml",
+    "infra/k8s/argocd/apps/web.yaml",
+    "infra/k8s/kind-config.yaml"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "def54df32e76",
+  "token_usage": {
+    "input_tokens": 3,
+    "cache_creation_tokens": 29659,
+    "cache_read_tokens": 11680,
+    "output_tokens": 433,
+    "api_call_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T14:08:31.627864Z",
+    "agent_lines": 56,
+    "human_added": 157,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 213,
+    "agent_percentage": 26.291079812206576
+  }
+}

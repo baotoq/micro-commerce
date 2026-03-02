@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "3d50b889c8c1",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "infra/k8s/argocd/apps/apiservice.yaml",
+    "infra/k8s/argocd/apps/gateway.yaml",
+    "infra/k8s/argocd/apps/keycloak.yaml",
+    "infra/k8s/argocd/apps/web.yaml",
+    "infra/k8s/kind-config.yaml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3d/50b889c8c1/0/metadata.json",
+      "transcript": "/3d/50b889c8c1/0/full.jsonl",
+      "context": "/3d/50b889c8c1/0/context.md",
+      "content_hash": "/3d/50b889c8c1/0/content_hash.txt",
+      "prompt": "/3d/50b889c8c1/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 3,
+    "cache_creation_tokens": 29659,
+    "cache_read_tokens": 11680,
+    "output_tokens": 433,
+    "api_call_count": 1
+  }
+}
