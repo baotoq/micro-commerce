@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { CategoryPillsRow } from "@/components/storefront/category-pills-row";
 import { HeroBanner } from "@/components/storefront/hero-banner";
 import { ProductFilters } from "@/components/storefront/product-filters";
 import { ProductGrid } from "@/components/storefront/product-grid";
@@ -36,18 +37,30 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     <div>
       <HeroBanner />
 
-      {/* Products Section */}
+      {/* Category Pills Section */}
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-20">
+        <h2 className="mb-6 text-2xl font-bold tracking-tight text-foreground">
+          Shop by Category
+        </h2>
+        <Suspense fallback={null}>
+          <CategoryPillsRow activeCategory={params.category} />
+        </Suspense>
+      </section>
+
+      {/* Featured Products Section */}
       <section
         id="products"
-        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10"
+        className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-20"
       >
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-            All Products
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Explore our collection of premium electronics
-          </p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              Featured Products
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Explore our collection of premium electronics
+            </p>
+          </div>
         </div>
 
         {/* Two-column layout: sidebar filters + product grid */}

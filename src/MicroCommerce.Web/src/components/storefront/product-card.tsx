@@ -1,14 +1,14 @@
 "use client";
 
+import { CheckCircle, Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
-
+import { StarRatingDisplay } from "@/components/reviews/star-rating-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StarRatingDisplay } from "@/components/reviews/star-rating-display";
 import { WishlistToggleButton } from "@/components/wishlist/wishlist-toggle-button";
 import type { ProductDto, StockInfoDto } from "@/lib/api";
 
@@ -39,14 +39,14 @@ function StockBadge({ stockInfo }: { stockInfo?: StockInfoDto }) {
 
   if (availableQuantity <= 10) {
     return (
-      <Badge className="bg-amber-100 text-[10px] font-semibold text-amber-800 hover:bg-amber-100">
+      <Badge className="bg-warning-bg text-[10px] font-semibold text-warning-foreground hover:bg-warning-bg">
         Only {availableQuantity} left!
       </Badge>
     );
   }
 
   return (
-    <Badge className="bg-emerald-50 text-[10px] font-semibold text-emerald-700 hover:bg-emerald-50">
+    <Badge className="bg-success-bg text-[10px] font-semibold text-success-foreground hover:bg-success-bg">
       <CheckCircle className="mr-0.5 size-3" />
       In Stock
     </Badge>
@@ -58,13 +58,13 @@ export function ProductCard({ product, stockInfo }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}`} className="group block">
-      <div
-        className={`relative overflow-hidden rounded-xl bg-white shadow-sm transition-shadow duration-300 group-hover:shadow-md ${
+      <Card
+        className={`overflow-hidden border-border py-0 transition-shadow duration-300 group-hover:shadow-md ${
           isOutOfStock ? "opacity-60" : ""
         }`}
       >
         {/* Image area */}
-        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-zinc-100 to-zinc-50">
+        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
           {product.imageUrl ? (
             <Image
               src={product.imageUrl}
@@ -77,9 +77,7 @@ export function ProductCard({ product, stockInfo }: ProductCardProps) {
             />
           ) : (
             <div className="flex h-full items-center justify-center">
-              <span className="text-4xl text-zinc-300">
-                <ShoppingCart className="size-12" />
-              </span>
+              <ShoppingCart className="size-12 text-border" />
             </div>
           )}
 
@@ -97,7 +95,7 @@ export function ProductCard({ product, stockInfo }: ProductCardProps) {
 
           {/* Out of stock overlay */}
           {isOutOfStock && (
-            <div className="absolute inset-0 bg-white/30" />
+            <div className="absolute inset-0 bg-background/30" />
           )}
 
           {/* Hover overlay with Add to Cart */}
@@ -120,43 +118,53 @@ export function ProductCard({ product, stockInfo }: ProductCardProps) {
         </div>
 
         {/* Product info */}
-        <div className="p-4">
-          <Badge
-            variant="secondary"
-            className="mb-2 text-[10px] font-medium uppercase tracking-wider"
-          >
-            {product.categoryName}
-          </Badge>
-          <h3 className="line-clamp-2 text-sm font-medium text-zinc-900">
+        <CardContent className="flex flex-col gap-2 p-4">
+          <h3 className="line-clamp-2 text-sm font-semibold text-foreground">
             {product.name}
           </h3>
+
+          <div className="flex items-center justify-between">
+            <p className="text-base font-bold text-foreground">
+              {formatPrice(product.price, product.priceCurrency)}
+            </p>
+            <Heart className="size-[18px] text-muted-foreground" />
+          </div>
+
           {product.reviewCount > 0 && product.averageRating !== null && (
-            <div className="mt-1.5">
-              <StarRatingDisplay
-                rating={product.averageRating}
-                count={product.reviewCount}
-                size="sm"
-              />
-            </div>
+            <StarRatingDisplay
+              rating={product.averageRating}
+              count={product.reviewCount}
+              size="sm"
+            />
           )}
-          <p className="mt-1 text-sm font-semibold text-zinc-900">
-            {formatPrice(product.price, product.priceCurrency)}
-          </p>
-        </div>
-      </div>
+
+          <Button
+            className="mt-1 w-full"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toast("Cart coming soon!");
+            }}
+            disabled={isOutOfStock}
+          >
+            <ShoppingCart className="mr-1.5 size-4" />
+            Add to Cart
+          </Button>
+        </CardContent>
+      </Card>
     </Link>
   );
 }
 
 export function ProductCardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-      <Skeleton className="aspect-square rounded-none" />
+    <Card className="overflow-hidden py-0">
+      <Skeleton className="aspect-[4/3] rounded-none" />
       <div className="p-4">
-        <Skeleton className="mb-2 h-4 w-16 rounded-full" />
-        <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="mt-2 h-4 w-1/4" />
+        <Skeleton className="mb-2 h-4 w-3/4" />
+        <Skeleton className="mb-2 h-5 w-1/3" />
+        <Skeleton className="h-9 w-full" />
       </div>
-    </div>
+    </Card>
   );
 }
