@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "9e0d93b14ba6",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/28-observability/28-VALIDATION.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/9e/0d93b14ba6/0/metadata.json",
+      "transcript": "/9e/0d93b14ba6/0/full.jsonl",
+      "context": "/9e/0d93b14ba6/0/context.md",
+      "content_hash": "/9e/0d93b14ba6/0/content_hash.txt",
+      "prompt": "/9e/0d93b14ba6/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 13456,
+    "cache_read_tokens": 303252,
+    "output_tokens": 1648,
+    "api_call_count": 5
+  }
+}

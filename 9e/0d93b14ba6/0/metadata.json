@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "9e0d93b14ba6",
+  "session_id": "cb926c67-d0a4-4220-8548-c5fe4c0bb18d",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T14:55:45.680856Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/28-observability/28-VALIDATION.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "c326a2a8fc73",
+  "checkpoint_transcript_start": 213,
+  "transcript_lines_at_start": 213,
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 13456,
+    "cache_read_tokens": 303252,
+    "output_tokens": 1648,
+    "api_call_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T14:55:45.518889Z",
+    "agent_lines": 76,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 76,
+    "agent_percentage": 100
+  }
+}
