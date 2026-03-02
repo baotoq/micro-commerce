@@ -64,6 +64,8 @@ Progress: [███████████████████████
 | Phase 25.1 P08 | 5min | 2 tasks | 6 files |
 | Phase 25.1 P02 | 5min | 2 tasks | 8 files |
 | Phase 25.1-04 P04 | 5min | 2 tasks | 11 files |
+| Phase 25.1-11 P11 | 6min | 3 tasks | 10 files |
+| Phase 25.1-03 P03 | 6min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -124,6 +126,10 @@ Recent decisions affecting v3.0:
 - [Phase 25.1]: [Phase 25.1-04]: Star ratings use text-star/fill-star from --star CSS variable instead of hardcoded yellow-400
 - [Phase 25.1]: [Phase 25.1-04]: Added radiogroup role on star-rating-input for screen reader semantics
 - [Phase 25.1]: [Phase 25.1-04]: Related products heading changed to "You Might Also Like" for design consistency
+- [Phase 25.1]: [Phase 25.1-11]: Admin sidebar layout verified as pre-implemented; preserved existing dark CSS vars scoped to admin wrapper
+- [Phase 25.1]: [Phase 25.1-11]: All admin components migrated to semantic theme tokens; status badge Record<string, string> pattern standardized
+- [Phase 25.1]: [Phase 25.1-03]: Replaced infinite scroll with URL-driven pagination for shareable catalog URLs
+- [Phase 25.1]: [Phase 25.1-03]: Grid uses 3 columns on desktop (not 4) to accommodate sidebar filter width
 
 ### Pending Todos
 
@@ -142,6 +148,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 25.1-04-PLAN.md (Product Detail)
+Stopped at: Completed 25.1-03-PLAN.md SUMMARY (Product Catalog)
 Resume file: None
-Next step: Continue remaining plans in Phase 25.1
+Next step: Continue creating remaining SUMMARY.md files for 25.1 phase plans
