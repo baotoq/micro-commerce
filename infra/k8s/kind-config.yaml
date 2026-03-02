@@ -24,3 +24,7 @@ nodes:
   - containerPort: 30443
     hostPort: 38443
     protocol: TCP
+  # Aspire Dashboard (NodePort 30888 -> host 38888)
+  - containerPort: 30888
+    hostPort: 38888
+    protocol: TCP
