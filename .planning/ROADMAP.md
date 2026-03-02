@@ -116,7 +116,7 @@
 **Goal:** Refresh all storefront and admin UI screens to match the split per-page pencil design files using existing shadcn/ui primitives and Tailwind CSS. Visual update only -- no new backend features, API endpoints, or routes.
 **Requirements**: UI-THEME, UI-HOME, UI-CATALOG, UI-PRODUCT-DETAIL, UI-CART, UI-CHECKOUT, UI-ORDER-CONFIRM, UI-ORDER-HISTORY, UI-PROFILE, UI-AUTH-LOGIN, UI-ADMIN
 **Depends on:** Phase 25
-**Plans:** 11/12 plans complete
+**Plans:** 12/12 plans complete
 
 Plans:
 - [x] 25.1-01-PLAN.md -- Theme/globals: CSS variable color palette + DM Sans font swap
@@ -130,7 +130,7 @@ Plans:
 - [x] 25.1-09-PLAN.md -- User Profile: account sidebar, profile form, addresses
 - [x] 25.1-10-PLAN.md -- Auth Login: branded Keycloak login page
 - [x] 25.1-11-PLAN.md -- Admin Dashboard: dark sidebar layout, stat cards, tables
-- [ ] 25.1-12-PLAN.md -- Gap closure: wire ProductCard Add to Cart to useAddToCart hook
+- [x] 25.1-12-PLAN.md -- Gap closure: wire ProductCard Add to Cart to useAddToCart hook
 
 ### Phase 26: ArgoCD GitOps
 **Goal**: ArgoCD manages all cluster resources from Git using app-of-apps, replacing manual kubectl apply
