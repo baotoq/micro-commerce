@@ -20,3 +20,7 @@ nodes:
   - containerPort: 30800
     hostPort: 38800
     protocol: TCP
+  # ArgoCD UI (NodePort 30443 -> host 38443)
+  - containerPort: 30443
+    hostPort: 38443
+    protocol: TCP
