@@ -2,20 +2,21 @@
 
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import Link from "next/link";
 import { GripVertical } from "lucide-react";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import type { OrderSummaryDto } from "@/lib/api";
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  Submitted: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  Confirmed: "bg-blue-100 text-blue-800 border-blue-200",
-  Paid: "bg-green-100 text-green-800 border-green-200",
-  Shipped: "bg-purple-100 text-purple-800 border-purple-200",
-  Delivered: "bg-green-100 text-green-800 border-green-200",
-  Failed: "bg-red-100 text-red-800 border-red-200",
-  Cancelled: "bg-gray-100 text-gray-800 border-gray-200",
+  Submitted: "bg-warning-bg text-warning-foreground border-transparent",
+  Confirmed: "bg-info-bg text-info-foreground border-transparent",
+  Paid: "bg-success-bg text-success-foreground border-transparent",
+  Shipped: "bg-accent text-accent-foreground border-transparent",
+  Delivered: "bg-success-bg text-success-foreground border-transparent",
+  Failed: "bg-error-bg text-error-foreground border-transparent",
+  Cancelled: "bg-muted text-muted-foreground border-transparent",
 };
 
 function formatCurrency(value: number): string {
@@ -50,16 +51,16 @@ export function OrderKanbanCard({ order }: OrderKanbanCardProps) {
     : undefined;
 
   return (
-    <div
+    <Card
       ref={setNodeRef}
       style={style}
-      className={`rounded-lg border bg-white p-3 shadow-sm transition-shadow hover:shadow-md ${
+      className={`p-3 transition-shadow hover:shadow-md ${
         isDragging ? "z-50 opacity-50 shadow-lg" : ""
       }`}
     >
       <div className="flex items-start gap-2">
         <button
-          className="mt-0.5 cursor-grab touch-none text-gray-400 hover:text-gray-600"
+          className="mt-0.5 cursor-grab touch-none text-muted-foreground hover:text-foreground"
           aria-label="Drag handle"
           {...listeners}
           {...attributes}
@@ -69,25 +70,25 @@ export function OrderKanbanCard({ order }: OrderKanbanCardProps) {
 
         <Link
           href={`/admin/orders/${order.id}`}
-          className="flex-1 min-w-0 space-y-1.5"
+          className="min-w-0 flex-1 space-y-1.5"
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="truncate text-sm font-semibold text-gray-900">
+            <span className="truncate text-sm font-semibold text-foreground">
               {order.orderNumber}
             </span>
             <Badge
               variant="outline"
               className={`shrink-0 text-[10px] ${
                 STATUS_BADGE_STYLES[order.status] ??
-                "bg-gray-100 text-gray-800 border-gray-200"
+                "bg-muted text-muted-foreground border-transparent"
               }`}
             >
               {order.status}
             </Badge>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span className="font-medium text-gray-700">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">
               {formatCurrency(order.total)}
             </span>
             <span>
@@ -95,48 +96,48 @@ export function OrderKanbanCard({ order }: OrderKanbanCardProps) {
             </span>
           </div>
 
-          <div className="text-[11px] text-gray-400">
+          <div className="text-[11px] text-muted-foreground">
             {formatShortDate(order.createdAt)}
           </div>
         </Link>
       </div>
-    </div>
+    </Card>
   );
 }
 
 export function OrderKanbanCardOverlay({ order }: OrderKanbanCardProps) {
   return (
-    <div className="w-[250px] rounded-lg border bg-white p-3 shadow-lg">
+    <Card className="w-[250px] p-3 shadow-lg">
       <div className="flex items-start gap-2">
-        <GripVertical className="mt-0.5 h-4 w-4 text-gray-400" />
-        <div className="flex-1 min-w-0 space-y-1.5">
+        <GripVertical className="mt-0.5 h-4 w-4 text-muted-foreground" />
+        <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="truncate text-sm font-semibold text-gray-900">
+            <span className="truncate text-sm font-semibold text-foreground">
               {order.orderNumber}
             </span>
             <Badge
               variant="outline"
               className={`shrink-0 text-[10px] ${
                 STATUS_BADGE_STYLES[order.status] ??
-                "bg-gray-100 text-gray-800 border-gray-200"
+                "bg-muted text-muted-foreground border-transparent"
               }`}
             >
               {order.status}
             </Badge>
           </div>
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span className="font-medium text-gray-700">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">
               {formatCurrency(order.total)}
             </span>
             <span>
               {order.itemCount} {order.itemCount === 1 ? "item" : "items"}
             </span>
           </div>
-          <div className="text-[11px] text-gray-400">
+          <div className="text-[11px] text-muted-foreground">
             {formatShortDate(order.createdAt)}
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

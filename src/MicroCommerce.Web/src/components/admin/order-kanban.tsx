@@ -1,21 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import {
-  DndContext,
-  DragOverlay,
   closestCorners,
+  DndContext,
+  type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
-  type DragStartEvent,
 } from "@dnd-kit/core";
+import { useState } from "react";
 import { toast } from "sonner";
-
-import { Skeleton } from "@/components/ui/skeleton";
-import { OrderKanbanColumn } from "@/components/admin/order-kanban-column";
 import { OrderKanbanCardOverlay } from "@/components/admin/order-kanban-card";
+import { OrderKanbanColumn } from "@/components/admin/order-kanban-column";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAllOrders, useUpdateOrderStatus } from "@/hooks/use-orders";
 import type { OrderSummaryDto } from "@/lib/api";
 
@@ -50,7 +49,7 @@ export function OrderKanban() {
       activationConstraint: {
         distance: 8,
       },
-    })
+    }),
   );
 
   const ordersByStatus: Record<string, OrderSummaryDto[]> = {};
@@ -91,7 +90,7 @@ export function OrderKanban() {
 
     if (!isValidTransition(sourceStatus, targetStatus)) {
       toast.error(
-        "Invalid transition. Only Confirmed to Shipped and Shipped to Delivered are allowed."
+        "Invalid transition. Only Confirmed to Shipped and Shipped to Delivered are allowed.",
       );
       return;
     }
@@ -101,10 +100,10 @@ export function OrderKanban() {
       {
         onSuccess: () => {
           toast.success(
-            `Order ${sourceOrder.orderNumber} moved to ${targetStatus}`
+            `Order ${sourceOrder.orderNumber} moved to ${targetStatus}`,
           );
         },
-      }
+      },
     );
   }
 
@@ -118,14 +117,14 @@ export function OrderKanban() {
         {KANBAN_STATUSES.map((status) => (
           <div
             key={status}
-            className="min-w-[250px] rounded-lg border-2 border-gray-200 bg-gray-50"
+            className="min-w-[250px] rounded-lg border-2 border-border bg-muted/30"
           >
-            <div className="border-b border-gray-200 px-3 py-2.5">
+            <div className="border-b border-border px-3 py-2.5">
               <Skeleton className="h-4 w-20" />
             </div>
             <div className="space-y-2 p-2">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-[80px] w-full rounded-lg" />
+              {["sk1", "sk2", "sk3"].map((key) => (
+                <Skeleton key={key} className="h-[80px] w-full rounded-lg" />
               ))}
             </div>
           </div>
