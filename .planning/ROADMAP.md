@@ -130,7 +130,10 @@ Plans:
   2. All 8 workloads have securityContext: runAsNonRoot, readOnlyRootFilesystem, drop ALL capabilities
   3. Keycloak base manifest runs `start` (production mode); dev overlay patches to `start-dev`
   4. Each workload has its own ServiceAccount with automountServiceAccountToken: false
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 33-01-PLAN.md — Security contexts and dedicated ServiceAccounts for all 8 workloads
+- [ ] 33-02-PLAN.md — Web SealedSecrets and Keycloak production mode with dev overlay
 
 ### Phase 34: Reliability Improvements
 **Goal**: Services survive restarts, start reliably, and bootstrap is safe to run
@@ -170,7 +173,7 @@ Plans:
 | 30. CI/CD Pipeline Fixes | 1/1 | Complete    | 2026-03-08 | - |
 | 31. CI/CD Hardening | 1/1 | Complete    | 2026-03-08 | - |
 | 32. Kustomize Hygiene | 2/2 | Complete    | 2026-03-08 | - |
-| 33. K8s Security Hardening | v3.1 | 0/TBD | Not started | - |
+| 33. K8s Security Hardening | v3.1 | 0/2 | Not started | - |
 | 34. Reliability Improvements | v3.1 | 0/TBD | Not started | - |
 | 35. ArgoCD GitOps Best Practices | v3.1 | 0/TBD | Not started | - |
 
