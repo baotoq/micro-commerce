@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/component: messaging
     app.kubernetes.io/part-of: micro-commerce
 spec:
+  clusterIP: None
   selector:
     app: rabbitmq
   ports:

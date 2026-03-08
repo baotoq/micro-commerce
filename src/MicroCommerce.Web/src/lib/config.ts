@@ -13,3 +13,10 @@ export function getApiBaseUrl(): string {
   return process.env.API_URL || "http://localhost:5200";
 }
 
+export function getClientApiBaseUrl(): string {
+  // NEXT_PUBLIC_API_URL is the browser-reachable gateway URL
+  // In K8s: set to http://localhost:38800 (NodePort)
+  // In Aspire: the gateway is proxied, so same origin works
+  return process.env.NEXT_PUBLIC_API_URL || "";
+}
+

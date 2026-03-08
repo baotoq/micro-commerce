@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: rabbitmq
   labels:
@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/component: messaging
     app.kubernetes.io/part-of: micro-commerce
 spec:
+  serviceName: rabbitmq
   replicas: 1
   selector:
     matchLabels:
@@ -51,6 +52,9 @@ spec:
             secretKeyRef:
               name: rabbitmq-credentials
               key: password
+        volumeMounts:
+        - name: rabbitmq-data
+          mountPath: /var/lib/rabbitmq
         readinessProbe:
           exec:
             command: ["rabbitmq-diagnostics", "ping"]
@@ -68,3 +72,11 @@ spec:
           limits:
             memory: 512Mi
             cpu: 500m
+  volumeClaimTemplates:
+  - metadata:
+      name: rabbitmq-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi

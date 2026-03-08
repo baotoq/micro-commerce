@@ -64,6 +64,8 @@ spec:
               key: keycloak-client-secret
         - name: services__gateway__https__0
           value: "http://gateway:8080"
+        - name: NEXT_PUBLIC_API_URL
+          value: "http://localhost:38800"
         livenessProbe:
           httpGet:
             path: /
