@@ -1,0 +1,195 @@
+# ApplicationSet Template - Matrix Generator
+#
+# This template creates an ApplicationSet using the matrix generator to
+# deploy multiple applications across multiple clusters (cartesian product).
+#
+# Usage:
+#   1. Replace all <PLACEHOLDER> values
+#   2. Save to: infra-team/applicationset/master-applicationset.yaml
+#   3. Commit and push to Git repository
+#
+# Pattern: apps × clusters = deployed applications
+#   Example: 5 apps × 3 clusters = 15 Application resources
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: <APPLICATIONSET_NAME>
+  namespace: argocd
+spec:
+  generators:
+    - matrix:
+        generators:
+          # Generator 1: List of applications/components
+          - list:
+              elements:
+                # Platform components
+                - app: cert-manager
+                  chart: cert-manager
+                  repo: https://charts.jetstack.io
+                  version: v1.14.0
+                  namespace: cert-manager
+
+                - app: external-secrets
+                  chart: external-secrets
+                  repo: https://charts.external-secrets.io
+                  version: 0.9.11
+                  namespace: external-secrets
+
+                - app: ingress-nginx
+                  chart: ingress-nginx
+                  repo: https://kubernetes.github.io/ingress-nginx
+                  version: 4.9.0
+                  namespace: ingress-nginx
+
+                - app: prometheus-stack
+                  chart: kube-prometheus-stack
+                  repo: https://prometheus-community.github.io/helm-charts
+                  version: 56.6.2
+                  namespace: monitoring
+
+                - app: loki
+                  chart: loki-stack
+                  repo: https://grafana.github.io/helm-charts
+                  version: 2.10.0
+                  namespace: logging
+
+          # Generator 2: Target clusters
+          - clusters:
+              selector:
+                matchLabels:
+                  tier: application
+                  # environment: dev  # Uncomment to filter
+
+  # Sync policy for the ApplicationSet
+  syncPolicy:
+    preserveResourcesOnDeletion: false
+
+  # Application template (generated for each app × cluster combination)
+  template:
+    metadata:
+      # Unique name: component-clustername
+      name: '{{app}}-{{name}}'
+
+      labels:
+        app.kubernetes.io/name: '{{app}}'
+        app.kubernetes.io/component: platform
+        environment: '{{metadata.labels.environment}}'
+        cluster: '{{name}}'
+
+      annotations:
+        # Notification subscriptions
+        notifications.argoproj.io/subscribe.on-sync-failed.slack: platform-alerts
+        notifications.argoproj.io/subscribe.on-health-degraded.slack: platform-alerts
+
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+
+    spec:
+      # Project based on cluster name
+      project: '{{name}}'
+
+      # Multi-source configuration
+      sources:
+        # Source 1: Helm chart
+        - repoURL: '{{repo}}'
+          chart: '{{chart}}'
+          targetRevision: '{{version}}'
+          helm:
+            valueFiles:
+              # Base values for component
+              - $values/kube-addons/{{app}}/base/values.yaml
+              # Cluster-specific values
+              - $values/kube-addons/{{app}}/{{name}}/values.yaml
+
+        # Source 2: Values repository
+        - repoURL: https://github.com/org/argo-cd-helm-values.git
+          targetRevision: main
+          ref: values
+
+      # Destination
+      destination:
+        server: '{{server}}'
+        namespace: '{{namespace}}'
+
+      # Sync policy (environment-aware via gotemplate)
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+          - PruneLast=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+
+      # Common ignore differences
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /spec/replicas
+        - group: autoscaling
+          kind: HorizontalPodAutoscaler
+          jsonPointers:
+            - /spec/minReplicas
+            - /spec/maxReplicas
+
+---
+# Example: Environment-Aware Matrix Generator
+#
+# This example shows how to use conditional sync policies based on environment
+#
+# apiVersion: argoproj.io/v1alpha1
+# kind: ApplicationSet
+# metadata:
+#   name: platform-apps-dev
+#   namespace: argocd
+# spec:
+#   generators:
+#     - matrix:
+#         generators:
+#           - list:
+#               elements:
+#                 - app: ingress-nginx
+#                   chart: ingress-nginx
+#                   repo: https://kubernetes.github.io/ingress-nginx
+#                   version: 4.9.0
+#                   namespace: ingress-nginx
+#
+#           # Only target dev clusters
+#           - clusters:
+#               selector:
+#                 matchLabels:
+#                   environment: dev
+#
+#   template:
+#     metadata:
+#       name: '{{app}}-{{name}}'
+#     spec:
+#       project: '{{name}}'
+#       sources:
+#         - repoURL: '{{repo}}'
+#           chart: '{{chart}}'
+#           targetRevision: '{{version}}'
+#           helm:
+#             valueFiles:
+#               - $values/kube-addons/{{app}}/{{name}}/values.yaml
+#         - repoURL: https://github.com/org/argo-cd-helm-values.git
+#           targetRevision: main
+#           ref: values
+#       destination:
+#         server: '{{server}}'
+#         namespace: '{{namespace}}'
+#       # Dev-specific: Aggressive sync
+#       syncPolicy:
+#         automated:
+#           prune: true
+#           selfHeal: true
+#         syncOptions:
+#           - CreateNamespace=true

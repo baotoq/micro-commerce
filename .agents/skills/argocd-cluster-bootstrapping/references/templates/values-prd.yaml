@@ -1,0 +1,277 @@
+# Production Environment Values Template
+#
+# This template provides cluster-specific values for production environments.
+# Place in: argo-cd-helm-values/kube-addons/<component>/<cluster-name>/values.yaml
+#
+# Characteristics:
+# - Standard nodes only (no spot)
+# - Multiple replicas for HA
+# - Higher resources
+# - Pod disruption budgets
+# - Anti-affinity rules
+
+# =============================================================================
+# TEMPLATE: Production Values
+# Component: <COMPONENT_NAME>
+# Cluster: <CLUSTER_NAME>
+# Environment: prd
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# REPLICA COUNT
+# Production requires multiple replicas for high availability
+# -----------------------------------------------------------------------------
+replicaCount: 3
+
+# For Helm charts with nested structure:
+# controller:
+#   replicaCount: 3
+
+# -----------------------------------------------------------------------------
+# NODE SELECTION
+# Production uses standard nodes only (NO spot tolerations)
+# -----------------------------------------------------------------------------
+nodeSelector:
+  kubernetes.azure.com/mode: system
+  # Or specific node pool
+  # agentpool: production
+
+# Tolerations for standard nodes only
+tolerations: []
+
+# For Helm charts with nested structure:
+# controller:
+#   nodeSelector:
+#     kubernetes.azure.com/mode: system
+#   tolerations: []
+
+# -----------------------------------------------------------------------------
+# RESOURCE LIMITS
+# Production-grade resources
+# -----------------------------------------------------------------------------
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+
+# For Helm charts with nested structure:
+# controller:
+#   resources:
+#     requests:
+#       cpu: 500m
+#       memory: 512Mi
+#     limits:
+#       cpu: 2000m
+#       memory: 2Gi
+
+# -----------------------------------------------------------------------------
+# HIGH AVAILABILITY
+# Pod disruption budget ensures minimum availability during updates
+# -----------------------------------------------------------------------------
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+  # Or use maxUnavailable: 1
+
+# For Helm charts with nested structure:
+# controller:
+#   podDisruptionBudget:
+#     enabled: true
+#     minAvailable: 2
+
+# -----------------------------------------------------------------------------
+# POD ANTI-AFFINITY
+# Spread pods across nodes and availability zones
+# -----------------------------------------------------------------------------
+affinity:
+  podAntiAffinity:
+    # Hard requirement: different nodes
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: <COMPONENT_NAME>
+        topologyKey: kubernetes.io/hostname
+
+    # Soft preference: different zones
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: <COMPONENT_NAME>
+          topologyKey: topology.kubernetes.io/zone
+
+# For Helm charts with nested structure:
+# controller:
+#   affinity:
+#     podAntiAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         - labelSelector:
+#             matchLabels:
+#               app.kubernetes.io/component: controller
+#           topologyKey: kubernetes.io/hostname
+
+# -----------------------------------------------------------------------------
+# TOPOLOGY SPREAD CONSTRAINTS
+# Even distribution across zones
+# -----------------------------------------------------------------------------
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: <COMPONENT_NAME>
+
+# -----------------------------------------------------------------------------
+# STORAGE
+# Production-grade storage with premium disks
+# -----------------------------------------------------------------------------
+persistence:
+  enabled: true
+  size: 100Gi
+  storageClass: managed-premium
+
+# For prometheus-stack:
+# prometheus:
+#   prometheusSpec:
+#     retention: 30d
+#     storageSpec:
+#       volumeClaimTemplate:
+#         spec:
+#           storageClassName: managed-premium
+#           resources:
+#             requests:
+#               storage: 200Gi
+
+# -----------------------------------------------------------------------------
+# AUTOSCALING
+# Horizontal Pod Autoscaler for production workloads
+# -----------------------------------------------------------------------------
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# For Helm charts with nested structure:
+# controller:
+#   autoscaling:
+#     enabled: true
+#     minReplicas: 3
+#     maxReplicas: 10
+
+# -----------------------------------------------------------------------------
+# MONITORING
+# Full monitoring and alerting for production
+# -----------------------------------------------------------------------------
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+
+# Additional Prometheus rules for production alerting
+# prometheusRule:
+#   enabled: true
+#   rules:
+#     - alert: HighErrorRate
+#       expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+#       for: 5m
+#       labels:
+#         severity: critical
+#         environment: production
+#       annotations:
+#         summary: High error rate detected
+
+# -----------------------------------------------------------------------------
+# SERVICE CONFIGURATION
+# Production load balancer configuration
+# -----------------------------------------------------------------------------
+service:
+  type: LoadBalancer
+  annotations:
+    # Internal load balancer
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    # Health probe configuration
+    service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+
+# -----------------------------------------------------------------------------
+# INGRESS CONFIGURATION
+# Production ingress settings
+# -----------------------------------------------------------------------------
+# ingress:
+#   enabled: true
+#   className: nginx
+#   annotations:
+#     cert-manager.io/cluster-issuer: letsencrypt-prod
+#     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+#   hosts:
+#     - host: app.example.com
+#       paths:
+#         - path: /
+#           pathType: Prefix
+#   tls:
+#     - secretName: app-tls
+#       hosts:
+#         - app.example.com
+
+# -----------------------------------------------------------------------------
+# SECURITY
+# Production security settings
+# -----------------------------------------------------------------------------
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+# For Helm charts with nested structure:
+# controller:
+#   podSecurityContext:
+#     runAsNonRoot: true
+#   securityContext:
+#     allowPrivilegeEscalation: false
+
+# -----------------------------------------------------------------------------
+# ENVIRONMENT-SPECIFIC SECRETS
+# Reference to external secrets for production environment
+# -----------------------------------------------------------------------------
+# extraEnvVars:
+#   - name: ENV
+#     value: production
+#
+# extraEnvVarsSecret: prd-app-secrets
+
+# -----------------------------------------------------------------------------
+# LIVENESS AND READINESS PROBES
+# Production-tuned health checks
+# -----------------------------------------------------------------------------
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3

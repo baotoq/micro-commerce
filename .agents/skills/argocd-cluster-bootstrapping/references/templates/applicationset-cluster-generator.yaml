@@ -1,0 +1,179 @@
+# ApplicationSet Template - Cluster Generator
+#
+# This template creates an ApplicationSet that uses the cluster generator
+# to dynamically deploy applications to all clusters matching label selectors.
+#
+# Usage:
+#   1. Replace all <PLACEHOLDER> values
+#   2. Save to: infra-team/applicationset/kube-addons/<component>.yaml
+#   3. Commit and push to Git repository
+#
+# Features:
+#   - Multi-source: Combines Helm chart with environment-specific values
+#   - Dynamic targeting: Uses cluster labels for selection
+#   - Environment-aware: Different sync policies per environment
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: <COMPONENT_NAME>
+  namespace: argocd
+spec:
+  # Generator: Select clusters by labels
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            # Target all clusters with these labels
+            tier: application
+            # environment: dev  # Uncomment to restrict to specific env
+
+          # Or use matchExpressions for complex logic
+          # matchExpressions:
+          #   - key: environment
+          #     operator: In
+          #     values:
+          #       - dev
+          #       - hlg
+
+        # Additional values to pass to template
+        values:
+          # Component-specific values
+          component: <COMPONENT_NAME>
+          namespace: <TARGET_NAMESPACE>
+
+  # Sync policy for the ApplicationSet itself
+  syncPolicy:
+    preserveResourcesOnDeletion: false
+
+  # Application template
+  template:
+    metadata:
+      # Application name pattern
+      name: '<COMPONENT_NAME>-{{name}}'
+
+      # Labels for organization
+      labels:
+        app.kubernetes.io/name: <COMPONENT_NAME>
+        app.kubernetes.io/component: platform
+        environment: '{{metadata.labels.environment}}'
+
+      # Annotations
+      annotations:
+        notifications.argoproj.io/subscribe.on-sync-failed.slack: platform-alerts
+
+      # Finalizers for cleanup
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+
+    spec:
+      # Project assignment
+      project: '{{name}}'
+
+      # Multi-source configuration
+      sources:
+        # Source 1: Helm chart from public repository
+        - repoURL: <HELM_REPO_URL>
+          chart: <CHART_NAME>
+          targetRevision: <CHART_VERSION>
+          helm:
+            # Reference values from the $values source
+            valueFiles:
+              - $values/kube-addons/<COMPONENT_NAME>/base/values.yaml
+              - $values/kube-addons/<COMPONENT_NAME>/{{name}}/values.yaml
+
+            # Inline values (use sparingly)
+            # values: |
+            #   key: value
+
+        # Source 2: Values repository (referenced as $values)
+        - repoURL: https://github.com/org/argo-cd-helm-values.git
+          targetRevision: main
+          ref: values
+
+      # Destination cluster and namespace
+      destination:
+        server: '{{server}}'
+        namespace: '{{values.namespace}}'
+
+      # Sync policy
+      syncPolicy:
+        # Automated sync (adjust per environment)
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+
+        # Sync options
+        syncOptions:
+          - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+          - PruneLast=true
+
+        # Retry configuration
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+
+      # Ignore differences for specific fields
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /spec/replicas
+
+---
+# Example: Ingress NGINX ApplicationSet
+#
+# apiVersion: argoproj.io/v1alpha1
+# kind: ApplicationSet
+# metadata:
+#   name: ingress-nginx
+#   namespace: argocd
+# spec:
+#   generators:
+#     - clusters:
+#         selector:
+#           matchLabels:
+#             tier: application
+#         values:
+#           component: ingress-nginx
+#           namespace: ingress-nginx
+#
+#   template:
+#     metadata:
+#       name: 'ingress-nginx-{{name}}'
+#       labels:
+#         app.kubernetes.io/name: ingress-nginx
+#         environment: '{{metadata.labels.environment}}'
+#       finalizers:
+#         - resources-finalizer.argocd.argoproj.io
+#
+#     spec:
+#       project: '{{name}}'
+#       sources:
+#         - repoURL: https://kubernetes.github.io/ingress-nginx
+#           chart: ingress-nginx
+#           targetRevision: 4.9.0
+#           helm:
+#             valueFiles:
+#               - $values/kube-addons/ingress-nginx/base/values.yaml
+#               - $values/kube-addons/ingress-nginx/{{name}}/values.yaml
+#
+#         - repoURL: https://github.com/org/argo-cd-helm-values.git
+#           targetRevision: main
+#           ref: values
+#
+#       destination:
+#         server: '{{server}}'
+#         namespace: ingress-nginx
+#
+#       syncPolicy:
+#         automated:
+#           prune: true
+#           selfHeal: true
+#         syncOptions:
+#           - CreateNamespace=true

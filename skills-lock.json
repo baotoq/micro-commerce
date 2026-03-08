@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skills": {
+    "argocd-cluster-bootstrapping": {
+      "source": "julianobarbosa/claude-code-skills",
+      "sourceType": "github",
+      "computedHash": "94d790350adc310b41328941f8ba6e19f5208b3ddc1a2af464f5b7ef164fb43c"
+    },
+    "argocd-expert": {
+      "source": "personamanagmentlayer/pcl",
+      "sourceType": "github",
+      "computedHash": "2c5d71cc3d0d7154d11e6bac61cd531f4d8fd0ca0cd7e90d5fa29fbabe0ebce4"
+    },
+    "kubernetes-architect": {
+      "source": "baotoq/agent-skills",
+      "sourceType": "github",
+      "computedHash": "9c891358e68ae1fea15c1bbef89ef669e11165d203ac27dede4e9986d5066a93"
+    },
+    "kubernetes-specialist": {
+      "source": "baotoq/agent-skills",
+      "sourceType": "github",
+      "computedHash": "5649a06b54a2327d930e7473912b23e111afc0e84160b88842bb42b954725ea2"
+    }
+  }
+}

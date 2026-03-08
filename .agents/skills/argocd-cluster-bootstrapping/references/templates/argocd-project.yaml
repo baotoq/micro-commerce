@@ -1,0 +1,202 @@
+# ArgoCD Project Template
+#
+# This template creates an ArgoCD AppProject that defines RBAC boundaries
+# for applications deployed to a specific cluster.
+#
+# Usage:
+#   1. Replace all <PLACEHOLDER> values
+#   2. Save to: infra-team/argocd-projects/<project-name>.yaml
+#   3. Commit and push to Git repository
+#
+# Required replacements:
+#   - <PROJECT_NAME>: Unique project identifier (typically matches cluster name)
+#   - <DESCRIPTION>: Human-readable description
+#   - <SERVER_URL>: Kubernetes API server URL
+#   - <CLUSTER_NAME>: Cluster name for destination matching
+
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: <PROJECT_NAME>
+  namespace: argocd
+  # Prevent accidental deletion
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "<DESCRIPTION>"
+
+  # Source repositories allowed for this project
+  sourceRepos:
+    # Infrastructure repository
+    - 'https://github.com/org/infra-team.git'
+    # Values repository
+    - 'https://github.com/org/argo-cd-helm-values.git'
+    # Public Helm repositories
+    - 'https://charts.bitnami.com/bitnami'
+    - 'https://prometheus-community.github.io/helm-charts'
+    - 'https://kubernetes.github.io/ingress-nginx'
+    - 'https://charts.jetstack.io'
+    - 'https://charts.external-secrets.io'
+    - 'https://grafana.github.io/helm-charts'
+    # Allow all (use with caution)
+    # - '*'
+
+  # Destination clusters and namespaces
+  destinations:
+    # Allow all namespaces on the target cluster
+    - namespace: '*'
+      server: <SERVER_URL>
+      name: <CLUSTER_NAME>
+
+    # Or restrict to specific namespaces:
+    # - namespace: 'app-*'
+    #   server: <SERVER_URL>
+    # - namespace: 'monitoring'
+    #   server: <SERVER_URL>
+
+  # Cluster-scoped resources this project can manage
+  clusterResourceWhitelist:
+    # Allow all (use with caution in production)
+    - group: '*'
+      kind: '*'
+
+    # Or restrict to specific resources:
+    # - group: ''
+    #   kind: Namespace
+    # - group: rbac.authorization.k8s.io
+    #   kind: ClusterRole
+    # - group: rbac.authorization.k8s.io
+    #   kind: ClusterRoleBinding
+    # - group: apiextensions.k8s.io
+    #   kind: CustomResourceDefinition
+
+  # Namespace-scoped resources this project can manage
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  # Deny specific resources (takes precedence over whitelist)
+  # clusterResourceBlacklist:
+  #   - group: ''
+  #     kind: Secret
+
+  # Monitor orphaned resources
+  orphanedResources:
+    warn: true
+    # ignore:
+    #   - group: ''
+    #     kind: ConfigMap
+    #     name: 'kube-root-ca.crt'
+
+  # Sync windows (optional - restrict when syncs can occur)
+  # Useful for production environments
+  # syncWindows:
+  #   - kind: allow
+  #     schedule: '0 8-18 * * 1-5'    # Mon-Fri 8am-6pm
+  #     duration: 10h
+  #     applications:
+  #       - '*'
+  #     manualSync: true
+  #   - kind: deny
+  #     schedule: '0 0 * * 0'          # Sundays
+  #     duration: 24h
+  #     applications:
+  #       - '*'
+
+  # Roles for RBAC within this project
+  roles:
+    # Read-only role
+    - name: read-only
+      description: Read-only access to project applications
+      policies:
+        - p, proj:<PROJECT_NAME>:read-only, applications, get, <PROJECT_NAME>/*, allow
+        - p, proj:<PROJECT_NAME>:read-only, applications, sync, <PROJECT_NAME>/*, deny
+      groups:
+        - viewers
+
+    # Developer role
+    - name: developer
+      description: Can view and sync applications
+      policies:
+        - p, proj:<PROJECT_NAME>:developer, applications, get, <PROJECT_NAME>/*, allow
+        - p, proj:<PROJECT_NAME>:developer, applications, sync, <PROJECT_NAME>/*, allow
+        - p, proj:<PROJECT_NAME>:developer, applications, delete, <PROJECT_NAME>/*, deny
+      groups:
+        - developers
+
+    # Admin role
+    - name: admin
+      description: Full access to project applications
+      policies:
+        - p, proj:<PROJECT_NAME>:admin, applications, *, <PROJECT_NAME>/*, allow
+      groups:
+        - admins
+
+---
+# Example: Development Project (cafehyna-dev)
+#
+# apiVersion: argoproj.io/v1alpha1
+# kind: AppProject
+# metadata:
+#   name: cafehyna-dev
+#   namespace: argocd
+#   finalizers:
+#     - resources-finalizer.argocd.argoproj.io
+# spec:
+#   description: "Cafehyna Development Cluster Project"
+#   sourceRepos:
+#     - '*'
+#   destinations:
+#     - namespace: '*'
+#       server: https://aks-cafehyna-dev-abc123.hcp.brazilsouth.azmk8s.io:443
+#       name: cafehyna-dev
+#   clusterResourceWhitelist:
+#     - group: '*'
+#       kind: '*'
+#   namespaceResourceWhitelist:
+#     - group: '*'
+#       kind: '*'
+#   orphanedResources:
+#     warn: true
+
+---
+# Example: Production Project with Restrictions
+#
+# apiVersion: argoproj.io/v1alpha1
+# kind: AppProject
+# metadata:
+#   name: cafehyna-prd
+#   namespace: argocd
+#   finalizers:
+#     - resources-finalizer.argocd.argoproj.io
+# spec:
+#   description: "Cafehyna Production Cluster Project"
+#   sourceRepos:
+#     - 'https://github.com/org/infra-team.git'
+#     - 'https://github.com/org/argo-cd-helm-values.git'
+#   destinations:
+#     - namespace: 'app-*'
+#       server: https://aks-cafehyna-prd-xyz789.hcp.brazilsouth.azmk8s.io:443
+#       name: cafehyna-prd
+#     - namespace: 'monitoring'
+#       server: https://aks-cafehyna-prd-xyz789.hcp.brazilsouth.azmk8s.io:443
+#       name: cafehyna-prd
+#   clusterResourceWhitelist:
+#     - group: ''
+#       kind: Namespace
+#     - group: rbac.authorization.k8s.io
+#       kind: ClusterRole
+#     - group: rbac.authorization.k8s.io
+#       kind: ClusterRoleBinding
+#   namespaceResourceWhitelist:
+#     - group: '*'
+#       kind: '*'
+#   orphanedResources:
+#     warn: true
+#   syncWindows:
+#     - kind: allow
+#       schedule: '0 8-18 * * 1-5'
+#       duration: 10h
+#       applications:
+#         - '*'
+#       manualSync: true

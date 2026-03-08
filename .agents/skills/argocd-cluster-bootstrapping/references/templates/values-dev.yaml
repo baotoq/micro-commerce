@@ -1,0 +1,146 @@
+# Development Environment Values Template
+#
+# This template provides cluster-specific values for development environments.
+# Place in: argo-cd-helm-values/kube-addons/<component>/<cluster-name>/values.yaml
+#
+# Characteristics:
+# - Spot instance tolerations
+# - Single replica
+# - Reduced resources
+# - Aggressive sync policies
+
+# =============================================================================
+# TEMPLATE: Development Values
+# Component: <COMPONENT_NAME>
+# Cluster: <CLUSTER_NAME>
+# Environment: dev
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# REPLICA COUNT
+# Dev environments use single replicas for cost efficiency
+# -----------------------------------------------------------------------------
+replicaCount: 1
+
+# For Helm charts with nested structure:
+# controller:
+#   replicaCount: 1
+
+# -----------------------------------------------------------------------------
+# SPOT INSTANCE CONFIGURATION
+# Required for dev clusters using Azure spot instances
+# -----------------------------------------------------------------------------
+tolerations:
+  - key: "kubernetes.azure.com/scalesetpriority"
+    operator: "Equal"
+    value: "spot"
+    effect: "NoSchedule"
+
+nodeSelector:
+  kubernetes.azure.com/scalesetpriority: spot
+
+# For Helm charts with nested structure:
+# controller:
+#   tolerations:
+#     - key: "kubernetes.azure.com/scalesetpriority"
+#       operator: "Equal"
+#       value: "spot"
+#       effect: "NoSchedule"
+#   nodeSelector:
+#     kubernetes.azure.com/scalesetpriority: spot
+
+# -----------------------------------------------------------------------------
+# RESOURCE LIMITS
+# Reduced resources for development
+# -----------------------------------------------------------------------------
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# For Helm charts with nested structure:
+# controller:
+#   resources:
+#     requests:
+#       cpu: 100m
+#       memory: 128Mi
+#     limits:
+#       cpu: 500m
+#       memory: 512Mi
+
+# -----------------------------------------------------------------------------
+# STORAGE
+# Smaller storage for dev environments
+# -----------------------------------------------------------------------------
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: managed-standard
+
+# For prometheus-stack:
+# prometheus:
+#   prometheusSpec:
+#     retention: 3d
+#     storageSpec:
+#       volumeClaimTemplate:
+#         spec:
+#           storageClassName: managed-standard
+#           resources:
+#             requests:
+#               storage: 10Gi
+
+# -----------------------------------------------------------------------------
+# HIGH AVAILABILITY
+# Disabled for dev environments
+# -----------------------------------------------------------------------------
+podDisruptionBudget:
+  enabled: false
+
+# No anti-affinity required for single replica
+affinity: {}
+
+# -----------------------------------------------------------------------------
+# MONITORING
+# Enable for dev debugging but with reduced retention
+# -----------------------------------------------------------------------------
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+
+# -----------------------------------------------------------------------------
+# LOGGING
+# Verbose logging for debugging
+# -----------------------------------------------------------------------------
+# Example for ingress-nginx:
+# controller:
+#   config:
+#     log-format-upstream: '$remote_addr - $request_id - [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $request_time [$proxy_upstream_name] [$proxy_alternative_upstream_name] $upstream_addr $upstream_response_length $upstream_response_time $upstream_status $req_id'
+
+# -----------------------------------------------------------------------------
+# FEATURE FLAGS
+# Enable experimental features in dev
+# -----------------------------------------------------------------------------
+# enableExperimentalFeatures: true
+
+# -----------------------------------------------------------------------------
+# INGRESS/SERVICE CONFIGURATION
+# Internal only for dev
+# -----------------------------------------------------------------------------
+# service:
+#   type: LoadBalancer
+#   annotations:
+#     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+# -----------------------------------------------------------------------------
+# ENVIRONMENT-SPECIFIC SECRETS
+# Reference to external secrets for dev environment
+# -----------------------------------------------------------------------------
+# extraEnvVars:
+#   - name: ENV
+#     value: development
+#
+# extraEnvVarsSecret: dev-app-secrets

@@ -1,0 +1,103 @@
+# Base Values Template
+#
+# This template provides the base Helm values that apply to all environments.
+# Place in: argo-cd-helm-values/kube-addons/<component>/base/values.yaml
+#
+# These values are overridden by cluster-specific values files.
+
+# =============================================================================
+# TEMPLATE: Base Values
+# Component: <COMPONENT_NAME>
+# =============================================================================
+
+# Global settings applied to all sub-charts
+global:
+  # Image registry (useful for air-gapped environments)
+  # imageRegistry: registry.example.com
+
+  # Image pull secrets
+  # imagePullSecrets:
+  #   - name: registry-credentials
+
+  # Default storage class
+  # storageClass: managed-premium
+
+# Component-specific settings
+# Adjust these based on the Helm chart being deployed
+
+# Example for ingress-nginx:
+# controller:
+#   # Metrics for monitoring
+#   metrics:
+#     enabled: true
+#     serviceMonitor:
+#       enabled: true
+#
+#   # Default resource requests (overridden per-env)
+#   resources:
+#     requests:
+#       cpu: 100m
+#       memory: 128Mi
+#
+#   # Admission webhooks
+#   admissionWebhooks:
+#     enabled: true
+#
+#   # Service configuration
+#   service:
+#     type: LoadBalancer
+#     annotations:
+#       # Azure internal load balancer
+#       service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+# Example for cert-manager:
+# installCRDs: true
+#
+# prometheus:
+#   enabled: true
+#   servicemonitor:
+#     enabled: true
+#
+# webhook:
+#   timeoutSeconds: 30
+
+# Example for external-secrets:
+# installCRDs: true
+#
+# serviceMonitor:
+#   enabled: true
+#
+# webhook:
+#   port: 9443
+
+# Example for prometheus-stack:
+# prometheus:
+#   prometheusSpec:
+#     retention: 15d
+#     storageSpec:
+#       volumeClaimTemplate:
+#         spec:
+#           storageClassName: managed-premium
+#           accessModes: ["ReadWriteOnce"]
+#           resources:
+#             requests:
+#               storage: 50Gi
+#
+# grafana:
+#   enabled: true
+#   adminPassword: "" # Use external secret
+#   persistence:
+#     enabled: true
+#     size: 10Gi
+#
+# alertmanager:
+#   enabled: true
+
+# Example for loki:
+# loki:
+#   auth_enabled: false
+#   storage:
+#     type: azure
+#
+# promtail:
+#   enabled: true
