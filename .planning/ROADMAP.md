@@ -178,7 +178,7 @@ Plans:
 | 31. CI/CD Hardening | 1/1 | Complete    | 2026-03-08 | - |
 | 32. Kustomize Hygiene | 2/2 | Complete    | 2026-03-08 | - |
 | 33. K8s Security Hardening | 2/2 | Complete    | 2026-03-08 | - |
-| 34. Reliability Improvements | 3/3 | Complete   | 2026-03-08 | - |
+| 34. Reliability Improvements | 3/3 | Complete    | 2026-03-08 | - |
 | 35. ArgoCD GitOps Best Practices | v3.1 | 0/TBD | Not started | - |
 
 ---
