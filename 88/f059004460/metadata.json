@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "88f059004460",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/31-ci-cd-hardening/31-VERIFICATION.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/88/f059004460/0/metadata.json",
+      "transcript": "/88/f059004460/0/full.jsonl",
+      "context": "/88/f059004460/0/context.md",
+      "content_hash": "/88/f059004460/0/content_hash.txt",
+      "prompt": "/88/f059004460/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 2632,
+    "cache_read_tokens": 196645,
+    "output_tokens": 1007,
+    "api_call_count": 4
+  }
+}
