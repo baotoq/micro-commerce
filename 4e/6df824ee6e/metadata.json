@@ -1,0 +1,56 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "4e6df824ee6e",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/MicroCommerce.ApiService.Tests/Integration/Coupons/CouponEndpointsTests.cs",
+    "src/MicroCommerce.ApiService/Common/Persistence/BaseDbContext.cs",
+    "src/MicroCommerce.ApiService/Common/Persistence/VogenEfCoreConverters.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Commands/CreateCoupon/CreateCouponCommand.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Commands/CreateCoupon/CreateCouponCommandHandler.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Commands/CreateCoupon/CreateCouponCommandValidator.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Commands/ToggleCouponStatus/ToggleCouponStatusCommand.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Commands/ToggleCouponStatus/ToggleCouponStatusCommandHandler.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Commands/UpdateCoupon/UpdateCouponCommand.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Commands/UpdateCoupon/UpdateCouponCommandHandler.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Commands/UpdateCoupon/UpdateCouponCommandValidator.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Queries/GetCouponById/GetCouponByIdQuery.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Queries/GetCouponById/GetCouponByIdQueryHandler.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Queries/GetCoupons/CouponDto.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Queries/GetCoupons/GetCouponsQuery.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Queries/GetCoupons/GetCouponsQueryHandler.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Queries/ValidateCoupon/ValidateCouponQuery.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Application/Queries/ValidateCoupon/ValidateCouponQueryHandler.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/CouponsEndpoints.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Domain/Entities/Coupon.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Domain/Entities/CouponUsage.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Domain/ValueObjects/CouponId.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Domain/ValueObjects/CouponUsageId.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Domain/ValueObjects/DiscountType.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Infrastructure/Configurations/CouponConfiguration.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Infrastructure/Configurations/CouponUsageConfiguration.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Infrastructure/CouponsDbContext.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Infrastructure/Migrations/20260308185447_InitialCoupons.Designer.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Infrastructure/Migrations/20260308185447_InitialCoupons.cs",
+    "src/MicroCommerce.ApiService/Features/Coupons/Infrastructure/Migrations/CouponsDbContextModelSnapshot.cs",
+    "src/MicroCommerce.ApiService/Program.cs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/4e/6df824ee6e/0/metadata.json",
+      "transcript": "/4e/6df824ee6e/0/full.jsonl",
+      "context": "/4e/6df824ee6e/0/context.md",
+      "content_hash": "/4e/6df824ee6e/0/content_hash.txt",
+      "prompt": "/4e/6df824ee6e/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 17405,
+    "cache_read_tokens": 114009,
+    "output_tokens": 438,
+    "api_call_count": 5
+  }
+}
