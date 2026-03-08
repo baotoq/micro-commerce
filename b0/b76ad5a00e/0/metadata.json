@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "b0b76ad5a00e",
+  "session_id": "35a29e84-6a45-4643-a1d4-03b6a34b703a",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-08T19:02:05.374317Z",
+  "branch": "test/pooa-16-integration-tests-gaps",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/MicroCommerce.ApiService.Tests/Integration/Fixtures/ApiWebApplicationFactory.cs",
+    "src/MicroCommerce.ApiService.Tests/Integration/Messaging/MessagingEndpointsTests.cs"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "9fb7b5ce78ca",
+  "checkpoint_transcript_start": 17,
+  "transcript_lines_at_start": 17,
+  "token_usage": {
+    "input_tokens": 27,
+    "cache_creation_tokens": 41873,
+    "cache_read_tokens": 1150049,
+    "output_tokens": 4774,
+    "api_call_count": 25
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-08T19:02:05.232172Z",
+    "agent_lines": 87,
+    "human_added": 296,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 383,
+    "agent_percentage": 22.715404699738905
+  }
+}

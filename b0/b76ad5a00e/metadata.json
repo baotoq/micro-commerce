@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "b0b76ad5a00e",
+  "strategy": "manual-commit",
+  "branch": "test/pooa-16-integration-tests-gaps",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/MicroCommerce.ApiService.Tests/Integration/Fixtures/ApiWebApplicationFactory.cs",
+    "src/MicroCommerce.ApiService.Tests/Integration/Messaging/MessagingEndpointsTests.cs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/b0/b76ad5a00e/0/metadata.json",
+      "transcript": "/b0/b76ad5a00e/0/full.jsonl",
+      "context": "/b0/b76ad5a00e/0/context.md",
+      "content_hash": "/b0/b76ad5a00e/0/content_hash.txt",
+      "prompt": "/b0/b76ad5a00e/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 27,
+    "cache_creation_tokens": 41873,
+    "cache_read_tokens": 1150049,
+    "output_tokens": 4774,
+    "api_call_count": 25
+  }
+}
