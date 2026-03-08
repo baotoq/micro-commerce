@@ -1,5 +1,6 @@
 using MassTransit;
 using MicroCommerce.ApiService.Features.Catalog.Domain.ValueObjects;
+using MicroCommerce.ApiService.Features.Coupons.Domain.ValueObjects;
 using MicroCommerce.ApiService.Features.Ordering.Domain.ValueObjects;
 using MicroCommerce.BuildingBlocks.Common.Converters;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,8 @@ public abstract class BaseDbContext : DbContext
             .HaveConversion<SmartEnumStringConverter<OrderStatus>>();
         configurationBuilder.Properties<ProductStatus>()
             .HaveConversion<SmartEnumStringConverter<ProductStatus>>();
+        configurationBuilder.Properties<DiscountType>()
+            .HaveConversion<SmartEnumStringConverter<DiscountType>>();
 
         configurationBuilder.Conventions.Add(_ => new Conventions.AuditableConvention());
         configurationBuilder.Conventions.Add(_ => new Conventions.ConcurrencyTokenConvention());

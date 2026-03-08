@@ -25,6 +25,8 @@ using MicroCommerce.ApiService.Features.Reviews;
 using MicroCommerce.ApiService.Features.Reviews.Infrastructure;
 using MicroCommerce.ApiService.Features.Wishlists;
 using MicroCommerce.ApiService.Common.OpenApi;
+using MicroCommerce.ApiService.Features.Coupons;
+using MicroCommerce.ApiService.Features.Coupons.Infrastructure;
 using MicroCommerce.ApiService.Features.Wishlists.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -95,6 +97,14 @@ builder.AddNpgsqlDbContext<WishlistsDbContext>("appdb", configureDbContextOption
     options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
 });
 
+builder.AddNpgsqlDbContext<CouponsDbContext>("appdb", configureDbContextOptions: options =>
+{
+    options.UseNpgsql(npgsql =>
+        npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "coupons"));
+    options.UseSnakeCaseNamingConvention();
+    options.AddInterceptors(softDeleteInterceptor, concurrencyInterceptor, auditInterceptor);
+});
+
 // Conditional transport: RabbitMQ for K8s, Azure Service Bus for Aspire (default)
 string massTransitTransport = builder.Configuration["MASSTRANSIT_TRANSPORT"] ?? "AzureServiceBus";
 bool useRabbitMq = massTransitTransport.Equals("RabbitMQ", StringComparison.OrdinalIgnoreCase);
@@ -155,6 +165,14 @@ builder.Services.AddMassTransit(x =>
     });
 
     x.AddEntityFrameworkOutbox<ProfilesDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+        o.QueryDelay = TimeSpan.FromSeconds(1);
+        o.DuplicateDetectionWindow = TimeSpan.FromMinutes(5);
+    });
+
+    x.AddEntityFrameworkOutbox<CouponsDbContext>(o =>
     {
         o.UsePostgres();
         o.UseBusOutbox();
@@ -346,6 +364,7 @@ app.MapMessagingEndpoints();
 app.MapProfilesEndpoints();
 app.MapReviewsEndpoints();
 app.MapWishlistsEndpoints();
+app.MapCouponsEndpoints();
 
 app.Run();
 
