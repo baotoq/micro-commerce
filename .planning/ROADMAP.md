@@ -72,7 +72,7 @@
 
 **Milestone Goal:** Fix critical security, reliability, and CI/CD issues identified in the v3.0 implementation audit.
 
-- [ ] **Phase 30: CI/CD Pipeline Fixes** - Restore broken workflows with correct SDK, paths, and test gates
+- [x] **Phase 30: CI/CD Pipeline Fixes** - Restore broken workflows with correct SDK, paths, and test gates (completed 2026-03-08)
 - [ ] **Phase 31: CI/CD Hardening** - Secure and optimize CI with permissions, caching, and path filters
 - [ ] **Phase 32: Kustomize Hygiene** - Clean up K8s manifests with standard labels, image policies, and overlay structure
 - [ ] **Phase 33: K8s Security Hardening** - Lock down workloads with security contexts, service accounts, and sealed secrets
@@ -91,7 +91,7 @@
   3. Tests run as a required gate before release publishing
   4. Dockerfile uses ARG for build-time placeholder secrets (no ENV leaking to runtime)
   5. Aspire workload version is pinned (not floating latest)
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 Plans:
 - [ ] 30-01-PLAN.md — Fix all CI/CD workflows (SDK, paths, test gate, Aspire, Dockerfile secrets)
 
@@ -162,7 +162,7 @@ Plans:
 | 11-14.3 | v1.1 | 23/23 | Complete | 2026-02-14 |
 | 15-22 | v2.0 | 9/9 | Complete | 2026-02-25 |
 | 23-29 | v3.0 | 29/29 | Complete | 2026-03-03 |
-| 30. CI/CD Pipeline Fixes | v3.1 | 0/1 | Planning | - |
+| 30. CI/CD Pipeline Fixes | 1/1 | Complete   | 2026-03-08 | - |
 | 31. CI/CD Hardening | v3.1 | 0/TBD | Not started | - |
 | 32. Kustomize Hygiene | v3.1 | 0/TBD | Not started | - |
 | 33. K8s Security Hardening | v3.1 | 0/TBD | Not started | - |
