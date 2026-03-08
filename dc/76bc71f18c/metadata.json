@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "dc76bc71f18c",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".planning/phases/34-reliability-improvements/34-VERIFICATION.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/dc/76bc71f18c/0/metadata.json",
+      "transcript": "/dc/76bc71f18c/0/full.jsonl",
+      "context": "/dc/76bc71f18c/0/context.md",
+      "content_hash": "/dc/76bc71f18c/0/content_hash.txt",
+      "prompt": "/dc/76bc71f18c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 92,
+    "cache_creation_tokens": 113249,
+    "cache_read_tokens": 3862392,
+    "output_tokens": 18973,
+    "api_call_count": 64
+  }
+}
