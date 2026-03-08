@@ -24,14 +24,14 @@ Requirements for K8s & GitOps Hardening. Each maps to roadmap phases.
 - [x] **SEC-02**: securityContext added to all 8 workloads (runAsNonRoot, readOnlyRootFilesystem, drop ALL capabilities)
 - [x] **SEC-03**: Keycloak base manifest uses `start` (production mode); dev overlay patches to `start-dev`
 - [x] **SEC-04**: Dedicated ServiceAccounts per workload with automountServiceAccountToken: false
-- [ ] **SEC-05**: Dedicated ArgoCD AppProject with restricted sourceRepos and destinations
+- [x] **SEC-05**: Dedicated ArgoCD AppProject with restricted sourceRepos and destinations
 
 ### ArgoCD
 
-- [ ] **ARGO-01**: Sync wave annotations on all Application resources enforcing dependency ordering
+- [x] **ARGO-01**: Sync wave annotations on all Application resources enforcing dependency ordering
 - [ ] **ARGO-02**: Sealed secret YAML files committed to Git and added as Kustomize resources
-- [ ] **ARGO-03**: Root app retry strategy matching child app configuration
-- [ ] **ARGO-04**: ignoreDifferences configured for PostgreSQL StatefulSet with RespectIgnoreDifferences
+- [x] **ARGO-03**: Root app retry strategy matching child app configuration
+- [x] **ARGO-04**: ignoreDifferences configured for PostgreSQL StatefulSet with RespectIgnoreDifferences
 - [ ] **ARGO-05**: Consistent overlay paths for all applications (infrastructure services moved to overlays)
 
 ### Reliability
@@ -84,11 +84,11 @@ None deferred — all audit findings scoped to v3.1.
 | SEC-02 | Phase 33 | Complete |
 | SEC-03 | Phase 33 | Complete |
 | SEC-04 | Phase 33 | Complete |
-| SEC-05 | Phase 35 | Pending |
-| ARGO-01 | Phase 35 | Pending |
+| SEC-05 | Phase 35 | Complete |
+| ARGO-01 | Phase 35 | Complete |
 | ARGO-02 | Phase 35 | Pending |
-| ARGO-03 | Phase 35 | Pending |
-| ARGO-04 | Phase 35 | Pending |
+| ARGO-03 | Phase 35 | Complete |
+| ARGO-04 | Phase 35 | Complete |
 | ARGO-05 | Phase 35 | Pending |
 | REL-01 | Phase 34 | Complete |
 | REL-02 | Phase 34 | Complete |

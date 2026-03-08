@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: K8s & GitOps Hardening
 status: executing
-stopped_at: Completed 34-02-PLAN.md
-last_updated: "2026-03-08T16:20:54.566Z"
+stopped_at: Completed 35-02-PLAN.md
+last_updated: "2026-03-08T16:36:11.477Z"
 last_activity: 2026-03-08 — Completed Phase 33 Plan 02 (Web Secrets & Keycloak Production Mode)
 progress:
   total_phases: 6
-  completed_phases: 5
-  total_plans: 9
-  completed_plans: 9
+  completed_phases: 6
+  total_plans: 11
+  completed_plans: 11
   percent: 83
 ---
 
@@ -52,6 +52,8 @@ Progress: [█████████░] 83%
 | Phase 34 P01 | 1min | 1 tasks | 1 files |
 | Phase 34 P03 | 2min | 1 tasks | 1 files |
 | Phase 34 P02 | 2min | 2 tasks | 9 files |
+| Phase 35 P01 | 2min | 2 tasks | 11 files |
+| Phase 35 P02 | 2min | 2 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -79,6 +81,11 @@ Progress: [█████████░] 83%
 - [Phase 34]: NEXT_PUBLIC_API_URL returns empty string in Aspire (same-origin), http://localhost:38800 in K8s
 - [Phase 34]: RabbitMQ uses StatefulSet with headless service and 1Gi PVC for message persistence
 - [Phase 34]: Startup probe timeouts tuned per service: RabbitMQ 130s, gateway/web/aspire 65s, otel-collector 33s
+- [Phase 35]: Sync wave ordering: postgres=1, rabbitmq/keycloak=2, apiservice=3, gateway=4, web=5, otel/aspire=6
+- [Phase 35]: AppProject allows micro-commerce and argocd namespaces; clusterResourceWhitelist limited to Namespace kind
+- [Phase 35]: ignoreDifferences on postgres and rabbitmq StatefulSets for volumeClaimTemplates drift prevention
+- [Phase 35]: Keycloak ArgoCD app also updated from base/ to overlays/dev/ for consistency
+- [Phase 35]: Placeholder sealed secrets use AgAAAA== dummy values, overwritten by bootstrap.sh per-cluster
 
 ### Pending Todos
 
@@ -90,7 +97,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-08T16:18:28.222Z
-Stopped at: Completed 34-02-PLAN.md
+Last session: 2026-03-08T16:36:11.474Z
+Stopped at: Completed 35-02-PLAN.md
 Resume file: None
 Next step: Next phase in v3.1 milestone

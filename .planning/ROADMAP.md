@@ -77,7 +77,7 @@
 - [x] **Phase 32: Kustomize Hygiene** - Clean up K8s manifests with standard labels, image policies, and overlay structure (completed 2026-03-08)
 - [x] **Phase 33: K8s Security Hardening** - Lock down workloads with security contexts, service accounts, and sealed secrets (completed 2026-03-08)
 - [x] **Phase 34: Reliability Improvements** - Harden runtime with persistent messaging, startup probes, and bootstrap safety (completed 2026-03-08)
-- [ ] **Phase 35: ArgoCD GitOps Best Practices** - Enforce deployment ordering, seal secrets in Git, and scope ArgoCD access
+- [x] **Phase 35: ArgoCD GitOps Best Practices** - Enforce deployment ordering, seal secrets in Git, and scope ArgoCD access (completed 2026-03-08)
 
 ## Phase Details
 
@@ -164,7 +164,7 @@ Plans:
   4. PostgreSQL StatefulSet diffs are ignored by ArgoCD (RespectIgnoreDifferences enabled)
   5. All applications use consistent overlay paths (infrastructure services moved to overlays)
   6. Dedicated ArgoCD AppProject restricts sourceRepos and destination namespaces
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 35-01-PLAN.md — AppProject, sync waves, root app retry, and PostgreSQL ignoreDifferences
 - [ ] 35-02-PLAN.md — Sealed secrets in Git as Kustomize resources and consistent overlay paths
@@ -182,7 +182,7 @@ Plans:
 | 32. Kustomize Hygiene | 2/2 | Complete    | 2026-03-08 | - |
 | 33. K8s Security Hardening | 2/2 | Complete    | 2026-03-08 | - |
 | 34. Reliability Improvements | 3/3 | Complete    | 2026-03-08 | - |
-| 35. ArgoCD GitOps Best Practices | v3.1 | 0/2 | Not started | - |
+| 35. ArgoCD GitOps Best Practices | 2/2 | Complete   | 2026-03-08 | - |
 
 ---
 *Roadmap created: 2026-01-29*
