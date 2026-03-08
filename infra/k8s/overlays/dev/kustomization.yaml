@@ -7,6 +7,8 @@ resources:
 - ../../base/postgres
 - ../../base/rabbitmq
 - ../../base/keycloak
+- ../../base/otel-collector
+- ../../base/aspire-dashboard
 - apiservice/
 - gateway/
 - web/
