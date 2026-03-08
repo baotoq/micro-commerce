@@ -45,6 +45,13 @@ spec:
           value: "true"
         - name: DASHBOARD__OTLP__AUTHMODE
           value: "Unsecured"
+        startupProbe:
+          httpGet:
+            path: /
+            port: 18888
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 12
         livenessProbe:
           httpGet:
             path: /

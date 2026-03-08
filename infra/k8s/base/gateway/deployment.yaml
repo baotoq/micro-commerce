@@ -50,6 +50,13 @@ spec:
           value: "http://otel-collector:4317"
         - name: OTEL_SERVICE_NAME
           value: "gateway"
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 12
         livenessProbe:
           httpGet:
             path: /alive

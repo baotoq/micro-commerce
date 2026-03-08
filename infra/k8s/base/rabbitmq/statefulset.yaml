@@ -55,6 +55,12 @@ spec:
         volumeMounts:
         - name: rabbitmq-data
           mountPath: /var/lib/rabbitmq
+        startupProbe:
+          exec:
+            command: ["rabbitmq-diagnostics", "ping"]
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 24
         readinessProbe:
           exec:
             command: ["rabbitmq-diagnostics", "ping"]

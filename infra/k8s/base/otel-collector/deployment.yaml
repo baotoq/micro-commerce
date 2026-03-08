@@ -46,6 +46,13 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /etc/otelcol
+        startupProbe:
+          httpGet:
+            path: /
+            port: 13133
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          failureThreshold: 6
         livenessProbe:
           httpGet:
             path: /
