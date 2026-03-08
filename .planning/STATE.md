@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: K8s & GitOps Hardening
 status: executing
-stopped_at: Completed 32-01-PLAN.md
-last_updated: "2026-03-08T14:57:00Z"
+stopped_at: Completed 32-02-PLAN.md
+last_updated: "2026-03-08T14:58:42.561Z"
 last_activity: 2026-03-08 — Completed Phase 32 Plan 01 (Kustomize Hygiene)
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 4
-  completed_plans: 3
-  percent: 100
+  completed_plans: 4
+  percent: 75
 ---
 
 # Project State
@@ -46,6 +46,7 @@ Progress: [████████░░] 75%
 | v2.0 DDD Foundation | 9 | 9 | 11 days |
 | v3.0 K8s & GitOps | 8 | 29 | 5 days |
 | v3.1 Hardening | 6 | 3 | in progress |
+| Phase 32 P02 | 2min | 2 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -59,6 +60,9 @@ Progress: [████████░░] 75%
 - [31-01] NuGet cache key uses both csproj and Directory.Packages.props hashes
 - [32-01] Namespace set only via Kustomize transformer in kustomization.yaml, never in individual manifests
 - [32-01] otel-collector and aspire-dashboard stay in base/ directory but referenced only from dev overlay
+- [Phase 32]: Retained existing app: X labels alongside app.kubernetes.io/* for backward compatibility
+- [Phase 32]: All containers use imagePullPolicy: IfNotPresent (no latest tags in use)
+- [Phase 32]: Service selectors keep only app: X to avoid restrictive pod matching
 
 ### Pending Todos
 
@@ -70,7 +74,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-08
-Stopped at: Completed 32-01-PLAN.md
+Last session: 2026-03-08T14:58:42.559Z
+Stopped at: Completed 32-02-PLAN.md
 Resume file: None
 Next step: Next phase in v3.1 or `/gsd:plan-phase 33` for next phase

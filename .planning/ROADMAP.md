@@ -74,7 +74,7 @@
 
 - [x] **Phase 30: CI/CD Pipeline Fixes** - Restore broken workflows with correct SDK, paths, and test gates (completed 2026-03-08)
 - [x] **Phase 31: CI/CD Hardening** - Secure and optimize CI with permissions, caching, and path filters (completed 2026-03-08)
-- [ ] **Phase 32: Kustomize Hygiene** - Clean up K8s manifests with standard labels, image policies, and overlay structure
+- [x] **Phase 32: Kustomize Hygiene** - Clean up K8s manifests with standard labels, image policies, and overlay structure (completed 2026-03-08)
 - [ ] **Phase 33: K8s Security Hardening** - Lock down workloads with security contexts, service accounts, and sealed secrets
 - [ ] **Phase 34: Reliability Improvements** - Harden runtime with persistent messaging, startup probes, and bootstrap safety
 - [ ] **Phase 35: ArgoCD GitOps Best Practices** - Enforce deployment ordering, seal secrets in Git, and scope ArgoCD access
@@ -116,7 +116,7 @@ Plans:
   2. otel-collector and aspire-dashboard appear in dev overlay (not base)
   3. All application deployments declare explicit `imagePullPolicy`
   4. All workloads carry standard `app.kubernetes.io/*` labels (name, component, part-of)
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 32-01-PLAN.md — Remove hardcoded namespaces and move dev-only resources to overlay
 - [ ] 32-02-PLAN.md — Add standard Kubernetes labels and imagePullPolicy to all workloads
@@ -169,7 +169,7 @@ Plans:
 | 23-29 | v3.0 | 29/29 | Complete | 2026-03-03 |
 | 30. CI/CD Pipeline Fixes | 1/1 | Complete    | 2026-03-08 | - |
 | 31. CI/CD Hardening | 1/1 | Complete    | 2026-03-08 | - |
-| 32. Kustomize Hygiene | 1/2 | In Progress|  | - |
+| 32. Kustomize Hygiene | 2/2 | Complete   | 2026-03-08 | - |
 | 33. K8s Security Hardening | v3.1 | 0/TBD | Not started | - |
 | 34. Reliability Improvements | v3.1 | 0/TBD | Not started | - |
 | 35. ArgoCD GitOps Best Practices | v3.1 | 0/TBD | Not started | - |

@@ -48,8 +48,8 @@ Requirements for K8s & GitOps Hardening. Each maps to roadmap phases.
 
 - [x] **KUST-01**: Hardcoded namespaces removed from base manifests (Kustomize transformer handles it)
 - [x] **KUST-02**: otel-collector and aspire-dashboard added to dev overlay
-- [ ] **KUST-03**: Explicit imagePullPolicy on all application deployments
-- [ ] **KUST-04**: Standard Kubernetes labels (app.kubernetes.io/*) on all workloads
+- [x] **KUST-03**: Explicit imagePullPolicy on all application deployments
+- [x] **KUST-04**: Standard Kubernetes labels (app.kubernetes.io/*) on all workloads
 
 ## Future Requirements
 
@@ -99,8 +99,8 @@ None deferred — all audit findings scoped to v3.1.
 | REL-07 | Phase 34 | Pending |
 | KUST-01 | Phase 32 | Complete |
 | KUST-02 | Phase 32 | Complete |
-| KUST-03 | Phase 32 | Pending |
-| KUST-04 | Phase 32 | Pending |
+| KUST-03 | Phase 32 | Complete |
+| KUST-04 | Phase 32 | Complete |
 
 **Coverage:**
 - v3.1 requirements: 29 total
