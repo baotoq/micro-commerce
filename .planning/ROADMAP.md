@@ -169,7 +169,7 @@ Plans:
 | 23-29 | v3.0 | 29/29 | Complete | 2026-03-03 |
 | 30. CI/CD Pipeline Fixes | 1/1 | Complete    | 2026-03-08 | - |
 | 31. CI/CD Hardening | 1/1 | Complete    | 2026-03-08 | - |
-| 32. Kustomize Hygiene | 2/2 | Complete   | 2026-03-08 | - |
+| 32. Kustomize Hygiene | 2/2 | Complete    | 2026-03-08 | - |
 | 33. K8s Security Hardening | v3.1 | 0/TBD | Not started | - |
 | 34. Reliability Improvements | v3.1 | 0/TBD | Not started | - |
 | 35. ArgoCD GitOps Best Practices | v3.1 | 0/TBD | Not started | - |
