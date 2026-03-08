@@ -116,7 +116,10 @@ Plans:
   2. otel-collector and aspire-dashboard appear in dev overlay (not base)
   3. All application deployments declare explicit `imagePullPolicy`
   4. All workloads carry standard `app.kubernetes.io/*` labels (name, component, part-of)
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 32-01-PLAN.md — Remove hardcoded namespaces and move dev-only resources to overlay
+- [ ] 32-02-PLAN.md — Add standard Kubernetes labels and imagePullPolicy to all workloads
 
 ### Phase 33: K8s Security Hardening
 **Goal**: All workloads run with least-privilege security posture
@@ -166,7 +169,7 @@ Plans:
 | 23-29 | v3.0 | 29/29 | Complete | 2026-03-03 |
 | 30. CI/CD Pipeline Fixes | 1/1 | Complete    | 2026-03-08 | - |
 | 31. CI/CD Hardening | 1/1 | Complete    | 2026-03-08 | - |
-| 32. Kustomize Hygiene | v3.1 | 0/TBD | Not started | - |
+| 32. Kustomize Hygiene | v3.1 | 0/2 | Not started | - |
 | 33. K8s Security Hardening | v3.1 | 0/TBD | Not started | - |
 | 34. Reliability Improvements | v3.1 | 0/TBD | Not started | - |
 | 35. ArgoCD GitOps Best Practices | v3.1 | 0/TBD | Not started | - |
