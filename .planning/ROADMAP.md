@@ -103,7 +103,9 @@ Plans:
   1. All workflow files declare explicit least-privilege `permissions:` blocks
   2. NuGet packages are cached across workflow runs (faster builds)
   3. Container image builds skip when only non-source files change (docs, manifests)
-**Plans**: TBD
+**Plans:** 1 plan
+Plans:
+- [ ] 31-01-PLAN.md — Add permissions, NuGet caching, and path filters to all workflows
 
 ### Phase 32: Kustomize Hygiene
 **Goal**: K8s manifests follow Kustomize conventions and Kubernetes labeling standards
@@ -163,7 +165,7 @@ Plans:
 | 15-22 | v2.0 | 9/9 | Complete | 2026-02-25 |
 | 23-29 | v3.0 | 29/29 | Complete | 2026-03-03 |
 | 30. CI/CD Pipeline Fixes | 1/1 | Complete    | 2026-03-08 | - |
-| 31. CI/CD Hardening | v3.1 | 0/TBD | Not started | - |
+| 31. CI/CD Hardening | v3.1 | 0/1 | Not started | - |
 | 32. Kustomize Hygiene | v3.1 | 0/TBD | Not started | - |
 | 33. K8s Security Hardening | v3.1 | 0/TBD | Not started | - |
 | 34. Reliability Improvements | v3.1 | 0/TBD | Not started | - |
