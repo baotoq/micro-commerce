@@ -5,8 +5,7 @@
   "branch": "master",
   "checkpoints_count": 0,
   "files_touched": [
-    ".planning/ROADMAP.md",
-    ".planning/phases/31-ci-cd-hardening/31-01-PLAN.md"
+    ".planning/config.json"
   ],
   "sessions": [
     {
@@ -18,10 +17,10 @@
     }
   ],
   "token_usage": {
-    "input_tokens": 13,
-    "cache_creation_tokens": 24664,
-    "cache_read_tokens": 201233,
-    "output_tokens": 1480,
-    "api_call_count": 7
+    "input_tokens": 3,
+    "cache_creation_tokens": 2468,
+    "cache_read_tokens": 35382,
+    "output_tokens": 1,
+    "api_call_count": 1
   }
 }
