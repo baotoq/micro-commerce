@@ -72,41 +72,41 @@ None deferred — all audit findings scoped to v3.1.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CICD-01 | — | Pending |
-| CICD-02 | — | Pending |
-| CICD-03 | — | Pending |
-| CICD-04 | — | Pending |
-| CICD-05 | — | Pending |
-| CICD-06 | — | Pending |
-| CICD-07 | — | Pending |
-| CICD-08 | — | Pending |
-| SEC-01 | — | Pending |
-| SEC-02 | — | Pending |
-| SEC-03 | — | Pending |
-| SEC-04 | — | Pending |
-| SEC-05 | — | Pending |
-| ARGO-01 | — | Pending |
-| ARGO-02 | — | Pending |
-| ARGO-03 | — | Pending |
-| ARGO-04 | — | Pending |
-| ARGO-05 | — | Pending |
-| REL-01 | — | Pending |
-| REL-02 | — | Pending |
-| REL-03 | — | Pending |
-| REL-04 | — | Pending |
-| REL-05 | — | Pending |
-| REL-06 | — | Pending |
-| REL-07 | — | Pending |
-| KUST-01 | — | Pending |
-| KUST-02 | — | Pending |
-| KUST-03 | — | Pending |
-| KUST-04 | — | Pending |
+| CICD-01 | Phase 30 | Pending |
+| CICD-02 | Phase 30 | Pending |
+| CICD-03 | Phase 30 | Pending |
+| CICD-04 | Phase 31 | Pending |
+| CICD-05 | Phase 31 | Pending |
+| CICD-06 | Phase 31 | Pending |
+| CICD-07 | Phase 30 | Pending |
+| CICD-08 | Phase 30 | Pending |
+| SEC-01 | Phase 33 | Pending |
+| SEC-02 | Phase 33 | Pending |
+| SEC-03 | Phase 33 | Pending |
+| SEC-04 | Phase 33 | Pending |
+| SEC-05 | Phase 35 | Pending |
+| ARGO-01 | Phase 35 | Pending |
+| ARGO-02 | Phase 35 | Pending |
+| ARGO-03 | Phase 35 | Pending |
+| ARGO-04 | Phase 35 | Pending |
+| ARGO-05 | Phase 35 | Pending |
+| REL-01 | Phase 34 | Pending |
+| REL-02 | Phase 34 | Pending |
+| REL-03 | Phase 34 | Pending |
+| REL-04 | Phase 34 | Pending |
+| REL-05 | Phase 34 | Pending |
+| REL-06 | Phase 34 | Pending |
+| REL-07 | Phase 34 | Pending |
+| KUST-01 | Phase 32 | Pending |
+| KUST-02 | Phase 32 | Pending |
+| KUST-03 | Phase 32 | Pending |
+| KUST-04 | Phase 32 | Pending |
 
 **Coverage:**
 - v3.1 requirements: 29 total
-- Mapped to phases: 0
-- Unmapped: 29 ⚠️
+- Mapped to phases: 29
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-08*
-*Last updated: 2026-03-08 after v3.0 audit*
+*Last updated: 2026-03-08 — traceability updated with phase assignments*

@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: K8s & GitOps Hardening
-status: defining_requirements
+status: ready_to_plan
 last_updated: "2026-03-08"
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -18,14 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** A user can complete a purchase end-to-end — deployed to Kubernetes via GitOps
-**Current focus:** Defining requirements for v3.1 K8s & GitOps Hardening
+**Current focus:** Phase 30 - CI/CD Pipeline Fixes
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 30 (CI/CD Pipeline Fixes) — first of 6 in v3.1
 Plan: —
-Status: Defining requirements
-Last activity: 2026-03-08 — Milestone v3.1 started
+Status: Ready to plan
+Last activity: 2026-03-08 — v3.1 roadmap created (6 phases, 29 requirements)
+
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -40,6 +42,7 @@ Last activity: 2026-03-08 — Milestone v3.1 started
 | v1.1 User Features | 7 | 23 | 2 days |
 | v2.0 DDD Foundation | 9 | 9 | 11 days |
 | v3.0 K8s & GitOps | 8 | 29 | 5 days |
+| v3.1 Hardening | 6 | TBD | — |
 
 ## Accumulated Context
 
@@ -53,11 +56,11 @@ None.
 
 ### Blockers/Concerns
 
-None.
+- CI workflows are currently broken (SDK mismatch, stale paths) — Phase 30 addresses this first
 
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Defining v3.1 requirements
+Stopped at: v3.1 roadmap created
 Resume file: None
-Next step: Define requirements and create roadmap
+Next step: `/gsd:plan-phase 30`
