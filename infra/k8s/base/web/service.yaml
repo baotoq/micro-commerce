@@ -4,6 +4,9 @@ metadata:
   name: web
   labels:
     app: web
+    app.kubernetes.io/name: web
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   selector:
     app: web

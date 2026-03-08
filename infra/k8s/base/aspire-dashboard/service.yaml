@@ -4,6 +4,9 @@ metadata:
   name: aspire-dashboard
   labels:
     app: aspire-dashboard
+    app.kubernetes.io/name: aspire-dashboard
+    app.kubernetes.io/component: observability
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   selector:
     app: aspire-dashboard
@@ -23,6 +26,9 @@ metadata:
   name: aspire-dashboard-nodeport
   labels:
     app: aspire-dashboard
+    app.kubernetes.io/name: aspire-dashboard
+    app.kubernetes.io/component: observability
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   type: NodePort
   selector:

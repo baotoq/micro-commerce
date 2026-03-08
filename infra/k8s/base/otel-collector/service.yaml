@@ -4,6 +4,9 @@ metadata:
   name: otel-collector
   labels:
     app: otel-collector
+    app.kubernetes.io/name: otel-collector
+    app.kubernetes.io/component: observability
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   selector:
     app: otel-collector

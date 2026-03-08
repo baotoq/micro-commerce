@@ -4,6 +4,9 @@ metadata:
   name: apiservice
   labels:
     app: apiservice
+    app.kubernetes.io/name: apiservice
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   selector:
     app: apiservice

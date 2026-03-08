@@ -4,6 +4,9 @@ metadata:
   name: gateway
   labels:
     app: gateway
+    app.kubernetes.io/name: gateway
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   selector:
     app: gateway
@@ -18,6 +21,9 @@ metadata:
   name: gateway-nodeport
   labels:
     app: gateway
+    app.kubernetes.io/name: gateway
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   type: NodePort
   selector:
