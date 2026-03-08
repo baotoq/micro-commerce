@@ -49,6 +49,10 @@ export function CheckoutPage() {
   function handleBack() {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+      if (currentStep === 2) {
+        setAppliedCoupon(null);
+        setDiscountAmount(0);
+      }
     }
   }
 
@@ -142,39 +146,9 @@ export function CheckoutPage() {
               <PaymentSection
                 shippingData={shippingData}
                 couponCode={appliedCoupon ?? undefined}
+                discountAmount={discountAmount}
                 onSuccess={handlePaymentSuccess}
               />
-            </div>
-          )}
-
-          {/* Step 3: Review */}
-          {currentStep === 3 && shippingData && (
-            <div className="rounded-lg border bg-card p-6">
-              <h2 className="mb-5 text-lg font-bold text-foreground">
-                Review Order
-              </h2>
-              <div className="space-y-4">
-                <div className="rounded-md border bg-background p-4">
-                  <p className="mb-1 text-sm font-medium text-foreground">
-                    Shipping to
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {shippingData.name}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {shippingData.street}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {shippingData.city}, {shippingData.state}{" "}
-                    {shippingData.zipCode}
-                  </p>
-                </div>
-                <PaymentSection
-                  shippingData={shippingData}
-                  couponCode={appliedCoupon ?? undefined}
-                  onSuccess={handlePaymentSuccess}
-                />
-              </div>
             </div>
           )}
 

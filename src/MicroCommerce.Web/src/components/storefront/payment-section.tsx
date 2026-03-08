@@ -20,12 +20,14 @@ function formatPrice(price: number): string {
 interface PaymentSectionProps {
   shippingData: ShippingAddressDto;
   couponCode?: string;
+  discountAmount?: number;
   onSuccess: (orderId: string) => void;
 }
 
 export function PaymentSection({
   shippingData,
   couponCode,
+  discountAmount = 0,
   onSuccess,
 }: PaymentSectionProps) {
   const { data: cart } = useCart();
@@ -40,7 +42,7 @@ export function PaymentSection({
   const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
   const shipping = 5.99;
   const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  const total = subtotal + shipping + tax - discountAmount;
 
   async function handlePayment() {
     if (items.length === 0) return;
@@ -161,6 +163,12 @@ export function PaymentSection({
               {formatPrice(tax)}
             </span>
           </div>
+          {discountAmount > 0 && (
+            <div className="flex justify-between text-green-600">
+              <span>Discount</span>
+              <span className="font-medium">-{formatPrice(discountAmount)}</span>
+            </div>
+          )}
           <div className="flex justify-between border-t border-border pt-2 text-base font-bold">
             <span className="text-foreground">Total</span>
             <span className="text-foreground">{formatPrice(total)}</span>

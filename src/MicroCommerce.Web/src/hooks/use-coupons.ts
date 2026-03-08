@@ -111,5 +111,8 @@ export function useValidateCoupon() {
       subtotal: number;
       userId?: string;
     }) => validateCoupon(code, subtotal, userId),
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to validate coupon");
+    },
   });
 }

@@ -133,7 +133,7 @@ export function CouponDialog({ open, onClose, coupon }: CouponDialogProps) {
       discountValue: Number(formData.discountValue),
       validFrom: new Date(formData.validFrom).toISOString(),
       validUntil: formData.validUntil
-        ? new Date(formData.validUntil).toISOString()
+        ? `${formData.validUntil}T23:59:59`
         : undefined,
       minOrderAmount: formData.minOrderAmount
         ? Number(formData.minOrderAmount)
@@ -185,7 +185,7 @@ export function CouponDialog({ open, onClose, coupon }: CouponDialogProps) {
                   placeholder="SUMMER20"
                   disabled={isPending}
                   className={errors.code ? "border-destructive" : ""}
-                  {...field("code")}
+                  value={formData.code}
                   onChange={(e) => {
                     setFormData((prev) => ({
                       ...prev,
