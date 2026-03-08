@@ -76,7 +76,7 @@
 - [x] **Phase 31: CI/CD Hardening** - Secure and optimize CI with permissions, caching, and path filters (completed 2026-03-08)
 - [x] **Phase 32: Kustomize Hygiene** - Clean up K8s manifests with standard labels, image policies, and overlay structure (completed 2026-03-08)
 - [x] **Phase 33: K8s Security Hardening** - Lock down workloads with security contexts, service accounts, and sealed secrets (completed 2026-03-08)
-- [ ] **Phase 34: Reliability Improvements** - Harden runtime with persistent messaging, startup probes, and bootstrap safety
+- [x] **Phase 34: Reliability Improvements** - Harden runtime with persistent messaging, startup probes, and bootstrap safety (completed 2026-03-08)
 - [ ] **Phase 35: ArgoCD GitOps Best Practices** - Enforce deployment ordering, seal secrets in Git, and scope ArgoCD access
 
 ## Phase Details
@@ -147,7 +147,7 @@ Plans:
   5. Bootstrap script has trap handler that prints cleanup guidance on failure
   6. Bootstrap script refuses to run if kubectl context is not the expected kind cluster
   7. MassTransit outbox is registered on all DbContexts that publish domain events
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 Plans:
 - [ ] 34-01-PLAN.md — Bootstrap script safety (pre-flight checks, context guard, trap handler)
 - [ ] 34-02-PLAN.md — Client-side API URL fix, RabbitMQ StatefulSet, and startup probes
@@ -178,7 +178,7 @@ Plans:
 | 31. CI/CD Hardening | 1/1 | Complete    | 2026-03-08 | - |
 | 32. Kustomize Hygiene | 2/2 | Complete    | 2026-03-08 | - |
 | 33. K8s Security Hardening | 2/2 | Complete    | 2026-03-08 | - |
-| 34. Reliability Improvements | 2/3 | In Progress|  | - |
+| 34. Reliability Improvements | 3/3 | Complete   | 2026-03-08 | - |
 | 35. ArgoCD GitOps Best Practices | v3.1 | 0/TBD | Not started | - |
 
 ---

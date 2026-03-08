@@ -36,9 +36,9 @@ Requirements for K8s & GitOps Hardening. Each maps to roadmap phases.
 
 ### Reliability
 
-- [ ] **REL-01**: Client-side API URL resolution returns browser-reachable URL in K8s
-- [ ] **REL-02**: RabbitMQ converted to StatefulSet with persistent volume
-- [ ] **REL-03**: Startup probes added to gateway, web, rabbitmq, otel-collector, aspire-dashboard
+- [x] **REL-01**: Client-side API URL resolution returns browser-reachable URL in K8s
+- [x] **REL-02**: RabbitMQ converted to StatefulSet with persistent volume
+- [x] **REL-03**: Startup probes added to gateway, web, rabbitmq, otel-collector, aspire-dashboard
 - [x] **REL-04**: Bootstrap script checks for required CLI tools before execution
 - [x] **REL-05**: Bootstrap script adds trap handler for failure cleanup guidance
 - [x] **REL-06**: Bootstrap script context guard prevents applying to wrong cluster
@@ -90,9 +90,9 @@ None deferred — all audit findings scoped to v3.1.
 | ARGO-03 | Phase 35 | Pending |
 | ARGO-04 | Phase 35 | Pending |
 | ARGO-05 | Phase 35 | Pending |
-| REL-01 | Phase 34 | Pending |
-| REL-02 | Phase 34 | Pending |
-| REL-03 | Phase 34 | Pending |
+| REL-01 | Phase 34 | Complete |
+| REL-02 | Phase 34 | Complete |
+| REL-03 | Phase 34 | Complete |
 | REL-04 | Phase 34 | Complete |
 | REL-05 | Phase 34 | Complete |
 | REL-06 | Phase 34 | Complete |

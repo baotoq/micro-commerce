@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: K8s & GitOps Hardening
 status: executing
-stopped_at: Completed 34-03-PLAN.md
-last_updated: "2026-03-08T16:16:51.000Z"
+stopped_at: Completed 34-02-PLAN.md
+last_updated: "2026-03-08T16:18:28.224Z"
 last_activity: 2026-03-08 — Completed Phase 33 Plan 02 (Web Secrets & Keycloak Production Mode)
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
   percent: 83
 ---
 
@@ -51,6 +51,7 @@ Progress: [█████████░] 83%
 | Phase 33 P02 | 1min | 2 tasks | 6 files |
 | Phase 34 P01 | 1min | 1 tasks | 1 files |
 | Phase 34 P03 | 2min | 1 tasks | 1 files |
+| Phase 34 P02 | 2min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,9 @@ Progress: [█████████░] 83%
 - [Phase 34]: docker added to prerequisite checks alongside kind/kubectl/kubeseal since needed for image builds
 - [Phase 34]: Context guard placed after cluster creation so kind sets context before verification
 - [Phase 34]: Identical outbox config across all DbContexts (1s QueryDelay, 5min DuplicateDetectionWindow)
+- [Phase 34]: NEXT_PUBLIC_API_URL returns empty string in Aspire (same-origin), http://localhost:38800 in K8s
+- [Phase 34]: RabbitMQ uses StatefulSet with headless service and 1Gi PVC for message persistence
+- [Phase 34]: Startup probe timeouts tuned per service: RabbitMQ 130s, gateway/web/aspire 65s, otel-collector 33s
 
 ### Pending Todos
 
@@ -86,7 +90,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-08T16:16:50.997Z
-Stopped at: Completed 34-03-PLAN.md
+Last session: 2026-03-08T16:18:28.222Z
+Stopped at: Completed 34-02-PLAN.md
 Resume file: None
 Next step: Next phase in v3.1 milestone
