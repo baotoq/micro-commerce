@@ -23,8 +23,16 @@ spec:
         app.kubernetes.io/component: api
         app.kubernetes.io/part-of: micro-commerce
     spec:
+      serviceAccountName: apiservice
       containers:
       - name: apiservice
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         image: apiservice:dev
         imagePullPolicy: IfNotPresent
         ports:

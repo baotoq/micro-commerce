@@ -23,8 +23,16 @@ spec:
         app.kubernetes.io/component: observability
         app.kubernetes.io/part-of: micro-commerce
     spec:
+      serviceAccountName: aspire-dashboard
       containers:
       - name: aspire-dashboard
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         image: mcr.microsoft.com/dotnet/aspire-dashboard:9.3
         imagePullPolicy: IfNotPresent
         ports:

@@ -23,8 +23,16 @@ spec:
         app.kubernetes.io/component: observability
         app.kubernetes.io/part-of: micro-commerce
     spec:
+      serviceAccountName: otel-collector
       containers:
       - name: otel-collector
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         image: otel/opentelemetry-collector:0.146.0
         imagePullPolicy: IfNotPresent
         args: ["--config=/etc/otelcol/otel-collector-config.yaml"]

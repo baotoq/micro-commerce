@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
 - deployment.yaml
 - service.yaml
+- serviceaccount.yaml
 
 configMapGenerator:
 - name: keycloak-realm

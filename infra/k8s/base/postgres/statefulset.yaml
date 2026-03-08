@@ -24,8 +24,16 @@ spec:
         app.kubernetes.io/component: database
         app.kubernetes.io/part-of: micro-commerce
     spec:
+      serviceAccountName: postgres
       containers:
       - name: postgres
+        securityContext:
+          runAsNonRoot: false
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         image: postgres:17
         imagePullPolicy: IfNotPresent
         ports:

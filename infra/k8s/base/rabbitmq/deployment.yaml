@@ -23,8 +23,16 @@ spec:
         app.kubernetes.io/component: messaging
         app.kubernetes.io/part-of: micro-commerce
     spec:
+      serviceAccountName: rabbitmq
       containers:
       - name: rabbitmq
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         image: rabbitmq:4-management
         imagePullPolicy: IfNotPresent
         ports:

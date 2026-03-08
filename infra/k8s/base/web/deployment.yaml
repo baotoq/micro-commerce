@@ -23,8 +23,16 @@ spec:
         app.kubernetes.io/component: frontend
         app.kubernetes.io/part-of: micro-commerce
     spec:
+      serviceAccountName: web
       containers:
       - name: web
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         image: web:dev
         imagePullPolicy: IfNotPresent
         ports:

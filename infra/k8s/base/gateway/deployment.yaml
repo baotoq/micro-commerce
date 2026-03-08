@@ -23,8 +23,16 @@ spec:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/part-of: micro-commerce
     spec:
+      serviceAccountName: gateway
       containers:
       - name: gateway
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         image: gateway:dev
         imagePullPolicy: IfNotPresent
         ports:
