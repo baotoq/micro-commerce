@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "a3b2cbda4e1f",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".planning/phases/32-kustomize-hygiene/32-02-SUMMARY.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/a3/b2cbda4e1f/0/metadata.json",
+      "transcript": "/a3/b2cbda4e1f/0/full.jsonl",
+      "context": "/a3/b2cbda4e1f/0/context.md",
+      "content_hash": "/a3/b2cbda4e1f/0/content_hash.txt",
+      "prompt": "/a3/b2cbda4e1f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 45,
+    "cache_creation_tokens": 83679,
+    "cache_read_tokens": 1157326,
+    "output_tokens": 7526,
+    "api_call_count": 27
+  }
+}
