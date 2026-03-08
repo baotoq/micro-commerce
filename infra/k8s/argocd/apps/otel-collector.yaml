@@ -3,10 +3,12 @@ kind: Application
 metadata:
   name: otel-collector
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: micro-commerce
   source:
     repoURL: https://github.com/baotoq/micro-commerce.git
     targetRevision: master

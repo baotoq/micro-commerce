@@ -3,10 +3,12 @@ kind: Application
 metadata:
   name: postgres
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: micro-commerce
   source:
     repoURL: https://github.com/baotoq/micro-commerce.git
     targetRevision: master
@@ -14,12 +16,19 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: micro-commerce
+  ignoreDifferences:
+  - group: apps
+    kind: StatefulSet
+    jsonPointers:
+    - /spec/volumeClaimTemplates/0/apiVersion
+    - /spec/volumeClaimTemplates/0/kind
   syncPolicy:
     automated:
       selfHeal: true
       prune: true
     syncOptions:
     - CreateNamespace=true
+    - RespectIgnoreDifferences=true
     retry:
       limit: 5
       backoff:

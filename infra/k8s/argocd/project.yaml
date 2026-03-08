@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: micro-commerce
+  namespace: argocd
+spec:
+  description: MicroCommerce application project
+  sourceRepos:
+  - https://github.com/baotoq/micro-commerce.git
+  destinations:
+  - namespace: micro-commerce
+    server: https://kubernetes.default.svc
+  - namespace: argocd
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
