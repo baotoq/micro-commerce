@@ -5,6 +5,7 @@ resources:
 - deployment.yaml
 - service.yaml
 - serviceaccount.yaml
+- sealed-secret.yaml
 
 configMapGenerator:
 - name: keycloak-realm

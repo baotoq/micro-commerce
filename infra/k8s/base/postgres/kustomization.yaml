@@ -5,3 +5,4 @@ resources:
 - statefulset.yaml
 - service.yaml
 - serviceaccount.yaml
+- sealed-secret.yaml
