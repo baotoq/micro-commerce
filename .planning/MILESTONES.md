@@ -1,5 +1,27 @@
 # Milestones
 
+## v3.1 K8s & GitOps Hardening (Shipped: 2026-03-08)
+
+**Phases completed:** 6 phases, 11 plans, 20 tasks
+**Timeline:** 1 day (2026-03-08)
+**Stats:** 20 feat commits, 58 files, +694 / -58 lines
+**Requirements:** 29/29 satisfied (100%)
+
+**Key accomplishments:**
+- Fixed all 3 CI workflows (.NET 10.0.x SDK, test gate, correct project paths) and hardened with least-privilege permissions, NuGet caching, and path filters
+- Kustomize hygiene: removed hardcoded namespaces, added standard `app.kubernetes.io/*` labels, explicit `imagePullPolicy`, and dev overlay structure for all 8 services
+- Security hardened all 8 K8s workloads with securityContext (runAsNonRoot, readOnlyRootFilesystem, drop ALL), dedicated ServiceAccounts, and SealedSecrets for web frontend secrets
+- Keycloak production-mode base manifest with dev overlay patch pattern for start-dev
+- Reliability improvements: RabbitMQ StatefulSet with PVC, startup probes on 7 workloads, MassTransit outbox on all 5 domain-event DbContexts, bootstrap script safety (pre-flight, context guard, trap handler)
+- ArgoCD best practices: dedicated AppProject scoping, sync wave ordering (infrastructure-before-apps), consistent overlay paths, sealed secret placeholders committed to Git, retry strategy alignment
+
+**Archives:**
+- [v3.1 Roadmap](milestones/v3.1-ROADMAP.md)
+- [v3.1 Requirements](milestones/v3.1-REQUIREMENTS.md)
+- [v3.1 Audit](milestones/v3.1-MILESTONE-AUDIT.md)
+
+---
+
 ## v3.0 Kubernetes & GitOps (Shipped: 2026-03-03)
 
 **Phases completed:** 8 phases, 29 plans

@@ -63,19 +63,21 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - ✓ Local kind cluster as dev environment with bootstrap.sh — v3.0
 - ✓ Complete UI refresh: 11 pages restyled with shadcn/ui, oklch tokens, DM Sans — v3.0
 - ✓ Runtime API URL resolution for client-side K8s deployment — v3.0
+- ✓ CI workflows fixed (.NET 10.0.x SDK, test gate, correct project paths, ARG secrets) — v3.1
+- ✓ CI hardening (least-privilege permissions, NuGet caching, path filters) — v3.1
+- ✓ Kustomize hygiene (no hardcoded namespaces, standard K8s labels, imagePullPolicy, overlay structure) — v3.1
+- ✓ Security contexts on all 8 K8s workloads (runAsNonRoot, readOnlyRootFilesystem, drop ALL) — v3.1
+- ✓ Dedicated ServiceAccounts per workload with automountServiceAccountToken: false — v3.1
+- ✓ Web frontend secrets via SealedSecret (AUTH_SECRET, KEYCLOAK_CLIENT_SECRET) — v3.1
+- ✓ Keycloak production mode with dev overlay patch — v3.1
+- ✓ RabbitMQ StatefulSet with persistent volume (messages survive restarts) — v3.1
+- ✓ Startup probes on all applicable workloads — v3.1
+- ✓ Bootstrap script safety (pre-flight checks, context guard, trap handler) — v3.1
+- ✓ MassTransit outbox on all 5 domain-event-publishing DbContexts — v3.1
+- ✓ ArgoCD sync waves, dedicated AppProject, consistent overlay paths, sealed secrets in Git — v3.1
+- ✓ Client-side API URL resolution via NEXT_PUBLIC_API_URL in K8s — v3.1
 
 ### Active
-
-## Current Milestone: v3.1 K8s & GitOps Hardening
-
-**Goal:** Fix critical security, reliability, and CI/CD issues identified in the v3.0 implementation audit.
-
-**Target features:**
-- Fix broken CI workflows (.NET SDK version mismatch, stale project paths)
-- Security hardening (securityContext, SealedSecrets for web, Keycloak prod mode)
-- ArgoCD best practices (sync waves, AppProject, sealed secrets in Git)
-- Reliability improvements (RabbitMQ persistence, startup probes, bootstrap robustness)
-- Fix client-side API URL resolution in K8s
 
 ### Out of Scope
 
@@ -95,7 +97,7 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 
 ## Context
 
-**Shipped v3.0 Kubernetes & GitOps** with 25.6K LOC C# backend, 15.7K LOC TypeScript frontend, 1.3K LOC K8s manifests. Full stack deployed to kind cluster via ArgoCD GitOps.
+**Shipped v3.1 K8s & GitOps Hardening** with 25.6K LOC C# backend, 15.7K LOC TypeScript frontend, 2K LOC K8s manifests/CI. Full stack deployed to kind cluster via ArgoCD GitOps with production-grade security, reliability, and CI/CD practices.
 
 **Tech stack:**
 - Backend: .NET 10, ASP.NET Core Minimal APIs, .NET Aspire 13.1.0
@@ -121,6 +123,7 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 - ISoftDeletable has zero entity adopters (infrastructure ready, no entities implement it yet)
 - AUTH_URL=localhost:38800 works for local kind dev only (needs adjustment for remote clusters)
 - Hero image placeholder (gray bg-muted div)
+- getApiBaseUrl() exported from config.ts but never imported (orphaned utility)
 
 ## Constraints
 
@@ -172,6 +175,16 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 | NodePort for kind access | Avoid Ingress NGINX (EOL March 2026) | ✓ Good — simple port mapping chain |
 | Runtime API URL resolution | getApiBase() singleton fetching /api/config at runtime | ✓ Good — single Docker image for all environments |
 | OTEL Collector + Aspire Dashboard | Standalone observability without .NET Aspire AppHost | ✓ Good — distributed tracing visible in K8s |
+| Deny-by-default CI permissions | Top-level `permissions: {}` with job-level overrides | ✓ Good — least-privilege on all workflows |
+| Inclusive path filters for CI | `paths:` allowlist (not `paths-ignore:`) for explicit triggering | ✓ Good — container builds skip non-source changes |
+| Namespace via Kustomize transformer only | No hardcoded `namespace:` in base manifests | ✓ Good — single source of truth for namespace |
+| Container-level securityContext | Per-container (not pod-level) for granular exceptions | ✓ Good — postgres/keycloak/rabbitmq exceptions clean |
+| RabbitMQ StatefulSet with PVC | Messages persist across pod restarts | ✓ Good — 1Gi PVC, headless service |
+| Bootstrap pre-flight + context guard | Validate tools and kubectl context before operations | ✓ Good — safe against wrong-cluster mistakes |
+| MassTransit outbox on all event DbContexts | Transactional domain event delivery for all 5 DbContexts | ✓ Good — consistent at-least-once guarantees |
+| ArgoCD sync wave ordering | Infrastructure (1-2) before apps (3-5) before observability (6) | ✓ Good — deterministic deployment order |
+| Dedicated ArgoCD AppProject | Restrict sourceRepos and destination namespaces | ✓ Good — scoped access, not default project |
+| Placeholder sealed secrets in Git | Dummy `AgAAAA==` values overwritten by bootstrap per-cluster | ✓ Good — fully declarative ArgoCD, no manual steps |
 
 ---
-*Last updated: 2026-03-03 after v3.0 milestone completed*
+*Last updated: 2026-03-08 after v3.1 milestone completed*
