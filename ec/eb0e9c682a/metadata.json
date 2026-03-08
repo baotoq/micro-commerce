@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "eceb0e9c682a",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "src/MicroCommerce.ApiService.Tests/Integration/Fixtures/ApiWebApplicationFactory.cs",
+    "src/MicroCommerce.ApiService.Tests/Integration/Messaging/MessagingEndpointsTests.cs",
+    "src/MicroCommerce.ApiService.Tests/Integration/Profiles/ProfilesEndpointsTests.cs",
+    "src/MicroCommerce.ApiService.Tests/Integration/Reviews/ReviewsEndpointsTests.cs",
+    "src/MicroCommerce.ApiService.Tests/Integration/Wishlists/WishlistsEndpointsTests.cs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ec/eb0e9c682a/0/metadata.json",
+      "transcript": "/ec/eb0e9c682a/0/full.jsonl",
+      "context": "/ec/eb0e9c682a/0/context.md",
+      "content_hash": "/ec/eb0e9c682a/0/content_hash.txt",
+      "prompt": "/ec/eb0e9c682a/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 27,
+    "cache_creation_tokens": 59976,
+    "cache_read_tokens": 554991,
+    "output_tokens": 4892,
+    "api_call_count": 19
+  }
+}
