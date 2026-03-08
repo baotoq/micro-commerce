@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "15ca13b47b13",
+  "session_id": "992843a2-3e29-4edc-984f-3fa8f0e978d7",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-08T16:31:01.361929Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/ROADMAP.md",
+    ".planning/phases/35-argocd-gitops-best-practices/35-01-PLAN.md",
+    ".planning/phases/35-argocd-gitops-best-practices/35-02-PLAN.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "cf80bda564de",
+  "token_usage": {
+    "input_tokens": 11,
+    "cache_creation_tokens": 26307,
+    "cache_read_tokens": 253087,
+    "output_tokens": 1830,
+    "api_call_count": 8
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-08T16:31:01.270384Z",
+    "agent_lines": 0,
+    "human_added": 546,
+    "human_modified": 2,
+    "human_removed": 0,
+    "total_committed": 546,
+    "agent_percentage": 0
+  }
+}
