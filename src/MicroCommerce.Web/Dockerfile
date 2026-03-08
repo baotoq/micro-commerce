@@ -16,8 +16,8 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Placeholder for build-time auth — real secret injected at runtime via K8s Secrets
-ENV AUTH_SECRET=placeholder-for-docker-build
-ENV AUTH_TRUST_HOST=true
+ARG AUTH_SECRET=placeholder-for-docker-build
+ARG AUTH_TRUST_HOST=true
 
 RUN npm run build
 
