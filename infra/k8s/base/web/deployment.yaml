@@ -45,7 +45,10 @@ spec:
         - name: PORT
           value: "3000"
         - name: AUTH_SECRET
-          value: "k8s-dev-auth-secret-change-in-production"
+          valueFrom:
+            secretKeyRef:
+              name: web-secrets
+              key: auth-secret
         - name: AUTH_TRUST_HOST
           value: "true"
         - name: AUTH_URL
@@ -55,7 +58,10 @@ spec:
         - name: KEYCLOAK_CLIENT_ID
           value: "nextjs-app"
         - name: KEYCLOAK_CLIENT_SECRET
-          value: "nextjs-app-secret"
+          valueFrom:
+            secretKeyRef:
+              name: web-secrets
+              key: keycloak-client-secret
         - name: services__gateway__https__0
           value: "http://gateway:8080"
         livenessProbe:

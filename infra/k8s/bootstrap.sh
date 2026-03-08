@@ -77,10 +77,16 @@ seal_secret "keycloak-credentials" \
   --from-literal=admin-username=admin \
   --from-literal=admin-password=admin
 
+seal_secret "web-secrets" \
+  "$SCRIPT_DIR/base/web/sealed-secret.yaml" \
+  --from-literal=auth-secret=k8s-dev-auth-secret-change-in-production \
+  --from-literal=keycloak-client-secret=nextjs-app-secret
+
 info "Applying sealed secrets..."
 kubectl apply -f "$SCRIPT_DIR/base/postgres/sealed-secret.yaml"
 kubectl apply -f "$SCRIPT_DIR/base/rabbitmq/sealed-secret.yaml"
 kubectl apply -f "$SCRIPT_DIR/base/keycloak/sealed-secret.yaml"
+kubectl apply -f "$SCRIPT_DIR/base/web/sealed-secret.yaml"
 
 # --- Step 7: Install ArgoCD ---
 info "Installing ArgoCD ${ARGOCD_VERSION}..."
