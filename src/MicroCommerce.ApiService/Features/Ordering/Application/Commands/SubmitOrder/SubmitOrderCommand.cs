@@ -6,7 +6,8 @@ public sealed record SubmitOrderCommand(
     Guid BuyerId,
     string Email,
     ShippingAddressRequest ShippingAddress,
-    List<OrderItemRequest> Items) : IRequest<Guid>;
+    List<OrderItemRequest> Items,
+    string? CouponCode = null) : IRequest<Guid>;
 
 public sealed record ShippingAddressRequest(
     string Name,

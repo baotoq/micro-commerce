@@ -21,9 +21,11 @@ public sealed class Order : BaseAggregateRoot<OrderId>, IConcurrencyToken
     public ShippingAddress ShippingAddress { get; private set; } = null!;
     public OrderStatus Status { get; private set; }
     public decimal Subtotal { get; private set; }
+    public decimal DiscountAmount { get; private set; }
     public decimal ShippingCost { get; private set; }
     public decimal Tax { get; private set; }
     public decimal Total { get; private set; }
+    public string? CouponCode { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? PaidAt { get; private set; }
     public string? FailureReason { get; private set; }
@@ -46,7 +48,9 @@ public sealed class Order : BaseAggregateRoot<OrderId>, IConcurrencyToken
         Guid buyerId,
         string buyerEmail,
         ShippingAddress address,
-        IEnumerable<(Guid productId, string productName, decimal unitPrice, string? imageUrl, int quantity)> items)
+        IEnumerable<(Guid productId, string productName, decimal unitPrice, string? imageUrl, int quantity)> items,
+        string? couponCode = null,
+        decimal discountAmount = 0)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(buyerEmail);
         ArgumentNullException.ThrowIfNull(address);
@@ -60,7 +64,8 @@ public sealed class Order : BaseAggregateRoot<OrderId>, IConcurrencyToken
             BuyerEmail = buyerEmail,
             ShippingAddress = address,
             Status = OrderStatus.Submitted,
-            CreatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            CouponCode = couponCode
         };
 
         foreach ((Guid productId, string productName, decimal unitPrice, string? imageUrl, int quantity) item in items)
@@ -79,9 +84,10 @@ public sealed class Order : BaseAggregateRoot<OrderId>, IConcurrencyToken
             throw new InvalidOperationException("Order must contain at least one item.");
 
         order.Subtotal = order._items.Sum(i => i.LineTotal);
+        order.DiscountAmount = Math.Min(discountAmount, order.Subtotal);
         order.ShippingCost = FlatShippingCost;
-        order.Tax = Math.Round(order.Subtotal * TaxRate, 2);
-        order.Total = order.Subtotal + order.ShippingCost + order.Tax;
+        order.Tax = Math.Round((order.Subtotal - order.DiscountAmount) * TaxRate, 2);
+        order.Total = order.Subtotal - order.DiscountAmount + order.ShippingCost + order.Tax;
 
         order.AddDomainEvent(new OrderSubmittedDomainEvent(orderId.Value));
 

@@ -4,6 +4,7 @@ using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Cart.Infrastructure;
 using MicroCommerce.ApiService.Features.Catalog;
 using MicroCommerce.ApiService.Features.Catalog.Infrastructure;
+using MicroCommerce.ApiService.Features.Coupons.Infrastructure;
 using MicroCommerce.ApiService.Features.Inventory.Infrastructure;
 using MicroCommerce.ApiService.Features.Ordering.Infrastructure;
 using MicroCommerce.ApiService.Features.Profiles.Infrastructure;
@@ -94,6 +95,7 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
             ReplaceDbContext<CatalogDbContext>(services, "catalog");
             ReplaceDbContext<CartDbContext>(services, "cart");
             ReplaceDbContext<OrderingDbContext>(services, "ordering");
+            ReplaceDbContext<CouponsDbContext>(services, "coupons");
             ReplaceDbContext<InventoryDbContext>(services, "inventory");
             ReplaceDbContext<ProfilesDbContext>(services, "profiles");
             ReplaceDbContext<ReviewsDbContext>(services, "reviews");
@@ -214,6 +216,9 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
 
         OrderingDbContext orderingDb = scope.ServiceProvider.GetRequiredService<OrderingDbContext>();
         await orderingDb.Database.MigrateAsync();
+
+        CouponsDbContext couponsDb = scope.ServiceProvider.GetRequiredService<CouponsDbContext>();
+        await couponsDb.Database.MigrateAsync();
 
         InventoryDbContext inventoryDb = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
         await inventoryDb.Database.MigrateAsync();

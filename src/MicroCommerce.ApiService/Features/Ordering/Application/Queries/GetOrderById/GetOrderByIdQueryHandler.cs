@@ -54,9 +54,11 @@ public sealed class GetOrderByIdQueryHandler
             shippingAddress,
             items,
             order.Subtotal,
+            order.DiscountAmount,
             order.ShippingCost,
             order.Tax,
             order.Total,
+            order.CouponCode,
             order.CreatedAt,
             order.PaidAt,
             order.FailureReason);

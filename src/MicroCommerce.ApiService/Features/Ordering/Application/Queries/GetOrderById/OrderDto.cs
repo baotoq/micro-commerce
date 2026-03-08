@@ -10,9 +10,11 @@ public sealed record OrderDto(
     ShippingAddressDto ShippingAddress,
     List<OrderItemDto> Items,
     decimal Subtotal,
+    decimal DiscountAmount,
     decimal ShippingCost,
     decimal Tax,
     decimal Total,
+    string? CouponCode,
     DateTimeOffset CreatedAt,
     DateTimeOffset? PaidAt,
     string? FailureReason);
