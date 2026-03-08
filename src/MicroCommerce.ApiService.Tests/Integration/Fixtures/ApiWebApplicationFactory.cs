@@ -1,4 +1,5 @@
 using MassTransit;
+using MicroCommerce.ApiService.Common.Messaging;
 using MicroCommerce.ApiService.Common.Persistence;
 using MicroCommerce.ApiService.Features.Cart.Infrastructure;
 using MicroCommerce.ApiService.Features.Catalog;
@@ -138,6 +139,10 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
             // Replace Azure Avatar service with no-op stub
             services.RemoveAll<IAvatarImageService>();
             services.AddScoped<IAvatarImageService, NoOpAvatarImageService>();
+
+            // Replace DLQ service with no-op stub (Azure Service Bus not available in tests)
+            services.RemoveAll<IDeadLetterQueueService>();
+            services.AddScoped<IDeadLetterQueueService, NoOpDeadLetterQueueService>();
 
             // Replace Keycloak JWT auth with fake handler for tests
             // FakeAuthenticationHandler reads X-Test-UserId header and injects claims

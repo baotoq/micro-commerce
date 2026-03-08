@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using MicroCommerce.ApiService.Features.Inventory;
+using MicroCommerce.ApiService.Features.Inventory.Application.Queries.GetAdjustmentHistory;
 using MicroCommerce.ApiService.Features.Inventory.Application.Queries.GetStockByProductId;
 using MicroCommerce.ApiService.Features.Inventory.Domain.Entities;
 using MicroCommerce.ApiService.Features.Inventory.Infrastructure;
@@ -152,5 +153,95 @@ public sealed class InventoryEndpointsTests
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task GetStockByProductId_ExistingProduct_ReturnsStockInfo()
+    {
+        // Arrange
+        Guid productId = Guid.NewGuid();
+        StockItem stock = StockItem.Create(productId);
+        stock.AdjustStock(75, "Initial stock");
+        _dbContext.StockItems.Add(stock);
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        StockInfoDto? result = await _client.GetFromJsonAsync<StockInfoDto>($"/api/inventory/stock/{productId}");
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.ProductId.Should().Be(productId);
+        result.AvailableQuantity.Should().Be(75);
+    }
+
+    [Fact]
+    public async Task GetStockByProductId_NonExistentProduct_Returns404()
+    {
+        // Act
+        HttpResponseMessage response = await _client.GetAsync($"/api/inventory/stock/{Guid.NewGuid()}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetAdjustmentHistory_AfterAdjustments_ReturnsHistory()
+    {
+        // Arrange
+        Guid productId = Guid.NewGuid();
+        StockItem stock = StockItem.Create(productId);
+        stock.AdjustStock(100, "Initial stock", "admin");
+        stock.AdjustStock(-10, "Damage write-off", "admin");
+        _dbContext.StockItems.Add(stock);
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        List<AdjustmentDto>? history = await _client.GetFromJsonAsync<List<AdjustmentDto>>(
+            $"/api/inventory/stock/{productId}/adjustments");
+
+        // Assert
+        history.Should().NotBeNull();
+        history.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task GetAdjustmentHistory_NonExistentProduct_ReturnsEmptyList()
+    {
+        // Act
+        List<AdjustmentDto>? history = await _client.GetFromJsonAsync<List<AdjustmentDto>>(
+            $"/api/inventory/stock/{Guid.NewGuid()}/adjustments");
+
+        // Assert
+        history.Should().NotBeNull();
+        history.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ReleaseReservation_ExistingReservation_ReturnsNoContent()
+    {
+        // Arrange - Seed stock item and create a reservation via API
+        Guid productId = Guid.NewGuid();
+        StockItem stock = StockItem.Create(productId);
+        stock.AdjustStock(50, "Initial stock");
+        _dbContext.StockItems.Add(stock);
+        await _dbContext.SaveChangesAsync();
+
+        Guid stockItemId = stock.Id.Value;
+
+        // Reserve stock to get a reservationId
+        HttpResponseMessage reserveResponse = await _client.PostAsJsonAsync(
+            $"/api/inventory/stock/{productId}/reserve", new ReserveStockRequest(Quantity: 5));
+        ReserveStockResponse? reservation = await reserveResponse.Content.ReadFromJsonAsync<ReserveStockResponse>();
+
+        // Act
+        HttpResponseMessage response = await _client.DeleteAsync(
+            $"/api/inventory/reservations/{reservation!.ReservationId}?stockItemId={stockItemId}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        // Verify stock is released (available quantity back to 50)
+        StockInfoDto? stockInfo = await _client.GetFromJsonAsync<StockInfoDto>($"/api/inventory/stock/{productId}");
+        stockInfo!.AvailableQuantity.Should().Be(50);
     }
 }

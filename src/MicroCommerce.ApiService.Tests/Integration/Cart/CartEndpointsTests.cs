@@ -12,11 +12,13 @@ namespace MicroCommerce.ApiService.Tests.Integration.Cart;
 [Trait("Category", "Integration")]
 public sealed class CartEndpointsTests
 {
+    private readonly ApiWebApplicationFactory _factory;
     private readonly HttpClient _client;
     private readonly Guid _buyerId;
 
     public CartEndpointsTests(ApiWebApplicationFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
         _buyerId = Guid.NewGuid();
 
@@ -184,5 +186,36 @@ public sealed class CartEndpointsTests
 
         // Assert
         count.Should().Be(5); // 3 + 2
+    }
+
+    [Fact]
+    public async Task MergeCarts_GuestCartWithItems_ReturnsNoContent()
+    {
+        // Arrange - Create a guest cart with an item
+        Guid guestBuyerId = Guid.NewGuid();
+        Guid authenticatedUserId = Guid.NewGuid();
+
+        // Add item as guest
+        HttpClient guestClient = _factory.CreateClient();
+        guestClient.DefaultRequestHeaders.Add("Cookie", $"buyer_id={guestBuyerId}");
+        await guestClient.PostAsJsonAsync(
+            "/api/cart/items",
+            new AddToCartRequest(
+                Guid.NewGuid(),
+                "Guest Product",
+                19.99m,
+                null,
+                1));
+
+        // Create authenticated client with the buyer_id cookie (simulates post-login state)
+        HttpClient authClient = _factory.CreateClient();
+        authClient.DefaultRequestHeaders.Add("X-Test-UserId", authenticatedUserId.ToString());
+        authClient.DefaultRequestHeaders.Add("Cookie", $"buyer_id={guestBuyerId}");
+
+        // Act - Merge the guest cart into the authenticated cart
+        HttpResponseMessage response = await authClient.PostAsync("/api/cart/merge", null);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 }

@@ -194,4 +194,176 @@ public sealed class CatalogEndpointsTests : IntegrationTestBase
         updated!.Name.Should().Be("iPad Pro 12.9\"");
         updated.Price.Should().Be(1199.99m);
     }
+
+    [Fact]
+    public async Task ChangeProductStatus_PublishProduct_ReturnsNoContent()
+    {
+        // Arrange - Create product (starts as Draft)
+        CreateCategoryRequest categoryRequest = new("Cameras", "Camera equipment");
+        HttpResponseMessage categoryResponse = await _client.PostAsJsonAsync("/api/catalog/categories", categoryRequest);
+        CreateCategoryResponse? category = await categoryResponse.Content.ReadFromJsonAsync<CreateCategoryResponse>();
+
+        CreateProductRequest productRequest = new(
+            "Canon EOS R5",
+            "Full-frame mirrorless camera",
+            3899.99m,
+            category!.Id,
+            null,
+            "CANON-R5");
+        HttpResponseMessage createResponse = await _client.PostAsJsonAsync("/api/catalog/products", productRequest);
+        CreateProductResponse? created = await createResponse.Content.ReadFromJsonAsync<CreateProductResponse>();
+
+        // Act - Publish the product
+        HttpResponseMessage response = await _client.PatchAsJsonAsync(
+            $"/api/catalog/products/{created!.Id}/status",
+            new { Status = "Published" });
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task ChangeProductStatus_InvalidTransition_Returns422()
+    {
+        // Arrange - Create product (starts as Draft); can't go directly to Archived
+        CreateCategoryRequest categoryRequest = new("Audio", "Audio equipment");
+        HttpResponseMessage categoryResponse = await _client.PostAsJsonAsync("/api/catalog/categories", categoryRequest);
+        CreateCategoryResponse? category = await categoryResponse.Content.ReadFromJsonAsync<CreateCategoryResponse>();
+
+        CreateProductRequest productRequest = new(
+            "Sony Headphones",
+            "Noise-cancelling headphones",
+            349.99m,
+            category!.Id,
+            null,
+            "SONY-WH");
+        HttpResponseMessage createResponse = await _client.PostAsJsonAsync("/api/catalog/products", productRequest);
+        CreateProductResponse? created = await createResponse.Content.ReadFromJsonAsync<CreateProductResponse>();
+
+        // Act - Try invalid transition: Draft -> Archived
+        HttpResponseMessage response = await _client.PatchAsJsonAsync(
+            $"/api/catalog/products/{created!.Id}/status",
+            new { Status = "Archived" });
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Fact]
+    public async Task ArchiveProduct_PublishedProduct_ReturnsNoContent()
+    {
+        // Arrange - Create and publish product first
+        CreateCategoryRequest categoryRequest = new("Wearables", "Wearable technology");
+        HttpResponseMessage categoryResponse = await _client.PostAsJsonAsync("/api/catalog/categories", categoryRequest);
+        CreateCategoryResponse? category = await categoryResponse.Content.ReadFromJsonAsync<CreateCategoryResponse>();
+
+        CreateProductRequest productRequest = new(
+            "Apple Watch",
+            "Smartwatch",
+            399.99m,
+            category!.Id,
+            null,
+            "AW-S9");
+        HttpResponseMessage createResponse = await _client.PostAsJsonAsync("/api/catalog/products", productRequest);
+        CreateProductResponse? created = await createResponse.Content.ReadFromJsonAsync<CreateProductResponse>();
+
+        // Publish first (Draft -> Published)
+        await _client.PatchAsJsonAsync(
+            $"/api/catalog/products/{created!.Id}/status",
+            new { Status = "Published" });
+
+        // Act - Archive (Published -> Archived via DELETE)
+        HttpResponseMessage response = await _client.DeleteAsync($"/api/catalog/products/{created.Id}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task ArchiveProduct_NonExistentProduct_ReturnsNotFound()
+    {
+        // Act
+        HttpResponseMessage response = await _client.DeleteAsync($"/api/catalog/products/{Guid.NewGuid()}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task UploadProductImage_ValidImage_ReturnsCreated()
+    {
+        // Arrange
+        byte[] fakePng = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+        using MultipartFormDataContent content = new();
+        using ByteArrayContent imageContent = new(fakePng);
+        imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
+        content.Add(imageContent, "file", "product.png");
+
+        // Act
+        HttpResponseMessage response = await _client.PostAsync("/api/catalog/images", content);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        string body = await response.Content.ReadAsStringAsync();
+        body.Should().Contain("imageUrl");
+    }
+
+    [Fact]
+    public async Task GetCategoryById_ExistingCategory_ReturnsCategory()
+    {
+        // Arrange
+        CreateCategoryRequest categoryRequest = new("Gaming", "Gaming peripherals");
+        HttpResponseMessage createResponse = await _client.PostAsJsonAsync("/api/catalog/categories", categoryRequest);
+        CreateCategoryResponse? created = await createResponse.Content.ReadFromJsonAsync<CreateCategoryResponse>();
+
+        // Act
+        HttpResponseMessage response = await _client.GetAsync($"/api/catalog/categories/{created!.Id}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        string body = await response.Content.ReadAsStringAsync();
+        body.Should().Contain("Gaming");
+    }
+
+    [Fact]
+    public async Task GetCategoryById_NonExistentCategory_ReturnsNotFound()
+    {
+        // Act
+        HttpResponseMessage response = await _client.GetAsync($"/api/catalog/categories/{Guid.NewGuid()}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task UpdateCategory_ExistingCategory_ReturnsNoContent()
+    {
+        // Arrange
+        CreateCategoryRequest categoryRequest = new("Fitness", "Fitness equipment");
+        HttpResponseMessage createResponse = await _client.PostAsJsonAsync("/api/catalog/categories", categoryRequest);
+        CreateCategoryResponse? created = await createResponse.Content.ReadFromJsonAsync<CreateCategoryResponse>();
+
+        // Act
+        HttpResponseMessage response = await _client.PutAsJsonAsync(
+            $"/api/catalog/categories/{created!.Id}",
+            new { Name = "Fitness & Wellness", Description = "Fitness and wellness products" });
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task DeleteCategory_ExistingEmptyCategory_ReturnsNoContent()
+    {
+        // Arrange - Create category without products
+        CreateCategoryRequest categoryRequest = new("Temporary", "Temp category");
+        HttpResponseMessage createResponse = await _client.PostAsJsonAsync("/api/catalog/categories", categoryRequest);
+        CreateCategoryResponse? created = await createResponse.Content.ReadFromJsonAsync<CreateCategoryResponse>();
+
+        // Act
+        HttpResponseMessage response = await _client.DeleteAsync($"/api/catalog/categories/{created!.Id}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
 }
