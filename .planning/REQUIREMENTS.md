@@ -12,9 +12,9 @@ Requirements for K8s & GitOps Hardening. Each maps to roadmap phases.
 - [x] **CICD-01**: .NET SDK version updated to 10.0.x in dotnet-test.yml and release.yml
 - [x] **CICD-02**: Stale project paths in release.yml updated to current structure (MicroCommerce.ApiService, MicroCommerce.Gateway)
 - [x] **CICD-03**: Aspire workload install pinned to specific version
-- [ ] **CICD-04**: Explicit least-privilege `permissions:` block on all workflows
-- [ ] **CICD-05**: NuGet package caching added to test and image build workflows
-- [ ] **CICD-06**: Path filtering on container-images.yml to skip non-source changes
+- [x] **CICD-04**: Explicit least-privilege `permissions:` block on all workflows
+- [x] **CICD-05**: NuGet package caching added to test and image build workflows
+- [x] **CICD-06**: Path filtering on container-images.yml to skip non-source changes
 - [x] **CICD-07**: Tests re-enabled as gate in release.yml
 - [x] **CICD-08**: Dockerfile uses ARG instead of ENV for build-time placeholder secrets
 
@@ -75,9 +75,9 @@ None deferred — all audit findings scoped to v3.1.
 | CICD-01 | Phase 30 | Complete |
 | CICD-02 | Phase 30 | Complete |
 | CICD-03 | Phase 30 | Complete |
-| CICD-04 | Phase 31 | Pending |
-| CICD-05 | Phase 31 | Pending |
-| CICD-06 | Phase 31 | Pending |
+| CICD-04 | Phase 31 | Complete |
+| CICD-05 | Phase 31 | Complete |
+| CICD-06 | Phase 31 | Complete |
 | CICD-07 | Phase 30 | Complete |
 | CICD-08 | Phase 30 | Complete |
 | SEC-01 | Phase 33 | Pending |
