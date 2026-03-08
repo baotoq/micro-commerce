@@ -182,7 +182,7 @@ Plans:
 | 32. Kustomize Hygiene | 2/2 | Complete    | 2026-03-08 | - |
 | 33. K8s Security Hardening | 2/2 | Complete    | 2026-03-08 | - |
 | 34. Reliability Improvements | 3/3 | Complete    | 2026-03-08 | - |
-| 35. ArgoCD GitOps Best Practices | 2/2 | Complete   | 2026-03-08 | - |
+| 35. ArgoCD GitOps Best Practices | 2/2 | Complete    | 2026-03-08 | - |
 
 ---
 *Roadmap created: 2026-01-29*
