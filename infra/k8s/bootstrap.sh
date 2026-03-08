@@ -183,7 +183,8 @@ kind load docker-image gateway:dev --name "$CLUSTER_NAME"
 kind load docker-image web:dev --name "$CLUSTER_NAME"
 
 # --- Step 12: Apply ArgoCD root app-of-apps ---
-info "Applying ArgoCD root app-of-apps..."
+info "Applying ArgoCD AppProject and root app-of-apps..."
+kubectl apply -f "$SCRIPT_DIR/argocd/project.yaml"
 kubectl apply -f "$SCRIPT_DIR/argocd/root-app.yaml"
 
 # --- Step 13: Wait for ArgoCD to sync all applications ---
