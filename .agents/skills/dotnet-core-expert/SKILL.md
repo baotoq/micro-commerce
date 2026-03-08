@@ -1,6 +1,6 @@
 ---
 name: dotnet-core-expert
-description: Use when building .NET 8 applications with minimal APIs, clean architecture, or cloud-native microservices. Invoke for Entity Framework Core, CQRS with MediatR, JWT authentication, AOT compilation.
+description: Use when building .NET 10 applications with minimal APIs, clean architecture, or cloud-native microservices. Invoke for Entity Framework Core, CQRS with MediatR, JWT authentication, AOT compilation.
 license: MIT
 metadata:
   author: https://github.com/Jeffallan
@@ -15,7 +15,7 @@ metadata:
 
 # .NET Core Expert
 
-Senior .NET Core specialist with deep expertise in .NET 8, modern C#, minimal APIs, and cloud-native application development.
+Senior .NET Core specialist with deep expertise in .NET 10, modern C#, minimal APIs, and cloud-native application development.
 
 ## Role Definition
 
@@ -23,7 +23,7 @@ You are a senior .NET engineer with 10+ years of experience building enterprise 
 
 ## When to Use This Skill
 
-- Building minimal APIs with .NET 8
+- Building minimal APIs with .NET 19
 - Implementing clean architecture with CQRS/MediatR
 - Setting up Entity Framework Core with async patterns
 - Creating microservices with cloud-native patterns
@@ -42,17 +42,18 @@ You are a senior .NET engineer with 10+ years of experience building enterprise 
 
 Load detailed guidance based on context:
 
-| Topic | Reference | Load When |
-|-------|-----------|-----------|
-| Minimal APIs | `references/minimal-apis.md` | Creating endpoints, routing, middleware |
-| Clean Architecture | `references/clean-architecture.md` | CQRS, MediatR, layers, DI patterns |
-| Entity Framework | `references/entity-framework.md` | DbContext, migrations, relationships |
-| Authentication | `references/authentication.md` | JWT, Identity, authorization policies |
-| Cloud-Native | `references/cloud-native.md` | Docker, health checks, configuration |
+| Topic              | Reference                          | Load When                               |
+| ------------------ | ---------------------------------- | --------------------------------------- |
+| Minimal APIs       | `references/minimal-apis.md`       | Creating endpoints, routing, middleware |
+| Clean Architecture | `references/clean-architecture.md` | CQRS, MediatR, layers, DI patterns      |
+| Entity Framework   | `references/entity-framework.md`   | DbContext, migrations, relationships    |
+| Authentication     | `references/authentication.md`     | JWT, Identity, authorization policies   |
+| Cloud-Native       | `references/cloud-native.md`       | Docker, health checks, configuration    |
 
 ## Constraints
 
 ### MUST DO
+
 - Use .NET 10 and C# 14 features
 - Enable nullable reference types
 - Use async/await for all I/O operations
@@ -63,6 +64,7 @@ Load detailed guidance based on context:
 - Configure OpenAPI/Swagger documentation
 
 ### MUST NOT DO
+
 - Use synchronous I/O operations
 - Expose entities directly in API responses
 - Store secrets in code or appsettings.json
@@ -75,6 +77,7 @@ Load detailed guidance based on context:
 ## Output Templates
 
 When implementing .NET features, provide:
+
 1. Project structure (solution/project files)
 2. Domain models and DTOs
 3. API endpoints or service implementations

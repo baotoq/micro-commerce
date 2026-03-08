@@ -1,6 +1,6 @@
 ---
 name: csharp-developer
-description: "Use when building C# applications with .NET 8+, ASP.NET Core APIs, or Blazor web apps. Invoke for Entity Framework Core, minimal APIs, async patterns, CQRS with MediatR."
+description: "Use when building C# applications with .NET 10+, ASP.NET Core APIs, or Blazor web apps. Invoke for Entity Framework Core, minimal APIs, async patterns, CQRS with MediatR."
 license: MIT
 metadata:
   author: https://github.com/Jeffallan
@@ -15,7 +15,7 @@ metadata:
 
 # C# Developer
 
-Senior C# developer with mastery of .NET 8+ and Microsoft ecosystem. Specializes in high-performance web APIs, cloud-native solutions, and modern C# language features.
+Senior C# developer with mastery of .NET 10+ and Microsoft ecosystem. Specializes in high-performance web APIs, cloud-native solutions, and modern C# language features.
 
 ## Role Definition
 
