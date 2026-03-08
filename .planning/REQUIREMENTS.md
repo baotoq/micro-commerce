@@ -29,10 +29,10 @@ Requirements for K8s & GitOps Hardening. Each maps to roadmap phases.
 ### ArgoCD
 
 - [x] **ARGO-01**: Sync wave annotations on all Application resources enforcing dependency ordering
-- [ ] **ARGO-02**: Sealed secret YAML files committed to Git and added as Kustomize resources
+- [x] **ARGO-02**: Sealed secret YAML files committed to Git and added as Kustomize resources
 - [x] **ARGO-03**: Root app retry strategy matching child app configuration
 - [x] **ARGO-04**: ignoreDifferences configured for PostgreSQL StatefulSet with RespectIgnoreDifferences
-- [ ] **ARGO-05**: Consistent overlay paths for all applications (infrastructure services moved to overlays)
+- [x] **ARGO-05**: Consistent overlay paths for all applications (infrastructure services moved to overlays)
 
 ### Reliability
 
@@ -86,10 +86,10 @@ None deferred — all audit findings scoped to v3.1.
 | SEC-04 | Phase 33 | Complete |
 | SEC-05 | Phase 35 | Complete |
 | ARGO-01 | Phase 35 | Complete |
-| ARGO-02 | Phase 35 | Pending |
+| ARGO-02 | Phase 35 | Complete |
 | ARGO-03 | Phase 35 | Complete |
 | ARGO-04 | Phase 35 | Complete |
-| ARGO-05 | Phase 35 | Pending |
+| ARGO-05 | Phase 35 | Complete |
 | REL-01 | Phase 34 | Complete |
 | REL-02 | Phase 34 | Complete |
 | REL-03 | Phase 34 | Complete |
