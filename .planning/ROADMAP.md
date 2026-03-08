@@ -147,7 +147,11 @@ Plans:
   5. Bootstrap script has trap handler that prints cleanup guidance on failure
   6. Bootstrap script refuses to run if kubectl context is not the expected kind cluster
   7. MassTransit outbox is registered on all DbContexts that publish domain events
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 34-01-PLAN.md — Bootstrap script safety (pre-flight checks, context guard, trap handler)
+- [ ] 34-02-PLAN.md — Client-side API URL fix, RabbitMQ StatefulSet, and startup probes
+- [ ] 34-03-PLAN.md — MassTransit outbox registration for all domain-event DbContexts
 
 ### Phase 35: ArgoCD GitOps Best Practices
 **Goal**: ArgoCD deployments are ordered, scoped, and fully declarative (sealed secrets in Git)
@@ -174,7 +178,7 @@ Plans:
 | 31. CI/CD Hardening | 1/1 | Complete    | 2026-03-08 | - |
 | 32. Kustomize Hygiene | 2/2 | Complete    | 2026-03-08 | - |
 | 33. K8s Security Hardening | 2/2 | Complete    | 2026-03-08 | - |
-| 34. Reliability Improvements | v3.1 | 0/TBD | Not started | - |
+| 34. Reliability Improvements | v3.1 | 0/3 | Not started | - |
 | 35. ArgoCD GitOps Best Practices | v3.1 | 0/TBD | Not started | - |
 
 ---
