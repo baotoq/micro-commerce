@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "75e375efdb5b",
+  "session_id": "992843a2-3e29-4edc-984f-3fa8f0e978d7",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-08T16:39:00.529043Z",
+  "branch": "master",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".planning/phases/35-argocd-gitops-best-practices/35-VERIFICATION.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "cf80bda564de",
+  "checkpoint_transcript_start": 142,
+  "transcript_lines_at_start": 142,
+  "token_usage": {
+    "input_tokens": 16,
+    "cache_creation_tokens": 17740,
+    "cache_read_tokens": 549884,
+    "output_tokens": 4139,
+    "api_call_count": 12
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-08T16:39:00.241879Z",
+    "agent_lines": 116,
+    "human_added": 431,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 547,
+    "agent_percentage": 21.206581352833638
+  }
+}
