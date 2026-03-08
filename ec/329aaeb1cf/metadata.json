@@ -1,0 +1,34 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "ec329aaeb1cf",
+  "strategy": "manual-commit",
+  "branch": "feat/coupon-admin-ui-checkout",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/MicroCommerce.Web/src/app/admin/coupons/page.tsx",
+    "src/MicroCommerce.Web/src/app/admin/layout.tsx",
+    "src/MicroCommerce.Web/src/components/admin/coupon-dialog.tsx",
+    "src/MicroCommerce.Web/src/components/storefront/checkout-page.tsx",
+    "src/MicroCommerce.Web/src/components/storefront/coupon-input.tsx",
+    "src/MicroCommerce.Web/src/components/storefront/order-sidebar.tsx",
+    "src/MicroCommerce.Web/src/components/storefront/payment-section.tsx",
+    "src/MicroCommerce.Web/src/hooks/use-coupons.ts",
+    "src/MicroCommerce.Web/src/lib/api.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ec/329aaeb1cf/0/metadata.json",
+      "transcript": "/ec/329aaeb1cf/0/full.jsonl",
+      "context": "/ec/329aaeb1cf/0/context.md",
+      "content_hash": "/ec/329aaeb1cf/0/content_hash.txt",
+      "prompt": "/ec/329aaeb1cf/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 88,
+    "cache_creation_tokens": 115976,
+    "cache_read_tokens": 5818536,
+    "output_tokens": 28188,
+    "api_call_count": 81
+  }
+}

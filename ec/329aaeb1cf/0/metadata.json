@@ -1,0 +1,38 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "ec329aaeb1cf",
+  "session_id": "360ce001-8b96-4e42-acaa-493e3d4a3443",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-08T20:58:36.059615Z",
+  "branch": "feat/coupon-admin-ui-checkout",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/MicroCommerce.Web/src/lib/api.ts",
+    "src/MicroCommerce.Web/src/hooks/use-coupons.ts",
+    "src/MicroCommerce.Web/src/components/admin/coupon-dialog.tsx",
+    "src/MicroCommerce.Web/src/app/admin/coupons/page.tsx",
+    "src/MicroCommerce.Web/src/components/storefront/coupon-input.tsx",
+    "src/MicroCommerce.Web/src/components/storefront/order-sidebar.tsx",
+    "src/MicroCommerce.Web/src/components/storefront/checkout-page.tsx",
+    "src/MicroCommerce.Web/src/components/storefront/payment-section.tsx",
+    "src/MicroCommerce.Web/src/app/admin/layout.tsx"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "932e1bbab505",
+  "token_usage": {
+    "input_tokens": 88,
+    "cache_creation_tokens": 115976,
+    "cache_read_tokens": 5818536,
+    "output_tokens": 28188,
+    "api_call_count": 81
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-08T20:58:35.803485Z",
+    "agent_lines": 1157,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1157,
+    "agent_percentage": 100
+  }
+}
