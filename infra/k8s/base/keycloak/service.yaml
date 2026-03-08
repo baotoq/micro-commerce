@@ -2,7 +2,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keycloak
-  namespace: micro-commerce
 spec:
   selector:
     app: keycloak
@@ -15,7 +14,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keycloak-nodeport
-  namespace: micro-commerce
 spec:
   type: NodePort
   selector:

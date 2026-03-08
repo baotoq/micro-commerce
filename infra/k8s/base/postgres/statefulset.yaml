@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
-  namespace: micro-commerce
 spec:
   serviceName: postgres
   replicas: 1
