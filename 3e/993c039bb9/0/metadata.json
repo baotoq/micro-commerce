@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "3e993c039bb9",
+  "session_id": "f4e9a5d6-fd45-4142-aea2-039574fb10d0",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-08T20:16:51.807616Z",
+  "branch": "agent/senior-dotnet-be",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/MicroCommerce.ApiService/Features/Ordering/Domain/Entities/Order.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Application/Commands/SubmitOrder/SubmitOrderCommand.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Application/Commands/SubmitOrder/SubmitOrderCommandHandler.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/OrderingEndpoints.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Infrastructure/Configurations/OrderConfiguration.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Application/Queries/GetOrderById/OrderDto.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Application/Queries/GetOrderById/GetOrderByIdQueryHandler.cs",
+    "src/MicroCommerce.ApiService.Tests/Integration/Ordering/CheckoutWithCouponTests.cs"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "3e5000a5774a",
+  "token_usage": {
+    "input_tokens": 63,
+    "cache_creation_tokens": 77958,
+    "cache_read_tokens": 3541438,
+    "output_tokens": 19140,
+    "api_call_count": 58
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-08T20:16:51.616801Z",
+    "agent_lines": 404,
+    "human_added": 610,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1014,
+    "agent_percentage": 39.8422090729783
+  }
+}

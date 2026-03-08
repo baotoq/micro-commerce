@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "3e993c039bb9",
+  "strategy": "manual-commit",
+  "branch": "agent/senior-dotnet-be",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/MicroCommerce.ApiService.Tests/Integration/Ordering/CheckoutWithCouponTests.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Application/Commands/SubmitOrder/SubmitOrderCommand.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Application/Commands/SubmitOrder/SubmitOrderCommandHandler.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Application/Queries/GetOrderById/GetOrderByIdQueryHandler.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Application/Queries/GetOrderById/OrderDto.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Domain/Entities/Order.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/Infrastructure/Configurations/OrderConfiguration.cs",
+    "src/MicroCommerce.ApiService/Features/Ordering/OrderingEndpoints.cs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3e/993c039bb9/0/metadata.json",
+      "transcript": "/3e/993c039bb9/0/full.jsonl",
+      "context": "/3e/993c039bb9/0/context.md",
+      "content_hash": "/3e/993c039bb9/0/content_hash.txt",
+      "prompt": "/3e/993c039bb9/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 63,
+    "cache_creation_tokens": 77958,
+    "cache_read_tokens": 3541438,
+    "output_tokens": 19140,
+    "api_call_count": 58
+  }
+}
