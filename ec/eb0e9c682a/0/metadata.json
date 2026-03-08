@@ -3,15 +3,11 @@
   "checkpoint_id": "eceb0e9c682a",
   "session_id": "c0e044fa-b5d4-433a-b6d5-ef8b9708a5ae",
   "strategy": "manual-commit",
-  "created_at": "2026-03-08T18:36:40.629829Z",
+  "created_at": "2026-03-08T18:39:22.605847Z",
   "branch": "master",
-  "checkpoints_count": 2,
+  "checkpoints_count": 1,
   "files_touched": [
-    "src/MicroCommerce.ApiService.Tests/Integration/Fixtures/ApiWebApplicationFactory.cs",
-    "src/MicroCommerce.ApiService.Tests/Integration/Messaging/MessagingEndpointsTests.cs",
-    "src/MicroCommerce.ApiService.Tests/Integration/Profiles/ProfilesEndpointsTests.cs",
-    "src/MicroCommerce.ApiService.Tests/Integration/Reviews/ReviewsEndpointsTests.cs",
-    "src/MicroCommerce.ApiService.Tests/Integration/Wishlists/WishlistsEndpointsTests.cs"
+    ".github/copilot-instructions.md"
   ],
   "agent": "Claude Code",
   "turn_id": "b47e31ef6bf9",
@@ -23,12 +19,12 @@
     "api_call_count": 19
   },
   "initial_attribution": {
-    "calculated_at": "2026-03-08T18:36:40.543483Z",
-    "agent_lines": 450,
-    "human_added": 538,
-    "human_modified": 9,
+    "calculated_at": "2026-03-08T18:39:22.52714Z",
+    "agent_lines": 0,
+    "human_added": 0,
+    "human_modified": 0,
     "human_removed": 0,
-    "total_committed": 997,
-    "agent_percentage": 45.135406218655966
+    "total_committed": 0,
+    "agent_percentage": 0
   }
 }

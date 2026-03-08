@@ -3,7 +3,7 @@
   "checkpoint_id": "eceb0e9c682a",
   "strategy": "manual-commit",
   "branch": "master",
-  "checkpoints_count": 12,
+  "checkpoints_count": 11,
   "files_touched": [
     ".github/copilot-instructions.md",
     "src/MicroCommerce.ApiService.Tests/Integration/Cart/CartEndpointsTests.cs",
