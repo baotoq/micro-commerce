@@ -4,19 +4,29 @@ metadata:
   name: web
   labels:
     app: web
+    app.kubernetes.io/name: web
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: web
+      app.kubernetes.io/name: web
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/part-of: micro-commerce
   template:
     metadata:
       labels:
         app: web
+        app.kubernetes.io/name: web
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/part-of: micro-commerce
     spec:
       containers:
       - name: web
         image: web:dev
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
         env:

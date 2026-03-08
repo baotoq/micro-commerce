@@ -4,19 +4,29 @@ metadata:
   name: gateway
   labels:
     app: gateway
+    app.kubernetes.io/name: gateway
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: gateway
+      app.kubernetes.io/name: gateway
+      app.kubernetes.io/component: gateway
+      app.kubernetes.io/part-of: micro-commerce
   template:
     metadata:
       labels:
         app: gateway
+        app.kubernetes.io/name: gateway
+        app.kubernetes.io/component: gateway
+        app.kubernetes.io/part-of: micro-commerce
     spec:
       containers:
       - name: gateway
         image: gateway:dev
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         env:

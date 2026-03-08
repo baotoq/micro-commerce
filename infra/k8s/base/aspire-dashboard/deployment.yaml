@@ -4,19 +4,29 @@ metadata:
   name: aspire-dashboard
   labels:
     app: aspire-dashboard
+    app.kubernetes.io/name: aspire-dashboard
+    app.kubernetes.io/component: observability
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: aspire-dashboard
+      app.kubernetes.io/name: aspire-dashboard
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/part-of: micro-commerce
   template:
     metadata:
       labels:
         app: aspire-dashboard
+        app.kubernetes.io/name: aspire-dashboard
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/part-of: micro-commerce
     spec:
       containers:
       - name: aspire-dashboard
         image: mcr.microsoft.com/dotnet/aspire-dashboard:9.3
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 18888
           name: ui

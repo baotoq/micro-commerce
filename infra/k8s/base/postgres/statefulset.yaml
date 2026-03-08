@@ -2,20 +2,32 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  labels:
+    app: postgres
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   serviceName: postgres
   replicas: 1
   selector:
     matchLabels:
       app: postgres
+      app.kubernetes.io/name: postgres
+      app.kubernetes.io/component: database
+      app.kubernetes.io/part-of: micro-commerce
   template:
     metadata:
       labels:
         app: postgres
+        app.kubernetes.io/name: postgres
+        app.kubernetes.io/component: database
+        app.kubernetes.io/part-of: micro-commerce
     spec:
       containers:
       - name: postgres
         image: postgres:17
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5432
         env:

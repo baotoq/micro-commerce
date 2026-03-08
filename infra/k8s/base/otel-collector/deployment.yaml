@@ -4,19 +4,29 @@ metadata:
   name: otel-collector
   labels:
     app: otel-collector
+    app.kubernetes.io/name: otel-collector
+    app.kubernetes.io/component: observability
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: otel-collector
+      app.kubernetes.io/name: otel-collector
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/part-of: micro-commerce
   template:
     metadata:
       labels:
         app: otel-collector
+        app.kubernetes.io/name: otel-collector
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/part-of: micro-commerce
     spec:
       containers:
       - name: otel-collector
         image: otel/opentelemetry-collector:0.146.0
+        imagePullPolicy: IfNotPresent
         args: ["--config=/etc/otelcol/otel-collector-config.yaml"]
         ports:
         - containerPort: 4317

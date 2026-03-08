@@ -4,19 +4,29 @@ metadata:
   name: apiservice
   labels:
     app: apiservice
+    app.kubernetes.io/name: apiservice
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: apiservice
+      app.kubernetes.io/name: apiservice
+      app.kubernetes.io/component: api
+      app.kubernetes.io/part-of: micro-commerce
   template:
     metadata:
       labels:
         app: apiservice
+        app.kubernetes.io/name: apiservice
+        app.kubernetes.io/component: api
+        app.kubernetes.io/part-of: micro-commerce
     spec:
       containers:
       - name: apiservice
         image: apiservice:dev
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         env:

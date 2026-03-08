@@ -2,19 +2,31 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rabbitmq
+  labels:
+    app: rabbitmq
+    app.kubernetes.io/name: rabbitmq
+    app.kubernetes.io/component: messaging
+    app.kubernetes.io/part-of: micro-commerce
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: rabbitmq
+      app.kubernetes.io/name: rabbitmq
+      app.kubernetes.io/component: messaging
+      app.kubernetes.io/part-of: micro-commerce
   template:
     metadata:
       labels:
         app: rabbitmq
+        app.kubernetes.io/name: rabbitmq
+        app.kubernetes.io/component: messaging
+        app.kubernetes.io/part-of: micro-commerce
     spec:
       containers:
       - name: rabbitmq
         image: rabbitmq:4-management
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5672
           name: amqp
