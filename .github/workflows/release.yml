@@ -10,9 +10,10 @@ env:
   CONTAINER_REGISTRY: ghcr.io
 
 jobs:
-  # tests:
-  #   uses: ./.github/workflows/dotnet-test.yml
+  tests:
+    uses: ./.github/workflows/dotnet-test.yml
   release:
+    needs: [tests]
     name: Release
     runs-on: ubuntu-latest
     steps:
@@ -37,7 +38,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - name: Generate build version
         id: generate-build-version
@@ -56,12 +57,6 @@ jobs:
           dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.NEW_VERSION }}
           dotnet nuget push *.nupkg --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
 
-      - name: Build and Push BuildingBlocks.ServiceDefaults Nuget packages
-        working-directory: src/BuildingBlocks/BuildingBlocks.ServiceDefaults
-        run: |
-          dotnet pack -c Release -o . /p:Version=${{ steps.generate-build-version.outputs.NEW_VERSION }}
-          dotnet nuget push *.nupkg --api-key ${{ steps.load-credentials.outputs.NUGET_TOKEN }} --source https://nuget.pkg.github.com/${{ github.actor }}/index.json
-
       - name: Log in to Image Container Registry
         uses: docker/login-action@v2
         with:
@@ -69,20 +64,20 @@ jobs:
           username: ${{ steps.load-credentials.outputs.REGISTRY_USERNAME }}
           password: ${{ steps.load-credentials.outputs.REGISTRY_TOKEN }}
 
-      - name: Build and Push CartService docker image
-        working-directory: src/CartService/CartService.Api
+      - name: Build and Push ApiService docker image
+        working-directory: src
         run: |
-          dotnet publish -c Release \
+          dotnet publish MicroCommerce.ApiService/MicroCommerce.ApiService.csproj -c Release \
             /t:PublishContainer \
             -p ContainerRegistry=${{ env.CONTAINER_REGISTRY }} \
-            -p ContainerRepository=${{ github.repository }}/cart-service \
+            -p ContainerRepository=${{ github.repository }}/apiservice \
             -p ContainerImageTag=${{ github.ref_name }}
 
-      - name: Build and Push Yarp docker image
-        working-directory: src/Gateway/Yarp
+      - name: Build and Push Gateway docker image
+        working-directory: src
         run: |
-          dotnet publish -c Release \
+          dotnet publish MicroCommerce.Gateway/MicroCommerce.Gateway.csproj -c Release \
             /t:PublishContainer \
             -p ContainerRegistry=${{ env.CONTAINER_REGISTRY }} \
-            -p ContainerRepository=${{ github.repository }}/yarp \
+            -p ContainerRepository=${{ github.repository }}/gateway \
             -p ContainerImageTag=${{ github.ref_name }}
