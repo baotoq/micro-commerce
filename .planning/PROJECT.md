@@ -66,7 +66,16 @@ A showcase e-commerce platform demonstrating modern .NET microservices architect
 
 ### Active
 
-(No active milestone — use `/gsd:new-milestone` to start next)
+## Current Milestone: v3.1 K8s & GitOps Hardening
+
+**Goal:** Fix critical security, reliability, and CI/CD issues identified in the v3.0 implementation audit.
+
+**Target features:**
+- Fix broken CI workflows (.NET SDK version mismatch, stale project paths)
+- Security hardening (securityContext, SealedSecrets for web, Keycloak prod mode)
+- ArgoCD best practices (sync waves, AppProject, sealed secrets in Git)
+- Reliability improvements (RabbitMQ persistence, startup probes, bootstrap robustness)
+- Fix client-side API URL resolution in K8s
 
 ### Out of Scope
 
