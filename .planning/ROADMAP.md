@@ -75,7 +75,7 @@
 - [x] **Phase 30: CI/CD Pipeline Fixes** - Restore broken workflows with correct SDK, paths, and test gates (completed 2026-03-08)
 - [x] **Phase 31: CI/CD Hardening** - Secure and optimize CI with permissions, caching, and path filters (completed 2026-03-08)
 - [x] **Phase 32: Kustomize Hygiene** - Clean up K8s manifests with standard labels, image policies, and overlay structure (completed 2026-03-08)
-- [ ] **Phase 33: K8s Security Hardening** - Lock down workloads with security contexts, service accounts, and sealed secrets
+- [x] **Phase 33: K8s Security Hardening** - Lock down workloads with security contexts, service accounts, and sealed secrets (completed 2026-03-08)
 - [ ] **Phase 34: Reliability Improvements** - Harden runtime with persistent messaging, startup probes, and bootstrap safety
 - [ ] **Phase 35: ArgoCD GitOps Best Practices** - Enforce deployment ordering, seal secrets in Git, and scope ArgoCD access
 
@@ -130,7 +130,7 @@ Plans:
   2. All 8 workloads have securityContext: runAsNonRoot, readOnlyRootFilesystem, drop ALL capabilities
   3. Keycloak base manifest runs `start` (production mode); dev overlay patches to `start-dev`
   4. Each workload has its own ServiceAccount with automountServiceAccountToken: false
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 33-01-PLAN.md — Security contexts and dedicated ServiceAccounts for all 8 workloads
 - [ ] 33-02-PLAN.md — Web SealedSecrets and Keycloak production mode with dev overlay
@@ -173,7 +173,7 @@ Plans:
 | 30. CI/CD Pipeline Fixes | 1/1 | Complete    | 2026-03-08 | - |
 | 31. CI/CD Hardening | 1/1 | Complete    | 2026-03-08 | - |
 | 32. Kustomize Hygiene | 2/2 | Complete    | 2026-03-08 | - |
-| 33. K8s Security Hardening | 1/2 | In Progress|  | - |
+| 33. K8s Security Hardening | 2/2 | Complete   | 2026-03-08 | - |
 | 34. Reliability Improvements | v3.1 | 0/TBD | Not started | - |
 | 35. ArgoCD GitOps Best Practices | v3.1 | 0/TBD | Not started | - |
 

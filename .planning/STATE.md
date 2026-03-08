@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: K8s & GitOps Hardening
 status: executing
-stopped_at: Completed 33-01-PLAN.md
-last_updated: "2026-03-08T15:12:37.526Z"
-last_activity: 2026-03-08 — Completed Phase 32 Plan 01 (Kustomize Hygiene)
+stopped_at: Completed 33-02-PLAN.md
+last_updated: "2026-03-08T15:15:10Z"
+last_activity: 2026-03-08 — Completed Phase 33 Plan 02 (Web Secrets & Keycloak Production Mode)
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 6
-  completed_plans: 5
-  percent: 75
+  completed_plans: 6
+  percent: 83
 ---
 
 # Project State
@@ -21,21 +21,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** A user can complete a purchase end-to-end — deployed to Kubernetes via GitOps
-**Current focus:** Phase 32 - Kustomize Hygiene
+**Current focus:** Phase 33 - K8s Security Hardening
 
 ## Current Position
 
-Phase: 32 (Kustomize Hygiene) — third of 6 in v3.1
-Plan: 01 (complete)
+Phase: 33 (K8s Security Hardening) — fourth of 6 in v3.1
+Plan: 02 (complete)
 Status: Executing
-Last activity: 2026-03-08 — Completed Phase 32 Plan 01 (Kustomize Hygiene)
+Last activity: 2026-03-08 — Completed Phase 33 Plan 02 (Web Secrets & Keycloak Production Mode)
 
-Progress: [████████░░] 75%
+Progress: [█████████░] 83%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 113 (v1.0: 49, v1.1: 23, v2.0: 9, v3.0: 29, v3.1: 3)
+- Total plans completed: 114 (v1.0: 49, v1.1: 23, v2.0: 9, v3.0: 29, v3.1: 4)
 
 **By Milestone:**
 
@@ -45,9 +45,10 @@ Progress: [████████░░] 75%
 | v1.1 User Features | 7 | 23 | 2 days |
 | v2.0 DDD Foundation | 9 | 9 | 11 days |
 | v3.0 K8s & GitOps | 8 | 29 | 5 days |
-| v3.1 Hardening | 6 | 3 | in progress |
+| v3.1 Hardening | 6 | 4 | in progress |
 | Phase 32 P02 | 2min | 2 tasks | 16 files |
 | Phase 33 P01 | 1min | 1 tasks | 24 files |
+| Phase 33 P02 | 1min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,8 @@ Progress: [████████░░] 75%
 - [Phase 33]: postgres uses runAsNonRoot: false because official image manages privilege dropping via gosu
 - [Phase 33]: postgres/keycloak/rabbitmq use readOnlyRootFilesystem: false due to runtime write requirements
 - [Phase 33]: securityContext at container level (not pod level) for granular control
+- [33-02] Web secrets (AUTH_SECRET, KEYCLOAK_CLIENT_SECRET) use secretKeyRef to web-secrets SealedSecret
+- [33-02] Keycloak base uses 'start' (production); dev overlay patches to 'start-dev' via strategic merge
 
 ### Pending Todos
 
@@ -78,7 +81,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-08T15:12:37.524Z
-Stopped at: Completed 33-01-PLAN.md
+Last session: 2026-03-08T15:15:10Z
+Stopped at: Completed 33-02-PLAN.md
 Resume file: None
-Next step: Next phase in v3.1 or `/gsd:plan-phase 33` for next phase
+Next step: Next phase in v3.1 milestone

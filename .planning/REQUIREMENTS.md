@@ -20,9 +20,9 @@ Requirements for K8s & GitOps Hardening. Each maps to roadmap phases.
 
 ### Security
 
-- [ ] **SEC-01**: Web frontend secrets (AUTH_SECRET, KEYCLOAK_CLIENT_SECRET) moved to SealedSecret
+- [x] **SEC-01**: Web frontend secrets (AUTH_SECRET, KEYCLOAK_CLIENT_SECRET) moved to SealedSecret
 - [x] **SEC-02**: securityContext added to all 8 workloads (runAsNonRoot, readOnlyRootFilesystem, drop ALL capabilities)
-- [ ] **SEC-03**: Keycloak base manifest uses `start` (production mode); dev overlay patches to `start-dev`
+- [x] **SEC-03**: Keycloak base manifest uses `start` (production mode); dev overlay patches to `start-dev`
 - [x] **SEC-04**: Dedicated ServiceAccounts per workload with automountServiceAccountToken: false
 - [ ] **SEC-05**: Dedicated ArgoCD AppProject with restricted sourceRepos and destinations
 
@@ -80,9 +80,9 @@ None deferred — all audit findings scoped to v3.1.
 | CICD-06 | Phase 31 | Complete |
 | CICD-07 | Phase 30 | Complete |
 | CICD-08 | Phase 30 | Complete |
-| SEC-01 | Phase 33 | Pending |
+| SEC-01 | Phase 33 | Complete |
 | SEC-02 | Phase 33 | Complete |
-| SEC-03 | Phase 33 | Pending |
+| SEC-03 | Phase 33 | Complete |
 | SEC-04 | Phase 33 | Complete |
 | SEC-05 | Phase 35 | Pending |
 | ARGO-01 | Phase 35 | Pending |
