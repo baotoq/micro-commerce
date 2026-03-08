@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "c1c1ad7e1ebf",
+  "session_id": "e03f90f3-4384-40ed-b9de-15157aa5ba33",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-08T15:18:45.473004Z",
+  "branch": "master",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".planning/phases/33-k8s-security-hardening/33-VERIFICATION.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "9e7f8135f851",
+  "token_usage": {
+    "input_tokens": 74,
+    "cache_creation_tokens": 100741,
+    "cache_read_tokens": 2727654,
+    "output_tokens": 13646,
+    "api_call_count": 50
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-08T15:18:44.943077Z",
+    "agent_lines": 86,
+    "human_added": 890,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 976,
+    "agent_percentage": 8.811475409836065
+  }
+}
