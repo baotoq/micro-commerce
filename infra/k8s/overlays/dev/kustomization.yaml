@@ -6,7 +6,7 @@ namespace: micro-commerce
 resources:
 - ../../base/postgres
 - ../../base/rabbitmq
-- ../../base/keycloak
+- keycloak/
 - ../../base/otel-collector
 - ../../base/aspire-dashboard
 - apiservice/
