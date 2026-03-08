@@ -1,0 +1,1164 @@
+/gsd:new-milestone
+
+---
+
+<objective>
+Start a new milestone: questioning → research (optional) → requirements → roadmap.
+
+Brownfield equivalent of new-project. Project exists, PROJECT.md has history. Gathers "what's next", updates PROJECT.md, then runs requirements → roadmap cycle.
+
+**Creates/Updates:**
+- `.planning/PROJECT.md` — updated with new milestone goals
+- `.planning/research/` — domain research (optional, NEW features only)
+- `.planning/REQUIREMENTS.md` — scoped requirements for this milestone
+- `.planning/ROADMAP.md` — phase structure (continues numbering)
+- `.planning/STATE.md` — reset for new milestone
+
+**After:** `/gsd:plan-phase [N]` to start execution.
+</objective>
+
+<execution_context>
+@/Users/baotoq/.claude/get-shit-done/workflows/new-milestone.md
+@/Users/baotoq/.claude/get-shit-done/references/questioning.md
+@/Users/baotoq/.claude/get-shit-done/references/ui-brand.md
+@/Users/baotoq/.claude/get-shit-done/templates/project.md
+@/Users/baotoq/.claude/get-shit-done/templates/requirements.md
+</execution_context>
+
+<context>
+Milestone name:  (optional - will prompt if not provided)
+
+Project and milestone context files are resolved inside the workflow (`init new-milestone`) and delegated via `<files_to_read>` blocks where subagents are used.
+</context>
+
+<process>
+Execute the new-milestone workflow from @/Users/baotoq/.claude/get-shit-done/workflows/new-milestone.md end-to-end.
+Preserve all workflow gates (validation, questioning, research, requirements, roadmap approval, commits).
+</process>
+
+---
+
+i just add claude skills for k8s and argocd now i want to audit v3.0
+
+---
+
+no i want to deeply check the previous implementation
+
+---
+
+<task-notification>
+<task-id>ae27d794fcb0349e8</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-baotoq-Work-micro-commerce/tasks/ae27d794fcb0349e8.output</output-file>
+<status>completed</status>
+<summary>Agent "Review Dockerfiles and CI" completed</summary>
+<result>Now I have a complete picture. Let me compile the review.
+
+---
+
+# Comprehensive Dockerfile and CI/CD Workflow Review
+
+## Files Reviewed
+
+- `/Users/baotoq/Work/micro-commerce/src/MicroCommerce.Web/Dockerfile`
+- `/Users/baotoq/Work/micro-commerce/src/MicroCommerce.Web/.dockerignore`
+- `/Users/baotoq/Work/micro-commerce/src/.dockerignore`
+- `/Users/baotoq/Work/micro-commerce/src/Directory.Build.props` (container base image config)
+- `/Users/baotoq/Work/micro-commerce/.github/workflows/dotnet-test.yml`
+- `/Users/baotoq/Work/micro-commerce/.github/workflows/container-images.yml`
+- `/Users/baotoq/Work/micro-commerce/.github/workflows/release.yml`
+
+---
+
+## DOCKERFILE: `src/MicroCommerce.Web/Dockerfile`
+
+### GOOD - Multi-stage build with proper separation
+
+The Dockerfile uses a clean 3-stage build pattern (deps, builder, runner). Dependencies are copied before source code, which maximizes layer caching. The `npm ci --ignore-scripts` in the deps stage ensures reproducible installs and avoids malicious post-install scripts.
+
+### GOOD - Non-root user in production stage
+
+Lines 33-41 correctly create a dedicated `nextjs` user (UID 1001) and switch to it before running the application. Files are copied with `--chown=nextjs:nodejs`. This is solid.
+
+### GOOD - Next.js standalone output mode
+
+The `next.config.ts` has `output: 'standalone'` configured, and the Dockerfile correctly copies `standalone` and `static` directories. This produces a minimal production image.
+
+### GOOD - Telemetry disabled
+
+`NEXT_TELEMETRY_DISABLED=1` is set in both the build and runner stages, preventing data leakage.
+
+### WARNING - Hardcoded placeholder secret in build layer (lines 18-19)
+
+```dockerfile
+ENV AUTH_SECRET=placeholder-for-docker-build
+ENV AUTH_TRUST_HOST=true
+```
+
+While the comment explains this is a placeholder overridden at runtime, `ENV` directives are baked into the image layer metadata. Anyone who pulls the image can inspect it with `docker inspect` and see these values. Although the value is "placeholder", this sets a bad precedent and could confuse operators into thinking this is the actual secret. Use `ARG` instead of `ENV` for build-time-only values, since `ARG` values are not persisted in the final image layers:
+
+```dockerfile
+ARG AUTH_SECRET=placeholder-for-docker-build
+ARG AUTH_TRUST_HOST=true
+```
+
+### WARNING - No HEALTHCHECK instruction
+
+The Dockerfile has no `HEALTHCHECK` directive. While Kubernetes liveness/readiness probes typically handle this, a Dockerfile-level health check is valuable for standalone Docker usage and `docker compose` environments. Consider adding:
+
+```dockerfile
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+```
+
+### INFO - Consider pinning the Node.js image digest
+
+`node:22-alpine` is a floating tag. For fully reproducible builds, consider pinning to a digest:
+
+```dockerfile
+FROM node:22-alpine@sha256:<digest> AS base
+```
+
+This prevents silent base image changes between builds. Dependabot can update the digest automatically.
+
+### INFO - No .npm cache mount for faster CI rebuilds
+
+The `npm ci` step could benefit from a BuildKit cache mount to speed up rebuilds:
+
+```dockerfile
+RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts
+```
+
+---
+
+## .NET Container Publishing (via `dotnet publish /t:PublishContainer`)
+
+### GOOD - Chiseled base image
+
+`Directory.Build.props` line 13 specifies `mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra` as the base image. Chiseled images are rootless, distroless, and have a minimal attack surface. This is an excellent security choice.
+
+### GOOD - Container configuration centralized in Directory.Build.props
+
+The `ContainerRegistry` and `ContainerBaseImage` properties are defined once in `Directory.Build.props`, and per-service `ContainerRepository` values are in individual `.csproj` files. This is clean and maintainable.
+
+### INFO - No ReadyToRun or trimming configured
+
+The `.csproj` files and `Directory.Build.props` do not enable `PublishReadyToRun`, `PublishTrimmed`, or Native AOT. For a microservices project, enabling ReadyToRun (`<PublishReadyToRun>true</PublishReadyToRun>`) would improve cold-start performance at the cost of slightly larger images. Full trimming or AOT may not be feasible given the heavy use of reflection-based libraries (MediatR, EF Core, MassTransit), so this is informational only.
+
+---
+
+## WORKFLOW: `.github/workflows/dotnet-test.yml`
+
+### CRITICAL - .NET SDK version mismatch
+
+Line 30 specifies `dotnet-version: 9.0.x`, but the project targets `net10.0` (confirmed in `Directory.Build.props` line 4 and all `.csproj` files). This means the test workflow will fail on every run because .NET 9 cannot build .NET 10 projects. This must be updated to `10.0.x`.
+
+### CRITICAL - Aspire workload install is fragile and slow
+
+Lines 33-35:
+```yaml
+- name: Setup Aspire
+  run: |
+    dotnet workload update
+    dotnet workload install aspire
+```
+
+`dotnet workload update` updates ALL workloads, which is slow and non-deterministic. The Aspire workload version is not pinned, so different runs may get different versions. Consider pinning:
+
+```yaml
+- name: Setup Aspire
+  run: dotnet workload install aspire --version 9.3.0
+```
+
+Or better, use the `aspire` workload manifest pinning from a `global.json` file.
+
+### WARNING - No permissions block
+
+The workflow has no `permissions:` declaration. By default, `GITHUB_TOKEN` gets broad read/write permissions. Add a least-privilege permissions block:
+
+```yaml
+permissions:
+  contents: read
+```
+
+### WARNING - No NuGet package caching
+
+The workflow restores NuGet packages from scratch on every run. Add caching:
+
+```yaml
+- uses: actions/cache@v4
+  with:
+    path: ~/.nuget/packages
+    key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Build.props') }}
+    restore-keys: ${{ runner.os }}-nuget-
+```
+
+Alternatively, `actions/setup-dotnet@v4` supports `cache: true` with `cache-dependency-path`.
+
+### WARNING - Action versions not pinned to SHA
+
+`actions/checkout@v4` and `actions/setup-dotnet@v4` use major version tags, not SHA pins. A compromised tag could inject malicious code. For higher security, pin to full commit SHA:
+
+```yaml
+uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+```
+
+This applies to all three workflows.
+
+### INFO - No path filter for non-source changes
+
+The `paths` filter on line 12 includes `.github/**`, which means workflow file changes to unrelated workflows (like `container-images.yml`) will trigger test runs. Consider narrowing to:
+
+```yaml
+paths:
+  - "src/**"
+  - ".github/workflows/dotnet-test.yml"
+```
+
+---
+
+## WORKFLOW: `.github/workflows/container-images.yml`
+
+### GOOD - Proper permissions block
+
+All three jobs correctly declare minimal `permissions: { contents: read, packages: write }`.
+
+### GOOD - Uses GITHUB_TOKEN for registry auth
+
+Lines 23-24 use `secrets.GITHUB_TOKEN` for ghcr.io authentication instead of a PAT. This is the correct and most secure approach.
+
+### GOOD - Docker layer caching with GHA backend
+
+Line 50-51 uses `cache-from: type=gha` and `cache-to: type=gha,mode=max`. This is the recommended caching strategy for GitHub Actions with Buildx.
+
+### GOOD - Multi-arch image support
+
+The web image builds for `linux/amd64,linux/arm64` via QEMU/Buildx, and the .NET images use a manifest-based multi-arch approach. Both are well-implemented.
+
+### GOOD - Image tagging strategy
+
+The metadata action produces SHA-prefixed tags, semver tags for version releases, and a `latest` tag only on master. This is a solid tagging strategy.
+
+### WARNING - No NuGet cache for .NET image builds
+
+The `build-apiservice` and `build-gateway` jobs run `dotnet publish` but do not cache NuGet packages. Each run downloads all dependencies from scratch. Add NuGet caching as described above.
+
+### WARNING - No [skip ci] or path filtering
+
+The workflow triggers on every push to `master` regardless of what changed. Documentation-only commits, README updates, or workflow file changes to other workflows will trigger full image rebuilds. Consider adding path filters:
+
+```yaml
+on:
+  push:
+    branches: [master]
+    tags: ['v*.*.*']
+    paths:
+      - 'src/**'
+      - '.github/workflows/container-images.yml'
+```
+
+### WARNING - .NET publish does not push to registry directly
+
+For `build-apiservice` and `build-gateway`, the `dotnet publish /t:PublishContainer` creates local images tagged with `${{ github.sha }}-amd64` and `${{ github.sha }}-arm64`, then uses `docker buildx imagetools create` to create multi-arch manifests. However, the `dotnet publish` step does not explicitly push these intermediate images to ghcr.io. The `imagetools create` command requires the source images to already exist in a registry. This workflow relies on the .NET SDK container publishing pushing directly to ghcr.io (via `ContainerRegistry` from `Directory.Build.props`), but the `ContainerImageTags` override on lines 90 and 97 use temporary SHA-based tags. These intermediate images accumulate in the registry and are never cleaned up.
+
+### INFO - Tests not gated before image publish
+
+The workflow does not depend on the `dotnet-test.yml` workflow. Broken code could be published as container images. The `release.yml` has a commented-out test dependency (line 13-14). Consider uncommenting or adding:
+
+```yaml
+build-apiservice:
+  needs: [tests]
+```
+
+---
+
+## WORKFLOW: `.github/workflows/release.yml`
+
+### CRITICAL - .NET SDK version mismatch (same as test workflow)
+
+Line 40 specifies `dotnet-version: 9.0.x` but the project targets `net10.0`. NuGet pack and container publish will fail.
+
+### CRITICAL - Stale project references
+
+Lines 72-88 reference `src/CartService/CartService.Api` and `src/Gateway/Yarp`, which do not exist in the current project structure. The current structure has `src/MicroCommerce.ApiService` and `src/MicroCommerce.Gateway`. This workflow will fail with "project not found" errors. It appears this workflow was written for an older version of the project and never updated.
+
+### CRITICAL - 1Password secrets in CI without rotation policy
+
+The workflow uses 1Password (`1password/load-secrets-action@v2`) to inject registry credentials and NuGet tokens. While 1Password is a reasonable vault, the action version is pinned to `v2` (not SHA), and the `OP_SERVICE_ACCOUNT_TOKEN` stored in GitHub secrets is a long-lived credential with access to multiple secrets. If this token is compromised, it exposes registry credentials, NuGet tokens, and anything else in the `cicd` vault.
+
+### WARNING - docker/login-action pinned to v2 (outdated)
+
+Line 66 uses `docker/login-action@v2`, while the `container-images.yml` workflow correctly uses `@v3`. This should be updated for consistency and to get security fixes.
+
+### WARNING - No permissions block
+
+Like `dotnet-test.yml`, this workflow lacks an explicit `permissions:` declaration.
+
+### WARNING - Tests are commented out
+
+Lines 13-14 show that the test job dependency was intentionally commented out:
+```yaml
+# tests:
+#   uses: ./.github/workflows/dotnet-test.yml
+```
+
+This means releases are published without running any automated tests. Even if tests are slow, they should gate releases.
+
+### WARNING - Version generation is fragile
+
+Lines 44-51 generate a version from the current date/time, but the workflow also triggers on `v*.*.*` tags. The tag version and the generated version will not match, creating confusion about which version was actually published.
+
+---
+
+## SUMMARY
+
+| Severity | Count | Items |
+|----------|-------|-------|
+| CRITICAL | 4 | .NET 9 SDK in test + release workflows (project is .NET 10); stale project paths in release.yml; fragile Aspire workload install |
+| WARNING | 9 | Placeholder secret as ENV not ARG; no HEALTHCHECK; no permissions in 2 workflows; no NuGet cache (3 places); no path filtering; commented-out tests; outdated docker/login-action |
+| INFO | 4 | Unpinned Node base image; no npm cache mount; no ReadyToRun; test path filter too broad |
+| GOOD | 7 | Multi-stage Dockerfile; non-root user; standalone output; chiseled .NET base; GITHUB_TOKEN auth; Docker layer caching; multi-arch images |
+
+The most urgent fixes are the **.NET SDK version mismatches** (the test and release workflows will fail against the current `net10.0` codebase) and the **stale project paths in `release.yml`** (references to `CartService` and `Gateway/Yarp` that no longer exist). These are broken-right-now issues, not theoretical risks.</result>
+<usage><total_tokens>22627</total_tokens><tool_uses>19</tool_uses><duration_ms>108613</duration_ms></usage>
+</task-notification>
+Full transcript available at: /private/tmp/claude-501/-Users-baotoq-Work-micro-commerce/tasks/ae27d794fcb0349e8.output
+
+---
+
+<task-notification>
+<task-id>a685d61fe02a2d129</task-id>
+<tool-use-id>toolu_01L8Mirn56ttph8npqfV4Hcf</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-baotoq-Work-micro-commerce/tasks/a685d61fe02a2d129.output</output-file>
+<status>completed</status>
+<summary>Agent "Review ArgoCD configuration" completed</summary>
+<result>I now have a complete picture. Here is the full review.
+
+---
+
+## ArgoCD GitOps Configuration Review
+
+### Scope
+
+All files under `/Users/baotoq/Work/micro-commerce/infra/k8s/argocd/` plus the bootstrap script and related Kustomize manifests.
+
+**Files reviewed:**
+
+- `infra/k8s/argocd/root-app.yaml`
+- `infra/k8s/argocd/apps/apiservice.yaml`
+- `infra/k8s/argocd/apps/gateway.yaml`
+- `infra/k8s/argocd/apps/web.yaml`
+- `infra/k8s/argocd/apps/keycloak.yaml`
+- `infra/k8s/argocd/apps/rabbitmq.yaml`
+- `infra/k8s/argocd/apps/postgres.yaml`
+- `infra/k8s/argocd/apps/otel-collector.yaml`
+- `infra/k8s/argocd/apps/aspire-dashboard.yaml`
+- `infra/k8s/argocd/argocd-cmd-params-cm.yaml`
+- `infra/k8s/argocd/argocd-server-nodeport.yaml`
+- `infra/k8s/bootstrap.sh`
+
+---
+
+### 1. App-of-Apps Pattern
+
+**[GOOD] Properly implemented app-of-apps pattern.**
+The `root-app.yaml` points to `infra/k8s/argocd/apps` which contains individual Application CRDs. This is the correct structure -- a single root application manages child applications declaratively via Git.
+
+**[WARNING] Root app has no retry strategy.**
+File: `infra/k8s/argocd/root-app.yaml`, lines 17-20.
+The root application lacks `retry` and `syncOptions` that all child apps have. If the root app fails to sync (e.g., transient Git fetch error), there is no automatic retry. Since this is the single point of entry for the entire platform, it should be the most resilient application.
+
+```yaml
+# Missing from root-app.yaml:
+syncOptions:
+- CreateNamespace=true
+retry:
+  limit: 5
+  backoff:
+    duration: 5s
+    factor: 2
+    maxDuration: 3m
+```
+
+**[INFO] Consider adding `ServerSideApply=true` to root app syncOptions.**
+Since the root app manages Application CRDs in the `argocd` namespace, server-side apply avoids ownership conflicts if ArgoCD itself or another controller also modifies these resources.
+
+---
+
+### 2. Application Sync Policies
+
+**[GOOD] All child applications have automated sync with selfHeal and prune.**
+Every application in `infra/k8s/argocd/apps/` consistently specifies:
+```yaml
+syncPolicy:
+  automated:
+    selfHeal: true
+    prune: true
+```
+This is correct for a dev/local environment -- drift is auto-corrected and orphaned resources are cleaned up.
+
+**[GOOD] All child applications have consistent retry strategies.**
+Every child app uses `limit: 5` with exponential backoff (`5s`, factor `2`, max `3m`). This is well-tuned for transient failures.
+
+**[WARNING] No `Replace=true` or `ServerSideApply=true` sync option for stateful resources.**
+File: `infra/k8s/argocd/apps/postgres.yaml`, line 21.
+PostgreSQL uses a StatefulSet with `volumeClaimTemplates`. Certain fields on StatefulSets are immutable after creation. Without `ServerSideApply=true` or careful `ignoreDifferences`, ArgoCD may report the application as OutOfSync permanently if Kubernetes adds default values to the StatefulSet spec. This becomes a real problem when you modify resource requests/limits or add containers.
+
+**[WARNING] Missing `RespectIgnoreDifferences=true` sync option.**
+None of the applications specify `RespectIgnoreDifferences=true` in their `syncOptions`. Without this, even if you later add `ignoreDifferences`, ArgoCD will still attempt to "fix" those differences during automated syncs. This option is needed for the `ignoreDifferences` feature to work properly with automated sync.
+
+---
+
+### 3. Sync Waves / Hooks
+
+**[CRITICAL] No sync wave ordering for infrastructure dependencies.**
+None of the Application resources in `infra/k8s/argocd/apps/` have `argocd.argoproj.io/sync-wave` annotations. The current deployment has a strict dependency chain:
+
+1. PostgreSQL and RabbitMQ must be running first (infrastructure)
+2. Keycloak must be running next (depends on its own startup, but is an auth dependency)
+3. ApiService depends on PostgreSQL, RabbitMQ, and Keycloak
+4. Gateway depends on ApiService
+5. Web depends on Gateway
+
+Without sync waves, ArgoCD will attempt to deploy all 8 applications simultaneously. The bootstrap script works around this with sequential `kubectl wait` commands (lines 144-166), but that only covers the initial bootstrap. On subsequent syncs -- for example, after a full namespace deletion or a disaster recovery scenario -- ArgoCD has no ordering guarantees.
+
+Recommended sync wave annotations for the Application resources:
+
+```yaml
+# postgres.yaml, rabbitmq.yaml
+annotations:
+  argocd.argoproj.io/sync-wave: "0"
+
+# keycloak.yaml
+annotations:
+  argocd.argoproj.io/sync-wave: "1"
+
+# apiservice.yaml, otel-collector.yaml, aspire-dashboard.yaml
+annotations:
+  argocd.argoproj.io/sync-wave: "2"
+
+# gateway.yaml
+annotations:
+  argocd.argoproj.io/sync-wave: "3"
+
+# web.yaml
+annotations:
+  argocd.argoproj.io/sync-wave: "4"
+```
+
+**[INFO] No PreSync/PostSync hooks defined.**
+There are no ArgoCD hooks (e.g., database migration Jobs as `PreSync` hooks, smoke test Jobs as `PostSync` hooks). For the current scope this is acceptable, but as the platform matures, consider adding a `PreSync` Job for database migrations rather than running them inside the ApiService container at startup.
+
+---
+
+### 4. Health Checks
+
+**[INFO] No custom health assessments defined.**
+ArgoCD relies on its built-in health checks for standard Kubernetes resources (Deployment, StatefulSet, Service). For this project, the built-in checks are sufficient since all workloads are standard resource types. No custom CRDs requiring custom health Lua scripts were found.
+
+**[GOOD] All workloads define Kubernetes health probes.**
+The underlying deployments (`apiservice`, `keycloak`, `postgres`) all define `readinessProbe`, `livenessProbe`, and in some cases `startupProbe`. This means ArgoCD's health assessment will correctly reflect actual application health.
+
+---
+
+### 5. RBAC / AppProject
+
+**[CRITICAL] All applications use the `default` AppProject with no restrictions.**
+Every Application resource specifies `project: default` (e.g., `infra/k8s/argocd/root-app.yaml` line 9, and line 9 of every child app). The `default` AppProject permits:
+
+- **Any source repository** -- a compromised Application CRD could point to a malicious repo
+- **Any destination cluster and namespace** -- applications could deploy to `kube-system`, `argocd`, or any other namespace
+- **Any resource kind** -- applications could create ClusterRoles, ClusterRoleBindings, or other cluster-scoped resources
+
+You should define a dedicated `AppProject` that restricts:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: micro-commerce
+  namespace: argocd
+spec:
+  description: MicroCommerce platform
+  sourceRepos:
+  - https://github.com/baotoq/micro-commerce.git
+  destinations:
+  - namespace: micro-commerce
+    server: https://kubernetes.default.svc
+  - namespace: argocd
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+  namespaceResourceBlacklist:
+  - group: ''
+    kind: ResourceQuota
+  - group: ''
+    kind: LimitRange
+```
+
+Then change all Application resources to `project: micro-commerce`.
+
+---
+
+### 6. ignoreDifferences
+
+**[WARNING] No `ignoreDifferences` configured on any application.**
+Several resources are susceptible to perpetual OutOfSync states due to Kubernetes mutating admission controllers and defaulting:
+
+- **StatefulSet (postgres):** Kubernetes may add default `volumeClaimTemplates.spec.volumeMode: Filesystem` and `resources` defaults, causing drift.
+- **ConfigMap (keycloak-realm):** The Kustomize `configMapGenerator` appends a hash suffix to the ConfigMap name. While Kustomize handles the reference update, ArgoCD may show the old-named ConfigMap as needing pruning after regeneration.
+
+At minimum, consider adding to the postgres Application:
+
+```yaml
+spec:
+  ignoreDifferences:
+  - group: apps
+    kind: StatefulSet
+    jsonPointers:
+    - /spec/volumeClaimTemplates/0/spec/resources
+```
+
+---
+
+### 7. Resource Tracking
+
+**[INFO] No explicit resource tracking method configured.**
+ArgoCD defaults to annotation-based tracking (`argocd.argoproj.io/tracking-id`). For this project's scale, the default is fine. For larger deployments, label-based tracking or the newer server-side tracking method can reduce annotation size and improve performance.
+
+---
+
+### 8. Multi-Environment Support
+
+**[WARNING] Only `dev` overlay exists; hardcoded to `master` branch for all applications.**
+Every Application targets `targetRevision: master`. This means:
+
+- There is no staging or production environment separation
+- There is no way to promote a specific Git SHA through environments
+- All applications will always track the latest `master` commit
+
+For a showcase project this is acceptable, but the structure is partially prepared for multi-environment (the `overlays/dev/` directory exists). To complete the pattern:
+
+- Create `overlays/staging/` and `overlays/prod/` directories
+- Create corresponding ArgoCD Application sets per environment, or use an `ApplicationSet` with a Git directory generator
+- Use `targetRevision` to pin specific tags or SHAs for non-dev environments
+
+**[WARNING] Inconsistent use of base vs overlay paths.**
+Some applications point to overlays, others point directly to base:
+
+| Application | Path | Issue |
+|---|---|---|
+| `apiservice` | `infra/k8s/overlays/dev/apiservice` | Correct -- uses overlay |
+| `gateway` | `infra/k8s/overlays/dev/gateway` | Correct -- uses overlay |
+| `web` | `infra/k8s/overlays/dev/web` | Correct -- uses overlay |
+| `keycloak` | `infra/k8s/base/keycloak` | Points directly to base |
+| `rabbitmq` | `infra/k8s/base/rabbitmq` | Points directly to base |
+| `postgres` | `infra/k8s/base/postgres` | Points directly to base |
+| `otel-collector` | `infra/k8s/base/otel-collector` | Points directly to base |
+| `aspire-dashboard` | `infra/k8s/base/aspire-dashboard` | Points directly to base |
+
+The infrastructure services (postgres, rabbitmq, keycloak) point directly to `base/`. If you ever need environment-specific configuration for these (different resource limits, replica counts, credentials), you will need to create overlays and update the Application paths. The inconsistency makes the mental model harder to follow.
+
+---
+
+### 9. Secret Management Integration
+
+**[GOOD] Sealed Secrets properly integrated with bootstrap workflow.**
+The `bootstrap.sh` script (lines 32-83) installs the Sealed Secrets controller, generates sealed secrets with `kubeseal`, and applies them before ArgoCD takes over. This is a sound approach -- secrets are sealed at bootstrap time and the raw secrets never appear in Git.
+
+**[CRITICAL] Sealed secret YAML files are not committed to Git.**
+The `seal_secret` function in `bootstrap.sh` (lines 47-63) writes sealed secret files to the local filesystem (e.g., `base/postgres/sealed-secret.yaml`) but these files are generated at bootstrap time and are not tracked in Git. Examining the kustomization files:
+
+- `infra/k8s/base/postgres/kustomization.yaml` references only `statefulset.yaml` and `service.yaml`
+- `infra/k8s/base/rabbitmq/kustomization.yaml` references only `deployment.yaml` and `service.yaml`
+- `infra/k8s/base/keycloak/kustomization.yaml` references only `deployment.yaml` and `service.yaml`
+
+The sealed secrets are `kubectl apply`-ed directly in the bootstrap script (lines 81-83) outside of ArgoCD's management. This means:
+
+1. **Secrets are not GitOps-managed** -- ArgoCD does not know about or manage these secrets
+2. **If secrets are deleted**, ArgoCD cannot restore them since they are not in the tracked Git paths
+3. **Secret rotation** requires manual intervention via `kubectl` rather than a Git commit
+
+The sealed secret files should be included in the Kustomize resources and committed to Git. That is the entire point of Sealed Secrets -- the encrypted form is safe to store in version control.
+
+**[WARNING] Dev credentials are hardcoded in bootstrap script.**
+File: `bootstrap.sh`, lines 65-78. Credentials like `postgres/postgres`, `guest/guest`, `admin/admin` are plaintext in the script. While these are clearly dev-only credentials, the script sets a pattern. For non-dev environments, a different secret provisioning mechanism (e.g., Vault, external-secrets-operator) would be needed.
+
+---
+
+### 10. ArgoCD Server Configuration
+
+**[WARNING] ArgoCD server running in insecure mode.**
+File: `infra/k8s/argocd/argocd-cmd-params-cm.yaml`, line 7: `server.insecure: "true"`. This disables TLS on the ArgoCD server. For a local Kind cluster this is pragmatic, but this configuration file should never be applied to a non-local environment. Consider adding a comment to the file making this explicit, and ensure this config is scoped to dev only.
+
+**[WARNING] ArgoCD exposed via NodePort without authentication context.**
+File: `infra/k8s/argocd/argocd-server-nodeport.yaml`. The ArgoCD UI is exposed on NodePort 30443 mapped to host port 38443. Combined with insecure mode, this means the ArgoCD API is accessible over plaintext HTTP on the host network. For local development this is tolerable, but the configuration should be clearly segregated from any production-adjacent setup.
+
+---
+
+### 11. Finalizers
+
+**[GOOD] All applications have the cascade deletion finalizer.**
+Every Application resource includes:
+```yaml
+finalizers:
+- resources-finalizer.argocd.argoproj.io
+```
+This ensures that when an Application is deleted from Git, ArgoCD will also delete the managed Kubernetes resources (cascade delete). This is the correct behavior for a pruning-enabled setup.
+
+---
+
+### Summary by Severity
+
+| Severity | Count | Items |
+|---|---|---|
+| **CRITICAL** | 3 | No sync waves for dependency ordering; all apps use unrestricted `default` project; sealed secrets not in Git/Kustomize |
+| **WARNING** | 6 | Root app missing retry; no `ignoreDifferences` for StatefulSet; no `RespectIgnoreDifferences` sync option; inconsistent base vs overlay paths; insecure ArgoCD server mode; hardcoded dev credentials |
+| **INFO** | 3 | No server-side apply on root app; no PreSync/PostSync hooks; default resource tracking method |
+| **GOOD** | 4 | App-of-apps structure; consistent sync policies; cascade deletion finalizers; Kubernetes health probes on all workloads |
+
+### Priority Remediation Order
+
+1. **Add sync wave annotations** to all Application resources in `infra/k8s/argocd/apps/` to enforce deployment ordering (CRITICAL)
+2. **Create a dedicated `AppProject`** with restricted `sourceRepos` and `destinations`, then update all Application resources to reference it (CRITICAL)
+3. **Commit sealed secret files to Git** and add them as resources in the respective `kustomization.yaml` files so ArgoCD manages them declaratively (CRITICAL)
+4. **Add retry strategy to root-app.yaml** matching the child app configuration (WARNING)
+5. **Add `ignoreDifferences`** for the postgres StatefulSet to prevent perpetual OutOfSync (WARNING)
+6. **Standardize all applications to use overlays** rather than mixing base and overlay paths (WARNING)</result>
+<usage><total_tokens>28596</total_tokens><tool_uses>31</tool_uses><duration_ms>116132</duration_ms></usage>
+</task-notification>
+Full transcript available at: /private/tmp/claude-501/-Users-baotoq-Work-micro-commerce/tasks/a685d61fe02a2d129.output
+
+---
+
+<task-notification>
+<task-id>aeebdb82aba6c1101</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-baotoq-Work-micro-commerce/tasks/aeebdb82aba6c1101.output</output-file>
+<status>completed</status>
+<summary>Agent "Review K8s manifests" completed</summary>
+<result>I have now read every Kubernetes manifest file in the project. Here is my comprehensive review.
+
+---
+
+# Kubernetes Manifests -- Comprehensive Code Review
+
+**Scope:** 42 files under `/Users/baotoq/Work/micro-commerce/infra/k8s/`, including base manifests, dev overlays, ArgoCD app-of-apps, kind cluster config, and the bootstrap script.
+
+---
+
+## CRITICAL -- Must Fix
+
+### 1. Hardcoded secrets in plain-text deployment manifests
+
+**File:** `/Users/baotoq/Work/micro-commerce/infra/k8s/base/web/deployment.yaml`, lines 30-40
+
+```yaml
+- name: AUTH_SECRET
+  value: "k8s-dev-auth-secret-change-in-production"
+- name: KEYCLOAK_CLIENT_SECRET
+  value: "nextjs-app-secret"
+```
+
+The `AUTH_SECRET` and `KEYCLOAK_CLIENT_SECRET` are hardcoded directly in the deployment manifest. This file is committed to a public GitHub repository. While the bootstrap script properly seals secrets for PostgreSQL, RabbitMQ, and Keycloak admin credentials, the web frontend secrets were overlooked entirely. Even though the AUTH_SECRET value contains a "change in production" reminder, any value committed to Git is compromised. An attacker with these values can forge NextAuth.js session tokens and authenticate as any user.
+
+**Fix:** Create a `web-credentials` SealedSecret with `AUTH_SECRET`, `KEYCLOAK_CLIENT_SECRET`, and `KEYCLOAK_CLIENT_ID`, and reference them via `secretKeyRef` in the deployment. Add the sealing step to `bootstrap.sh`.
+
+### 2. Default/weak credentials used for all infrastructure secrets
+
+**File:** `/Users/baotoq/Work/micro-commerce/infra/k8s/bootstrap.sh`, lines 65-78
+
+```bash
+seal_secret "postgres-credentials" ... --from-literal=password=postgres
+seal_secret "rabbitmq-credentials" ... --from-literal=password=guest
+seal_secret "keycloak-credentials" ... --from-literal=admin-password=admin
+```
+
+All three infrastructure components use their default credentials (`postgres/postgres`, `guest/guest`, `admin/admin`). Although these are sealed before being applied, the actual secret values are trivially guessable defaults. The bootstrap script also prints all credentials in plain text to stdout at lines 176-178. Even for a dev/kind environment, this sets a dangerous precedent -- if this script is adapted for any other environment, those defaults carry forward.
+
+**Fix:** Generate random passwords at bootstrap time (e.g., `openssl rand -base64 16`) and store the generated values for the operator. At minimum, add a prominent warning comment and a `--production` flag that enforces random credentials.
+
+### 3. No securityContext on any container
+
+Every single deployment and statefulset across all 8 workloads is missing `securityContext`. None of the containers specify:
+- `runAsNonRoot: true`
+- `readOnlyRootFilesystem: true`
+- `allowPrivilegeEscalation: false`
+- `capabilities: { drop: ["ALL"] }`
+
+This means all containers run as root by default. The PostgreSQL, RabbitMQ, Keycloak, and OTEL containers all have writable root filesystems, can escalate privileges, and retain all Linux capabilities.
+
+**Affected files:**
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/postgres/statefulset.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/rabbitmq/deployment.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/keycloak/deployment.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/apiservice/deployment.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/gateway/deployment.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/web/deployment.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/otel-collector/deployment.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/aspire-dashboard/deployment.yaml`
+
+**Fix:** Add pod-level and container-level security contexts. Example for the .NET services:
+
+```yaml
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1654    # .NET default non-root user
+    fsGroup: 1654
+  containers:
+  - name: apiservice
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]
+```
+
+### 4. Keycloak running in dev mode in "Production" setup
+
+**File:** `/Users/baotoq/Work/micro-commerce/infra/k8s/base/keycloak/deployment.yaml`, line 19
+
+```yaml
+args: ["start-dev", "--import-realm"]
+```
+
+`start-dev` disables HTTPS, uses an embedded H2 database, and enables other insecure defaults. This is in the `base/` directory which is intended to be shared across environments. If a production overlay inherits this base without overriding the args, Keycloak will run in development mode in production, with no TLS, no database persistence, and relaxed security.
+
+**Fix:** Change the base to use `start` with production flags. Create a dev overlay patch that overrides to `start-dev` only for the dev environment.
+
+---
+
+## WARNING -- Should Fix
+
+### 5. RabbitMQ deployed as Deployment with no persistent storage
+
+**File:** `/Users/baotoq/Work/micro-commerce/infra/k8s/base/rabbitmq/deployment.yaml`
+
+RabbitMQ is deployed as a `Deployment` (not `StatefulSet`) with zero volume mounts. All messages, queues, exchanges, and bindings are stored only in the container filesystem. If the pod restarts or is rescheduled, all in-flight messages are permanently lost. Given that MassTransit with the outbox pattern relies on RabbitMQ delivering messages, this is a data loss risk.
+
+**Fix:** Either convert to a StatefulSet with a PVC for `/var/lib/rabbitmq`, or use the RabbitMQ Kubernetes Operator which handles this properly.
+
+### 6. Missing startup probes on gateway, web, and infrastructure services
+
+**Files:**
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/gateway/deployment.yaml` -- no startup probe
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/web/deployment.yaml` -- no startup probe
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/rabbitmq/deployment.yaml` -- no startup probe
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/otel-collector/deployment.yaml` -- no startup probe
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/aspire-dashboard/deployment.yaml` -- no startup probe
+
+The apiservice and keycloak correctly have startup probes, but the other five workloads do not. Without startup probes, the liveness probe kicks in immediately and may kill slow-starting containers before they finish initialization. This is particularly relevant for the gateway which needs to establish routes, and for web which needs Next.js to compile.
+
+**Fix:** Add `startupProbe` with a generous `failureThreshold` to each of these deployments.
+
+### 7. No service accounts defined -- all pods use the default service account
+
+No workload defines a `serviceAccountName`. All pods inherit the `default` service account for the `micro-commerce` namespace. If any pod is compromised, the attacker gets whatever RBAC permissions are bound to the default service account. By Kubernetes best practice (and for PSA compliance), each workload should have its own service account with the least privilege needed.
+
+**Fix:** Create dedicated ServiceAccounts for each workload (e.g., `apiservice-sa`, `postgres-sa`) and set `automountServiceAccountToken: false` where the Kubernetes API is not needed (which is all of them).
+
+### 8. Dev overlay missing otel-collector and aspire-dashboard
+
+**File:** `/Users/baotoq/Work/micro-commerce/infra/k8s/overlays/dev/kustomization.yaml`
+
+```yaml
+resources:
+- ../../base/postgres
+- ../../base/rabbitmq
+- ../../base/keycloak
+- apiservice/
+- gateway/
+- web/
+```
+
+The dev overlay references postgres, rabbitmq, keycloak, apiservice, gateway, and web -- but omits `otel-collector` and `aspire-dashboard`. However, the ArgoCD apps deploy these separately. This creates two inconsistent paths: the Kustomize overlay (if applied manually with `kubectl apply -k`) gives an incomplete stack, while ArgoCD individually deploys each component. If someone follows the Kustomize path, they get a broken stack where the apiservice and gateway send OTLP data to a nonexistent `otel-collector` service.
+
+**Fix:** Either include otel-collector and aspire-dashboard in the dev overlay, or document clearly that the overlay is only for ArgoCD partial use and not meant for direct `kubectl apply`.
+
+### 9. No image pull policy specified -- relies on implicit `:dev` tag behavior
+
+**Files:** All application deployments (apiservice, gateway, web)
+
+All three application images use the tag `:dev` with no `imagePullPolicy` specified. For tags other than `:latest`, Kubernetes defaults to `IfNotPresent`. Since kind loads images directly, this works -- but it means that if you rebuild an image with the same `:dev` tag and reload it into kind, already-running pods will not pick up the new image on restart. This leads to confusing debugging scenarios.
+
+**Fix:** Add `imagePullPolicy: Never` (for kind-only environments) or `IfNotPresent` explicitly in the base, and override to `Always` in non-kind overlays. Being explicit prevents confusion.
+
+### 10. No PodDisruptionBudgets defined
+
+No workload has a PodDisruptionBudget. While this is acceptable for dev with `replicas: 1`, the base manifests should include PDBs since they serve as the template for production overlays. Without PDBs, node drains or cluster upgrades can take down all replicas simultaneously.
+
+**Fix:** Add PDBs with `minAvailable: 1` (or appropriate values) for stateful services (PostgreSQL, RabbitMQ, Keycloak) and for the gateway and apiservice.
+
+### 11. No resource quotas or limit ranges for the namespace
+
+**File:** `/Users/baotoq/Work/micro-commerce/infra/k8s/base/namespace.yaml`
+
+The namespace is bare -- no ResourceQuota or LimitRange. A misconfigured deployment could consume unbounded resources and starve other workloads in the cluster.
+
+**Fix:** Add a LimitRange to set default requests/limits, and a ResourceQuota to cap total namespace resource consumption.
+
+### 12. Hardcoded namespaces in base manifests conflict with Kustomize namespace transformer
+
+Several base manifests hardcode `namespace: micro-commerce` in their metadata:
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/postgres/statefulset.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/postgres/service.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/rabbitmq/deployment.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/rabbitmq/service.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/keycloak/deployment.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/keycloak/service.yaml`
+
+The `base/kustomization.yaml` and overlay kustomization files both set `namespace: micro-commerce` via the namespace transformer. When the namespace is also hardcoded in the resource files, it defeats the purpose of Kustomize's namespace transformer. If you ever need a staging or production overlay with a different namespace, these hardcoded values will conflict or require patches.
+
+**Fix:** Remove `namespace:` from all resource metadata in base manifests. Let Kustomize handle namespace assignment exclusively.
+
+---
+
+## INFO -- Nice to Have
+
+### 13. No network policies defined
+
+There are no NetworkPolicy resources anywhere. All pods in the namespace can communicate with all other pods freely. In a real environment, you would want to restrict traffic so that:
+- Only the gateway can reach the apiservice
+- Only the apiservice can reach PostgreSQL, RabbitMQ, and Keycloak
+- Only the otel-collector can reach the aspire-dashboard
+- The web frontend can only reach the gateway
+
+**Recommendation:** Add NetworkPolicy resources, at least in a production overlay.
+
+### 14. No pod anti-affinity or topology spread constraints
+
+No workload specifies `affinity` or `topologySpreadConstraints`. While irrelevant for a single-node kind cluster, base manifests intended for reuse across environments should include at least soft anti-affinity to prevent scheduling multiple replicas of the same workload on the same node.
+
+### 15. No update strategy specified on deployments
+
+None of the Deployments specify `strategy`. They all default to `RollingUpdate` with `maxUnavailable: 25%` and `maxSurge: 25%`. For the PostgreSQL StatefulSet, no `updateStrategy` is specified either. Being explicit about the update strategy documents intent and prevents surprises.
+
+### 16. Port names missing on some services
+
+The apiservice and web ClusterIP services do not name their ports. Named ports are required for certain Istio/Envoy features and are generally a best practice for documentation clarity.
+
+**Affected files:**
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/apiservice/service.yaml`
+- `/Users/baotoq/Work/micro-commerce/infra/k8s/base/web/service.yaml`
+
+### 17. Postgres image tag `:17` is a floating major version
+
+**File:** `/Users/baotoq/Work/micro-commerce/infra/k8s/base/postgres/statefulset.yaml`, line 19
+
+```yaml
+image: postgres:17
+```
+
+Using `postgres:17` means you get whatever the latest 17.x.y build is. For a database, this is risky -- a minor patch could change behavior. Pin to a specific patch version like `postgres:17.2`.
+
+### 18. Keycloak and RabbitMQ also use loosely pinned tags
+
+- `rabbitmq:4-management` -- tracks the latest 4.x release
+- `quay.io/keycloak/keycloak:26.0` -- tracks 26.0.x patches
+
+**Recommendation:** Pin to full semver tags for reproducibility.
+
+### 19. ArgoCD apps all use `project: default`
+
+All eight ArgoCD Application resources use `project: default`. ArgoCD projects provide RBAC boundaries for what an application can deploy. Using `default` gives each app full cluster access. Consider creating a dedicated `micro-commerce` AppProject with scoped permissions.
+
+### 20. No annotations for monitoring/alerting
+
+No deployments carry Prometheus scrape annotations (`prometheus.io/scrape: "true"`, etc.) or any other observability metadata. While the OTEL collector is present, having standard annotations enables discovery-based monitoring.
+
+### 21. Aspire Dashboard has anonymous access enabled in base
+
+**File:** `/Users/baotoq/Work/micro-commerce/infra/k8s/base/aspire-dashboard/deployment.yaml`, line 26-29
+
+```yaml
+- name: DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS
+  value: "true"
+- name: DASHBOARD__OTLP__AUTHMODE
+  value: "Unsecured"
+```
+
+This is in the base, meaning any overlay inherits unsecured anonymous access to the dashboard which exposes all telemetry data. Acceptable for dev, but should be overridden in any non-dev overlay.
+
+### 22. No labels beyond `app:` -- missing standard Kubernetes labels
+
+All workloads only use `app: <name>` as their sole label. Kubernetes recommends the standard label set:
+- `app.kubernetes.io/name`
+- `app.kubernetes.io/version`
+- `app.kubernetes.io/component`
+- `app.kubernetes.io/part-of`
+- `app.kubernetes.io/managed-by`
+
+These enable better tooling integration, filtering, and are used by many third-party tools.
+
+---
+
+## GOOD -- Well Done
+
+### G1. Proper Kustomize base/overlay structure
+The project follows the standard `base/` + `overlays/dev/` Kustomize pattern correctly. Each component has its own directory with a `kustomization.yaml`. The overlay properly references the base and uses Kustomize image transformers for tag overrides. This is clean and extensible.
+
+### G2. SealedSecrets integration
+The bootstrap script properly generates SealedSecrets for infrastructure credentials (PostgreSQL, RabbitMQ, Keycloak). The secrets are sealed against the cluster's controller, meaning the encrypted YAML files are safe to commit. The deployments correctly reference secrets via `secretKeyRef` rather than embedding values (with the exception of the web frontend noted above).
+
+### G3. Health probes on all workloads
+Every single deployment and statefulset includes both `livenessProbe` and `readinessProbe`. The apiservice and keycloak also include `startupProbe` for slow-starting services. The probe endpoints are appropriate -- `pg_isready` for PostgreSQL, `rabbitmq-diagnostics` for RabbitMQ, HTTP health endpoints for application services.
+
+### G4. Resource requests and limits on every container
+Every container specifies both `requests` and `limits` for CPU and memory. The values are reasonable for a development environment. This prevents any single workload from monopolizing cluster resources.
+
+### G5. ArgoCD app-of-apps pattern
+The ArgoCD configuration uses the app-of-apps pattern with a root application that manages individual component applications. Each app has `selfHeal: true`, `prune: true`, and retry with exponential backoff. The `resources-finalizer.argocd.argoproj.io` finalizer ensures clean deletion. This is a well-structured GitOps setup.
+
+### G6. PostgreSQL as StatefulSet with PVC
+PostgreSQL correctly uses a StatefulSet (not Deployment) with `volumeClaimTemplates` for persistent storage and a headless service for stable DNS. The `PGDATA` subdirectory is set correctly to avoid the "lost+found" issue.
+
+### G7. Bootstrap script is well-structured
+The bootstrap script uses `set -euo pipefail`, has clear step numbering, colored output, proper error handling, idempotent cluster creation, and waits for all components to be ready before declaring success. The `--dry-run=client -o yaml | kubectl apply -f -` pattern for namespace creation is a good idempotent approach.
+
+### G8. OTEL Collector configuration is solid
+The OTel Collector config includes `memory_limiter` processor (80% limit, 25% spike), `batch` processor for efficiency, and a health check extension. The pipeline configuration correctly chains receivers, processors, and exporters in the right order.
+
+### G9. Proper ConfigMap usage for Keycloak realm import
+The Keycloak kustomization uses `configMapGenerator` to create a ConfigMap from the realm JSON file, which is mounted into the container for import. This is the correct Kustomize approach and generates a content-hash-suffixed name for automatic rollout on changes.
+
+---
+
+## Summary
+
+| Severity | Count | Key Themes |
+|----------|-------|------------|
+| CRITICAL | 4 | Hardcoded secrets in Git, no security contexts, weak default credentials, Keycloak dev mode in base |
+| WARNING | 8 | RabbitMQ data loss risk, missing startup probes, no service accounts, namespace hardcoding, missing PDBs |
+| INFO | 10 | No network policies, floating image tags, no standard labels, no anti-affinity, ArgoCD project scoping |
+| GOOD | 9 | Kustomize structure, SealedSecrets, health probes, resource limits, ArgoCD app-of-apps, StatefulSet for PG |
+
+**Top 3 priorities for immediate action:**
+1. Move web frontend secrets (`AUTH_SECRET`, `KEYCLOAK_CLIENT_SECRET`) into a SealedSecret -- these are exposed in a public repo right now.
+2. Add `securityContext` with `runAsNonRoot`, `readOnlyRootFilesystem`, and `drop ALL capabilities` to every workload.
+3. Move Keycloak `start-dev` to the dev overlay only; use production-safe `start` in the base.</result>
+<usage><total_tokens>37063</total_tokens><tool_uses>55</tool_uses><duration_ms>167237</duration_ms></usage>
+</task-notification>
+Full transcript available at: /private/tmp/claude-501/-Users-baotoq-Work-micro-commerce/tasks/aeebdb82aba6c1101.output
+
+---
+
+<task-notification>
+<task-id>a8467fbd4a5b23e5b</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-baotoq-Work-micro-commerce/tasks/a8467fbd4a5b23e5b.output</output-file>
+<status>completed</status>
+<summary>Agent "Review bootstrap and infra" completed</summary>
+<result>I now have a comprehensive view of all the relevant files. Here is my full review.
+
+---
+
+# Infrastructure & Architecture Deep Review
+
+## 1. Bootstrap Script (`/Users/baotoq/Work/micro-commerce/infra/k8s/bootstrap.sh`)
+
+### GOOD -- `set -euo pipefail` is set correctly
+The script uses strict bash mode from line 1, which will exit on errors, unset variable references, and pipe failures. This is the gold standard for infrastructure scripts.
+
+### GOOD -- Idempotency for cluster creation and namespace creation
+- Kind cluster creation (line 20-25) checks if the cluster already exists before creating.
+- Namespace creation (line 42) uses the `--dry-run=client -o yaml | kubectl apply` idiom, which is properly idempotent.
+- ArgoCD namespace (line 87) uses the same pattern.
+- `kubectl apply` for all manifest resources is naturally idempotent.
+
+### GOOD -- Clear output/logging with color-coded info/warn helpers
+Lines 16-17 define `info()` and `warn()` with colored output. Every step is preceded by an `info()` call. The final summary (lines 168-191) is comprehensive with access points, credentials, and useful commands.
+
+### GOOD -- Proper startup/liveness/readiness probes on all deployments
+The apiservice deployment has a startup probe with `failureThreshold: 30` and `periodSeconds: 5`, giving it up to 150 seconds to start (handling slow first-boot migrations). All services have both liveness and readiness probes.
+
+### WARNING -- No dependency checking for required CLI tools
+The script uses `kind`, `kubectl`, `kubeseal`, `dotnet`, and `docker` but never verifies they are installed before execution. If `kubeseal` is missing, the script will fail at step 6 after having already created the cluster and installed SealedSecrets -- leaving things in a partial state.
+
+**Recommendation:** Add a dependency check block near the top:
+```bash
+for cmd in kind kubectl kubeseal dotnet docker; do
+  command -v "$cmd" >/dev/null 2>&1 || { echo "ERROR: $cmd is required but not installed."; exit 1; }
+done
+```
+
+### WARNING -- No cleanup/trap on failure
+If the script fails mid-execution (for example, if the `dotnet publish` at line 108 fails), the cluster and SealedSecrets are left in a partial state with no guidance to the user. There is no `trap` handler to provide cleanup instructions or log what step failed.
+
+**Recommendation:** Add a trap that prints the failed step:
+```bash
+trap 'echo "ERROR: Script failed at step. Run: kind delete cluster --name ${CLUSTER_NAME} to clean up."' ERR
+```
+
+### WARNING -- Hardcoded dev credentials in sealed secrets
+Lines 65-78 seal secrets with plaintext `postgres`/`postgres`, `guest`/`guest`, and `admin`/`admin`. While this is clearly for local dev, there is no guard preventing accidental use of this script against a non-kind cluster context. If `kubectl` happens to be pointing at a production-like cluster, these weak credentials would be applied there.
+
+**Recommendation:** Add a context guard after line 30:
+```bash
+CURRENT_CONTEXT=$(kubectl config current-context)
+if [[ "$CURRENT_CONTEXT" != "kind-${CLUSTER_NAME}" ]]; then
+  echo "ERROR: Expected context kind-${CLUSTER_NAME} but got ${CURRENT_CONTEXT}. Aborting."
+  exit 1
+fi
+```
+
+### WARNING -- `sleep 10` as an ArgoCD sync wait (line 142)
+The `sleep 10` before waiting for pods is a fragile timing assumption. If ArgoCD takes longer to create the Application resources, the subsequent `kubectl wait` commands will fail because the pods do not exist yet. `kubectl wait` will error with "no matching resources found" if the pods have not been created at all.
+
+**Recommendation:** Use a polling loop that waits for the pod labels to exist before running `kubectl wait`:
+```bash
+until kubectl get pods -l app=postgres -n "$NAMESPACE" 2>/dev/null | grep -q .; do sleep 5; done
+```
+
+### INFO -- SealedSecrets version pinning
+Version `v0.27.3` (line 8) and ArgoCD `v3.3.2` (line 9) are pinned, which is good. Consider adding a comment noting when these were last verified.
+
+### INFO -- No parallelism in image builds
+Steps 10-11 build and load three images sequentially (apiservice, gateway, web). For a faster developer experience, the `dotnet publish` commands could run in parallel with `&` and `wait`.
+
+---
+
+## 2. MassTransit Transport Switching
+
+### GOOD -- Clean conditional transport pattern
+The transport switching at lines 98-181 of `/Users/baotoq/Work/micro-commerce/src/MicroCommerce.ApiService/Program.cs` is well-structured. The `MASSTRANSIT_TRANSPORT` env var (line 99) defaults to `"AzureServiceBus"`, and the K8s deployment manifest explicitly sets `MASSTRANSIT_TRANSPORT=RabbitMQ` (line 37-38 of the apiservice deployment). The conditional cleanly branches Azure SDK registrations, MassTransit transport configuration, and DLQ service registration.
+
+### GOOD -- DLQ handling with NoOp fallback
+Lines 248-255 properly register `NoOpDeadLetterQueueService` when using RabbitMQ. The `NoOpDeadLetterQueueService` in `/Users/baotoq/Work/micro-commerce/src/MicroCommerce.ApiService/Common/Messaging/DeadLetterQueueService.cs` silently returns empty results rather than throwing, so the admin DLQ UI will show "no messages" rather than crashing.
+
+### GOOD -- Azure SB-specific DLQ transport configuration
+Line 136-139 uses `IServiceBusReceiveEndpointConfigurator` type check to only configure `ConfigureDeadLetterQueueErrorTransport()` when running on Azure Service Bus. This correctly avoids applying ASB-specific config on RabbitMQ.
+
+### WARNING -- Outbox only configured on CatalogDbContext
+Lines 125-131 configure `AddEntityFrameworkOutbox<CatalogDbContext>()` and line 158 uses `UseEntityFrameworkOutbox<CatalogDbContext>()` for inbox deduplication. This means domain events published from **other** DbContexts (Ordering, Inventory, Cart, etc.) are NOT going through the transactional outbox. The `DomainEventInterceptor` (line 183) publishes events after `SaveChanges`, but without outbox integration on those contexts, there is a window where the database commits but the message publish fails (or vice versa).
+
+**Impact:** If a domain event is published from an `OrderingDbContext` or `InventoryDbContext` save operation and the message broker is temporarily unavailable, the event will be lost. This is particularly concerning for the checkout saga which involves cross-feature messaging.
+
+**Recommendation:** Either register outbox on all DbContexts that publish domain events, or consolidate domain event publishing through the CatalogDbContext outbox (which would require architectural changes). At minimum, document which features are and are not covered by the outbox guarantee.
+
+### WARNING -- RabbitMQ host configuration uses flat config keys
+Lines 165-169 read `RabbitMQ:Host`, `RabbitMQ:Username`, `RabbitMQ:Password`. In the K8s deployment manifest, these are provided via environment variables with `__` separator (`RabbitMQ__Host`, `RabbitMQ__Username`, `RabbitMQ__Password`). However, the Username and Password values in the deployment use Kubernetes variable expansion (`$(RABBITMQ_USERNAME)`) which depends on the env var ordering in the manifest. While this works in Kubernetes, it is somewhat fragile -- reordering the env vars in the deployment YAML could break the expansion.
+
+### INFO -- Consumer/saga compatibility across transports
+`x.AddConsumers(typeof(Program).Assembly)` (line 115) and the `CheckoutStateMachine` saga (lines 117-123) are registered once, independent of transport. The `cfg.ConfigureEndpoints(context)` call inside both transport branches ensures MassTransit auto-creates queues/subscriptions for all consumers. This is correct and portable.
+
+### INFO -- `KnownQueueNames` in `DeadLetterQueueService` is static and incomplete
+Line 43-46 of `DeadLetterQueueService.cs` hardcodes only `"product-created-domain-event"` but the system has many more consumers (ordering, inventory, cart, etc.). This means the DLQ admin UI will only show dead letters for that one queue.
+
+---
+
+## 3. OTEL Observability Setup
+
+### GOOD -- Complete OTEL pipeline (traces, metrics, logs)
+The OTEL Collector configmap at `/Users/baotoq/Work/micro-commerce/infra/k8s/base/otel-collector/configmap.yaml` configures all three signal types (traces, metrics, logs) with the same pipeline: `otlp receiver -> memory_limiter -> batch -> otlp/aspire exporter`. This ensures nothing is dropped silently.
+
+### GOOD -- Memory limiter configuration
+The `memory_limiter` processor (lines 16-19) is properly configured with `limit_percentage: 80` and `spike_limit_percentage: 25`. This prevents the collector from OOMing under heavy telemetry load.
+
+### GOOD -- Health check extension exposed
+The collector exposes a health check on port 13133 (line 32), and both liveness and readiness probes are configured in the deployment. This ensures Kubernetes can detect and restart an unhealthy collector.
+
+### GOOD -- Service instrumentation is comprehensive
+In `/Users/baotoq/Work/micro-commerce/src/MicroCommerce.ServiceDefaults/Extensions.cs`:
+- ASP.NET Core instrumentation for HTTP traces and metrics
+- HttpClient instrumentation for outgoing calls
+- Runtime instrumentation for GC/thread metrics
+- MassTransit trace source registered (line 66) for message bus visibility
+- Health check endpoints filtered from traces (lines 69-71) to reduce noise
+- Conditional OTLP exporter (lines 86-91) only activates when `OTEL_EXPORTER_OTLP_ENDPOINT` is set
+
+### GOOD -- OTEL environment variables properly set in K8s deployments
+Both `apiservice` and `gateway` deployments set `OTEL_EXPORTER_OTLP_ENDPOINT` pointing to `http://otel-collector:4317` and `OTEL_SERVICE_NAME`. This correctly routes telemetry through the collector to the Aspire Dashboard.
+
+### WARNING -- Aspire Dashboard has no authentication in K8s
+The Aspire Dashboard deployment at `/Users/baotoq/Work/micro-commerce/infra/k8s/base/aspire-dashboard/deployment.yaml` sets `DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true` and `DASHBOARD__OTLP__AUTHMODE=Unsecured` (lines 26-29). Combined with the NodePort service exposing it on port 30888 (mapped to host port 38888), anyone with network access to the kind cluster can view all traces, logs, and metrics. For a local dev cluster this is acceptable, but this configuration should never be used in shared or production environments.
+
+### INFO -- No resource attributes configured
+The OTEL configuration does not add resource attributes beyond `OTEL_SERVICE_NAME`. Adding `service.namespace`, `service.version`, and `deployment.environment` resource attributes would improve trace correlation and filtering in the Aspire Dashboard.
+
+### INFO -- Web frontend not instrumented with OTEL
+The Next.js frontend (`web` deployment) does not have `OTEL_EXPORTER_OTLP_ENDPOINT` set, so server-side rendering traces and frontend performance metrics are not captured. Next.js supports OpenTelemetry via the `@vercel/otel` or `next-otel` packages.
+
+### INFO -- Batch processor settings are reasonable
+The batch processor with `timeout: 5s` and `send_batch_size: 1024` provides a good balance between latency and efficiency for a dev environment.
+
+---
+
+## 4. Runtime API URL Resolution
+
+### GOOD -- Dual-mode resolution pattern
+The `getApiBaseUrl()` function in `/Users/baotoq/Work/micro-commerce/src/MicroCommerce.Web/src/lib/config.ts` correctly reads Aspire-injected environment variables (`services__gateway__https__0` or `services__gateway__http__0`) first, then falls back to `API_URL`. This allows the same code to work in both Aspire and standalone dev modes.
+
+### GOOD -- `/api/config` route exposes server-side URL to client
+The route handler at `/Users/baotoq/Work/micro-commerce/src/MicroCommerce.Web/src/app/api/config/route.ts` wraps `getApiBaseUrl()` in a JSON response, allowing client-side code to discover the API URL dynamically without baking it into the JavaScript bundle.
+
+### GOOD -- Singleton promise pattern for client-side resolution
+In `/Users/baotoq/Work/micro-commerce/src/MicroCommerce.Web/src/lib/api.ts`, the `getApiBase()` function (lines 4-17) caches the config fetch in `_configPromise`, ensuring only one HTTP request to `/api/config` regardless of how many API calls are made. This is efficient and avoids a waterfall of config requests.
+
+### CRITICAL -- Client-side API calls bypass the Gateway in K8s
+In the K8s deployment, the web frontend's server-side `getApiBaseUrl()` resolves to `http://gateway:8080` (from `services__gateway__https__0` env var in the web deployment). However, the `/api/config` route **exposes this internal cluster URL to the browser**. When client-side JavaScript runs `fetch("http://gateway:8080/api/catalog/products")`, this will fail because `gateway:8080` is a Kubernetes internal DNS name that is not resolvable from the user's browser.
+
+Looking at line 41-42 of the web K8s deployment:
+```yaml
+- name: services__gateway__https__0
+  value: "http://gateway:8080"
+```
+
+The `getApiBaseUrl()` returns `"http://gateway:8080"`, and `/api/config` sends this to the browser. The browser cannot reach `gateway:8080`.
+
+**Impact:** All client-side API calls (every `getApiBase()` call in `api.ts` that runs in the browser) will fail in the K8s deployment. This breaks the entire storefront for any interactive features.
+
+**Recommendation:** The `/api/config` route should return a browser-reachable URL (e.g., `http://localhost:38800`) rather than the internal service URL. Either:
+1. Add a separate env var like `NEXT_PUBLIC_API_URL` set to the external gateway URL and return that from `/api/config`, OR
+2. Return a relative URL (empty string) so client fetches go through the Next.js server which can proxy to the gateway, OR
+3. Make `getApiBaseUrl()` aware of the distinction between server-side and client-facing URLs.
+
+### WARNING -- SSR-side `fetch` in `api.ts` uses the same `getApiBase()` as client-side
+The server-side rendering code path (line 12-13 of `api.ts`) falls back to `NEXT_PUBLIC_API_URL || "http://localhost:5200"`. In K8s, `NEXT_PUBLIC_API_URL` is not set in the web deployment manifest, so SSR calls from the Next.js server that happen to take this path would hit localhost:5200 (which does not exist in the container). However, for server components that `import { getApiBaseUrl } from "@/lib/config"` directly (using the config.ts function), they would correctly get `http://gateway:8080`. The dual-path approach creates confusion about which resolution function to use server-side.
+
+### WARNING -- No cache-busting or TTL on the config promise
+Once `_configPromise` is set (line 6 of `api.ts`), it is never reset. If the API URL changes (for example during a rolling deployment or DNS failover), the client will keep using the stale URL until the page is fully refreshed. For a long-lived SPA session, this could cause silent failures.
+
+### INFO -- The `services__gateway__https__0` env var name contains "https" but points to HTTP
+In the web K8s deployment (line 41), the env var is named `services__gateway__https__0` but its value is `"http://gateway:8080"`. While this is just a naming convention from Aspire's service discovery and the code reads both `https__0` and `http__0`, it could confuse operators maintaining the K8s manifests.
+
+---
+
+## Summary Table
+
+| # | Severity | Area | Finding |
+|---|----------|------|---------|
+| 1 | **CRITICAL** | API URL Resolution | `/api/config` exposes internal K8s service URL (`gateway:8080`) to browser; all client-side API calls fail in K8s |
+| 2 | **WARNING** | Bootstrap | No dependency checks for required CLI tools (kind, kubectl, kubeseal, dotnet, docker) |
+| 3 | **WARNING** | Bootstrap | No trap/cleanup handler on script failure; partial state left behind |
+| 4 | **WARNING** | Bootstrap | No kubectl context guard; weak dev credentials could be applied to wrong cluster |
+| 5 | **WARNING** | Bootstrap | `sleep 10` for ArgoCD sync is fragile; `kubectl wait` may fail if pods not yet created |
+| 6 | **WARNING** | MassTransit | EF Core outbox only on CatalogDbContext; domain events from other features lack at-least-once delivery guarantee |
+| 7 | **WARNING** | MassTransit | RabbitMQ credentials use Kubernetes env var expansion which is ordering-dependent |
+| 8 | **WARNING** | OTEL | Aspire Dashboard exposed unauthenticated via NodePort; acceptable for local dev only |
+| 9 | **WARNING** | API URL | SSR vs client-side URL resolution uses two different functions with different fallback behavior |
+| 10 | **WARNING** | API URL | Config promise has no TTL; stale URL cached indefinitely in browser |
+| 11 | **INFO** | Bootstrap | Image builds are sequential; could be parallelized |
+| 12 | **INFO** | MassTransit | `KnownQueueNames` only lists one queue; DLQ UI will miss dead letters on other queues |
+| 13 | **INFO** | OTEL | No OTEL resource attributes beyond service name |
+| 14 | **INFO** | OTEL | Next.js frontend not instrumented with OpenTelemetry |
+| 15 | **INFO** | API URL | Env var named `services__gateway__https__0` but value is HTTP |
+| 16 | **GOOD** | Bootstrap | `set -euo pipefail`, idempotent operations, color-coded logging |
+| 17 | **GOOD** | Bootstrap | Comprehensive probe configuration on all K8s deployments |
+| 18 | **GOOD** | MassTransit | Clean transport switching with env var + conditional branching |
+| 19 | **GOOD** | MassTransit | NoOp DLQ fallback for RabbitMQ environments |
+| 20 | **GOOD** | MassTransit | ASB-specific DLQ config guarded by type check |
+| 21 | **GOOD** | OTEL | Full trace/metric/log pipeline with memory limiter and batching |
+| 22 | **GOOD** | OTEL | MassTransit trace source registered for message bus observability |
+| 23 | **GOOD** | OTEL | Health endpoints filtered from traces |
+| 24 | **GOOD** | API URL | Singleton promise avoids redundant config fetches |
+
+The single **critical** issue (finding #1) will cause the frontend to be non-functional in Kubernetes for any client-side rendered page making API calls. This should be addressed before any K8s deployment is considered usable.</result>
+<usage><total_tokens>53869</total_tokens><tool_uses>46</tool_uses><duration_ms>175935</duration_ms></usage>
+</task-notification>
+Full transcript available at: /private/tmp/claude-501/-Users-baotoq-Work-micro-commerce/tasks/a8467fbd4a5b23e5b.output
+
+---
+
+yes
