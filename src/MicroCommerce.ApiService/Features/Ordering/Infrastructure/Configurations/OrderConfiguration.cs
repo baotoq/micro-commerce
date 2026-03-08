@@ -67,6 +67,13 @@ public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasMaxLength(32)
             .IsRequired();
 
+        builder.Property(o => o.CouponCode)
+            .HasMaxLength(50);
+
+        builder.Property(o => o.DiscountAmount)
+            .HasPrecision(18, 2)
+            .HasDefaultValue(0m);
+
         builder.Property(o => o.Subtotal)
             .HasPrecision(18, 2);
 

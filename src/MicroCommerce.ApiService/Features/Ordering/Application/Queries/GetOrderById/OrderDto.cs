@@ -10,6 +10,8 @@ public sealed record OrderDto(
     ShippingAddressDto ShippingAddress,
     List<OrderItemDto> Items,
     decimal Subtotal,
+    decimal DiscountAmount,
+    string? CouponCode,
     decimal ShippingCost,
     decimal Tax,
     decimal Total,

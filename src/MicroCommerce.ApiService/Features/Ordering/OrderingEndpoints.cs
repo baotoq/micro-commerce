@@ -79,7 +79,8 @@ public static class OrderingEndpoints
             buyerId,
             request.Email,
             request.ShippingAddress,
-            request.Items);
+            request.Items,
+            request.CouponCode);
 
         Guid orderId = await sender.Send(command, cancellationToken);
 
@@ -158,7 +159,8 @@ public static class OrderingEndpoints
 public sealed record CheckoutRequest(
     string Email,
     ShippingAddressRequest ShippingAddress,
-    List<OrderItemRequest> Items);
+    List<OrderItemRequest> Items,
+    string? CouponCode = null);
 
 public sealed record PaymentRequest(bool ShouldSucceed);
 

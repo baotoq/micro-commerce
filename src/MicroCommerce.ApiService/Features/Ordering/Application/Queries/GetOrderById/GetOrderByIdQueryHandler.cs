@@ -54,6 +54,8 @@ public sealed class GetOrderByIdQueryHandler
             shippingAddress,
             items,
             order.Subtotal,
+            order.DiscountAmount,
+            order.CouponCode,
             order.ShippingCost,
             order.Tax,
             order.Total,
