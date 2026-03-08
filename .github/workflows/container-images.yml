@@ -4,6 +4,12 @@ on:
   push:
     branches: [master]
     tags: ['v*.*.*']
+    paths:
+      - 'src/**'
+      - '.github/workflows/container-images.yml'
+      - '**/Dockerfile'
+      - '**/Directory.Build.props'
+      - '**/Directory.Packages.props'
 
 jobs:
   build-web:
