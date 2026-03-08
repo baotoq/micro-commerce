@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Package,
   ShoppingBag,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -32,6 +33,7 @@ const NAV_ITEMS = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/dead-letters", label: "Dead Letters", icon: AlertTriangle },
 ];
 

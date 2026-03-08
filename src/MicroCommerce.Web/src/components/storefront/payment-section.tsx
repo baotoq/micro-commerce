@@ -19,11 +19,13 @@ function formatPrice(price: number): string {
 
 interface PaymentSectionProps {
   shippingData: ShippingAddressDto;
+  couponCode?: string;
   onSuccess: (orderId: string) => void;
 }
 
 export function PaymentSection({
   shippingData,
+  couponCode,
   onSuccess,
 }: PaymentSectionProps) {
   const { data: cart } = useCart();
@@ -57,6 +59,7 @@ export function PaymentSection({
           imageUrl: item.imageUrl,
           quantity: item.quantity,
         })),
+        couponCode: couponCode || undefined,
       });
 
       // Simulate realistic processing delay

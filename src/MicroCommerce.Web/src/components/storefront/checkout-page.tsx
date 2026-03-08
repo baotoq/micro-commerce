@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { CheckoutLoginGate } from "@/components/storefront/checkout-login-gate";
+import { CouponInput } from "@/components/storefront/coupon-input";
 import { OrderSidebar } from "@/components/storefront/order-sidebar";
 import { PaymentSection } from "@/components/storefront/payment-section";
 import { ShippingSection } from "@/components/storefront/shipping-section";
@@ -29,6 +30,8 @@ export function CheckoutPage() {
   const [shippingData, setShippingData] = useState<ShippingAddressDto | null>(
     null,
   );
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   const handleContinueAsGuest = useCallback(() => {
     setCheckoutStarted(true);
@@ -102,11 +105,31 @@ export function CheckoutPage() {
         <div className="lg:col-span-2">
           {/* Step 1: Shipping */}
           {currentStep === 1 && (
-            <div className="rounded-lg border bg-card p-6">
-              <h2 className="mb-5 text-lg font-bold text-foreground">
-                Shipping Address
-              </h2>
-              <ShippingSection onComplete={handleShippingComplete} />
+            <div className="space-y-4">
+              <div className="rounded-lg border bg-card p-6">
+                <h2 className="mb-5 text-lg font-bold text-foreground">
+                  Shipping Address
+                </h2>
+                <ShippingSection onComplete={handleShippingComplete} />
+              </div>
+              <div className="rounded-lg border bg-card p-6">
+                <h2 className="mb-3 text-base font-semibold text-foreground">
+                  Promo Code
+                </h2>
+                <CouponInput
+                  subtotal={items.reduce((s, i) => s + i.lineTotal, 0)}
+                  onApply={(code, amount) => {
+                    setAppliedCoupon(code);
+                    setDiscountAmount(amount);
+                  }}
+                  onRemove={() => {
+                    setAppliedCoupon(null);
+                    setDiscountAmount(0);
+                  }}
+                  appliedCode={appliedCoupon}
+                  discountAmount={discountAmount}
+                />
+              </div>
             </div>
           )}
 
@@ -118,6 +141,7 @@ export function CheckoutPage() {
               </h2>
               <PaymentSection
                 shippingData={shippingData}
+                couponCode={appliedCoupon ?? undefined}
                 onSuccess={handlePaymentSuccess}
               />
             </div>
@@ -147,6 +171,7 @@ export function CheckoutPage() {
                 </div>
                 <PaymentSection
                   shippingData={shippingData}
+                  couponCode={appliedCoupon ?? undefined}
                   onSuccess={handlePaymentSuccess}
                 />
               </div>
@@ -184,7 +209,10 @@ export function CheckoutPage() {
 
         {/* Right column: order summary sidebar */}
         <div>
-          <OrderSidebar />
+          <OrderSidebar
+            couponCode={appliedCoupon}
+            discountAmount={discountAmount}
+          />
         </div>
       </div>
     </div>

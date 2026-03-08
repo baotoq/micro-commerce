@@ -14,7 +14,15 @@ function formatPrice(price: number): string {
   }).format(price);
 }
 
-export function OrderSidebar() {
+interface OrderSidebarProps {
+  couponCode?: string | null;
+  discountAmount?: number;
+}
+
+export function OrderSidebar({
+  couponCode,
+  discountAmount = 0,
+}: OrderSidebarProps = {}) {
   const { data: cart } = useCart();
   const [mobileExpanded, setMobileExpanded] = useState(false);
 
@@ -22,7 +30,7 @@ export function OrderSidebar() {
   const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
   const shipping = 5.99;
   const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  const total = Math.max(0, subtotal + shipping + tax - discountAmount);
 
   return (
     <div className="sticky top-20 rounded-lg border border-border bg-card p-6">
@@ -100,6 +108,16 @@ export function OrderSidebar() {
               {formatPrice(tax)}
             </span>
           </div>
+          {discountAmount > 0 && couponCode && (
+            <div className="flex justify-between">
+              <span className="text-[13px] text-muted-foreground">
+                Coupon ({couponCode})
+              </span>
+              <span className="text-[13px] font-medium text-success-foreground">
+                −{formatPrice(discountAmount)}
+              </span>
+            </div>
+          )}
         </div>
 
         <Separator />

@@ -583,6 +583,7 @@ export interface SubmitOrderRequest {
     imageUrl: string | null;
     quantity: number;
   }[];
+  couponCode?: string;
 }
 
 export interface SimulatePaymentRequest {
@@ -1225,4 +1226,179 @@ export async function removeFromWishlist(token: string, productId: string): Prom
   if (!response.ok) {
     throw new Error("Failed to remove from wishlist");
   }
+}
+
+// Coupon types
+export interface CouponDto {
+  id: string;
+  code: string;
+  description: string;
+  discountType: 'Percentage' | 'FixedAmount';
+  discountValue: number;
+  minOrderAmount: number | null;
+  maxDiscountAmount: number | null;
+  usageLimit: number | null;
+  usagePerUser: number | null;
+  timesUsed: number;
+  validFrom: string;
+  validUntil: string | null;
+  isActive: boolean;
+  applicableProductIds: string[];
+  applicableCategoryIds: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CouponListDto {
+  items: CouponDto[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface CreateCouponRequest {
+  code: string;
+  description: string;
+  discountType: string;
+  discountValue: number;
+  validFrom: string;
+  validUntil?: string;
+  minOrderAmount?: number;
+  maxDiscountAmount?: number;
+  usageLimit?: number;
+  usagePerUser?: number;
+  applicableProductIds?: string[];
+  applicableCategoryIds?: string[];
+}
+
+export interface UpdateCouponRequest {
+  description: string;
+  discountType: string;
+  discountValue: number;
+  validFrom: string;
+  validUntil?: string;
+  minOrderAmount?: number;
+  maxDiscountAmount?: number;
+  usageLimit?: number;
+  usagePerUser?: number;
+  applicableProductIds?: string[];
+  applicableCategoryIds?: string[];
+}
+
+export interface ValidateCouponResult {
+  isValid: boolean;
+  discountAmount: number;
+  errorMessage: string | null;
+}
+
+// Coupon API functions
+export async function getCoupons(params: {
+  page?: number;
+  pageSize?: number;
+  isActive?: boolean;
+  search?: string;
+} = {}): Promise<CouponListDto> {
+  const apiBase = await getApiBase();
+  const searchParams = new URLSearchParams();
+  if (params.page) searchParams.set('page', params.page.toString());
+  if (params.pageSize) searchParams.set('pageSize', params.pageSize.toString());
+  if (params.isActive !== undefined) searchParams.set('isActive', params.isActive.toString());
+  if (params.search) searchParams.set('search', params.search);
+
+  const response = await fetch(`${apiBase}/api/coupons?${searchParams}`, {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch coupons');
+  }
+
+  return response.json();
+}
+
+export async function getCouponById(id: string): Promise<CouponDto> {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/coupons/${id}`, {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch coupon');
+  }
+
+  return response.json();
+}
+
+export async function createCoupon(data: CreateCouponRequest): Promise<{ id: string }> {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/coupons`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create coupon');
+  }
+
+  return response.json();
+}
+
+export async function updateCoupon(id: string, data: UpdateCouponRequest): Promise<void> {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/coupons/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to update coupon');
+  }
+}
+
+export async function deleteCoupon(id: string): Promise<void> {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/coupons/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete coupon');
+  }
+}
+
+export async function toggleCouponStatus(id: string, isActive: boolean): Promise<void> {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/coupons/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ isActive }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to toggle coupon status');
+  }
+}
+
+export async function validateCoupon(
+  code: string,
+  subtotal: number,
+  userId?: string
+): Promise<ValidateCouponResult> {
+  const apiBase = await getApiBase();
+  const response = await fetch(`${apiBase}/api/coupons/validate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, subtotal, userId }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to validate coupon');
+  }
+
+  return response.json();
 }
