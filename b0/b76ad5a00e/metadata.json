@@ -5,7 +5,10 @@
   "branch": "test/pooa-16-integration-tests-gaps",
   "checkpoints_count": 0,
   "files_touched": [
+    "src/MicroCommerce.ApiService.Tests/Integration/Cart/CartEndpointsTests.cs",
+    "src/MicroCommerce.ApiService.Tests/Integration/Catalog/CatalogEndpointsTests.cs",
     "src/MicroCommerce.ApiService.Tests/Integration/Fixtures/ApiWebApplicationFactory.cs",
+    "src/MicroCommerce.ApiService.Tests/Integration/Inventory/InventoryEndpointsTests.cs",
     "src/MicroCommerce.ApiService.Tests/Integration/Messaging/MessagingEndpointsTests.cs"
   ],
   "sessions": [
@@ -15,13 +18,20 @@
       "context": "/b0/b76ad5a00e/0/context.md",
       "content_hash": "/b0/b76ad5a00e/0/content_hash.txt",
       "prompt": "/b0/b76ad5a00e/0/prompt.txt"
+    },
+    {
+      "metadata": "/b0/b76ad5a00e/1/metadata.json",
+      "transcript": "/b0/b76ad5a00e/1/full.jsonl",
+      "context": "/b0/b76ad5a00e/1/context.md",
+      "content_hash": "/b0/b76ad5a00e/1/content_hash.txt",
+      "prompt": "/b0/b76ad5a00e/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 27,
-    "cache_creation_tokens": 41873,
-    "cache_read_tokens": 1150049,
-    "output_tokens": 4774,
-    "api_call_count": 25
+    "input_tokens": 41,
+    "cache_creation_tokens": 68716,
+    "cache_read_tokens": 1457205,
+    "output_tokens": 7881,
+    "api_call_count": 36
   }
 }
