@@ -11,10 +11,46 @@ ARGOCD_VERSION="v3.3.2"
 # Color output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 info() { echo -e "${GREEN}[INFO]${NC} $*"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
+error() { echo -e "${RED}[ERROR]${NC} $*"; }
+
+# --- Pre-flight: Check required CLI tools ---
+check_prerequisites() {
+  local missing=false
+  for cmd in kind kubectl kubeseal docker; do
+    if ! command -v "$cmd" &>/dev/null; then
+      error "Required tool '$cmd' not found. Please install it before running this script."
+      missing=true
+    fi
+  done
+  if [ "$missing" = true ]; then
+    error "Install missing tools:"
+    error "  kind:      https://kind.sigs.k8s.io/docs/user/quick-start/#installation"
+    error "  kubectl:   https://kubernetes.io/docs/tasks/tools/"
+    error "  kubeseal:  https://github.com/bitnami-labs/sealed-secrets#kubeseal"
+    error "  docker:    https://docs.docker.com/get-docker/"
+    exit 1
+  fi
+  info "All required tools found."
+}
+
+check_prerequisites
+
+# --- Trap handler: Print cleanup guidance on failure ---
+cleanup_on_error() {
+  echo ""
+  error "Bootstrap failed! To clean up:"
+  error "  kind delete cluster --name ${CLUSTER_NAME}"
+  error "  kubectl config unset contexts.kind-${CLUSTER_NAME}"
+  echo ""
+  error "To retry, run this script again."
+}
+
+trap cleanup_on_error ERR
 
 # --- Step 1: Create kind cluster ---
 if kind get clusters 2>/dev/null | grep -q "^${CLUSTER_NAME}$"; then
@@ -24,9 +60,16 @@ else
   kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml"
 fi
 
-# --- Step 2: Set kubectl context ---
-info "Setting kubectl context..."
-kubectl cluster-info --context "kind-${CLUSTER_NAME}" >/dev/null 2>&1
+# --- Step 2: Verify kubectl context targets the kind cluster ---
+CURRENT_CONTEXT=$(kubectl config current-context 2>/dev/null || echo "")
+EXPECTED_CONTEXT="kind-${CLUSTER_NAME}"
+if [ "$CURRENT_CONTEXT" != "$EXPECTED_CONTEXT" ]; then
+  error "kubectl context is '${CURRENT_CONTEXT}' but expected '${EXPECTED_CONTEXT}'"
+  error "This script only runs against the local kind cluster."
+  error "Switch context: kubectl config use-context ${EXPECTED_CONTEXT}"
+  exit 1
+fi
+info "kubectl context verified: ${EXPECTED_CONTEXT}"
 kubectl config use-context "kind-${CLUSTER_NAME}"
 
 # --- Step 3: Install SealedSecrets controller ---
