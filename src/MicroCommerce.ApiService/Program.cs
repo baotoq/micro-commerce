@@ -130,6 +130,38 @@ builder.Services.AddMassTransit(x =>
         o.DuplicateDetectionWindow = TimeSpan.FromMinutes(5);
     });
 
+    x.AddEntityFrameworkOutbox<OrderingDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+        o.QueryDelay = TimeSpan.FromSeconds(1);
+        o.DuplicateDetectionWindow = TimeSpan.FromMinutes(5);
+    });
+
+    x.AddEntityFrameworkOutbox<InventoryDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+        o.QueryDelay = TimeSpan.FromSeconds(1);
+        o.DuplicateDetectionWindow = TimeSpan.FromMinutes(5);
+    });
+
+    x.AddEntityFrameworkOutbox<ReviewsDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+        o.QueryDelay = TimeSpan.FromSeconds(1);
+        o.DuplicateDetectionWindow = TimeSpan.FromMinutes(5);
+    });
+
+    x.AddEntityFrameworkOutbox<ProfilesDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+        o.QueryDelay = TimeSpan.FromSeconds(1);
+        o.DuplicateDetectionWindow = TimeSpan.FromMinutes(5);
+    });
+
     x.AddConfigureEndpointsCallback((context, name, cfg) =>
     {
         // DLQ routing for Azure Service Bus endpoints
