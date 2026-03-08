@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: https://github.com/baotoq/micro-commerce.git
     targetRevision: master
-    path: infra/k8s/base/keycloak
+    path: infra/k8s/overlays/dev/keycloak
   destination:
     server: https://kubernetes.default.svc
     namespace: micro-commerce

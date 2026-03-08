@@ -4,11 +4,11 @@ kind: Kustomization
 namespace: micro-commerce
 
 resources:
-- ../../base/postgres
-- ../../base/rabbitmq
+- postgres/
+- rabbitmq/
 - keycloak/
-- ../../base/otel-collector
-- ../../base/aspire-dashboard
+- otel-collector/
+- aspire-dashboard/
 - apiservice/
 - gateway/
 - web/
