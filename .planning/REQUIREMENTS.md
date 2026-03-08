@@ -39,10 +39,10 @@ Requirements for K8s & GitOps Hardening. Each maps to roadmap phases.
 - [ ] **REL-01**: Client-side API URL resolution returns browser-reachable URL in K8s
 - [ ] **REL-02**: RabbitMQ converted to StatefulSet with persistent volume
 - [ ] **REL-03**: Startup probes added to gateway, web, rabbitmq, otel-collector, aspire-dashboard
-- [ ] **REL-04**: Bootstrap script checks for required CLI tools before execution
-- [ ] **REL-05**: Bootstrap script adds trap handler for failure cleanup guidance
-- [ ] **REL-06**: Bootstrap script context guard prevents applying to wrong cluster
-- [ ] **REL-07**: MassTransit outbox extended to cover all DbContexts that publish domain events
+- [x] **REL-04**: Bootstrap script checks for required CLI tools before execution
+- [x] **REL-05**: Bootstrap script adds trap handler for failure cleanup guidance
+- [x] **REL-06**: Bootstrap script context guard prevents applying to wrong cluster
+- [x] **REL-07**: MassTransit outbox extended to cover all DbContexts that publish domain events
 
 ### Kustomize Hygiene
 
@@ -93,10 +93,10 @@ None deferred — all audit findings scoped to v3.1.
 | REL-01 | Phase 34 | Pending |
 | REL-02 | Phase 34 | Pending |
 | REL-03 | Phase 34 | Pending |
-| REL-04 | Phase 34 | Pending |
-| REL-05 | Phase 34 | Pending |
-| REL-06 | Phase 34 | Pending |
-| REL-07 | Phase 34 | Pending |
+| REL-04 | Phase 34 | Complete |
+| REL-05 | Phase 34 | Complete |
+| REL-06 | Phase 34 | Complete |
+| REL-07 | Phase 34 | Complete |
 | KUST-01 | Phase 32 | Complete |
 | KUST-02 | Phase 32 | Complete |
 | KUST-03 | Phase 32 | Complete |
