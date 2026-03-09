@@ -3,7 +3,7 @@
   "checkpoint_id": "e85fca026550",
   "strategy": "manual-commit",
   "branch": "feat/checkout-coupon-integration",
-  "checkpoints_count": 2,
+  "checkpoints_count": 3,
   "files_touched": [
     ".gitignore"
   ],
@@ -14,13 +14,20 @@
       "context": "/e8/5fca026550/0/context.md",
       "content_hash": "/e8/5fca026550/0/content_hash.txt",
       "prompt": "/e8/5fca026550/0/prompt.txt"
+    },
+    {
+      "metadata": "/e8/5fca026550/1/metadata.json",
+      "transcript": "/e8/5fca026550/1/full.jsonl",
+      "context": "/e8/5fca026550/1/context.md",
+      "content_hash": "/e8/5fca026550/1/content_hash.txt",
+      "prompt": "/e8/5fca026550/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 45,
-    "cache_creation_tokens": 167474,
-    "cache_read_tokens": 1370299,
-    "output_tokens": 7784,
-    "api_call_count": 35
+    "input_tokens": 87,
+    "cache_creation_tokens": 262752,
+    "cache_read_tokens": 3018965,
+    "output_tokens": 16854,
+    "api_call_count": 72
   }
 }
