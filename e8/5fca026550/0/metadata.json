@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "e85fca026550",
+  "session_id": "1089b6c3-bc30-42c3-a36e-2f251b872362",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-09T12:44:31.42193Z",
+  "branch": "feat/checkout-coupon-integration",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".gitignore"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "72b39cce4c12",
+  "token_usage": {
+    "input_tokens": 45,
+    "cache_creation_tokens": 167474,
+    "cache_read_tokens": 1370299,
+    "output_tokens": 7784,
+    "api_call_count": 35
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-09T12:44:31.301201Z",
+    "agent_lines": 4,
+    "human_added": 952,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 956,
+    "agent_percentage": 0.41841004184100417
+  }
+}
