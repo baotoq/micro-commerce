@@ -1,3 +1,4 @@
+# http://127.0.0.1:24282/dashboard/index.html
 # the name by which the project can be referenced within Serena
 project_name: "micro-commerce"
 
@@ -27,6 +28,7 @@ project_name: "micro-commerce"
 # Note that when using the JetBrains backend, language servers are not used and this list is correspondingly ignored.
 languages:
 - csharp
+- typescript
 
 # the encoding used by text files in the project
 # For a list of possible encodings, see https://docs.python.org/3.11/library/codecs.html#standard-encodings
