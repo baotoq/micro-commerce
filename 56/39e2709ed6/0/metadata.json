@@ -1,0 +1,38 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "5639e2709ed6",
+  "session_id": "204e886d-ef44-433d-8adb-f431dd47bc03",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-10T15:15:05.17079Z",
+  "branch": "master",
+  "checkpoints_count": 3,
+  "files_touched": [
+    ".serena/memories/conventions_csharp.md",
+    ".serena/memories/conventions_typescript.md",
+    ".serena/memories/project_overview.md",
+    ".serena/memories/project_structure.md",
+    ".serena/memories/suggested_commands.md",
+    ".serena/memories/task_completion_checklist.md",
+    ".serena/project.yml"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "b71571b20723",
+  "checkpoint_transcript_start": 10,
+  "transcript_lines_at_start": 10,
+  "token_usage": {
+    "input_tokens": 41,
+    "cache_creation_tokens": 13177,
+    "cache_read_tokens": 602973,
+    "output_tokens": 4652,
+    "api_call_count": 21
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-10T15:15:05.12566Z",
+    "agent_lines": 183,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 183,
+    "agent_percentage": 100
+  }
+}
