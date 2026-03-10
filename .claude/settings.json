@@ -3,8 +3,6 @@
     "context7@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
-    "greptile@claude-plugins-official": true,
-    "playwright@claude-plugins-official": false,
     "commit-commands@claude-plugins-official": true,
     "csharp-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
@@ -111,7 +109,6 @@
       "Bash(git log:*)",
       "Bash(git diff:*)",
       "Bash(git tag:*)",
-      "Skill(gsd:map-codebase)",
       "Skill(gsd:map-codebase:*)",
       "WebFetch(domain:masstransit.io)",
       "WebFetch(domain:microsoft.github.io)"
