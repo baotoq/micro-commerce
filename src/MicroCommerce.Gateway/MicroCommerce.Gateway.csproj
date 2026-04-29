@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Yarp.ReverseProxy" Version="2.2.0" />
-    <PackageReference Include="Aspire.Keycloak.Authentication" Version="13.1.0-preview.1.25616.3" />
+    <PackageReference Include="Aspire.Keycloak.Authentication" Version="13.2.4-preview.1.26224.4" />
   </ItemGroup>
 
 </Project>
