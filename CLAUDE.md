@@ -28,3 +28,7 @@ There is no test runner configured. There is no separate typecheck script — `n
 
 - App Router source lives under `web/src/app/`. Use Server Components by default; add `"use client"` only when a component needs hooks, browser APIs, or event handlers.
 - Use `next/image` and `next/font` (already wired for Geist Sans/Mono in `src/app/layout.tsx`) — don't load fonts or images via raw `<img>`/`<link>`.
+
+## Testing
+use TDD to write tests before implementing features. This ensures that your code is robust and meets the requirements.
+DO NOT add tax maintenance tests

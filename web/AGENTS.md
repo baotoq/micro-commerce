@@ -9,3 +9,4 @@ Shadcn UI is available for pre-built components. Use it to speed up development 
 
 ## Testing
 use TDD to write tests before implementing features. This ensures that your code is robust and meets the requirements.
+DO NOT add tax maintenance tests
