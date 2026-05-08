@@ -1,9 +1,0 @@
-root = true
-
-[*]
-end_of_line = lf
-
-[*.{js,jsx,ts,tsx}]
-indent_size = 2
-indent_style = space
-trim_trailing_whitespace = true
