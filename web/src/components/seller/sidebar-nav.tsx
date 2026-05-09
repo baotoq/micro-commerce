@@ -6,13 +6,15 @@ import {
   type LucideIcon,
   Package,
   ShoppingBag,
+  Store,
+  Tag,
   Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-type Item = { label: string; href: string };
+type Item = { label: string; href: string; badge?: number };
 
 const ICONS: Record<string, LucideIcon> = {
   "/seller": LayoutDashboard,
@@ -20,12 +22,14 @@ const ICONS: Record<string, LucideIcon> = {
   "/seller/listings": Package,
   "/seller/analytics": ChartColumn,
   "/seller/customers": Users,
+  "/seller/discounts": Tag,
+  "/seller/storefront": Store,
 };
 
 export function SidebarNav({ items }: { items: readonly Item[] }) {
   const pathname = usePathname();
   return (
-    <nav className="flex flex-1 flex-col gap-0.5 px-3 py-4">
+    <nav className="flex flex-1 flex-col gap-0.5 px-3 py-2">
       {items.map((item) => {
         const active =
           item.href === "/seller"
@@ -37,10 +41,10 @@ export function SidebarNav({ items }: { items: readonly Item[] }) {
             key={item.href}
             href={item.href}
             className={cn(
-              "relative flex items-center gap-3 rounded-md px-3 py-2 text-sm text-[#1d1d1f] transition-colors",
+              "relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
               active
-                ? "bg-white font-semibold shadow-[inset_2px_0_0_#0066cc]"
-                : "hover:bg-white/60",
+                ? "bg-[#1d1d1f] font-medium text-white"
+                : "text-[#1d1d1f] hover:bg-white/60",
             )}
           >
             {Icon && (
@@ -48,11 +52,21 @@ export function SidebarNav({ items }: { items: readonly Item[] }) {
                 aria-hidden
                 className={cn(
                   "h-4 w-4 shrink-0",
-                  active ? "text-[#0066cc]" : "text-[#1d1d1f]/60",
+                  active ? "text-white" : "text-[#1d1d1f]/60",
                 )}
               />
             )}
-            {item.label}
+            <span className="flex-1">{item.label}</span>
+            {item.badge != null && (
+              <span
+                className={cn(
+                  "inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums",
+                  active ? "bg-white/20 text-white" : "bg-[#cf5a2c] text-white",
+                )}
+              >
+                {item.badge}
+              </span>
+            )}
           </Link>
         );
       })}
