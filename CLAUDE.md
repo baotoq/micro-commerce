@@ -32,3 +32,6 @@ There is no test runner configured. There is no separate typecheck script — `n
 ## Testing
 use TDD to write tests before implementing features. This ensures that your code is robust and meets the requirements.
 DO NOT add tax maintenance tests
+
+## UI Design
+`DESIGN.md` contains the UI design specifications for the project. Please refer to it before implementing any features to ensure that your code aligns with the overall design vision.
