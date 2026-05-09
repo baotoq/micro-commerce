@@ -55,3 +55,88 @@ export type ListingCounts = {
 };
 
 export type Brand = { name: string; owner: string };
+
+export type SellerApplication = {
+  shopName: string;
+  domain: string;
+  available: boolean;
+  category: string;
+  categories: string[];
+  stepsLeft: number;
+};
+
+export type SetupStep = {
+  label: string;
+  status: "done" | "active" | "pending";
+};
+
+export type LaunchTask = {
+  label: string;
+  subject: string;
+  done: boolean;
+  hint?: string;
+};
+
+export type ShippingOption = {
+  label: string;
+  sub: string;
+  price: number;
+  selected: boolean;
+};
+
+export type OrderDetail = {
+  id: string;
+  customer: string;
+  shortCustomer: string;
+  productName: string;
+  productSubtitle: string;
+  qty: number;
+  subtotal: number;
+  shippingLabel: string;
+  shippingCost: number;
+  customerPaid: number;
+  feePct: number;
+  fee: number;
+  net: number;
+  shipTo: { name: string; line1: string; cityState: string };
+  customerNote: string;
+};
+
+export type LedgerEntry = {
+  date: string;
+  label: string;
+  subject: string;
+  amount: number;
+  type: "payout" | "sale" | "fee";
+};
+
+export type PayoutSummary = {
+  lastPayout: number;
+  lastPayoutSentLabel: string;
+  available: number;
+  availableSendsOn: string;
+  availableFromOrders: number;
+  lifetime: number;
+  lifetimeOrders: number;
+  lifetimeRange: string;
+};
+
+export type FirstOrderKpi = {
+  label: string;
+  value: string;
+  delta: string;
+  spark: number[];
+};
+export type FirstMonthKpi = {
+  label: string;
+  value: string;
+  delta: string;
+  spark: number[];
+};
+export type TopSeller = {
+  sku: string;
+  name: string;
+  soldLabel: string;
+  revenue: number;
+  tone: string;
+};

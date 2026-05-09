@@ -1,15 +1,25 @@
 // web/src/lib/seller/data.ts
 import type {
   Brand,
+  FirstMonthKpi,
+  FirstOrderKpi,
   FunnelStage,
   KpiPoint,
+  LaunchTask,
+  LedgerEntry,
   Listing,
   ListingCounts,
   Order,
+  OrderDetail,
+  PayoutSummary,
   RevenuePoint,
+  SellerApplication,
+  SetupStep,
+  ShippingOption,
   SourceBreakdown,
   TodayItem,
   TopProduct,
+  TopSeller,
 } from "./types";
 
 export const BRAND: Brand = { name: "Micro Commerce", owner: "Alex" };
@@ -537,4 +547,277 @@ const FUNNEL: FunnelStage[] = [
 ];
 export function getFunnel(): FunnelStage[] {
   return FUNNEL;
+}
+
+const APPLICATION: SellerApplication = {
+  shopName: "Mira Studio",
+  domain: "mira-studio.micro.shop",
+  available: true,
+  category: "Ceramics",
+  categories: ["Ceramics", "Bakery", "Textiles", "Jewelry", "Vintage", "Other"],
+  stepsLeft: 6,
+};
+export function getApplication(): SellerApplication {
+  return APPLICATION;
+}
+
+const SETUP_STEPS: SetupStep[] = [
+  { label: "Shop name", status: "done" },
+  { label: "Location & payouts", status: "active" },
+  { label: "Brand", status: "pending" },
+  { label: "First listing", status: "pending" },
+  { label: "Shipping", status: "pending" },
+  { label: "Review", status: "pending" },
+];
+export function getSetupSteps(): SetupStep[] {
+  return SETUP_STEPS;
+}
+
+const LAUNCH_CHECKLIST: LaunchTask[] = [
+  { label: "Claim shop name", subject: "mira-studio · 2 days ago", done: true },
+  { label: "Add payout method", subject: "Bank · ending 4421", done: true },
+  {
+    label: "Publish first listing",
+    subject: "Persimmon vase · just now",
+    done: true,
+  },
+  {
+    label: "Add 2 more listings",
+    subject: "Most shops launch with 5+",
+    done: false,
+    hint: "Recommended",
+  },
+  {
+    label: "Set shipping rates",
+    subject: "US · Intl · Local pickup",
+    done: false,
+  },
+  {
+    label: "Share with 3 friends",
+    subject: "Average shop gets first sale in 4 days",
+    done: false,
+  },
+];
+export function getLaunchChecklist(): LaunchTask[] {
+  return LAUNCH_CHECKLIST;
+}
+
+const DAY_ONE_STATS: { label: string; value: string; subject: string }[] = [
+  { label: "Sales · today", value: "$0.00", subject: "no activity yet" },
+  { label: "Orders · today", value: "0", subject: "no activity yet" },
+  { label: "Visits · today", value: "14", subject: "mostly you :)" },
+];
+export function getDayOneStats(): {
+  label: string;
+  value: string;
+  subject: string;
+}[] {
+  return DAY_ONE_STATS;
+}
+
+const FIRST_ORDER_STATS: FirstOrderKpi[] = [
+  {
+    label: "Sales · today",
+    value: "$86",
+    delta: "first sale!",
+    spark: [0, 0, 0, 0, 0, 0, 1],
+  },
+  {
+    label: "Orders · today",
+    value: "1",
+    delta: "new",
+    spark: [0, 0, 0, 0, 0, 0, 1],
+  },
+  {
+    label: "Visits · today",
+    value: "142",
+    delta: "8× yesterday",
+    spark: [0.1, 0.15, 0.1, 0.2, 0.3, 0.6, 0.95],
+  },
+  {
+    label: "Followers",
+    value: "14",
+    delta: "+5 today",
+    spark: [0.1, 0.2, 0.2, 0.4, 0.45, 0.7, 0.95],
+  },
+];
+export function getFirstOrderStats(): FirstOrderKpi[] {
+  return FIRST_ORDER_STATS;
+}
+
+const ORDER_DETAIL_1001: OrderDetail = {
+  id: "#1001",
+  customer: "Sasha Leblanc",
+  shortCustomer: "Sasha L.",
+  productName: "Persimmon vase",
+  productSubtitle: "Glazed terra · qty 1",
+  qty: 1,
+  subtotal: 86,
+  shippingLabel: "USPS Ground",
+  shippingCost: 0,
+  customerPaid: 86,
+  feePct: 4,
+  fee: 3.44,
+  net: 82.56,
+  shipTo: {
+    name: "Sasha Leblanc",
+    line1: "820 Sutter St #4B",
+    cityState: "SF CA 94109",
+  },
+  customerNote: "So excited — please pack carefully, this is for my mom.",
+};
+export function getOrderDetail(id: string): OrderDetail | null {
+  if (id === "1001") return ORDER_DETAIL_1001;
+  return null;
+}
+
+const SHIPPING_OPTIONS: ShippingOption[] = [
+  {
+    label: "USPS Priority · 1–3 days",
+    sub: "Tracked · $50 insured",
+    price: 9.84,
+    selected: true,
+  },
+  {
+    label: "USPS Ground Advantage",
+    sub: "2–5 days · tracked",
+    price: 6.52,
+    selected: false,
+  },
+  {
+    label: "UPS Ground",
+    sub: "3–4 days · pickup avail.",
+    price: 11.2,
+    selected: false,
+  },
+];
+export function getShippingOptions(): ShippingOption[] {
+  return SHIPPING_OPTIONS;
+}
+
+const FIRST_MONTH_KPIS: FirstMonthKpi[] = [
+  {
+    label: "Revenue",
+    value: "$2,148",
+    delta: "+ first month",
+    spark: [0.05, 0.1, 0.2, 0.25, 0.4, 0.55, 0.7, 0.85],
+  },
+  {
+    label: "Orders",
+    value: "23",
+    delta: "avg $93.39",
+    spark: [0.05, 0.1, 0.2, 0.3, 0.45, 0.6, 0.7, 0.9],
+  },
+  {
+    label: "Conversion",
+    value: "3.1%",
+    delta: "vs 2.4% benchmark",
+    spark: [0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.75, 0.85],
+  },
+  {
+    label: "Repeat buyers",
+    value: "4",
+    delta: "17% of orders",
+    spark: [0, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7],
+  },
+];
+export function getFirstMonthKpis(): FirstMonthKpi[] {
+  return FIRST_MONTH_KPIS;
+}
+
+const FIRST_MONTH_SERIES: number[] = [
+  0, 0, 0, 86, 0, 0, 0, 152, 78, 110, 0, 64, 230, 86, 110, 0, 178, 220, 64, 152,
+  86, 320, 110, 152, 64, 86, 230, 110, 320, 86,
+];
+export function getFirstMonthSeries(): number[] {
+  return FIRST_MONTH_SERIES;
+}
+
+const FIRST_MONTH_TOP_SELLERS: TopSeller[] = [
+  {
+    sku: "MC-VS-001",
+    name: "Persimmon vase",
+    soldLabel: "14 sold",
+    revenue: 1204,
+    tone: "clay",
+  },
+  {
+    sku: "MC-BW-014",
+    name: "Forest bowl, lg.",
+    soldLabel: "6 sold",
+    revenue: 384,
+    tone: "sage",
+  },
+  {
+    sku: "MC-TB-007",
+    name: "Cream tumbler set",
+    soldLabel: "4 sold",
+    revenue: 192,
+    tone: "cream",
+  },
+];
+export function getFirstMonthTopSellers(): TopSeller[] {
+  return FIRST_MONTH_TOP_SELLERS;
+}
+
+const LEDGER_ENTRIES: LedgerEntry[] = [
+  {
+    date: "Apr 8",
+    label: "Payout · weekly",
+    subject: "Sent · ending 4421",
+    amount: 1284.62,
+    type: "payout",
+  },
+  {
+    date: "Apr 7",
+    label: "Order #1042 · Sasha L.",
+    subject: "Net of $3.44 fee",
+    amount: 82.56,
+    type: "sale",
+  },
+  {
+    date: "Apr 7",
+    label: "Order #1041 · Devon T.",
+    subject: "Net of $2.56 fee",
+    amount: 61.44,
+    type: "sale",
+  },
+  {
+    date: "Apr 6",
+    label: "Shipping label · USPS",
+    subject: "#1041 · 1lb 4oz",
+    amount: -6.52,
+    type: "fee",
+  },
+  {
+    date: "Apr 5",
+    label: "Order #1040 · Ari K.",
+    subject: "Net of $1.92 fee",
+    amount: 46.08,
+    type: "sale",
+  },
+  {
+    date: "Apr 1",
+    label: "Payout · weekly",
+    subject: "Sent · ending 4421",
+    amount: 624.18,
+    type: "payout",
+  },
+];
+export function getLedgerEntries(): LedgerEntry[] {
+  return LEDGER_ENTRIES;
+}
+
+const PAYOUT_SUMMARY: PayoutSummary = {
+  lastPayout: 1284.62,
+  lastPayoutSentLabel: "Sent · arriving Wed",
+  available: 184.08,
+  availableSendsOn: "Tue, Apr 15",
+  availableFromOrders: 3,
+  lifetime: 2148.36,
+  lifetimeOrders: 23,
+  lifetimeRange: "Mar 12 → Apr 11",
+};
+export function getPayoutSummary(): PayoutSummary {
+  return PAYOUT_SUMMARY;
 }
