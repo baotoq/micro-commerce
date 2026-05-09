@@ -8,7 +8,7 @@ test.describe("Seller first-order page", () => {
 
     // Topbar
     await expect(
-      page.getByRole("heading", { name: /Good afternoon, Mira/ }),
+      page.getByRole("heading", { name: /Good afternoon, Alex/ }),
     ).toBeVisible();
     await expect(page.getByText("Day 4 · Friday, March 15")).toBeVisible();
 
