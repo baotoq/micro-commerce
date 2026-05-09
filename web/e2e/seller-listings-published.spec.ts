@@ -13,7 +13,7 @@ test.describe("Seller listings — published", () => {
     ).toBeVisible();
     await expect(page.getByText("42 products · 39 active")).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "+ New listing" }),
+      page.getByRole("link", { name: "+ New listing" }),
     ).toBeVisible();
 
     // Success banner

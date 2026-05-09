@@ -1,6 +1,8 @@
 // web/src/app/seller/listings/bulk/page.tsx
+import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const CHIPS = [
   { label: "All · 42", active: false },
@@ -70,7 +72,14 @@ export default function ListingsBulkPage() {
       <SellerTopbar
         title="Listings"
         subtitle="Filtered · low & out of stock"
-        actions={<Button className="rounded-full">+ New listing</Button>}
+        actions={
+          <Link
+            href="/seller/listings/new"
+            className={cn(buttonVariants(), "rounded-full")}
+          >
+            + New listing
+          </Link>
+        }
       />
 
       {/* Filter chips */}
@@ -113,12 +122,15 @@ export default function ListingsBulkPage() {
               {label}
             </Button>
           ))}
-          <Button
-            size="sm"
-            className="bg-white text-[#1d1d1f] hover:bg-white/90"
+          <Link
+            href="/seller/listings/MC-VS-001/edit"
+            className={cn(
+              buttonVariants({ size: "sm" }),
+              "bg-white text-[#1d1d1f] hover:bg-white/90",
+            )}
           >
             Apply →
-          </Button>
+          </Link>
         </div>
       </div>
 
@@ -279,12 +291,21 @@ export default function ListingsBulkPage() {
             </div>
           </div>
 
-          <Button className="h-[42px] w-full rounded-lg">
+          <Link
+            href="/seller/listings/MC-VS-001/edit"
+            className={cn(buttonVariants(), "h-[42px] w-full rounded-lg")}
+          >
             Apply to 3 items
-          </Button>
-          <Button variant="ghost" className="mt-1.5 w-full">
+          </Link>
+          <Link
+            href="/seller/listings"
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "mt-1.5 w-full",
+            )}
+          >
             Cancel
-          </Button>
+          </Link>
         </aside>
       </div>
     </div>

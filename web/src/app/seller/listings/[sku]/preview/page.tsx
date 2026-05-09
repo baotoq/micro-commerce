@@ -1,6 +1,7 @@
 // web/src/app/seller/listings/[sku]/preview/page.tsx
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { getListingBySku } from "@/lib/seller/data";
 
 type Check = { label: string; sub: string; tone: "good" | "warn" };
@@ -35,13 +36,13 @@ export default async function ListingPreviewPage({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-black/[0.06] bg-white px-7 py-4">
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <Link
+            href={`/seller/listings/${sku}/edit`}
             aria-label="Back"
             className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#f5f5f7]"
           >
             ‹
-          </button>
+          </Link>
           <div>
             <p className="text-[11px] uppercase tracking-wider text-[#1d1d1f]/60">
               Preview · {listing.name}
@@ -68,8 +69,15 @@ export default async function ListingPreviewPage({
               Mobile
             </Button>
           </div>
-          <Button variant="outline">Back to edit</Button>
-          <Button>Publish now →</Button>
+          <Link
+            href={`/seller/listings/${sku}/edit`}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Back to edit
+          </Link>
+          <Link href="/seller/listings/published" className={buttonVariants()}>
+            Publish now →
+          </Link>
         </div>
       </div>
 

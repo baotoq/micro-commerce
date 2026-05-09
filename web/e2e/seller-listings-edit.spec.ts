@@ -13,9 +13,15 @@ test.describe("Seller listings — edit", () => {
       page.getByRole("heading", { name: "Persimmon vase", exact: true }),
     ).toBeVisible();
     await expect(page.getByText("Unsaved changes")).toBeVisible();
-    for (const action of ["Discard", "Save draft", "Publish →"]) {
-      await expect(page.getByRole("button", { name: action })).toBeVisible();
-    }
+    await expect(
+      page.getByRole("link", { name: "Discard", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Save draft", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Publish →", exact: true }),
+    ).toBeVisible();
 
     // Variant matrix
     await expect(

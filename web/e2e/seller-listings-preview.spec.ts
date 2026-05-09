@@ -12,8 +12,11 @@ test.describe("Seller listings — preview", () => {
     await expect(
       page.getByRole("heading", { name: "How shoppers will see it" }),
     ).toBeVisible();
-    for (const b of ["Desktop", "Mobile", "Back to edit", "Publish now →"]) {
+    for (const b of ["Desktop", "Mobile"]) {
       await expect(page.getByRole("button", { name: b })).toBeVisible();
+    }
+    for (const link of ["Back to edit", "Publish now →"]) {
+      await expect(page.getByRole("link", { name: link })).toBeVisible();
     }
 
     // Browser-chrome url & alex-studio brand

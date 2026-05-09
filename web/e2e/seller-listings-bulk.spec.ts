@@ -29,7 +29,7 @@ test.describe("Seller listings — bulk", () => {
     for (const action of ["Edit price", "Adjust stock", "Move to draft"]) {
       await expect(page.getByRole("button", { name: action })).toBeVisible();
     }
-    await expect(page.getByRole("button", { name: "Apply →" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Apply →" })).toBeVisible();
 
     // Table rows
     for (const product of [
@@ -57,8 +57,8 @@ test.describe("Seller listings — bulk", () => {
       await expect(page.getByRole("button", { name: seg })).toBeVisible();
     }
     await expect(
-      page.getByRole("button", { name: "Apply to 3 items" }),
+      page.getByRole("link", { name: "Apply to 3 items" }),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Cancel" })).toBeVisible();
   });
 });

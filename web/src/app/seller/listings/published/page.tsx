@@ -1,6 +1,8 @@
 // web/src/app/seller/listings/published/page.tsx
+import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const KPIS = [
   { label: "Active listings", value: "39", delta: "+1" },
@@ -47,7 +49,14 @@ export default function ListingsPublishedPage() {
       <SellerTopbar
         title="Listings"
         subtitle="42 products · 39 active"
-        actions={<Button className="rounded-full">+ New listing</Button>}
+        actions={
+          <Link
+            href="/seller/listings/new"
+            className={cn(buttonVariants(), "rounded-full")}
+          >
+            + New listing
+          </Link>
+        }
       />
 
       <div className="border-b border-black/[0.06] bg-[#DDEDE1] px-7 py-3.5">

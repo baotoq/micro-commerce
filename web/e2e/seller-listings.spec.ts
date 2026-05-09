@@ -27,7 +27,7 @@ test.describe("Seller listings", () => {
       page.getByRole("button", { name: /Import CSV/ }),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /New listing/ }),
+      page.getByRole("link", { name: /New listing/ }),
     ).toBeVisible();
 
     // First-page SKU rows (page size 9)

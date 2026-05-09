@@ -13,7 +13,7 @@ test.describe("New listing editor", () => {
     await expect(
       page.getByRole("button", { name: "Save draft", exact: true }),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: /Publish/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Publish/ })).toBeVisible();
 
     await expect(page.getByRole("heading", { name: /Photos/ })).toBeVisible();
     await expect(

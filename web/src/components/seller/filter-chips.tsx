@@ -19,7 +19,7 @@ export function FilterChips({
     { key: "draft", label: "Drafts", count: counts.draft },
   ];
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-1.5">
       {chips.map((c) => {
         const isActive = c.key === active;
         return (
@@ -28,10 +28,10 @@ export function FilterChips({
             type="button"
             aria-pressed={isActive}
             className={cn(
-              "rounded-full border px-3 py-1 text-xs",
+              "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
               isActive
-                ? "border-[#0066cc] text-[#0066cc] ring-1 ring-[#0066cc]"
-                : "border-black/[0.08] text-[#1d1d1f]",
+                ? "border-[#1d1d1f] bg-[#1d1d1f] text-white"
+                : "border-black/[0.08] bg-white text-[#1d1d1f]/80 hover:border-black/20 hover:text-[#1d1d1f]",
             )}
           >
             {c.label} · {c.count}

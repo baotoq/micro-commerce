@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export default function NewListingPage() {
   return (
@@ -10,7 +11,12 @@ export default function NewListingPage() {
         actions={
           <>
             <Button variant="outline">Save draft</Button>
-            <Button>&#10003; Publish</Button>
+            <Link
+              href="/seller/listings/published"
+              className={buttonVariants()}
+            >
+              &#10003; Publish
+            </Link>
           </>
         }
       />

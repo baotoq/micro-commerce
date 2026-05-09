@@ -1,7 +1,9 @@
 // web/src/app/seller/listings/[sku]/edit/page.tsx
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { getListingBySku } from "@/lib/seller/data";
+import { cn } from "@/lib/utils";
 
 type Variant = {
   label: string;
@@ -92,13 +94,13 @@ export default async function ListingEditPage({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-black/[0.06] bg-white px-7 py-4">
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <Link
+            href="/seller/listings"
             aria-label="Back"
             className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#f5f5f7]"
           >
             ‹
-          </button>
+          </Link>
           <div>
             <p className="text-[11px] uppercase tracking-wider text-[#1d1d1f]/60">
               Listings · {listing.category}
@@ -113,9 +115,19 @@ export default async function ListingEditPage({
           </span>
         </div>
         <div className="flex gap-2">
-          <Button variant="ghost">Discard</Button>
+          <Link
+            href="/seller/listings"
+            className={buttonVariants({ variant: "ghost" })}
+          >
+            Discard
+          </Link>
           <Button variant="outline">Save draft</Button>
-          <Button>Publish →</Button>
+          <Link
+            href={`/seller/listings/${sku}/preview`}
+            className={cn(buttonVariants())}
+          >
+            Publish →
+          </Link>
         </div>
       </div>
 
