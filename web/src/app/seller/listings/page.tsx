@@ -58,6 +58,16 @@ export default function ListingsPage() {
               Import CSV
             </Button>
             <Link
+              href="/seller/listings/bulk"
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "gap-1.5 rounded-full",
+              )}
+            >
+              <Ico name="filter" />
+              Bulk edit
+            </Link>
+            <Link
               href="/seller/listings/new"
               className={cn(buttonVariants(), "gap-1.5 rounded-full")}
             >

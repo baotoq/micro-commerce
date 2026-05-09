@@ -1,0 +1,65 @@
+import { Eye } from "lucide-react";
+import { EmailComposerAudience } from "@/components/seller/email-composer-audience";
+import { EmailComposerContent } from "@/components/seller/email-composer-content";
+import { EmailComposerSchedule } from "@/components/seller/email-composer-schedule";
+import { EmailPreview } from "@/components/seller/email-preview";
+import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { getMarketingDraft } from "@/lib/seller/data";
+
+export default function MarketingPage() {
+  const draft = getMarketingDraft();
+  return (
+    <div className="flex h-screen min-w-0 flex-col overflow-hidden">
+      <SellerTopbar
+        title="Email recent buyers"
+        subtitle="Marketing · drafted Tuesday"
+        actions={
+          <>
+            <button
+              type="button"
+              className="inline-flex items-center rounded-lg border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-black/[0.04]"
+            >
+              Save draft
+            </button>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-black/[0.04]"
+            >
+              <Eye className="size-3.5" aria-hidden />
+              Send test
+            </button>
+            <button
+              type="button"
+              className="inline-flex items-center rounded-lg bg-[#1d1d1f] px-3.5 py-1.5 text-[13px] font-medium text-white hover:bg-[#1d1d1f]/90"
+            >
+              Schedule send
+            </button>
+          </>
+        }
+      />
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left — composer */}
+        <div
+          className="flex-1 overflow-auto border-r border-black/[0.06]"
+          style={{ padding: "24px 28px" }}
+        >
+          <EmailComposerAudience draft={draft} />
+          <EmailComposerContent draft={draft} />
+          <EmailComposerSchedule draft={draft} />
+        </div>
+
+        {/* Right — preview */}
+        <div
+          className="overflow-auto"
+          style={{
+            width: 480,
+            padding: "24px 28px",
+            background: "#f5f5f7",
+          }}
+        >
+          <EmailPreview draft={draft} />
+        </div>
+      </div>
+    </div>
+  );
+}

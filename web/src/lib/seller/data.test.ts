@@ -7,7 +7,15 @@ import {
   getListingBySku,
   getListingCounts,
   getListings,
+  getMarketingDraft,
+  getOrderDetailFull,
+  getOrderInbox,
+  getOrderInboxSummary,
+  getOrderInboxTabs,
   getOverviewKpis,
+  getPromoStats,
+  getPromos,
+  getPromoTabs,
   getRangeOptions,
   getRecentOrders,
   getRevenueSeries,
@@ -112,5 +120,119 @@ describe("seller mock data", () => {
 
   it("getListingBySku returns null for an unknown sku", () => {
     expect(getListingBySku("MC-NOPE-404")).toBeNull();
+  });
+});
+
+describe("seller management data — orders inbox", () => {
+  it("returns 10 inbox rows with #1042 starred at the top", () => {
+    const rows = getOrderInbox();
+    expect(rows).toHaveLength(10);
+    expect(rows[0].id).toBe("#1042");
+    expect(rows[0].starred).toBe(true);
+    expect(rows[0].customer).toBe("Sasha L.");
+    expect(rows[0].items).toBe("Persimmon vase, Ash budstem");
+    expect(rows[0].total).toBe(152);
+    expect(rows[0].tone).toBe("warn");
+  });
+
+  it("inbox tabs total 47 and Needs action is the active tab", () => {
+    const tabs = getOrderInboxTabs();
+    expect(tabs).toHaveLength(6);
+    const all = tabs.find((t) => t.label === "All");
+    expect(all?.count).toBe(47);
+    const needs = tabs.find((t) => t.label === "Needs action");
+    expect(needs?.count).toBe(4);
+    expect(needs?.on).toBe(true);
+  });
+
+  it("inbox summary reports lifetime + needs-action counts", () => {
+    const s = getOrderInboxSummary();
+    expect(s.totalLifetime).toBe(47);
+    expect(s.needAction).toBe(4);
+  });
+});
+
+describe("seller management data — order detail #1042", () => {
+  it("returns null for unknown order ids", () => {
+    expect(getOrderDetailFull("9999")).toBeNull();
+  });
+
+  it("returns the Sasha Leblanc partial-fulfillment detail for 1042", () => {
+    const d = getOrderDetailFull("1042");
+    expect(d).not.toBeNull();
+    if (!d) return;
+    expect(d.id).toBe("#1042");
+    expect(d.status).toBe("Partially fulfilled");
+    expect(d.customer.name).toBe("Sasha Leblanc");
+    expect(d.fulfillments).toHaveLength(2);
+    expect(d.fulfillments[0].status).toBe("shipped");
+    expect(d.fulfillments[0].productName).toBe("Persimmon vase");
+    expect(d.fulfillments[1].status).toBe("awaiting");
+    expect(d.fulfillments[1].productName).toBe("Ash budstem");
+    expect(d.refund.total).toBe(30);
+    expect(d.refund.lastFour).toBe("4421");
+    expect(d.summary.paid).toBe(152);
+    expect(d.summary.fee).toBe(6.08);
+    expect(d.summary.labelCost).toBe(9.84);
+    expect(d.summary.net).toBe(136.08);
+    expect(d.timeline).toHaveLength(5);
+    expect(d.customerTags).toEqual(["VIP", "Repeat buyer", "Gift"]);
+  });
+});
+
+describe("seller management data — promos", () => {
+  it("returns 5 promo codes with STUDIO15 highlighted", () => {
+    const codes = getPromos();
+    expect(codes).toHaveLength(5);
+    expect(codes.map((c) => c.code)).toEqual([
+      "SPRING20",
+      "WELCOME10",
+      "STUDIO15",
+      "BLOOM",
+      "FRIENDS",
+    ]);
+    const studio = codes.find((c) => c.code === "STUDIO15");
+    expect(studio?.highlight).toBe(true);
+    expect(studio?.status).toBe("Active");
+  });
+
+  it("returns 4 promo stat cards", () => {
+    const stats = getPromoStats();
+    expect(stats).toHaveLength(4);
+    expect(stats[0].label).toBe("Driven revenue");
+    expect(stats[3].sub).toBe("from WELCOME10");
+  });
+
+  it("returns 3 promo tabs with Promotions active", () => {
+    const tabs = getPromoTabs();
+    expect(tabs).toHaveLength(3);
+    expect(tabs[0].label).toBe("Promotions");
+    expect(tabs[0].on).toBe(true);
+    expect(tabs[0].count).toBe(5);
+  });
+});
+
+describe("seller management data — marketing draft", () => {
+  it("returns the persimmon-vase restock draft branded to BRAND.name", () => {
+    const d = getMarketingDraft();
+    expect(d.subject).toBe("The persimmon vase is back · just 8 this batch");
+    expect(d.previewText).toBe(
+      "A small restock — three glaze variations this round.",
+    );
+    expect(d.audiences).toHaveLength(4);
+    expect(d.audiences[0].count).toBe(47);
+    expect(d.audiences.filter((a) => a.on)).toHaveLength(3);
+    expect(d.templates.find((t) => t.label === "Restock")?.on).toBe(true);
+    expect(d.recipientCount).toBe(184);
+    expect(d.openRateForecast).toContain("32%");
+    expect(d.productName).toBe("Persimmon vase");
+    expect(d.productPrice).toBe(86);
+  });
+
+  it("does NOT mention 'Mira' anywhere in marketing draft copy", () => {
+    const d = getMarketingDraft();
+    const blob = JSON.stringify(d);
+    expect(blob).not.toMatch(/Mira/);
+    expect(blob).toContain(BRAND.name);
   });
 });

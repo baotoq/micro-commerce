@@ -7,6 +7,7 @@ const NAV = [
   { label: "Overview", href: "/seller" },
   { label: "Orders", href: "/seller/orders", badge: 4 },
   { label: "Listings", href: "/seller/listings" },
+  { label: "Discounts", href: "/seller/promos" },
   { label: "Analytics", href: "/seller/analytics" },
   { label: "Customers", href: "/seller/customers" },
 ] as const;

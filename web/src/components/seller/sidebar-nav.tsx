@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BadgePercent,
   ChartColumn,
   LayoutDashboard,
   type LucideIcon,
@@ -18,6 +19,7 @@ const ICONS: Record<string, LucideIcon> = {
   "/seller": LayoutDashboard,
   "/seller/orders": ShoppingBag,
   "/seller/listings": Package,
+  "/seller/promos": BadgePercent,
   "/seller/analytics": ChartColumn,
   "/seller/customers": Users,
 };

@@ -27,12 +27,20 @@ export default function SellerOverview() {
             Good morning, {BRAND.owner}
           </h1>
         </div>
-        <Link
-          href="/seller/listings/new"
-          className="rounded-full bg-[#1d1d1f] px-4 py-2 text-sm font-medium text-white hover:bg-[#1d1d1f]/90"
-        >
-          + New listing
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/seller/welcome"
+            className="rounded-full px-4 py-2 text-sm font-medium text-[#1d1d1f] hover:bg-black/5"
+          >
+            ← Back to welcome
+          </Link>
+          <Link
+            href="/seller/listings/new"
+            className="rounded-full bg-[#1d1d1f] px-4 py-2 text-sm font-medium text-white hover:bg-[#1d1d1f]/90"
+          >
+            + New listing
+          </Link>
+        </div>
       </header>
 
       <div className="mt-8 grid grid-cols-3 gap-4">
