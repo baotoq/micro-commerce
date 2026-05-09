@@ -21,7 +21,9 @@ export function SidebarNav({ items }: { items: readonly Item[] }) {
             href={item.href}
             className={cn(
               "relative rounded-md px-3 py-2 text-sm text-[#1d1d1f] transition-colors",
-              active ? "bg-white font-semibold shadow-[inset_2px_0_0_#0066cc]" : "hover:bg-white/60",
+              active
+                ? "bg-white font-semibold shadow-[inset_2px_0_0_#0066cc]"
+                : "hover:bg-white/60",
             )}
           >
             {item.label}

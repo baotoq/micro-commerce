@@ -5,11 +5,11 @@ import { ConversionFunnel } from "@/components/seller/conversion-funnel";
 
 describe("ConversionFunnel", () => {
   const stages = [
-    { label: "Storefront views",  count: 12000 },
-    { label: "Product views",     count: 8400 },
-    { label: "Added to cart",     count: 2300 },
-    { label: "Checkout started",  count: 1100 },
-    { label: "Purchased",         count: 410 },
+    { label: "Storefront views", count: 12000 },
+    { label: "Product views", count: 8400 },
+    { label: "Added to cart", count: 2300 },
+    { label: "Checkout started", count: 1100 },
+    { label: "Purchased", count: 410 },
   ];
 
   it("renders one row per stage in order", () => {

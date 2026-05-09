@@ -5,7 +5,9 @@ export function ConversionFunnel({ stages }: { stages: FunnelStage[] }) {
   const top = stages[0]?.count || 1;
   return (
     <div className="rounded-lg border border-black/[0.06] bg-white p-5">
-      <h2 className="text-base font-semibold tracking-tight">Conversion funnel</h2>
+      <h2 className="text-base font-semibold tracking-tight">
+        Conversion funnel
+      </h2>
       <ul className="mt-4 space-y-3">
         {stages.map((s) => {
           const pct = (s.count / top) * 100;

@@ -12,11 +12,11 @@ export function FilterChips({
   active: FilterKey;
 }) {
   const chips: { key: FilterKey; label: string; count: number }[] = [
-    { key: "all",    label: "All",    count: counts.total },
+    { key: "all", label: "All", count: counts.total },
     { key: "active", label: "Active", count: counts.active },
-    { key: "low",    label: "Low",    count: counts.low },
-    { key: "out",    label: "Out",    count: counts.out },
-    { key: "draft",  label: "Drafts", count: counts.draft },
+    { key: "low", label: "Low", count: counts.low },
+    { key: "out", label: "Out", count: counts.out },
+    { key: "draft", label: "Drafts", count: counts.draft },
   ];
   return (
     <div className="flex flex-wrap gap-2">

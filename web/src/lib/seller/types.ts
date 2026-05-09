@@ -14,12 +14,12 @@ export type Listing = {
 export type OrderStatus = "paid" | "fulfilled" | "refunded" | "pending";
 
 export type Order = {
-  id: string;            // includes leading "#"
+  id: string; // includes leading "#"
   customer: string;
   items: number;
   total: number;
   status: OrderStatus;
-  placedAt: string;      // ISO date
+  placedAt: string; // ISO date
 };
 
 export type KpiFormat = "currency" | "number" | "percent";
@@ -28,7 +28,7 @@ export type KpiPoint = {
   label: string;
   value: number;
   format: KpiFormat;
-  delta?: number;        // signed percent vs prior period
+  delta?: number; // signed percent vs prior period
 };
 
 export type RevenuePoint = { day: string; amount: number };
@@ -37,7 +37,12 @@ export type SourceBreakdown = { name: string; visits: number; share: number };
 
 export type FunnelStage = { label: string; count: number };
 
-export type TopProduct = { sku: string; name: string; units: number; revenue: number };
+export type TopProduct = {
+  sku: string;
+  name: string;
+  units: number;
+  revenue: number;
+};
 
 export type TodayItem = { label: string; count?: number };
 

@@ -13,7 +13,12 @@ export function SourcesDonut({ sources }: { sources: SourceBreakdown[] }) {
     <div className="rounded-lg border border-black/[0.06] bg-white p-5">
       <h2 className="text-base font-semibold tracking-tight">Sources</h2>
       <div className="mt-4 flex items-center gap-6">
-        <svg viewBox="-80 -80 160 160" className="h-40 w-40">
+        <svg
+          viewBox="-80 -80 160 160"
+          className="h-40 w-40"
+          role="img"
+          aria-label="Traffic sources breakdown"
+        >
           {sources.map((s, i) => {
             const len = s.share * c;
             const dasharray = `${len} ${c - len}`;
@@ -44,12 +49,16 @@ export function SourcesDonut({ sources }: { sources: SourceBreakdown[] }) {
                 style={{ background: PALETTE[i % PALETTE.length] }}
               />
               <span className="min-w-[8rem]">{s.name}</span>
-              <span className="tabular-nums text-[#1d1d1f]/70">{s.visits.toLocaleString("en-US")}</span>
+              <span className="tabular-nums text-[#1d1d1f]/70">
+                {s.visits.toLocaleString("en-US")}
+              </span>
             </li>
           ))}
         </ul>
       </div>
-      <p className="mt-3 text-xs text-[#1d1d1f]/60">{total.toLocaleString("en-US")} visits</p>
+      <p className="mt-3 text-xs text-[#1d1d1f]/60">
+        {total.toLocaleString("en-US")} visits
+      </p>
     </div>
   );
 }

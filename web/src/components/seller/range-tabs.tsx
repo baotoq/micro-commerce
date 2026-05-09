@@ -4,7 +4,13 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export function RangeTabs({ options, defaultValue }: { options: string[]; defaultValue: string }) {
+export function RangeTabs({
+  options,
+  defaultValue,
+}: {
+  options: string[];
+  defaultValue: string;
+}) {
   const [active, setActive] = useState(defaultValue);
   return (
     <div className="inline-flex rounded-full border border-black/[0.08] p-0.5">

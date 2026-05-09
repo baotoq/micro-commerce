@@ -20,8 +20,21 @@ export function RevenueChart({ points }: { points: RevenuePoint[] }) {
           const x = (i + 0.25) * (w / points.length);
           return (
             <g key={p.day}>
-              <rect x={x} y={h - barH} width={barW} height={barH} rx={3} fill="#1d1d1f" />
-              <text x={x + barW / 2} y={h + 18} textAnchor="middle" fontSize="11" fill="#1d1d1f99">
+              <rect
+                x={x}
+                y={h - barH}
+                width={barW}
+                height={barH}
+                rx={3}
+                fill="#1d1d1f"
+              />
+              <text
+                x={x + barW / 2}
+                y={h + 18}
+                textAnchor="middle"
+                fontSize="11"
+                fill="#1d1d1f99"
+              >
                 {p.day}
               </text>
             </g>

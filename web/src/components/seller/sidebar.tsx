@@ -1,11 +1,12 @@
 // web/src/components/seller/sidebar.tsx
-import { BRAND } from "@/lib/seller/data";
+
 import { SidebarNav } from "@/components/seller/sidebar-nav";
+import { BRAND } from "@/lib/seller/data";
 
 const NAV = [
-  { label: "Overview",  href: "/seller" },
-  { label: "Orders",    href: "/seller/orders" },
-  { label: "Listings",  href: "/seller/listings" },
+  { label: "Overview", href: "/seller" },
+  { label: "Orders", href: "/seller/orders" },
+  { label: "Listings", href: "/seller/listings" },
   { label: "Analytics", href: "/seller/analytics" },
   { label: "Customers", href: "/seller/customers" },
 ] as const;

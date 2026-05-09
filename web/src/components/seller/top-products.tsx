@@ -1,6 +1,7 @@
 // web/src/components/seller/top-products.tsx
-import type { TopProduct } from "@/lib/seller/types";
+
 import { money } from "@/lib/money";
+import type { TopProduct } from "@/lib/seller/types";
 
 export function TopProducts({ products }: { products: TopProduct[] }) {
   const max = Math.max(...products.map((p) => p.revenue), 1);
@@ -19,7 +20,11 @@ export function TopProducts({ products }: { products: TopProduct[] }) {
                 </span>
               </div>
               <div className="mt-1 h-1.5 w-full rounded-full bg-black/[0.05]">
-                <div className="h-1.5 rounded-full bg-[#1d1d1f]" style={{ width: `${pct}%` }} aria-hidden />
+                <div
+                  className="h-1.5 rounded-full bg-[#1d1d1f]"
+                  style={{ width: `${pct}%` }}
+                  aria-hidden
+                />
               </div>
             </li>
           );

@@ -2,7 +2,6 @@
 import { describe, expect, it } from "vitest";
 import {
   BRAND,
-  TODAY,
   getAnalyticsKpis,
   getFunnel,
   getListingCounts,
@@ -14,6 +13,7 @@ import {
   getSources,
   getTodayItems,
   getTopProducts,
+  TODAY,
 } from "@/lib/seller/data";
 
 describe("seller mock data", () => {
@@ -53,7 +53,8 @@ describe("seller mock data", () => {
 
   it("returns 7 revenue points", () => {
     expect(getRevenueSeries()).toHaveLength(7);
-    for (const p of getRevenueSeries()) expect(p.amount).toBeGreaterThanOrEqual(0);
+    for (const p of getRevenueSeries())
+      expect(p.amount).toBeGreaterThanOrEqual(0);
   });
 
   it("returns 5 recent orders with unique ids", () => {

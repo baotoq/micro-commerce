@@ -2,14 +2,22 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Seller analytics", () => {
-  test("renders KPIs, range tabs, sources, top products, and conversion funnel", async ({ page }) => {
+  test("renders KPIs, range tabs, sources, top products, and conversion funnel", async ({
+    page,
+  }) => {
     await page.goto("/seller/analytics");
 
-    await expect(page.getByRole("heading", { name: "Analytics", exact: true })).toBeVisible();
-    await expect(page.getByText("Apr 1 – Apr 30 · vs Mar 1 – Mar 30")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Analytics", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Apr 1 – Apr 30 · vs Mar 1 – Mar 30"),
+    ).toBeVisible();
 
     for (const r of ["7d", "30d", "90d", "Year"]) {
-      await expect(page.getByRole("button", { name: r, exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: r, exact: true }),
+      ).toBeVisible();
     }
     await expect(page.getByRole("button", { name: /Export/ })).toBeVisible();
 
@@ -26,19 +34,29 @@ test.describe("Seller analytics", () => {
     await expect(page.getByText("2,304")).toBeVisible();
 
     // Top products
-    await expect(page.getByRole("heading", { name: "Top products" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Top products" }),
+    ).toBeVisible();
     await expect(page.getByText("Persimmon vase")).toBeVisible();
 
     // Conversion funnel
-    await expect(page.getByRole("heading", { name: "Conversion funnel" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Conversion funnel" }),
+    ).toBeVisible();
     for (const stage of [
-      "Storefront views", "Product views", "Added to cart", "Checkout started", "Purchased",
+      "Storefront views",
+      "Product views",
+      "Added to cart",
+      "Checkout started",
+      "Purchased",
     ]) {
       await expect(page.getByText(stage, { exact: true })).toBeVisible();
     }
   });
 
-  test("the Analytics nav item links here from the seller dashboard", async ({ page }) => {
+  test("the Analytics nav item links here from the seller dashboard", async ({
+    page,
+  }) => {
     await page.goto("/seller");
     await page.getByRole("link", { name: "Analytics", exact: true }).click();
     await expect(page).toHaveURL("/seller/analytics");

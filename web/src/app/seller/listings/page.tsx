@@ -1,7 +1,8 @@
 // web/src/app/seller/listings/page.tsx
-import { Button } from "@/components/ui/button";
+
 import { FilterChips } from "@/components/seller/filter-chips";
 import { ListingsTable } from "@/components/seller/listings-table";
+import { Button } from "@/components/ui/button";
 import { getListingCounts, getListings } from "@/lib/seller/data";
 
 export default function ListingsPage() {
@@ -17,7 +18,9 @@ export default function ListingsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-full">Import CSV</Button>
+          <Button variant="outline" className="rounded-full">
+            Import CSV
+          </Button>
           <Button className="rounded-full">New listing</Button>
         </div>
       </header>

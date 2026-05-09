@@ -1,7 +1,15 @@
 // web/src/components/seller/recent-orders.tsx
-import type { Order } from "@/lib/seller/types";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { money } from "@/lib/money";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import type { Order } from "@/lib/seller/types";
 
 export function RecentOrders({ orders }: { orders: Order[] }) {
   return (

@@ -1,14 +1,22 @@
 // web/src/components/seller/listings-table.tsx
-import type { Listing } from "@/lib/seller/types";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { money } from "@/lib/money";
+import type { Listing } from "@/lib/seller/types";
 import { cn } from "@/lib/utils";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const STATUS_STYLES: Record<Listing["status"], string> = {
   active: "bg-emerald-50 text-emerald-700",
-  low:    "bg-amber-50 text-amber-800",
-  out:    "bg-rose-50 text-rose-700",
-  draft:  "bg-zinc-100 text-zinc-700",
+  low: "bg-amber-50 text-amber-800",
+  out: "bg-rose-50 text-rose-700",
+  draft: "bg-zinc-100 text-zinc-700",
 };
 
 export function ListingsTable({
@@ -43,7 +51,12 @@ export function ListingsTable({
               <TableCell className="text-right">{money(l.price)}</TableCell>
               <TableCell className="text-right">{l.inventory}</TableCell>
               <TableCell>
-                <span className={cn("rounded-full px-2 py-0.5 text-xs capitalize", STATUS_STYLES[l.status])}>
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-xs capitalize",
+                    STATUS_STYLES[l.status],
+                  )}
+                >
                   {l.status}
                 </span>
               </TableCell>
