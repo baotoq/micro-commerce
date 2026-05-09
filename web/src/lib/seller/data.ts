@@ -574,7 +574,7 @@ export function getSetupSteps(): SetupStep[] {
 }
 
 const LAUNCH_CHECKLIST: LaunchTask[] = [
-  { label: "Claim shop name", subject: "mira-studio · 2 days ago", done: true },
+  { label: "Claim shop name", subject: "alex-studio · 2 days ago", done: true },
   { label: "Add payout method", subject: "Bank · ending 4421", done: true },
   {
     label: "Publish first listing",
