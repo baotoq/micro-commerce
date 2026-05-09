@@ -247,3 +247,4 @@ _Pvt_Extensions
 .omc/
 test-results/
 .playwright-mcp/
+qa/evidence/
