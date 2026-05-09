@@ -31,7 +31,7 @@ test.describe("Seller listings", () => {
     }
 
     // Some named products
-    await expect(page.getByText("Persimmon vase")).toBeVisible();
+    await expect(page.getByRole("cell", { name: "Persimmon vase", exact: true })).toBeVisible();
 
     // Pagination footer
     await expect(page.getByText("9 of 42 shown")).toBeVisible();
