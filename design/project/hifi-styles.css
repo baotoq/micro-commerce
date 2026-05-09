@@ -1,0 +1,444 @@
+/* Hi-fi styles — Micro Commerce Design System aligned
+ *
+ * Class names + CSS variable names from the original warm-indie build are
+ * preserved so existing JSX renders unchanged, but every value is remapped to
+ * the Micro Commerce Design System tokens (Action Blue accent, SF Pro stack,
+ * white/parchment surfaces, single product shadow, no gradients).
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+  /* ── Surfaces ── DS canvas + parchment + near-blacks ─────────── */
+  --paper:   #ffffff;          /* canvas */
+  --paper-2: #f5f5f7;          /* canvas-parchment */
+  --paper-3: #ececef;          /* slightly deeper parchment */
+  --card:    #ffffff;
+  --line:    #e0e0e0;          /* DS hairline */
+  --line-2:  #d2d2d7;          /* DS chip-translucent */
+
+  /* DS dark tile near-blacks (for direct use) */
+  --tile-1: #272729;
+  --tile-2: #2a2a2c;
+  --tile-3: #252527;
+
+  /* ── Ink ── DS ink ladder ────────────────────────────────────── */
+  --ink:    #1d1d1f;           /* DS --ink */
+  --ink-2:  #333333;           /* ink-muted-80 */
+  --ink-3:  #6e6e73;           /* secondary copy */
+  --ink-4:  #86868b;           /* tertiary */
+  --ink-5:  #c7c7cc;           /* disabled */
+
+  /* ── Accents ── ONE Action Blue. All "brand accent" vars alias. */
+  --primary:        #0066cc;
+  --primary-focus:  #0071e3;
+  --primary-on-dark:#2997ff;
+
+  --terra:   var(--primary);   /* legacy alias */
+  --terra-2: #e8f1fc;          /* tinted blue surface */
+  --forest:  var(--primary);
+  --forest-2:#e8f1fc;
+  --sun:     var(--ink-3);     /* status accents collapse to neutral ink */
+  --sun-2:   var(--paper-2);
+  --plum:    var(--ink);
+  --plum-2:  var(--paper-2);
+  --berry:   var(--ink);
+  --rose:    var(--paper-2);
+
+  /* ── Status ── DS doesn't surface these; keep muted, ink-leaning */
+  --good:   #1d1d1f;
+  --warn:   #6e6e73;
+  --bad:    #b91c1c;
+
+  /* ── Type ── SF Pro stack (system-ui first, Inter fallback) ─── */
+  --serif: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", sans-serif;
+  --sans:  "SF Pro Text",    system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", sans-serif;
+  --mono:  ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ── Radii ── DS scale (0 / 8 / 11 / 18 / 9999) ──────────────── */
+  --r-sm:   8px;
+  --r-md:   11px;
+  --r-lg:   18px;
+  --r-xl:   18px;
+  --r-pill: 9999px;
+
+  /* ── Elevation ── DS has exactly ONE shadow (product imagery) */
+  --shadow-1: none;
+  --shadow-2: none;
+  --shadow-3: 3px 5px 30px 0 rgba(0,0,0,0.22);
+  --shadow-product: 3px 5px 30px 0 rgba(0,0,0,0.22);
+
+  /* Motion */
+  --press-scale: 0.95;
+  --press-duration: 120ms;
+  --press-ease: cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+/* ─── Base ──────────────────────────────────────────────────────── */
+.hf {
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  font-size: 13px;
+  line-height: 1.45;
+  letter-spacing: -0.01em;     /* DS "Apple-tight" cadence */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  width: 100%; height: 100%;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.hf *, .hf *::before, .hf *::after { box-sizing: border-box; }
+.hf img { display: block; max-width: 100%; }
+.hf button, .hf input, .hf select, .hf textarea { font-family: inherit; }
+
+/* ─── Typography scale ─────────────────────────────────────────── */
+.hf-display   { font-family: var(--serif); font-style: normal; font-weight: 600; letter-spacing: -0.022em; line-height: 1.05; }
+.hf-display i { font-style: italic; font-weight: 600; }
+.hf-display-2 { font-family: var(--serif); font-style: normal; font-weight: 600; letter-spacing: -0.018em; line-height: 1.07; }
+.hf-h1 { font-family: var(--serif); font-size: 32px; font-weight: 600; letter-spacing: -0.022px; line-height: 1.05; }
+.hf-h2 { font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: -0.022px; line-height: 1.1; }
+.hf-h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.374px; line-height: 1.24; }
+.hf-h4 { font-size: 14px; font-weight: 600; letter-spacing: -0.224px; line-height: 1.29; }
+.hf-body  { font-size: 13px; line-height: 1.5; color: var(--ink-2); letter-spacing: -0.01em; }
+.hf-small { font-size: 12px; color: var(--ink-3); letter-spacing: -0.005em; }
+.hf-tiny  { font-size: 11px; letter-spacing: 0; color: var(--ink-3); }
+.hf-eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+.hf-num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+.hf-mono { font-family: var(--mono); font-size: 11.5px; }
+
+.hf-muted { color: var(--ink-3); }
+.hf-soft  { color: var(--ink-4); }
+.hf-strong { color: var(--ink); }
+
+/* ─── Buttons ── DS pill primary in Action Blue, scale(.95) press */
+.hf-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 32px; padding: 0 14px;
+  border-radius: var(--r-pill);
+  font-size: 12.5px; font-weight: 400; letter-spacing: -0.01em;
+  border: 1px solid transparent; background: transparent;
+  color: var(--ink); cursor: default; white-space: nowrap;
+  transition: transform var(--press-duration) var(--press-ease), background .15s, border-color .15s;
+}
+.hf-btn:active { transform: scale(var(--press-scale)); }
+.hf-btn-primary  { background: var(--primary); color: #fff; }
+.hf-btn-primary:hover { background: var(--primary-focus); }
+.hf-btn-accent   { background: var(--primary); color: #fff; }
+.hf-btn-accent:hover { background: var(--primary-focus); }
+.hf-btn-secondary{ background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+.hf-btn-secondary:hover { background: var(--terra-2); }
+.hf-btn-ghost    { background: transparent; color: var(--ink-2); }
+.hf-btn-ghost:hover { background: var(--paper-2); }
+.hf-btn-outline  { border-color: var(--line); color: var(--ink); }
+.hf-btn-outline:hover { background: var(--paper-2); }
+.hf-btn-sm { height: 28px; padding: 0 12px; font-size: 11.5px; }
+.hf-btn-lg { height: 40px; padding: 0 22px; font-size: 13.5px; }
+.hf-btn-block { display: flex; width: 100%; }
+
+.hf-icon-btn {
+  width: 30px; height: 30px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm);
+  color: var(--ink-2); background: transparent;
+  border: 1px solid transparent; cursor: default;
+  transition: transform var(--press-duration) var(--press-ease), background .15s;
+}
+.hf-icon-btn:hover  { background: var(--paper-2); }
+.hf-icon-btn:active { transform: scale(var(--press-scale)); }
+
+/* ─── Chips / tags ─────────────────────────────────────────────── */
+.hf-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px;
+  border: 1px solid var(--line); border-radius: var(--r-pill);
+  font-size: 11.5px; color: var(--ink-2); background: var(--paper);
+  white-space: nowrap;
+}
+.hf-chip-on     { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.hf-chip-soft   { background: var(--paper-2); border-color: transparent; }
+.hf-chip-accent { background: var(--terra-2); color: var(--primary); border-color: transparent; }
+.hf-chip-good   { background: var(--paper-2); color: var(--ink); border-color: transparent; }
+.hf-chip-warn   { background: var(--paper-2); color: var(--ink-2); border-color: transparent; }
+.hf-chip-bad    { background: #fbe8e8; color: var(--bad); border-color: transparent; }
+
+.hf-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.hf-dot-good { background: var(--ink); }
+.hf-dot-warn { background: var(--ink-3); }
+.hf-dot-bad  { background: var(--bad); }
+.hf-dot-mute { background: var(--ink-4); }
+
+/* ─── Cards / containers ── hairline, no shadow ───────────────── */
+.hf-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.hf-card-flat {
+  background: var(--paper-2);
+  border-radius: var(--r-lg);
+}
+.hf-divider   { height: 1px; background: var(--line); border: 0; }
+.hf-divider-v { width: 1px; background: var(--line); align-self: stretch; }
+
+/* ─── Inputs ──────────────────────────────────────────────────── */
+.hf-input {
+  height: 34px; width: 100%;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: var(--r-sm);
+  font-size: 13px; color: var(--ink);
+  outline: none;
+  letter-spacing: -0.01em;
+}
+.hf-input::placeholder { color: var(--ink-4); }
+.hf-input-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+.hf-input-lg { height: 44px; padding: 0 14px; font-size: 14px; border-radius: var(--r-pill); }
+.hf-input:focus { border-color: var(--primary-focus); box-shadow: 0 0 0 3px rgba(0,113,227,0.18); }
+.hf-textarea { padding: 10px 12px; height: auto; resize: none; line-height: 1.45; }
+
+.hf-label { font-size: 11.5px; font-weight: 600; color: var(--ink-2); margin-bottom: 6px; display: block; letter-spacing: -0.01em; }
+.hf-help  { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+
+/* ─── Image placeholders ──────────────────────────────────────────
+ * DS forbids CSS gradients. Each tone is a flat tinted surface that
+ * stands in for "product render shot on a tinted backdrop". Subtle
+ * inner soft mask is fine for legibility — no gradient color stops.
+ * ────────────────────────────────────────────────────────────── */
+.hf-img {
+  position: relative; overflow: hidden; border-radius: var(--r-md);
+  background: var(--paper-2);
+}
+.hf-img-terra  { background-color: #eadfd4; }
+.hf-img-sage   { background-color: #d6dcd1; }
+.hf-img-clay   { background-color: #e2d5c8; }
+.hf-img-bone   { background-color: #ece6da; }
+.hf-img-shadow { background-color: var(--tile-1); }
+.hf-img-rose   { background-color: #e3d4ce; }
+.hf-img-moss   { background-color: #c8cdbf; }
+.hf-img-cobalt { background-color: #c8d0dc; }
+.hf-img-cream  { background-color: #efe8d9; }
+.hf-img-rust   { background-color: #ddc8b8; }
+.hf-img-violet { background-color: #d6cfd9; }
+.hf-img-coal   { background-color: var(--tile-3); }
+
+/* Optional: opt-in product shadow when an image is presented as a
+ * product render resting on a surface (DS: the only shadow allowed) */
+.hf-img-product { box-shadow: var(--shadow-product); }
+
+/* ─── Avatars ─────────────────────────────────────────────────── */
+.hf-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--paper-2); display: inline-flex;
+  align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--ink-2);
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+}
+.hf-avatar-sm { width: 22px; height: 22px; font-size: 9.5px; }
+.hf-avatar-lg { width: 40px; height: 40px; font-size: 14px; }
+.hf-avatar-xl { width: 56px; height: 56px; font-size: 18px; }
+
+/* ─── Layout helpers ──────────────────────────────────────────── */
+.hf-flex { display: flex; }
+.hf-col  { display: flex; flex-direction: column; }
+.hf-row  { display: flex; flex-direction: row; }
+.hf-grid { display: grid; }
+.hf-center  { display: flex; align-items: center; justify-content: center; }
+.hf-between { display: flex; align-items: center; justify-content: space-between; }
+.hf-items-center { align-items: center; }
+.hf-items-start  { align-items: flex-start; }
+.hf-items-end    { align-items: flex-end; }
+.hf-grow { flex: 1; min-width: 0; }
+.hf-shrink-0 { flex-shrink: 0; }
+.hf-relative { position: relative; }
+.hf-abs { position: absolute; }
+.hf-overflow-hidden { overflow: hidden; }
+
+.hf-gap-1 { gap: 4px; }
+.hf-gap-2 { gap: 8px; }
+.hf-gap-3 { gap: 12px; }
+.hf-gap-4 { gap: 16px; }
+.hf-gap-5 { gap: 20px; }
+.hf-gap-6 { gap: 24px; }
+.hf-gap-8 { gap: 32px; }
+
+.hf-p-2 { padding: 8px; } .hf-p-3 { padding: 12px; } .hf-p-4 { padding: 16px; }
+.hf-p-5 { padding: 20px; } .hf-p-6 { padding: 24px; } .hf-p-8 { padding: 32px; }
+.hf-px-3 { padding-left: 12px; padding-right: 12px; }
+.hf-px-4 { padding-left: 16px; padding-right: 16px; }
+.hf-px-5 { padding-left: 20px; padding-right: 20px; }
+.hf-px-6 { padding-left: 24px; padding-right: 24px; }
+.hf-py-2 { padding-top: 8px; padding-bottom: 8px; }
+.hf-py-3 { padding-top: 12px; padding-bottom: 12px; }
+.hf-py-4 { padding-top: 16px; padding-bottom: 16px; }
+.hf-py-5 { padding-top: 20px; padding-bottom: 20px; }
+.hf-py-6 { padding-top: 24px; padding-bottom: 24px; }
+
+/* ─── Phone & desktop chrome ─────────────────────────────────── */
+.hf-phone {
+  width: 100%; height: 100%;
+  background: var(--paper);
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.hf-phone-status {
+  height: 36px; padding: 0 22px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; font-weight: 600;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.hf-phone-status-icons { display: flex; gap: 4px; align-items: center; }
+.hf-phone-home {
+  height: 22px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.hf-phone-home::after {
+  content: ''; width: 130px; height: 4px; background: var(--ink); border-radius: 2px; opacity: 0.85;
+}
+.hf-phone-body {
+  flex: 1; min-height: 0;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+
+.hf-tabbar {
+  height: 56px; flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid var(--line);
+  display: flex; align-items: stretch;
+  padding: 4px 8px;
+}
+.hf-tabitem {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; color: var(--ink-4); font-size: 10px; font-weight: 400;
+}
+.hf-tabitem-on { color: var(--primary); }
+
+.hf-desktop {
+  width: 100%; height: 100%;
+  background: var(--paper);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.hf-topbar {
+  height: 56px; flex-shrink: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 20px;
+}
+.hf-sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--paper);
+  border-right: 1px solid var(--line);
+  padding: 16px 12px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.hf-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  font-size: 12.5px; font-weight: 400;
+  color: var(--ink-2);
+  letter-spacing: -0.01em;
+}
+.hf-nav-item-on { background: var(--primary); color: #fff; }
+.hf-nav-item:hover:not(.hf-nav-item-on) { background: var(--paper-2); }
+
+.hf-logo {
+  font-family: var(--serif); font-style: normal; font-weight: 600;
+  font-size: 22px; letter-spacing: -0.022em;
+  color: var(--ink);
+}
+
+/* ─── Charts (svg helpers) ──────────────────────────────────────── */
+.hf-spark { display: block; width: 100%; height: 100%; }
+.hf-bar { background: var(--ink); border-radius: 2px 2px 0 0; }
+
+/* ─── Toggle / switch ─────────────────────────────────────────── */
+.hf-switch {
+  width: 30px; height: 18px; border-radius: 999px;
+  background: var(--ink-5); position: relative; cursor: default;
+  transition: background .15s;
+}
+.hf-switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: white; transition: transform .15s;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.hf-switch-on { background: var(--primary); }
+.hf-switch-on::after { transform: translateX(12px); }
+
+/* ─── Breadcrumb ─────────────────────────────────────────────── */
+.hf-crumb { display: flex; gap: 6px; align-items: center; font-size: 11.5px; color: var(--ink-3); }
+.hf-crumb a { color: var(--ink-3); }
+.hf-crumb a:hover { color: var(--primary); }
+.hf-crumb-sep { color: var(--ink-4); }
+
+/* ─── Annotation pill ───────────────────────────────────────── */
+.hf-anno {
+  position: absolute; z-index: 50;
+  font-family: var(--sans); font-size: 11px; font-weight: 400;
+  color: var(--primary);
+  pointer-events: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.hf-anno-text {
+  background: white; border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 3px 8px; border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+body.hf-no-anno .hf-anno { display: none !important; }
+
+body.hf-density-compact .hf-card { border-radius: 8px; }
+
+/* ─── Misc ────────────────────────────────────────────────────── */
+.hf-progress {
+  height: 4px; border-radius: 2px; background: var(--paper-2); overflow: hidden;
+}
+.hf-progress > i { display: block; height: 100%; background: var(--primary); }
+
+.hf-rating { display: inline-flex; gap: 1px; color: var(--ink-3); font-size: 11px; }
+
+.hf-section-title {
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+
+.hf-tabs { display: flex; gap: 18px; border-bottom: 1px solid var(--line); }
+.hf-tab {
+  padding: 10px 0; font-size: 12.5px; color: var(--ink-3);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.hf-tab-on { color: var(--ink); border-bottom-color: var(--ink); }
+
+.hf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hf-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.hf-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+.hf-bullet { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-4); display: inline-block; }
+
+/* DS forbids decorative gradient backgrounds. Stripes → flat parchment. */
+.hf-stripes { background: var(--paper-2); }
+
+/* Table */
+.hf-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.hf-table th { text-align: left; padding: 10px 12px; font-weight: 600; color: var(--ink-3); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
+.hf-table td { padding: 12px; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: middle; }
+.hf-table tr:last-child td { border-bottom: 0; }
+
+/* Star icon */
+.hf-star { display: inline-block; width: 11px; height: 11px; background: currentColor; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+
+/* Scroll hide */
+.hf-no-scrollbar { scrollbar-width: none; }
+.hf-no-scrollbar::-webkit-scrollbar { display: none; }

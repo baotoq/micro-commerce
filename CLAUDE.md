@@ -30,8 +30,9 @@ There is no test runner configured. There is no separate typecheck script — `n
 - Use `next/image` and `next/font` (already wired for Geist Sans/Mono in `src/app/layout.tsx`) — don't load fonts or images via raw `<img>`/`<link>`.
 
 ## Testing
-use TDD to write tests before implementing features. This ensures that your code is robust and meets the requirements.
+MUST use TDD to write tests before implementing features. This ensures that your code is robust and meets the requirements.
 DO NOT add tax maintenance tests
 
 ## UI Design
 `DESIGN.md` contains the UI design specifications for the project. Please refer to it before implementing any features to ensure that your code aligns with the overall design vision.
+`designs/` contains the design files for the project. Please refer to them for any visual assets or design elements that you may need to use in your implementation.

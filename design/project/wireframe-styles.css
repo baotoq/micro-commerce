@@ -1,0 +1,287 @@
+/* Sketchy wireframe aesthetic — handwritten but readable */
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Patrick+Hand&family=Kalam:wght@400;700&display=swap');
+
+:root {
+  --ink: #1a1a1a;
+  --ink-2: #3a3a3a;
+  --ink-soft: #6a6a6a;
+  --ink-faint: #b3b3b3;
+  --paper: #fdfcf8;
+  --paper-2: #f4f1e8;
+  --accent: #0066cc; /* Action Blue */
+  --hand: 'Patrick Hand', 'Kalam', cursive;
+  --hand-display: 'Caveat', 'Patrick Hand', cursive;
+}
+
+.wf {
+  font-family: var(--hand);
+  color: var(--ink);
+  background: var(--paper);
+  font-size: 15px;
+  line-height: 1.3;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.wf *, .wf *::before, .wf *::after { box-sizing: border-box; }
+
+.wf-display { font-family: var(--hand-display); font-weight: 600; letter-spacing: -0.01em; }
+
+/* Hand-drawn box */
+.wf-box {
+  border: 1.6px solid var(--ink);
+  border-radius: 4px 6px 5px 7px / 6px 5px 7px 4px;
+  background: transparent;
+}
+.wf-box-2 { border-width: 1.2px; border-color: var(--ink-2); }
+.wf-box-soft { border-color: var(--ink-soft); }
+.wf-box-dashed { border-style: dashed; }
+.wf-box-dotted { border-style: dotted; }
+
+/* Filled boxes — gentle paper darken for image regions */
+.wf-img {
+  background: var(--paper-2);
+  border: 1.4px solid var(--ink-soft);
+  border-radius: 4px 6px 5px 7px / 6px 5px 7px 4px;
+  position: relative;
+  overflow: hidden;
+}
+.wf-img::before, .wf-img::after {
+  content: ''; position: absolute; inset: 0;
+  pointer-events: none;
+}
+/* Diagonal cross to mark image placeholders */
+.wf-img::before {
+  background:
+    linear-gradient(to top right, transparent calc(50% - 0.7px), var(--ink-faint) calc(50% - 0.7px), var(--ink-faint) calc(50% + 0.7px), transparent calc(50% + 0.7px)),
+    linear-gradient(to bottom right, transparent calc(50% - 0.7px), var(--ink-faint) calc(50% - 0.7px), var(--ink-faint) calc(50% + 0.7px), transparent calc(50% + 0.7px));
+  opacity: 0.55;
+}
+.wf-img-plain::before { display: none; }
+.wf-img-dark { background: #2a2a2c; border-color: #444; color: #ddd; }
+.wf-img-dark::before { opacity: 0.18; }
+
+/* Lines (for placeholder text) */
+.wf-line {
+  display: block;
+  height: 8px;
+  background: var(--ink-2);
+  border-radius: 4px;
+  margin: 6px 0;
+  opacity: 0.85;
+}
+.wf-line.thin { height: 5px; opacity: 0.55; }
+.wf-line.thick { height: 11px; }
+.wf-line.faint { opacity: 0.4; }
+
+/* Buttons */
+.wf-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 16px;
+  border: 1.6px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  font-family: var(--hand);
+  font-size: 15px;
+  color: var(--ink);
+  cursor: default;
+}
+.wf-btn-fill { background: var(--ink); color: var(--paper); }
+.wf-btn-accent {
+  background: var(--accent); color: white; border-color: var(--accent);
+}
+.wf-btn-ghost { background: transparent; }
+.wf-btn-pill { border-radius: 999px; padding: 6px 14px; }
+.wf-btn-sm { padding: 4px 10px; font-size: 13px; }
+.wf-btn-lg { padding: 12px 22px; font-size: 17px; }
+.wf-btn-block { display: flex; width: 100%; }
+
+/* Chip */
+.wf-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px;
+  border: 1.2px solid var(--ink-soft);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-2);
+  background: transparent;
+}
+.wf-chip-on { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.wf-chip-accent { border-color: var(--accent); color: var(--accent); }
+
+/* Annotation pill — small floating callout */
+.wf-anno {
+  position: absolute;
+  font-family: var(--hand-display);
+  font-size: 14px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.wf-anno svg { flex: 0 0 auto; }
+.wf-anno-text {
+  background: #fff7d6;
+  border: 1px solid #e3c87e;
+  padding: 3px 8px;
+  border-radius: 3px;
+  color: #5a4a2a;
+  transform: rotate(-1deg);
+}
+body.wf-no-anno .wf-anno { display: none !important; }
+
+/* Accent toggle — when off, paint accent things ink instead */
+body.wf-no-accent .wf-btn-accent {
+  background: var(--ink); border-color: var(--ink); color: var(--paper);
+}
+body.wf-no-accent .wf-chip-accent { color: var(--ink-2); border-color: var(--ink-soft); }
+body.wf-no-accent .wf-anno { color: var(--ink); }
+body.wf-no-accent .wf-accent-text { color: var(--ink) !important; }
+body.wf-no-accent .wf-accent-bg { background: var(--ink) !important; color: var(--paper) !important; }
+body.wf-no-accent .wf-accent-border { border-color: var(--ink) !important; }
+.wf-accent-text { color: var(--accent); }
+.wf-accent-bg { background: var(--accent); color: white; }
+.wf-accent-border { border-color: var(--accent); }
+
+/* Wobble — slight rotation per element for hand-drawn feel */
+body.wf-wobble .wf-box,
+body.wf-wobble .wf-img,
+body.wf-wobble .wf-btn {
+  /* tiny per-element rotation via CSS variable; default 0 */
+  transform: rotate(var(--wobble, 0deg));
+}
+
+/* Phone & desktop frames */
+.wf-phone {
+  width: 100%; height: 100%;
+  background: var(--paper);
+  position: relative;
+  display: flex; flex-direction: column;
+}
+.wf-phone-status {
+  height: 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px;
+  font-family: var(--hand);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.wf-phone-home {
+  height: 22px;
+  display: flex; align-items: center; justify-content: center;
+}
+.wf-phone-home::after {
+  content: ''; display: block; width: 110px; height: 4px;
+  background: var(--ink); border-radius: 2px;
+}
+
+.wf-desktop-chrome {
+  height: 30px;
+  border-bottom: 1.2px solid var(--ink-faint);
+  display: flex; align-items: center;
+  padding: 0 14px;
+  gap: 8px;
+  background: var(--paper-2);
+}
+.wf-desktop-chrome .wf-tl {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1.2px solid var(--ink-soft);
+}
+.wf-url {
+  flex: 1;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--paper);
+  border: 1px solid var(--ink-faint);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--ink-soft);
+  font-family: var(--hand);
+}
+
+/* Sketchy underline */
+.wf-sk-underline { 
+  border-bottom: 1.6px solid var(--ink); 
+  padding-bottom: 1px; 
+  display: inline;
+}
+
+/* Helpers */
+.wf-row { display: flex; }
+.wf-col { display: flex; flex-direction: column; }
+.wf-grid { display: grid; }
+.wf-grow { flex: 1; }
+.wf-center { display: flex; align-items: center; justify-content: center; }
+.wf-between { display: flex; align-items: center; justify-content: space-between; }
+.wf-gap-2 { gap: 8px; }
+.wf-gap-3 { gap: 12px; }
+.wf-gap-4 { gap: 16px; }
+.wf-gap-6 { gap: 24px; }
+.wf-p-2 { padding: 8px; }
+.wf-p-3 { padding: 12px; }
+.wf-p-4 { padding: 16px; }
+.wf-p-6 { padding: 24px; }
+.wf-mt-2 { margin-top: 8px; }
+.wf-mt-3 { margin-top: 12px; }
+.wf-mt-4 { margin-top: 16px; }
+.wf-mt-6 { margin-top: 24px; }
+
+.wf-h1 { font-family: var(--hand-display); font-weight: 700; font-size: 28px; line-height: 1.05; letter-spacing: -0.01em; }
+.wf-h2 { font-family: var(--hand-display); font-weight: 600; font-size: 22px; line-height: 1.1; }
+.wf-h3 { font-family: var(--hand-display); font-weight: 600; font-size: 18px; line-height: 1.15; }
+.wf-eyebrow { 
+  font-family: var(--hand);
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; 
+  color: var(--ink-soft);
+}
+.wf-muted { color: var(--ink-soft); }
+.wf-tiny { font-size: 12px; }
+.wf-small { font-size: 13px; }
+
+/* Dark surface variant — for nav bars, dark hero tiles */
+.wf-dark {
+  background: #2a2a2c;
+  color: #f0f0f0;
+}
+.wf-dark .wf-line { background: #ccc; opacity: 0.7; }
+.wf-dark .wf-line.thin, .wf-dark .wf-line.faint { background: #999; }
+.wf-dark .wf-box { border-color: #ccc; }
+.wf-dark .wf-muted { color: #999; }
+.wf-dark .wf-btn { color: #f0f0f0; border-color: #ccc; background: transparent; }
+
+/* Stat tile content */
+.wf-stat-num {
+  font-family: var(--hand-display);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Scribble fill — for subtle accents */
+.wf-scribble {
+  background-image: repeating-linear-gradient(
+    -55deg,
+    transparent 0, transparent 4px,
+    var(--ink-faint) 4px, var(--ink-faint) 5px
+  );
+}
+
+/* Mini chart paths */
+.wf-chart {
+  width: 100%; height: 100%;
+  display: block;
+}
+
+/* Scroll indicator (vertical phone hint) */
+.wf-fade-bottom {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--paper));
+  pointer-events: none;
+}
