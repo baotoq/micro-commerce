@@ -1,4 +1,9 @@
-const NAV_LINKS = ["Discover", "Shops", "Journal", "For makers"] as const;
+const NAV_LINKS: { label: string; href: string }[] = [
+  { label: "Discover", href: "/discover" },
+  { label: "Shops", href: "/shops" },
+  { label: "Journal", href: "/journal" },
+  { label: "For makers", href: "/sell" },
+];
 
 export function MarketingTop({ active = "" }: { active?: string }) {
   return (
@@ -10,32 +15,29 @@ export function MarketingTop({ active = "" }: { active?: string }) {
         micro.
       </span>
       <div className="flex" style={{ gap: 28 }}>
-        {NAV_LINKS.map((l) => (
-          <button
-            key={l}
-            type="button"
+        {NAV_LINKS.map(({ label, href }) => (
+          <a
+            key={label}
+            href={href}
             style={{
               fontSize: 12.5,
-              color: l === active ? "#1d1d1f" : "#1d1d1f99",
+              color: label === active ? "#1d1d1f" : "#1d1d1f99",
               fontWeight: 500,
-              background: "none",
-              border: "none",
-              padding: 0,
-              cursor: "pointer",
+              textDecoration: "none",
             }}
           >
-            {l}
-          </button>
+            {label}
+          </a>
         ))}
       </div>
       <div className="flex-1" />
-      <button
-        type="button"
+      <a
+        href="/signin"
         className="rounded-full border border-black/20 px-4 py-1.5 text-sm font-medium text-[#1d1d1f] hover:bg-black/5"
-        style={{ background: "transparent", cursor: "pointer" }}
+        style={{ textDecoration: "none" }}
       >
         Sign in
-      </button>
+      </a>
       <button
         type="button"
         className="rounded-full bg-[#0066cc] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#0055aa]"

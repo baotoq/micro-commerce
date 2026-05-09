@@ -36,9 +36,7 @@ test.describe("Seller apply", () => {
     await expect(
       page.getByText("mira-studio.micro.shop", { exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByText("is available", { exact: true }),
-    ).toBeVisible();
+    await expect(page.getByText("is available", { exact: true })).toBeVisible();
     for (const cat of [
       "Ceramics",
       "Bakery",
