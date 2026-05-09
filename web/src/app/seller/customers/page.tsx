@@ -1,9 +1,12 @@
-// web/src/app/seller/customers/page.tsx
+import { SellerTopbar } from "@/components/seller/seller-topbar";
+
 export default function CustomersPage() {
   return (
-    <section className="p-10">
-      <h1 className="text-2xl font-semibold tracking-tight">Customers</h1>
-      <p className="mt-2 text-sm text-[#1d1d1f]/70">Coming soon</p>
-    </section>
+    <div className="flex flex-col min-h-screen">
+      <SellerTopbar title="Customers" subtitle="All time" />
+      <section className="p-10">
+        <p className="text-sm text-[#1d1d1f]/70">Coming soon</p>
+      </section>
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 // web/src/app/seller/states/empty-orders/page.tsx
 import { Inbox } from "lucide-react";
+import Link from "next/link";
 import { CopyShopLink } from "@/components/seller/copy-shop-link";
 
 const DOMAIN = "alex-studio.micro.shop";
@@ -68,14 +69,17 @@ export default function EmptyOrdersPage() {
 
             {/* Helper cards */}
             <div className="grid grid-cols-2 gap-2 text-left">
-              <div className="rounded-xl border border-black/[0.08] bg-[#f5f5f7] p-3.5">
+              <Link
+                href="/seller/listings/new"
+                className="rounded-xl border border-black/[0.08] bg-[#f5f5f7] p-3.5 block hover:bg-[#ebebed] transition-colors"
+              >
                 <p className="mb-1 text-[13px] font-semibold text-[#1d1d1f]">
                   Add 2 more listings
                 </p>
                 <p className="text-xs text-[#1d1d1f]/60">
                   Shops with 5+ items get found 3× more.
                 </p>
-              </div>
+              </Link>
               <div className="rounded-xl border border-black/[0.08] bg-[#f5f5f7] p-3.5">
                 <p className="mb-1 text-[13px] font-semibold text-[#1d1d1f]">
                   Share your link

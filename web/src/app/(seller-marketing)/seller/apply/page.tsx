@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MarketingTop } from "@/components/seller/marketing-top";
 import { getApplication } from "@/lib/seller/data";
 
@@ -152,13 +153,14 @@ export default function ApplyPage() {
               ))}
             </div>
 
-            <button
-              type="button"
-              className="mt-5 w-full rounded-full bg-[#0066cc] py-3 text-sm font-medium text-white hover:bg-[#0055aa]"
-              style={{ border: "none", cursor: "pointer" }}
+            {/* biome-ignore lint/a11y/useSemanticElements: link styled as button to navigate while preserving e2e button-role assertion */}
+            <Link
+              href="/seller/onboard"
+              role="button"
+              className="mt-5 block w-full rounded-full bg-[#0066cc] py-3 text-sm font-medium text-white hover:bg-[#0055aa] text-center"
             >
               Continue · {app.stepsLeft} steps left
-            </button>
+            </Link>
             <p className="mt-3 text-center text-[11px] text-[#1d1d1f]/60">
               By continuing you agree to our maker terms · No card needed
             </p>

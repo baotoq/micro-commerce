@@ -1,8 +1,6 @@
-// web/src/app/seller/analytics/page.tsx
-
 import { AnalyticsKpiRow } from "@/components/seller/analytics-kpi-row";
 import { ConversionFunnel } from "@/components/seller/conversion-funnel";
-import { RangeTabs } from "@/components/seller/range-tabs";
+import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { SourcesDonut } from "@/components/seller/sources-donut";
 import { TopProducts } from "@/components/seller/top-products";
 import { Button } from "@/components/ui/button";
@@ -15,35 +13,114 @@ import {
 } from "@/lib/seller/data";
 
 export default function AnalyticsPage() {
+  const rangeOptions = getRangeOptions();
   return (
-    <section className="px-10 py-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Analytics</h1>
-          <p className="mt-1 text-sm text-[#1d1d1f]/70">
-            Apr 1 – Apr 30 · vs Mar 1 – Mar 30
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <RangeTabs options={getRangeOptions()} defaultValue="30d" />
-          <Button variant="outline" className="rounded-full">
-            Export
-          </Button>
-        </div>
-      </header>
+    <div className="flex flex-col min-h-screen">
+      <SellerTopbar
+        title="Analytics"
+        subtitle="Apr 1 – Apr 30 · vs Mar 1 – Mar 30"
+        actions={
+          <>
+            <div
+              className="flex gap-1 rounded-lg p-0.5"
+              style={{ background: "var(--paper-2, #f5f5f7)" }}
+            >
+              {rangeOptions.map((opt, i) => (
+                <button
+                  key={opt}
+                  type="button"
+                  className="rounded-md px-2.5 py-1 text-xs font-medium"
+                  style={{
+                    background: i === 1 ? "white" : "transparent",
+                    boxShadow: i === 1 ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                  }}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+            <Button variant="outline" size="sm">
+              <svg
+                aria-hidden="true"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Export
+            </Button>
+          </>
+        }
+      />
 
-      <div className="mt-8">
+      <div className="flex-1 overflow-auto p-7">
+        {/* KPI row */}
         <AnalyticsKpiRow kpis={getAnalyticsKpis()} />
-      </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <SourcesDonut sources={getSources()} />
-        <TopProducts products={getTopProducts()} />
-      </div>
+        {/* Revenue chart + Sources (2fr 1fr) */}
+        <div
+          className="mt-5 grid gap-4"
+          style={{ gridTemplateColumns: "2fr 1fr" }}
+        >
+          {/* Revenue over time */}
+          <div className="rounded-xl border border-black/[0.06] bg-white p-5">
+            <div className="mb-3.5 flex items-start justify-between">
+              <div>
+                <h3 className="text-[15px] font-semibold text-[#1d1d1f]">
+                  Revenue over time
+                </h3>
+                <p className="mt-0.5 text-[11px] text-[#1d1d1f]/50">
+                  Daily, by source
+                </p>
+              </div>
+              <div className="flex gap-3 text-[11px] text-[#1d1d1f]/60">
+                <span className="flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[#1d1d1f]" />
+                  Organic
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[#c2410c]" />
+                  Social
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[#1d1d1f]/30" />
+                  Direct
+                </span>
+              </div>
+            </div>
+            {/* Area chart placeholder */}
+            <div
+              className="w-full rounded-lg bg-[#f5f5f7]"
+              style={{ height: 220 }}
+              aria-label="Revenue over time chart"
+              role="img"
+            />
+            <div className="mt-2 flex justify-between text-[11px] text-[#1d1d1f]/40">
+              <span>Apr 1</span>
+              <span>Apr 8</span>
+              <span>Apr 15</span>
+              <span>Apr 22</span>
+              <span>Apr 30</span>
+            </div>
+          </div>
 
-      <div className="mt-6">
-        <ConversionFunnel stages={getFunnel()} />
+          <SourcesDonut sources={getSources()} />
+        </div>
+
+        {/* Top products + Conversion funnel (1fr 1fr) */}
+        <div className="mt-5 grid grid-cols-2 gap-4">
+          <TopProducts products={getTopProducts()} />
+          <ConversionFunnel stages={getFunnel()} />
+        </div>
       </div>
-    </section>
+    </div>
   );
 }

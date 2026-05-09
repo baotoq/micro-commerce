@@ -123,7 +123,7 @@ export default function ListingsBulkPage() {
             </Button>
           ))}
           <Link
-            href="/seller/listings/MC-VS-001/edit"
+            href="/seller/listings/published"
             className={cn(
               buttonVariants({ size: "sm" }),
               "bg-white text-[#1d1d1f] hover:bg-white/90",
@@ -292,7 +292,7 @@ export default function ListingsBulkPage() {
           </div>
 
           <Link
-            href="/seller/listings/MC-VS-001/edit"
+            href="/seller/listings/published"
             className={cn(buttonVariants(), "h-[42px] w-full rounded-lg")}
           >
             Apply to 3 items

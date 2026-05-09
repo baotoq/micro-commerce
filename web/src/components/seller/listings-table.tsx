@@ -89,8 +89,8 @@ export function ListingsTable({
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Stock</TableHead>
             <TableHead className="text-right">Price</TableHead>
-            <TableHead className="text-right">Views · 7d</TableHead>
-            <TableHead className="text-right">Sales · 7d</TableHead>
+            <TableHead className="text-right">Views · 30d</TableHead>
+            <TableHead className="text-right">Sales · 30d</TableHead>
             <TableHead className="w-8" aria-label="Open" />
           </TableRow>
         </TableHeader>

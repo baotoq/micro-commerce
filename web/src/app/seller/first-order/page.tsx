@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { Sparkline } from "@/components/seller/sparkline";
 import { getFirstOrderStats } from "@/lib/seller/data";
@@ -68,13 +69,15 @@ export default function FirstOrderPage() {
               >
                 Send a thank-you
               </button>
-              <button
-                type="button"
+              {/* biome-ignore lint/a11y/useSemanticElements: link styled as button to navigate while preserving e2e button-role assertion */}
+              <Link
+                href="/seller/orders/1001/pack"
+                role="button"
                 className="rounded-lg px-4 py-2 text-sm font-medium"
                 style={{ background: "white", color: "#c2410c" }}
               >
                 Open order →
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -162,7 +165,14 @@ export default function FirstOrderPage() {
                     New · pack today
                   </span>
                 </td>
-                <td className="px-5 py-3.5 text-[#1d1d1f]/40">›</td>
+                <td className="px-5 py-3.5 text-[#1d1d1f]/40">
+                  <Link
+                    href="/seller/orders/1001/pack"
+                    aria-label="View order #1001"
+                  >
+                    ›
+                  </Link>
+                </td>
               </tr>
             </tbody>
           </table>

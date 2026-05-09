@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getOrderDetail, getShippingOptions } from "@/lib/seller/data";
 
@@ -15,9 +16,9 @@ export default async function PackShipPage(props: {
       {/* Topbar breadcrumb */}
       <div className="flex items-center justify-between border-b border-black/[0.06] px-6 py-3.5">
         <div className="flex items-center gap-3">
-          <a href="/seller/orders" className="text-sm text-[#1d1d1f]/50">
+          <Link href="/seller/orders" className="text-sm text-[#1d1d1f]/50">
             Orders /
-          </a>
+          </Link>
           <span className="font-mono text-sm text-[#1d1d1f]/70">
             {order.id}
           </span>
@@ -31,7 +32,7 @@ export default async function PackShipPage(props: {
             type="button"
             className="rounded-lg border border-black/[0.12] px-3 py-1.5 text-xs font-medium text-[#1d1d1f]"
           >
-            💬 Message Sasha
+            Message Sasha
           </button>
           <button
             type="button"

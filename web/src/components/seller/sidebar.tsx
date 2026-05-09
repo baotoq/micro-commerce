@@ -9,8 +9,6 @@ const NAV = [
   { label: "Listings", href: "/seller/listings" },
   { label: "Analytics", href: "/seller/analytics" },
   { label: "Customers", href: "/seller/customers" },
-  { label: "Discounts", href: "/seller/discounts" },
-  { label: "Storefront", href: "/seller/storefront" },
 ] as const;
 
 export function SellerSidebar() {

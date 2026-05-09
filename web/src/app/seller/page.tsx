@@ -1,5 +1,6 @@
 // web/src/app/seller/page.tsx
 
+import Link from "next/link";
 import { KpiCard } from "@/components/seller/kpi-card";
 import { RecentOrders } from "@/components/seller/recent-orders";
 import { RevenueChart } from "@/components/seller/revenue-chart";
@@ -26,6 +27,12 @@ export default function SellerOverview() {
             Good morning, {BRAND.owner}
           </h1>
         </div>
+        <Link
+          href="/seller/listings/new"
+          className="rounded-full bg-[#1d1d1f] px-4 py-2 text-sm font-medium text-white hover:bg-[#1d1d1f]/90"
+        >
+          + New listing
+        </Link>
       </header>
 
       <div className="mt-8 grid grid-cols-3 gap-4">

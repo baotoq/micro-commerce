@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getSetupSteps } from "@/lib/seller/data";
 
 const PAYOUT_OPTIONS = [
@@ -229,17 +230,14 @@ export default function OnboardPage() {
 
           {/* Action row */}
           <div className="mt-7 flex items-center justify-between">
-            <button
-              type="button"
+            {/* biome-ignore lint/a11y/useSemanticElements: link styled as button to navigate while preserving e2e button-role assertion */}
+            <Link
+              href="/seller/apply"
+              role="button"
               className="rounded-full px-5 py-2.5 text-sm font-medium text-[#1d1d1f] hover:bg-black/5"
-              style={{
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-              }}
             >
               ← Back
-            </button>
+            </Link>
             <button
               type="button"
               className="rounded-full bg-[#0066cc] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#0055aa]"

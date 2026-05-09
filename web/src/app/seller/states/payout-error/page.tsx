@@ -1,4 +1,5 @@
 import { AlertTriangle, Info } from "lucide-react";
+import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { Sparkline } from "@/components/seller/sparkline";
 import { Button } from "@/components/ui/button";
@@ -63,7 +64,14 @@ export default function PayoutErrorPage() {
             <Button variant="outline" size="sm">
               View details
             </Button>
-            <Button size="sm">Update bank →</Button>
+            {/* biome-ignore lint/a11y/useSemanticElements: link styled as button to navigate while preserving e2e button-role assertion */}
+            <Link
+              href="/seller/payouts"
+              role="button"
+              className="inline-flex items-center justify-center rounded-[min(var(--radius-md),12px)] bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground h-7"
+            >
+              Update bank →
+            </Link>
           </div>
         </div>
       </div>

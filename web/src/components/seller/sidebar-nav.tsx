@@ -6,8 +6,6 @@ import {
   type LucideIcon,
   Package,
   ShoppingBag,
-  Store,
-  Tag,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -22,8 +20,6 @@ const ICONS: Record<string, LucideIcon> = {
   "/seller/listings": Package,
   "/seller/analytics": ChartColumn,
   "/seller/customers": Users,
-  "/seller/discounts": Tag,
-  "/seller/storefront": Store,
 };
 
 export function SidebarNav({ items }: { items: readonly Item[] }) {
@@ -59,6 +55,7 @@ export function SidebarNav({ items }: { items: readonly Item[] }) {
             <span className="flex-1">{item.label}</span>
             {item.badge != null && (
               <span
+                aria-hidden="true"
                 className={cn(
                   "inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums",
                   active ? "bg-white/20 text-white" : "bg-[#cf5a2c] text-white",

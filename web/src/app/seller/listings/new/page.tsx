@@ -11,10 +11,7 @@ export default function NewListingPage() {
         actions={
           <>
             <Button variant="outline">Save draft</Button>
-            <Link
-              href="/seller/listings/published"
-              className={buttonVariants()}
-            >
+            <Link href="/seller/listings" className={buttonVariants()}>
               &#10003; Publish
             </Link>
           </>

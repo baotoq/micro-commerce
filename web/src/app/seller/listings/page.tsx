@@ -45,12 +45,12 @@ function Ico({
 
 export default function ListingsPage() {
   const counts = getListingCounts();
-  const active = counts.active + counts.low + counts.out;
+  const published = counts.active + counts.low + counts.out;
   return (
     <section>
       <SellerTopbar
         title="Listings"
-        subtitle={`${counts.total} products · ${active} active`}
+        subtitle={`${counts.total} listings · ${published} published`}
         actions={
           <>
             <Button variant="outline" className="gap-1.5 rounded-full">

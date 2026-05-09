@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { Button } from "@/components/ui/button";
 import { getDayOneStats, getLaunchChecklist } from "@/lib/seller/data";
@@ -15,7 +16,12 @@ export default function SellerWelcomePage() {
         actions={
           <>
             <Button variant="outline">Share shop</Button>
-            <Button>+ New listing</Button>
+            <Link
+              href="/seller/listings/new"
+              className="inline-flex items-center justify-center rounded-lg bg-primary px-2.5 h-8 text-sm font-medium text-primary-foreground gap-1.5"
+            >
+              + New listing
+            </Link>
           </>
         }
       />

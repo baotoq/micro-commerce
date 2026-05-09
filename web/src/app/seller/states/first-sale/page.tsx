@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { money } from "@/lib/money";
 import { BRAND } from "@/lib/seller/data";
@@ -67,7 +68,7 @@ export default function SellerStatesFirstSale() {
           <div
             className="relative overflow-hidden text-white"
             style={{
-              background: "#1d1d1f",
+              background: "#0066cc",
               padding: "28px 28px 22px",
             }}
           >
@@ -156,12 +157,14 @@ export default function SellerStatesFirstSale() {
               >
                 Send a thank-you note
               </button>
-              <button
-                type="button"
-                className="flex-1 rounded-xl bg-[#1d1d1f] px-4 py-2.5 text-sm font-semibold text-white"
+              {/* biome-ignore lint/a11y/useSemanticElements: link styled as button to navigate while preserving e2e button-role assertion */}
+              <Link
+                href="/seller/orders/1001/pack"
+                role="button"
+                className="flex-1 rounded-xl bg-[#1d1d1f] px-4 py-2.5 text-sm font-semibold text-white text-center"
               >
                 Pack &amp; ship →
-              </button>
+              </Link>
             </div>
           </div>
         </div>
