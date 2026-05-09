@@ -26,9 +26,7 @@ test.describe("Seller payouts", () => {
     await expect(page.getByText("$2,148.36", { exact: true })).toBeVisible();
 
     // activity ledger
-    await expect(
-      page.getByRole("heading", { name: "Activity" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Activity" })).toBeVisible();
     for (const c of ["All", "Payouts", "Sales", "Fees"]) {
       await expect(page.getByText(c, { exact: true })).toBeVisible();
     }
