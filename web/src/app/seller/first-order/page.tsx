@@ -1,0 +1,179 @@
+import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { Sparkline } from "@/components/seller/sparkline";
+import { getFirstOrderStats } from "@/lib/seller/data";
+
+export default function FirstOrderPage() {
+  const stats = getFirstOrderStats();
+
+  return (
+    <div className="flex min-h-screen flex-col overflow-hidden">
+      <SellerTopbar
+        title="Good afternoon, Mira"
+        subtitle="Day 4 · Friday, March 15"
+      />
+
+      <div className="flex-1 overflow-auto px-7 py-6">
+        {/* Celebration banner */}
+        <div
+          className="relative mb-5 overflow-hidden rounded-xl border-none p-[22px]"
+          style={{ background: "#0066cc", color: "white" }}
+        >
+          <div
+            className="absolute rounded-full"
+            style={{
+              right: -20,
+              top: -20,
+              width: 180,
+              height: 180,
+              background: "rgba(255,255,255,0.08)",
+            }}
+          />
+          <div
+            className="absolute rounded-full"
+            style={{
+              right: 80,
+              bottom: -40,
+              width: 110,
+              height: 110,
+              background: "rgba(255,255,255,0.06)",
+            }}
+          />
+          <div className="relative flex items-end justify-between">
+            <div>
+              <div
+                className="text-xs font-medium uppercase tracking-wide"
+                style={{ opacity: 0.85, letterSpacing: "0.08em" }}
+              >
+                ★ Your first order
+              </div>
+              <h2
+                className="mt-1.5 text-[36px] font-semibold leading-none"
+                style={{ color: "white" }}
+              >
+                Sasha bought a Persimmon vase.
+              </h2>
+              <p className="mt-1.5 text-sm" style={{ opacity: 0.9 }}>
+                $86.00 · placed 12 minutes ago · we held it for you to confirm.
+              </p>
+            </div>
+            <div className="flex gap-2 shrink-0 ml-6">
+              <button
+                type="button"
+                className="rounded-lg px-4 py-2 text-sm font-medium"
+                style={{
+                  background: "rgba(255,255,255,0.18)",
+                  color: "white",
+                  border: "1px solid rgba(255,255,255,0.3)",
+                }}
+              >
+                Send a thank-you
+              </button>
+              <button
+                type="button"
+                className="rounded-lg px-4 py-2 text-sm font-medium"
+                style={{ background: "white", color: "#c2410c" }}
+              >
+                Open order →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI stat row */}
+        <div className="mb-5 grid grid-cols-4 gap-3">
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="rounded-xl border border-black/[0.06] bg-white p-[18px]"
+            >
+              <div className="mb-1.5 text-xs text-[#1d1d1f]/50">{s.label}</div>
+              <div className="flex items-end justify-between">
+                <div className="text-[28px] font-semibold leading-none tabular-nums">
+                  {s.value}
+                </div>
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: "#22c55e" }}
+                >
+                  ↑ {s.delta}
+                </span>
+              </div>
+              <div className="mt-2.5 h-8">
+                <Sparkline
+                  points={s.spark}
+                  className="h-8 w-full text-[#0066cc]"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Orders table */}
+        <div className="overflow-hidden rounded-xl border border-black/[0.06] bg-white">
+          <div className="flex items-center justify-between border-b border-black/[0.06] px-5 py-3.5">
+            <h2 className="text-base font-semibold">Orders</h2>
+            <a
+              href="/seller/orders"
+              className="text-sm font-medium text-[#1d1d1f]/50"
+            >
+              All orders →
+            </a>
+          </div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-black/[0.06] text-left text-xs font-medium text-[#1d1d1f]/50">
+                <th className="px-5 py-3">Order</th>
+                <th className="px-5 py-3">Customer</th>
+                <th className="px-5 py-3">Items</th>
+                <th className="px-5 py-3">Total</th>
+                <th className="px-5 py-3">Status</th>
+                <th className="px-5 py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ background: "rgba(194,65,12,0.05)" }}>
+                <td className="px-5 py-3.5">
+                  <span className="flex items-center gap-2">
+                    <span
+                      className="inline-block h-2 w-2 rounded-full"
+                      style={{ background: "#c2410c" }}
+                    />
+                    <span className="font-mono font-semibold text-[#1d1d1f]">
+                      #1001
+                    </span>
+                  </span>
+                </td>
+                <td className="px-5 py-3.5">
+                  <span className="flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066cc]/10 text-xs font-semibold text-[#0066cc]">
+                      S
+                    </span>
+                    <span>Sasha L.</span>
+                  </span>
+                </td>
+                <td className="px-5 py-3.5 text-[#1d1d1f]/50">
+                  Persimmon vase
+                </td>
+                <td className="px-5 py-3.5 font-semibold tabular-nums text-[#1d1d1f]">
+                  $86.00
+                </td>
+                <td className="px-5 py-3.5">
+                  <span className="rounded-full bg-orange-100 px-2.5 py-1 text-[11px] font-semibold text-orange-700">
+                    New · pack today
+                  </span>
+                </td>
+                <td className="px-5 py-3.5 text-[#1d1d1f]/40">›</td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="flex items-center gap-2 border-t border-black/[0.06] px-5 py-3.5 text-xs text-[#1d1d1f]/50">
+            <span>ℹ</span>
+            <span>
+              Funds are released to your bank 2 days after the order ships.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
