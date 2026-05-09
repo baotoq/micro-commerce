@@ -1,0 +1,264 @@
+// web/src/app/seller/listings/[sku]/edit/page.tsx
+import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { getListingBySku } from "@/lib/seller/data";
+
+type Variant = {
+  label: string;
+  sku: string;
+  price: number;
+  stock: number;
+  status: "Active" | "Low" | "Out";
+  changed?: boolean;
+};
+
+const VARIANTS: Variant[] = [
+  {
+    label: "Small · Persimmon",
+    sku: "MS-VS-001-S",
+    price: 70,
+    stock: 6,
+    status: "Active",
+    changed: true,
+  },
+  {
+    label: "Medium · Persimmon",
+    sku: "MS-VS-001-M",
+    price: 95,
+    stock: 4,
+    status: "Active",
+    changed: true,
+  },
+  {
+    label: "Large · Persimmon",
+    sku: "MS-VS-001-L",
+    price: 136,
+    stock: 0,
+    status: "Out",
+  },
+  {
+    label: "Small · Cream",
+    sku: "MS-VS-001-SC",
+    price: 70,
+    stock: 8,
+    status: "Active",
+  },
+  {
+    label: "Medium · Cream",
+    sku: "MS-VS-001-MC",
+    price: 95,
+    stock: 5,
+    status: "Active",
+  },
+  {
+    label: "Large · Cream",
+    sku: "MS-VS-001-LC",
+    price: 136,
+    stock: 2,
+    status: "Low",
+  },
+];
+
+const PHOTO_TONES = ["#e2d5c8", "#efe8d9", "#cfc7c2", "#d8c0a8"];
+
+const STATUS_CHIP: Record<Variant["status"], string> = {
+  Active:
+    "rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700",
+  Low: "rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700",
+  Out: "rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-700",
+};
+
+const money = (n: number) => `$${n}`;
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+export default async function ListingEditPage({
+  params,
+}: {
+  params: Promise<{ sku: string }>;
+}) {
+  const { sku } = await params;
+  const listing = getListingBySku(sku);
+  if (!listing) notFound();
+
+  const slug = slugify(listing.name);
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-black/[0.06] bg-white px-7 py-4">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            aria-label="Back"
+            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#f5f5f7]"
+          >
+            ‹
+          </button>
+          <div>
+            <p className="text-[11px] uppercase tracking-wider text-[#1d1d1f]/60">
+              Listings · {listing.category}
+            </p>
+            <h1 className="mt-0.5 text-[24px] font-semibold leading-none tracking-tight text-[#1d1d1f]">
+              {listing.name}
+            </h1>
+          </div>
+          <span className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+            Unsaved changes
+          </span>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="ghost">Discard</Button>
+          <Button variant="outline">Save draft</Button>
+          <Button>Publish →</Button>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="flex-1 overflow-auto px-7 py-6">
+        <div
+          className="grid gap-3"
+          style={{ gridTemplateColumns: "1.5fr 1fr" }}
+        >
+          {/* Variant matrix */}
+          <div className="rounded-xl border border-black/[0.06] bg-white p-5">
+            <div className="mb-3.5 flex items-end justify-between">
+              <div>
+                <h2 className="text-[15px] font-semibold text-[#1d1d1f]">
+                  Variant matrix
+                </h2>
+                <p className="text-[11px] text-[#1d1d1f]/60">
+                  Size × Glaze · 6 combinations
+                </p>
+              </div>
+              <Button variant="outline" size="sm">
+                + Add option
+              </Button>
+            </div>
+
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-black/[0.06] text-left text-[11px] uppercase tracking-wider text-[#1d1d1f]/50">
+                  <th className="py-2.5 pr-2 font-medium">Variant</th>
+                  <th className="px-2 py-2.5 font-medium">SKU</th>
+                  <th className="px-2 py-2.5 font-medium">Price</th>
+                  <th className="px-2 py-2.5 font-medium">Stock</th>
+                  <th className="px-2 py-2.5 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {VARIANTS.map((v) => (
+                  <tr
+                    key={v.sku}
+                    className="border-b border-black/[0.04]"
+                    style={
+                      v.changed
+                        ? { background: "rgba(27,94,63,0.04)" }
+                        : undefined
+                    }
+                  >
+                    <td className="py-3 pr-2 font-medium text-[#1d1d1f]">
+                      <span className="inline-flex items-center gap-2">
+                        {v.changed && (
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                        )}
+                        {v.label}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 font-mono text-[12px] text-[#1d1d1f]/60">
+                      {v.sku}
+                    </td>
+                    <td
+                      className="px-2 py-3 tabular-nums"
+                      style={{
+                        fontWeight: v.changed ? 600 : 400,
+                        color: v.changed ? "#16a34a" : "#1d1d1f",
+                      }}
+                    >
+                      {money(v.price)}
+                    </td>
+                    <td
+                      className="px-2 py-3 tabular-nums"
+                      style={{
+                        color:
+                          v.stock === 0
+                            ? "#dc2626"
+                            : v.stock < 5
+                              ? "#b45309"
+                              : "#1d1d1f",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {v.stock}
+                    </td>
+                    <td className="px-2 py-3">
+                      <span className={STATUS_CHIP[v.status]}>{v.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="mt-3.5 text-[11px] text-[#1d1d1f]/60">
+              ● 2 variants updated · prices +10%
+            </p>
+          </div>
+
+          {/* Right column */}
+          <div className="flex flex-col gap-3">
+            <div className="rounded-xl border border-black/[0.06] bg-white p-[18px]">
+              <h3 className="mb-3 text-[13.5px] font-semibold text-[#1d1d1f]">
+                Photos · 4 of 8
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                {PHOTO_TONES.map((tone) => (
+                  <div
+                    key={tone}
+                    className="rounded-md"
+                    style={{ height: 88, background: tone }}
+                  />
+                ))}
+                <div
+                  className="flex items-center justify-center rounded-md border-[1.5px] border-dashed border-black/20 text-[#1d1d1f]/40"
+                  style={{ height: 88 }}
+                >
+                  +
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-black/[0.06] bg-white p-[18px]">
+              <h3 className="mb-2.5 text-[13.5px] font-semibold text-[#1d1d1f]">
+                Status
+              </h3>
+              <div className="flex gap-1 rounded-lg bg-[#f5f5f7] p-[3px]">
+                {["Active", "Draft", "Archived"].map((s, i) => (
+                  <Button
+                    key={s}
+                    variant="ghost"
+                    size="sm"
+                    className={
+                      i === 0
+                        ? "flex-1 bg-white text-[#1d1d1f] shadow-sm hover:bg-white"
+                        : "flex-1 bg-transparent text-[#1d1d1f] hover:bg-transparent"
+                    }
+                  >
+                    {s}
+                  </Button>
+                ))}
+              </div>
+              <p className="mt-2.5 text-[11px] text-[#1d1d1f]/60">
+                Visible at{" "}
+                <span className="font-mono text-[#1d1d1f]">/{slug}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
