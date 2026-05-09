@@ -509,6 +509,10 @@ export function getListings(): Listing[] {
   return LISTINGS;
 }
 
+export function getListingBySku(sku: string): Listing | null {
+  return LISTINGS.find((l) => l.sku === sku) ?? null;
+}
+
 export function getListingCounts(): ListingCounts {
   const c = { total: LISTINGS.length, active: 0, low: 0, out: 0, draft: 0 };
   for (const l of LISTINGS) c[l.status] += 1;

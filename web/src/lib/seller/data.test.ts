@@ -4,6 +4,7 @@ import {
   BRAND,
   getAnalyticsKpis,
   getFunnel,
+  getListingBySku,
   getListingCounts,
   getListings,
   getOverviewKpis,
@@ -100,5 +101,16 @@ describe("seller mock data", () => {
 
   it("today items are non-empty", () => {
     expect(getTodayItems().length).toBeGreaterThan(0);
+  });
+
+  it("getListingBySku returns the matching listing", () => {
+    const listing = getListingBySku("MC-VS-001");
+    expect(listing).not.toBeNull();
+    expect(listing?.sku).toBe("MC-VS-001");
+    expect(listing?.name).toBe("Persimmon vase");
+  });
+
+  it("getListingBySku returns null for an unknown sku", () => {
+    expect(getListingBySku("MC-NOPE-404")).toBeNull();
   });
 });
