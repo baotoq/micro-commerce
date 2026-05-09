@@ -18,7 +18,9 @@ test.describe("First month analytics", () => {
     await expect(page.getByRole("button", { name: /Export/ })).toBeVisible();
 
     for (const label of ["Revenue", "Orders", "Conversion", "Repeat buyers"]) {
-      await expect(page.getByText(label, { exact: true }).first()).toBeVisible();
+      await expect(
+        page.getByText(label, { exact: true }).first(),
+      ).toBeVisible();
     }
     await expect(page.getByText("$2,148.00").first()).toBeVisible();
 
@@ -30,9 +32,7 @@ test.describe("First month analytics", () => {
     }
     await expect(page.getByText(/Day 4 · first sale/)).toBeVisible();
 
-    await expect(
-      page.getByText("★ Insight", { exact: true }),
-    ).toBeVisible();
+    await expect(page.getByText("★ Insight", { exact: true })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: /Friday afternoons sell 2.3× more/ }),
     ).toBeVisible();
