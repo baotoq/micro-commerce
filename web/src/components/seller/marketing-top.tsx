@@ -11,7 +11,7 @@ export function MarketingTop({ active = "" }: { active?: string }) {
       className="flex items-center border-b border-black/[0.06] bg-white"
       style={{ padding: "14px 32px", gap: 28 }}
     >
-      <span className="font-semibold text-[#1d1d1f]" style={{ fontSize: 20 }}>
+      <span className="font-semibold text-foreground" style={{ fontSize: 20 }}>
         micro.
       </span>
       <div className="flex" style={{ gap: 28 }}>
@@ -21,8 +21,11 @@ export function MarketingTop({ active = "" }: { active?: string }) {
             href={href}
             style={{
               fontSize: 12.5,
-              color: label === active ? "#1d1d1f" : "#1d1d1f99",
-              fontWeight: 500,
+              color:
+                label === active
+                  ? "var(--foreground)"
+                  : "color-mix(in oklch, var(--foreground) 60%, transparent)",
+              fontWeight: 400,
               textDecoration: "none",
             }}
           >
@@ -33,7 +36,7 @@ export function MarketingTop({ active = "" }: { active?: string }) {
       <div className="flex-1" />
       <a
         href="/signin"
-        className="rounded-full border border-black/20 px-4 py-1.5 text-sm font-medium text-[#1d1d1f] hover:bg-black/5"
+        className="rounded-full border border-black/20 px-4 py-1.5 text-sm font-medium text-foreground hover:bg-black/5"
         style={{ textDecoration: "none" }}
       >
         Sign in

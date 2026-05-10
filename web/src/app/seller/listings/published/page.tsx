@@ -1,4 +1,5 @@
 // web/src/app/seller/listings/published/page.tsx
+import { Check } from "lucide-react";
 import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -59,20 +60,23 @@ export default function ListingsPublishedPage() {
         }
       />
 
-      <div className="border-b border-black/[0.06] bg-[#DDEDE1] px-7 py-3.5">
+      <div className="border-b border-black/[0.06] bg-good-soft px-7 py-3.5">
         <div className="flex items-center gap-3">
           <span
             aria-hidden="true"
-            className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-emerald-600 text-sm text-white"
+            className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-good text-white"
           >
-            ✓
+            <Check className="size-3.5" strokeWidth={2.5} />
           </span>
-          <span className="flex-1 text-[13.5px] font-semibold text-[#1d1d1f]">
+          <span className="flex-1 text-[13.5px] font-semibold text-foreground">
             Persimmon vase published · 2 variants updated, 1 went live.
           </span>
-          <Button variant="ghost" size="sm">
+          <Link
+            href="/"
+            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+          >
             View shop →
-          </Button>
+          </Link>
           <Button variant="ghost" size="sm">
             Undo
           </Button>
@@ -86,12 +90,12 @@ export default function ListingsPublishedPage() {
               key={k.label}
               className="rounded-xl border border-black/[0.06] bg-white p-[18px]"
             >
-              <div className="text-[11px] text-[#1d1d1f]/50">{k.label}</div>
+              <div className="text-[11px] text-foreground/50">{k.label}</div>
               <div className="mt-1.5 flex items-end gap-2">
-                <div className="text-[28px] font-semibold leading-none tabular-nums text-[#1d1d1f]">
+                <div className="text-[28px] font-semibold leading-none tabular-nums text-foreground">
                   {k.value}
                 </div>
-                <span className="mb-1 text-[11px] font-semibold text-emerald-600">
+                <span className="mb-1 text-[11px] font-semibold text-good">
                   ↑ {k.delta}
                 </span>
               </div>
@@ -101,16 +105,19 @@ export default function ListingsPublishedPage() {
 
         <div className="rounded-xl border border-black/[0.06] bg-white">
           <div className="flex items-center justify-between border-b border-black/[0.06] px-5 py-3.5">
-            <h2 className="text-[15px] font-semibold text-[#1d1d1f]">
+            <h2 className="text-[15px] font-semibold text-foreground">
               What just changed
             </h2>
-            <span className="text-[13px] font-medium text-[#1d1d1f]/70">
+            <Link
+              href="/seller/listings/activity"
+              className="text-[13px] font-medium text-primary"
+            >
               Activity log →
-            </span>
+            </Link>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-[11px] uppercase tracking-wider text-[#1d1d1f]/50">
+              <tr className="text-left text-[11px] uppercase tracking-wider text-foreground/50">
                 <th className="px-5 py-2.5 font-medium">When</th>
                 <th className="px-5 py-2.5 font-medium">Item</th>
                 <th className="px-5 py-2.5 font-medium">Change</th>
@@ -120,13 +127,13 @@ export default function ListingsPublishedPage() {
             <tbody>
               {ACTIVITY.map((r) => (
                 <tr key={r.item} className="border-t border-black/[0.04]">
-                  <td className="px-5 py-3 text-[11px] text-[#1d1d1f]/60">
+                  <td className="px-5 py-3 text-[11px] text-foreground/60">
                     {r.when}
                   </td>
-                  <td className="px-5 py-3 font-medium text-[#1d1d1f]">
+                  <td className="px-5 py-3 font-medium text-foreground">
                     {r.item}
                   </td>
-                  <td className="px-5 py-3 text-[#1d1d1f]/70">{r.change}</td>
+                  <td className="px-5 py-3 text-foreground/70">{r.change}</td>
                   <td className="px-5 py-3 text-[13px]">{r.by}</td>
                 </tr>
               ))}

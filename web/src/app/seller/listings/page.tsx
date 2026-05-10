@@ -45,28 +45,17 @@ function Ico({
 
 export default function ListingsPage() {
   const counts = getListingCounts();
-  const published = counts.active + counts.low + counts.out;
   return (
     <section>
       <SellerTopbar
         title="Listings"
-        subtitle={`${counts.total} listings · ${published} published`}
+        subtitle={`${counts.total} products · ${counts.active} active`}
         actions={
           <>
             <Button variant="outline" className="gap-1.5 rounded-full">
               <Ico name="upload" />
               Import CSV
             </Button>
-            <Link
-              href="/seller/listings/bulk"
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "gap-1.5 rounded-full",
-              )}
-            >
-              <Ico name="filter" />
-              Bulk edit
-            </Link>
             <Link
               href="/seller/listings/new"
               className={cn(buttonVariants(), "gap-1.5 rounded-full")}
@@ -84,13 +73,13 @@ export default function ListingsPage() {
           <div className="relative">
             <Ico
               name="search"
-              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[#1d1d1f]/50"
+              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-foreground/50"
             />
             <Input
               type="search"
               placeholder="Search products…"
               aria-label="Search products"
-              className="h-8 w-56 rounded-full bg-[#f5f5f7] pl-8 text-xs"
+              className="h-8 w-56 rounded-full bg-canvas-parchment pl-8 text-xs"
             />
           </div>
           <Button

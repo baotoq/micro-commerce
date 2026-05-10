@@ -22,9 +22,7 @@ test.describe("New listing editor", () => {
     await expect(
       page.getByText("Persimmon vase", { exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: /Price & stock/ }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Pricing/ })).toBeVisible();
     await expect(page.getByText("$86.00", { exact: true })).toBeVisible();
     await expect(page.getByText("12", { exact: true }).first()).toBeVisible();
     await expect(

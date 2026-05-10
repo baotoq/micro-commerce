@@ -14,7 +14,7 @@ import type { Listing } from "@/lib/seller/types";
 import { cn } from "@/lib/utils";
 
 const STATUS_STYLES: Record<Listing["status"], string> = {
-  active: "bg-emerald-50 text-emerald-700",
+  active: "bg-good/15 text-good",
   low: "bg-amber-50 text-amber-800",
   out: "bg-rose-50 text-rose-700",
   draft: "bg-zinc-100 text-zinc-700",
@@ -102,7 +102,7 @@ export function ListingsTable({
                 ? "font-medium text-rose-700"
                 : l.inventory < 5
                   ? "font-medium text-amber-700"
-                  : "text-[#1d1d1f]";
+                  : "text-foreground";
             return (
               <TableRow key={l.sku}>
                 <TableCell className="pr-0">
@@ -120,16 +120,18 @@ export function ListingsTable({
                       )}
                       aria-hidden
                     />
-                    <span className="font-medium text-[#1d1d1f]">{l.name}</span>
+                    <span className="font-medium text-foreground">
+                      {l.name}
+                    </span>
                   </div>
                 </TableCell>
-                <TableCell className="font-mono text-[#1d1d1f]/70">
+                <TableCell className="font-mono text-foreground/70">
                   {l.sku}
                 </TableCell>
                 <TableCell>
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium capitalize",
+                      "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium",
                       STATUS_STYLES[l.status],
                     )}
                   >
@@ -137,26 +139,26 @@ export function ListingsTable({
                       className="size-1.5 rounded-full bg-current opacity-60"
                       aria-hidden
                     />
-                    {l.status}
+                    {l.status.charAt(0).toUpperCase() + l.status.slice(1)}
                   </span>
                 </TableCell>
                 <TableCell className={cn("text-right tabular-nums", stockTone)}>
                   {l.inventory}
                 </TableCell>
-                <TableCell className="text-right font-medium tabular-nums text-[#1d1d1f]">
+                <TableCell className="text-right font-medium tabular-nums text-foreground">
                   {money(l.price)}
                 </TableCell>
-                <TableCell className="text-right tabular-nums text-[#1d1d1f]/70">
+                <TableCell className="text-right tabular-nums text-foreground/70">
                   {l.views7d.toLocaleString()}
                 </TableCell>
-                <TableCell className="text-right tabular-nums text-[#1d1d1f]/70">
+                <TableCell className="text-right tabular-nums text-foreground/70">
                   {sales}
                 </TableCell>
                 <TableCell className="text-right">
                   <Link
                     href={`/seller/listings/${l.sku}/edit`}
                     aria-label={`Edit ${l.name}`}
-                    className="inline-flex size-7 items-center justify-center rounded-md text-[#1d1d1f]/40 hover:bg-black/[0.04] hover:text-[#1d1d1f]"
+                    className="inline-flex size-7 items-center justify-center rounded-md text-foreground/40 hover:bg-black/[0.04] hover:text-foreground"
                   >
                     <ChevRight />
                   </Link>
@@ -167,14 +169,14 @@ export function ListingsTable({
         </TableBody>
       </Table>
       <div className="flex items-center justify-between border-t border-black/[0.06] bg-white px-4 py-3 text-xs">
-        <span className="text-[#1d1d1f]/60">
+        <span className="text-foreground/60">
           {visible} of {listings.length} shown
         </span>
         <div className="flex items-center gap-1">
           <button
             type="button"
             aria-label="Previous page"
-            className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-[#1d1d1f]/70 hover:bg-black/[0.03]"
+            className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-foreground/70 hover:bg-black/[0.03]"
           >
             <ChevLeft />
           </button>
@@ -187,8 +189,8 @@ export function ListingsTable({
               className={cn(
                 "inline-flex size-7 items-center justify-center rounded-md text-xs font-medium",
                 i === 0
-                  ? "bg-[#1d1d1f] text-white"
-                  : "text-[#1d1d1f]/70 hover:bg-black/[0.03]",
+                  ? "bg-foreground text-white"
+                  : "text-foreground/70 hover:bg-black/[0.03]",
               )}
             >
               {p}
@@ -197,7 +199,7 @@ export function ListingsTable({
           <button
             type="button"
             aria-label="Next page"
-            className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-[#1d1d1f]/70 hover:bg-black/[0.03]"
+            className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-foreground/70 hover:bg-black/[0.03]"
           >
             <ChevRight />
           </button>

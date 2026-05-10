@@ -25,7 +25,7 @@ function Checkbox({ checked }: { checked: boolean }) {
   return (
     <span
       className={`inline-flex size-3.5 items-center justify-center rounded-[3px] ${
-        checked ? "bg-[#1d1d1f]" : "border-[1.5px] border-black/25 bg-white"
+        checked ? "bg-foreground" : "border-[1.5px] border-black/25 bg-white"
       }`}
       aria-hidden="true"
     >
@@ -50,23 +50,23 @@ function Checkbox({ checked }: { checked: boolean }) {
 
 function Avatar({ name }: { name: string }) {
   return (
-    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#e8e3da] text-[10px] font-semibold text-[#1d1d1f]">
+    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#e8e3da] text-[10px] font-semibold text-foreground">
       {name.charAt(0)}
     </span>
   );
 }
 
 const CHIP_STYLES: Record<StatusTone, string> = {
-  warn: "bg-amber-50 text-amber-700",
-  mute: "bg-black/[0.04] text-[#1d1d1f]/70",
-  good: "bg-emerald-50 text-emerald-700",
+  warn: "bg-warn/15 text-warn",
+  mute: "bg-black/[0.04] text-muted-foreground",
+  good: "bg-good/15 text-good",
   bad: "bg-red-50 text-red-700",
 };
 
 const DOT_STYLES: Record<StatusTone, string> = {
-  warn: "bg-amber-500",
-  mute: "bg-[#1d1d1f]/30",
-  good: "bg-emerald-500",
+  warn: "bg-warn",
+  mute: "bg-foreground/30",
+  good: "bg-good",
   bad: "bg-red-500",
 };
 
@@ -88,25 +88,25 @@ export function OrdersInboxTable({
                 aria-hidden="true"
               />
             </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-[#1d1d1f]/40">
+            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
               Order
             </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-[#1d1d1f]/40">
+            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
               Customer
             </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-[#1d1d1f]/40">
+            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
               Items
             </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-[#1d1d1f]/40">
+            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
               Ship
             </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-[#1d1d1f]/40">
+            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
               Total
             </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-[#1d1d1f]/40">
+            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
               Status
             </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-[#1d1d1f]/40">
+            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
               Age
             </th>
             <th className="w-8 py-2.5 pr-7" aria-label="Open" />
@@ -120,10 +120,7 @@ export function OrdersInboxTable({
               <tr
                 key={row.id}
                 data-selected={selected ? "true" : undefined}
-                style={
-                  selected ? { background: "rgba(0,102,204,0.04)" } : undefined
-                }
-                className="border-b border-black/[0.04] last:border-0"
+                className={`border-b border-black/[0.04] last:border-0${selected ? " bg-primary/[0.04]" : ""}`}
               >
                 <td className="py-3 pl-7 pr-2">
                   <Checkbox checked={selected} />
@@ -133,16 +130,16 @@ export function OrdersInboxTable({
                     {row.starred && (
                       <Star
                         size={11}
-                        className="shrink-0 text-[#1d1d1f]"
+                        className="shrink-0 text-foreground"
                         fill="currentColor"
                         aria-hidden="true"
                       />
                     )}
                     <div>
-                      <div className="font-mono text-[13px] font-semibold text-[#1d1d1f]">
+                      <div className="font-mono text-[13px] font-semibold text-foreground">
                         {row.id}
                       </div>
-                      <div className="text-[11px] text-[#1d1d1f]/50">
+                      <div className="text-[11px] text-muted-foreground">
                         {row.placedLabel}
                       </div>
                     </div>
@@ -152,27 +149,27 @@ export function OrdersInboxTable({
                   <div className="flex items-center gap-2">
                     <Avatar name={row.customer} />
                     <div>
-                      <div className="text-[12.5px] font-semibold text-[#1d1d1f]">
+                      <div className="text-[12.5px] font-semibold text-foreground">
                         {row.customer}
                       </div>
-                      <div className="text-[11px] text-[#1d1d1f]/50">
+                      <div className="text-[11px] text-muted-foreground">
                         {row.city}
                       </div>
                     </div>
                   </div>
                 </td>
                 <td className="max-w-[220px] py-3 pr-4">
-                  <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[12px] text-[#1d1d1f]/70">
+                  <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[12px] text-muted-foreground">
                     {row.items}
                   </div>
-                  <div className="text-[11px] text-[#1d1d1f]/50">
+                  <div className="text-[11px] text-muted-foreground">
                     {row.qty} item{row.qty > 1 ? "s" : ""}
                   </div>
                 </td>
-                <td className="py-3 pr-4 text-[11px] text-[#1d1d1f]/50">
+                <td className="py-3 pr-4 text-[11px] text-muted-foreground">
                   {row.ship}
                 </td>
-                <td className="py-3 pr-4 tabular-nums text-[13px] font-semibold text-[#1d1d1f]">
+                <td className="py-3 pr-4 tabular-nums text-[13px] font-semibold text-foreground">
                   {money(row.total)}
                 </td>
                 <td className="py-3 pr-4">
@@ -186,10 +183,10 @@ export function OrdersInboxTable({
                     {row.status}
                   </span>
                 </td>
-                <td className="py-3 pr-4 tabular-nums text-[11px] text-[#1d1d1f]/50">
+                <td className="py-3 pr-4 tabular-nums text-[11px] text-muted-foreground">
                   {row.age}
                 </td>
-                <td className="py-3 pr-7 text-[#1d1d1f]/30">
+                <td className="py-3 pr-7 text-muted-foreground">
                   <Link href={href} aria-label={`Open order ${row.id}`}>
                     <ChevronRight />
                   </Link>

@@ -69,10 +69,8 @@ export default function FirstOrderPage() {
               >
                 Send a thank-you
               </button>
-              {/* biome-ignore lint/a11y/useSemanticElements: link styled as button to navigate while preserving e2e button-role assertion */}
               <Link
                 href="/seller/orders/1001/pack"
-                role="button"
                 className="rounded-lg px-4 py-2 text-sm font-medium"
                 style={{ background: "white", color: "#c2410c" }}
               >
@@ -89,15 +87,14 @@ export default function FirstOrderPage() {
               key={s.label}
               className="rounded-xl border border-black/[0.06] bg-white p-[18px]"
             >
-              <div className="mb-1.5 text-xs text-[#1d1d1f]/50">{s.label}</div>
+              <div className="mb-1.5 text-xs text-muted-foreground">
+                {s.label}
+              </div>
               <div className="flex items-end justify-between">
                 <div className="text-[28px] font-semibold leading-none tabular-nums">
                   {s.value}
                 </div>
-                <span
-                  className="text-xs font-semibold"
-                  style={{ color: "#22c55e" }}
-                >
+                <span className="text-xs font-semibold text-good">
                   ↑ {s.delta}
                 </span>
               </div>
@@ -117,14 +114,14 @@ export default function FirstOrderPage() {
             <h2 className="text-base font-semibold">Orders</h2>
             <a
               href="/seller/orders"
-              className="text-sm font-medium text-[#1d1d1f]/50"
+              className="text-sm font-medium text-muted-foreground"
             >
               All orders →
             </a>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-black/[0.06] text-left text-xs font-medium text-[#1d1d1f]/50">
+              <tr className="border-b border-black/[0.06] text-left text-xs font-medium text-muted-foreground">
                 <th className="px-5 py-3">Order</th>
                 <th className="px-5 py-3">Customer</th>
                 <th className="px-5 py-3">Items</th>
@@ -141,7 +138,7 @@ export default function FirstOrderPage() {
                       className="inline-block h-2 w-2 rounded-full"
                       style={{ background: "#c2410c" }}
                     />
-                    <span className="font-mono font-semibold text-[#1d1d1f]">
+                    <span className="font-mono font-semibold text-foreground">
                       #1001
                     </span>
                   </span>
@@ -154,18 +151,18 @@ export default function FirstOrderPage() {
                     <span>Sasha L.</span>
                   </span>
                 </td>
-                <td className="px-5 py-3.5 text-[#1d1d1f]/50">
+                <td className="px-5 py-3.5 text-muted-foreground">
                   Persimmon vase
                 </td>
-                <td className="px-5 py-3.5 font-semibold tabular-nums text-[#1d1d1f]">
+                <td className="px-5 py-3.5 font-semibold tabular-nums text-foreground">
                   $86.00
                 </td>
                 <td className="px-5 py-3.5">
-                  <span className="rounded-full bg-orange-100 px-2.5 py-1 text-[11px] font-semibold text-orange-700">
+                  <span className="rounded-full bg-warn/15 px-2.5 py-1 text-[11px] font-semibold text-warn">
                     New · pack today
                   </span>
                 </td>
-                <td className="px-5 py-3.5 text-[#1d1d1f]/40">
+                <td className="px-5 py-3.5 text-muted-foreground">
                   <Link
                     href="/seller/orders/1001/pack"
                     aria-label="View order #1001"
@@ -176,7 +173,7 @@ export default function FirstOrderPage() {
               </tr>
             </tbody>
           </table>
-          <div className="flex items-center gap-2 border-t border-black/[0.06] px-5 py-3.5 text-xs text-[#1d1d1f]/50">
+          <div className="flex items-center gap-2 border-t border-black/[0.06] px-5 py-3.5 text-xs text-muted-foreground">
             <span>ℹ</span>
             <span>
               Funds are released to your bank 2 days after the order ships.

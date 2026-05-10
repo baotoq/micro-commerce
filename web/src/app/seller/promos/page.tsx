@@ -18,7 +18,7 @@ export default function PromosPage() {
         actions={
           <button
             type="button"
-            className="flex items-center gap-1.5 rounded-xl bg-[#1d1d1f] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d1d1f]/90"
+            className="flex items-center gap-1.5 rounded-pill bg-foreground px-4 py-2 text-sm font-semibold text-white hover:bg-foreground/90"
           >
             <svg
               width="12"

@@ -4,7 +4,7 @@ export function EmailPreview({ draft }: { draft: MarketingDraft }) {
   return (
     <>
       <div className="mb-[14px] flex items-center justify-between">
-        <span className="text-[13px] font-semibold tracking-tight text-[#1d1d1f]">
+        <span className="text-[13px] font-semibold tracking-tight text-foreground">
           Preview
         </span>
         <div
@@ -13,7 +13,7 @@ export function EmailPreview({ draft }: { draft: MarketingDraft }) {
         >
           <span
             className="flex size-7 items-center justify-center rounded-full"
-            style={{ background: "#1d1d1f", color: "white" }}
+            style={{ background: "var(--foreground)", color: "white" }}
             role="img"
             aria-label="Light mode"
           >
@@ -74,27 +74,27 @@ export function EmailPreview({ draft }: { draft: MarketingDraft }) {
         >
           <div className="flex items-center gap-2">
             <div
-              className="flex shrink-0 items-center justify-center rounded-full bg-[#1d1d1f] text-[11px] font-semibold text-white"
+              className="flex shrink-0 items-center justify-center rounded-full bg-foreground text-[11px] font-semibold text-white"
               style={{ width: 28, height: 28 }}
             >
               {draft.senderInitial}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[12.5px] font-semibold text-[#1d1d1f]">
+              <div className="text-[12.5px] font-semibold text-foreground">
                 {draft.senderName}
               </div>
-              <div className="text-[11px] text-[#1d1d1f]/50">
+              <div className="text-[11px] text-muted-foreground">
                 to you · Tue 6:00 PM
               </div>
             </div>
           </div>
           <div
-            className="mt-2.5 font-semibold text-[#1d1d1f]"
+            className="mt-2.5 font-semibold text-foreground"
             style={{ fontSize: 15, lineHeight: 1.3 }}
           >
             {draft.subject}
           </div>
-          <div className="mt-0.5 text-[11px] text-[#1d1d1f]/50">
+          <div className="mt-0.5 text-[11px] text-muted-foreground">
             {draft.previewText}
           </div>
         </div>
@@ -105,7 +105,7 @@ export function EmailPreview({ draft }: { draft: MarketingDraft }) {
         {/* Body */}
         <div style={{ padding: "20px 22px" }}>
           <div
-            className="font-semibold text-[#1d1d1f]"
+            className="font-semibold text-foreground"
             style={{ fontSize: 22, lineHeight: 1.1, letterSpacing: "-0.02em" }}
           >
             {draft.greeting}
@@ -113,7 +113,7 @@ export function EmailPreview({ draft }: { draft: MarketingDraft }) {
           {draft.body.map((para) => (
             <p
               key={para}
-              className="text-[#1d1d1f]"
+              className="text-foreground"
               style={{ marginTop: 10, fontSize: 13.5, lineHeight: 1.55 }}
             >
               {para}
@@ -121,12 +121,12 @@ export function EmailPreview({ draft }: { draft: MarketingDraft }) {
           ))}
           <button
             type="button"
-            className="mt-[18px] rounded-lg bg-[#1d1d1f] text-[13px] font-medium text-white"
+            className="mt-[18px] rounded-pill bg-foreground text-[13px] font-medium text-white"
             style={{ height: 44, padding: "0 26px" }}
           >
             {draft.ctaLabel}
           </button>
-          <div className="mt-4 text-[11px] text-[#1d1d1f]/50">
+          <div className="mt-4 text-[11px] text-muted-foreground">
             {draft.signoff}
           </div>
         </div>
@@ -134,13 +134,16 @@ export function EmailPreview({ draft }: { draft: MarketingDraft }) {
         {/* Footer */}
         <div
           className="border-t border-black/[0.06]"
-          style={{ padding: "12px 22px", background: "#f5f5f7" }}
+          style={{
+            padding: "12px 22px",
+            background: "var(--canvas-parchment)",
+          }}
         >
-          <div className="text-[11px] text-[#1d1d1f]/50">
+          <div className="text-[11px] text-muted-foreground">
             {draft.unsubscribeFooter} ·{" "}
             <button
               type="button"
-              className="text-[#0066cc]"
+              className="text-primary"
               style={{
                 background: "none",
                 border: "none",

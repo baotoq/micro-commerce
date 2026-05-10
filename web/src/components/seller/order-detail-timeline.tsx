@@ -16,7 +16,7 @@ export function OrderDetailTimeline({
 }) {
   return (
     <div className="rounded-xl border border-black/[0.06] bg-white p-[18px]">
-      <div className="mb-3.5 text-[15px] font-semibold text-[#1d1d1f]">
+      <div className="mb-3.5 text-[15px] font-semibold text-foreground">
         Timeline
       </div>
       <div className="flex flex-col">
@@ -28,45 +28,34 @@ export function OrderDetailTimeline({
           >
             <div className="flex w-6 shrink-0 flex-col items-center">
               <span
-                className="flex items-center justify-center rounded-full"
-                style={{
-                  width: 24,
-                  height: 24,
-                  background:
-                    e.tone === "warn"
-                      ? "#f5f5f7"
-                      : e.on
-                        ? "#1d1d1f"
-                        : "#f5f5f7",
-                  color:
-                    e.tone === "warn"
-                      ? "#c2410c"
-                      : e.on
-                        ? "white"
-                        : "rgba(29,29,31,0.5)",
-                }}
+                className={`flex items-center justify-center rounded-full ${
+                  e.tone === "warn"
+                    ? "bg-canvas-parchment text-orange-700"
+                    : e.on
+                      ? "bg-foreground text-white"
+                      : "bg-canvas-parchment text-foreground/50"
+                }`}
+                style={{ width: 24, height: 24 }}
               >
                 {ICON_MAP[e.icon]}
               </span>
               {i < timeline.length - 1 && (
                 <span
-                  style={{
-                    width: 1.5,
-                    flex: 1,
-                    minHeight: 18,
-                    background: "rgba(0,0,0,0.08)",
-                  }}
+                  className="bg-black/[0.08]"
+                  style={{ width: 1.5, flex: 1, minHeight: 18 }}
                 />
               )}
             </div>
             <div className="flex-1 pt-0.5">
               <div className="flex justify-between">
-                <span className="text-[13px] font-semibold text-[#1d1d1f]">
+                <span className="text-[13px] font-semibold text-foreground">
                   {e.title}
                 </span>
-                <span className="text-xs text-[#1d1d1f]/50">{e.when}</span>
+                <span className="text-xs text-muted-foreground">{e.when}</span>
               </div>
-              <div className="mt-0.5 text-xs text-[#1d1d1f]/50">{e.sub}</div>
+              <div className="mt-0.5 text-xs text-muted-foreground">
+                {e.sub}
+              </div>
             </div>
           </div>
         ))}

@@ -26,4 +26,27 @@ describe("money", () => {
   it("preserves negative sign", () => {
     expect(money(-1234.5)).toBe("$-1,234.50");
   });
+
+  it("formats negative zero as positive zero", () => {
+    expect(money(-0)).toBe("$0.00");
+  });
+
+  it("formats large numbers correctly", () => {
+    expect(money(1000000)).toBe("$1,000,000.00");
+    expect(money(9999999.99)).toBe("$9,999,999.99");
+  });
+
+  it("formats very small positive decimals", () => {
+    expect(money(0.01)).toBe("$0.01");
+    expect(money(0.001)).toBe("$0.00");
+  });
+
+  it("formats negative values with thousands separators", () => {
+    expect(money(-1000000, "€")).toBe("€-1,000,000.00");
+  });
+
+  it("uses empty string currency prefix", () => {
+    expect(money(0, "")).toBe("0.00");
+    expect(money(42.5, "")).toBe("42.50");
+  });
 });

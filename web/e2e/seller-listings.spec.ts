@@ -10,7 +10,7 @@ test.describe("Seller listings", () => {
     await expect(
       page.getByRole("heading", { name: "Listings", exact: true }),
     ).toBeVisible();
-    await expect(page.getByText("42 listings · 38 published")).toBeVisible();
+    await expect(page.getByText("42 products · 34 active")).toBeVisible();
 
     for (const chip of [
       "All · 42",

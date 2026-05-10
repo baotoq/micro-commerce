@@ -15,13 +15,13 @@ export function ConversionFunnel({ stages }: { stages: FunnelStage[] }) {
             <li key={s.label}>
               <div className="flex items-baseline justify-between text-sm">
                 <span>{s.label}</span>
-                <span className="tabular-nums text-[#1d1d1f]/70">
+                <span className="tabular-nums text-muted-foreground">
                   {s.count.toLocaleString("en-US")}
                 </span>
               </div>
               <div className="mt-1 h-2 w-full rounded-full bg-black/[0.05]">
                 <div
-                  className="h-2 rounded-full bg-[#1d1d1f]"
+                  className={`h-2 rounded-full ${s === stages[stages.length - 1] ? "bg-terra" : "bg-foreground"}`}
                   style={{ width: `${pct}%` }}
                   aria-hidden
                 />

@@ -47,6 +47,19 @@ Store and shop surfaces retain the same chassis but switch modes. The product co
 - **Divider Soft** (`{colors.divider-soft}` — #f0f0f0): The "border" tone on secondary buttons — functions as a ring shadow rather than a hard line. In production, often applied as `rgba(0, 0, 0, 0.04)`.
 - **Hairline** (`{colors.hairline}` — #e0e0e0): The 1px hairline border on store utility cards and configurator chips.
 
+### Token Glossary
+
+| Token | OKLCH | Hex source | Intended use |
+|---|---|---|---|
+| `--good` | `oklch(0.723 0.196 145)` | #34c759 | Success state: positive KPI deltas, checklist done-circles, active status indicators |
+| `--good-soft` | `oklch(0.929 0.030 149)` | #DDEDE1 | Success surface: background of success banners and highlight rows |
+| `--warn` | `oklch(0.551 0.134 52)` | #b45309 | Warning state: low-stock indicators, pending-action badges |
+| `--bad` | `oklch(0.510 0.185 25)` | #c0392b | Error/destructive state: out-of-stock, payout errors, validation failures |
+| `--terra` | `oklch(0.543 0.177 37)` | #c2410c | Terracotta accent: chart highlights, bulk-row emphasis, pack swatch |
+| `--surface-avatar-warm` | `oklch(0.912 0.012 75)` | #e8e3da | Warm beige avatar placeholder background in seller topbar |
+
+Tailwind utilities (`bg-good`, `text-warn`, `border-bad`, `bg-good-soft`, `bg-terra`, `bg-surface-avatar-warm`, etc.) are available because each token is mapped in `@theme inline` in `globals.css`.
+
 ### Brand Gradient
 **No decorative gradients.** Atmospheric depth on product photography (the iPhone 17 Pro camera plate, the Apple Watch bands, AirPods reflections) is inherent to the imagery, not a CSS gradient overlay. The environment page's hero uses photographic atmosphere (mountain vista at dawn) but no gradient tokens are defined. Apple is the rare luxury-brand site with zero gradient-based design tokens.
 

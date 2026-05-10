@@ -27,11 +27,19 @@ export default function SellerStatesFirstSale() {
             >
               <div
                 className="mb-2 rounded"
-                style={{ width: "40%", height: 10, background: "#f5f5f7" }}
+                style={{
+                  width: "40%",
+                  height: 10,
+                  background: "var(--canvas-parchment)",
+                }}
               />
               <div
                 className="rounded"
-                style={{ width: "60%", height: 22, background: "#f5f5f7" }}
+                style={{
+                  width: "60%",
+                  height: 22,
+                  background: "var(--canvas-parchment)",
+                }}
               />
             </div>
           ))}
@@ -43,11 +51,19 @@ export default function SellerStatesFirstSale() {
         >
           <div
             className="mb-4 rounded"
-            style={{ width: "20%", height: 14, background: "#f5f5f7" }}
+            style={{
+              width: "20%",
+              height: 14,
+              background: "var(--canvas-parchment)",
+            }}
           />
           <div
             className="rounded-lg"
-            style={{ width: "100%", height: 180, background: "#f5f5f7" }}
+            style={{
+              width: "100%",
+              height: 180,
+              background: "var(--canvas-parchment)",
+            }}
           />
         </div>
       </div>
@@ -61,7 +77,7 @@ export default function SellerStatesFirstSale() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="first-sale-heading"
-          className="overflow-hidden rounded-2xl border border-black/[0.06] bg-white text-center"
+          className="overflow-hidden rounded-xl border border-black/[0.06] bg-white text-center"
           style={{ width: 480 }}
         >
           {/* Hero band */}
@@ -116,7 +132,7 @@ export default function SellerStatesFirstSale() {
             {/* Order summary row */}
             <div
               className="flex items-center gap-3 rounded-[10px] text-left"
-              style={{ padding: 14, background: "#f5f5f7" }}
+              style={{ padding: 14, background: "var(--canvas-parchment)" }}
             >
               {/* Clay-tone product image placeholder */}
               <div
@@ -129,7 +145,7 @@ export default function SellerStatesFirstSale() {
               />
               <div className="flex-1">
                 <div className="text-sm font-semibold">Persimmon vase</div>
-                <div className="text-xs text-[#1d1d1f]/50">
+                <div className="text-xs text-muted-foreground">
                   Sasha L. · San Francisco, CA
                 </div>
               </div>
@@ -143,7 +159,7 @@ export default function SellerStatesFirstSale() {
 
             {/* Body copy */}
             <p
-              className="text-[#1d1d1f]/60"
+              className="text-muted-foreground"
               style={{ marginTop: 18, fontSize: 14, lineHeight: 1.55 }}
             >
               {`You’ll receive ${money(82.56)} after Micro’s 4% fee. Pack & ship in the next 3 days and the rating will follow.`}
@@ -153,7 +169,7 @@ export default function SellerStatesFirstSale() {
             <div className="mt-5 flex gap-2">
               <button
                 type="button"
-                className="flex-1 rounded-xl border border-black/[0.15] px-4 py-2.5 text-sm font-semibold text-[#1d1d1f]"
+                className="flex-1 rounded-pill border border-black/[0.15] px-4 py-2.5 text-sm font-semibold text-foreground"
               >
                 Send a thank-you note
               </button>
@@ -161,7 +177,7 @@ export default function SellerStatesFirstSale() {
               <Link
                 href="/seller/orders/1001/pack"
                 role="button"
-                className="flex-1 rounded-xl bg-[#1d1d1f] px-4 py-2.5 text-sm font-semibold text-white text-center"
+                className="flex-1 rounded-pill bg-primary px-4 py-2.5 text-sm font-semibold text-white text-center"
               >
                 Pack &amp; ship →
               </Link>

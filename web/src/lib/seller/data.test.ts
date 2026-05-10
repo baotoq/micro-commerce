@@ -2,23 +2,35 @@
 import { describe, expect, it } from "vitest";
 import {
   BRAND,
+  DATE_LABEL,
   getAnalyticsKpis,
+  getDayOneStats,
+  getFirstMonthKpis,
+  getFirstMonthSeries,
+  getFirstMonthTopSellers,
+  getFirstOrderStats,
   getFunnel,
+  getLaunchChecklist,
+  getLedgerEntries,
   getListingBySku,
   getListingCounts,
   getListings,
   getMarketingDraft,
+  getOrderDetail,
   getOrderDetailFull,
   getOrderInbox,
   getOrderInboxSummary,
   getOrderInboxTabs,
   getOverviewKpis,
+  getPayoutSummary,
   getPromoStats,
   getPromos,
   getPromoTabs,
   getRangeOptions,
   getRecentOrders,
   getRevenueSeries,
+  getSetupSteps,
+  getShippingOptions,
   getSources,
   getTodayItems,
   getTopProducts,
@@ -234,5 +246,125 @@ describe("seller management data — marketing draft", () => {
     const blob = JSON.stringify(d);
     expect(blob).not.toMatch(/Mira/);
     expect(blob).toContain(BRAND.name);
+  });
+});
+
+describe("seller data — setup and launch", () => {
+  it("DATE_LABEL matches the fixed today date", () => {
+    expect(DATE_LABEL).toBe("Tuesday · April 8");
+  });
+
+  it("setup steps include done, active, and pending states", () => {
+    const steps = getSetupSteps();
+    expect(steps.length).toBeGreaterThan(0);
+    const statuses = steps.map((s) => s.status);
+    expect(statuses).toContain("done");
+    expect(statuses).toContain("active");
+    expect(statuses).toContain("pending");
+  });
+
+  it("launch checklist has at least one done and one undone task", () => {
+    const tasks = getLaunchChecklist();
+    expect(tasks.some((t) => t.done)).toBe(true);
+    expect(tasks.some((t) => !t.done)).toBe(true);
+  });
+
+  it("day-one stats return 3 entries with label, value, and subject", () => {
+    const stats = getDayOneStats();
+    expect(stats).toHaveLength(3);
+    for (const s of stats) {
+      expect(s.label).toBeTruthy();
+      expect(s.value).toBeDefined();
+      expect(s.subject).toBeTruthy();
+    }
+  });
+
+  it("first-order stats return 4 entries each with a non-empty spark array", () => {
+    const stats = getFirstOrderStats();
+    expect(stats).toHaveLength(4);
+    for (const s of stats) {
+      expect(s.spark.length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe("seller data — shipping options", () => {
+  it("returns 3 shipping options with exactly one selected", () => {
+    const opts = getShippingOptions();
+    expect(opts).toHaveLength(3);
+    const selected = opts.filter((o) => o.selected);
+    expect(selected).toHaveLength(1);
+  });
+
+  it("all shipping options have positive prices", () => {
+    for (const o of getShippingOptions()) {
+      expect(o.price).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe("seller data — order detail (legacy #1001)", () => {
+  it("returns null for an unknown order id", () => {
+    expect(getOrderDetail("9999")).toBeNull();
+  });
+
+  it("returns Sasha Leblanc detail for order 1001", () => {
+    const d = getOrderDetail("1001");
+    expect(d).not.toBeNull();
+    if (!d) return;
+    expect(d.id).toBe("#1001");
+    expect(d.customer).toBe("Sasha Leblanc");
+    expect(d.subtotal).toBe(86);
+    expect(d.net).toBeGreaterThan(0);
+    expect(d.feePct).toBe(4);
+  });
+});
+
+describe("seller data — payout and ledger", () => {
+  it("payout summary has positive lifetime revenue", () => {
+    const p = getPayoutSummary();
+    expect(p.lifetime).toBeGreaterThan(0);
+    expect(p.lifetimeOrders).toBeGreaterThan(0);
+  });
+
+  it("ledger entries include at least one sale and one payout entry", () => {
+    const entries = getLedgerEntries();
+    expect(entries.some((e) => e.type === "sale")).toBe(true);
+    expect(entries.some((e) => e.type === "payout")).toBe(true);
+  });
+
+  it("payout entries have positive amounts, fee entries are negative", () => {
+    const entries = getLedgerEntries();
+    for (const e of entries.filter((e) => e.type === "payout")) {
+      expect(e.amount).toBeGreaterThan(0);
+    }
+    for (const e of entries.filter((e) => e.type === "fee")) {
+      expect(e.amount).toBeLessThan(0);
+    }
+  });
+});
+
+describe("seller data — first-month milestones", () => {
+  it("first-month KPIs return 4 entries with non-empty spark arrays", () => {
+    const kpis = getFirstMonthKpis();
+    expect(kpis).toHaveLength(4);
+    for (const k of kpis) {
+      expect(k.spark.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("first-month series has 30 data points with non-negative values", () => {
+    const series = getFirstMonthSeries();
+    expect(series).toHaveLength(30);
+    for (const v of series) expect(v).toBeGreaterThanOrEqual(0);
+  });
+
+  it("first-month top sellers have 3 entries with positive revenue", () => {
+    const sellers = getFirstMonthTopSellers();
+    expect(sellers).toHaveLength(3);
+    for (const s of sellers) {
+      expect(s.revenue).toBeGreaterThan(0);
+      expect(s.soldLabel).toMatch(/sold/);
+    }
   });
 });

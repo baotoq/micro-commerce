@@ -1,7 +1,13 @@
 // web/src/components/seller/sources-donut.tsx
 import type { SourceBreakdown } from "@/lib/seller/types";
 
-const PALETTE = ["#1d1d1f", "#0066cc", "#7a7a7a", "#cccccc", "#aacbe7"];
+const PALETTE = [
+  "var(--foreground)",
+  "var(--terra)",
+  "#7a7a7a",
+  "#cccccc",
+  "#aacbe7",
+];
 
 export function SourcesDonut({ sources }: { sources: SourceBreakdown[] }) {
   const total = sources.reduce((s, x) => s + x.visits, 0);
@@ -49,14 +55,14 @@ export function SourcesDonut({ sources }: { sources: SourceBreakdown[] }) {
                 style={{ background: PALETTE[i % PALETTE.length] }}
               />
               <span className="min-w-[8rem]">{s.name}</span>
-              <span className="tabular-nums text-[#1d1d1f]/70">
+              <span className="tabular-nums text-muted-foreground">
                 {s.visits.toLocaleString("en-US")}
               </span>
             </li>
           ))}
         </ul>
       </div>
-      <p className="mt-3 text-xs text-[#1d1d1f]/60">
+      <p className="mt-3 text-xs text-muted-foreground">
         {total.toLocaleString("en-US")} visits
       </p>
     </div>

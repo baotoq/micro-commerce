@@ -28,22 +28,14 @@ function FulfillmentBox({ f }: { f: OrderFulfillment }) {
     <div>
       {/* Header */}
       <div
-        className="flex items-center justify-between px-[18px] py-3.5"
-        style={{
-          background: shipped ? "#f5f5f7" : "rgba(194,65,12,0.05)",
-          borderBottom: "1px solid rgba(0,0,0,0.06)",
-        }}
+        className={`flex items-center justify-between px-[18px] py-3.5 ${shipped ? "bg-canvas-parchment" : "bg-orange-900/5"}`}
+        style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}
       >
         <div className="flex items-center gap-2">
           {shipped ? (
             <span
-              className="flex items-center justify-center rounded-full"
-              style={{
-                width: 22,
-                height: 22,
-                background: "#16a34a",
-                color: "white",
-              }}
+              className="flex items-center justify-center rounded-full bg-good text-white"
+              style={{ width: 22, height: 22 }}
             >
               <Check size={11} strokeWidth={2.4} />
             </span>
@@ -58,19 +50,19 @@ function FulfillmentBox({ f }: { f: OrderFulfillment }) {
               }}
             />
           )}
-          <span className="text-[13.5px] font-semibold text-[#1d1d1f]">
+          <span className="text-[13.5px] font-semibold text-foreground">
             Fulfillment {f.idx} of {f.of} ·{" "}
             {f.status === "shipped" ? "shipped" : "awaiting restock"}
           </span>
         </div>
         {shipped && f.tracking ? (
-          <span className="font-mono text-xs text-[#1d1d1f]/50">
+          <span className="font-mono text-xs text-muted-foreground">
             {f.tracking}
           </span>
         ) : (
           <button
             type="button"
-            className="rounded-lg border border-black/[0.12] px-3 py-1.5 text-xs font-medium text-[#1d1d1f]"
+            className="rounded-lg border border-black/[0.12] px-3 py-1.5 text-xs font-medium text-foreground"
           >
             Buy label
           </button>
@@ -81,11 +73,11 @@ function FulfillmentBox({ f }: { f: OrderFulfillment }) {
       <div className="flex items-center gap-3 px-[18px] py-3.5">
         <ProdImg tone={f.productTone} />
         <div className="flex-1">
-          <div className="text-[13.5px] font-semibold text-[#1d1d1f]">
+          <div className="text-[13.5px] font-semibold text-foreground">
             {f.productName}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#1d1d1f]/50">
+            <span className="text-xs text-muted-foreground">
               {f.productSubtitle}
             </span>
             {f.restockNote && (
@@ -95,7 +87,7 @@ function FulfillmentBox({ f }: { f: OrderFulfillment }) {
             )}
           </div>
         </div>
-        <span className="font-mono text-[13.5px] font-semibold tabular-nums text-[#1d1d1f]">
+        <span className="font-mono text-[13.5px] font-semibold tabular-nums text-foreground">
           {money(f.price)}
         </span>
       </div>

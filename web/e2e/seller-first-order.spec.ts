@@ -28,7 +28,7 @@ test.describe("Seller first-order page", () => {
       page.getByRole("button", { name: "Send a thank-you" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Open order →" }),
+      page.getByRole("link", { name: "Open order →" }),
     ).toBeVisible();
 
     // KPI cards

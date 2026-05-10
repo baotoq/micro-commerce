@@ -30,8 +30,8 @@ export function FilterChips({
             className={cn(
               "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
               isActive
-                ? "border-[#1d1d1f] bg-[#1d1d1f] text-white"
-                : "border-black/[0.08] bg-white text-[#1d1d1f]/80 hover:border-black/20 hover:text-[#1d1d1f]",
+                ? "border-foreground bg-foreground text-white"
+                : "border-black/[0.08] bg-white text-foreground/80 hover:border-black/20 hover:text-foreground",
             )}
           >
             {c.label} · {c.count}

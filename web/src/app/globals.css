@@ -48,6 +48,13 @@
   --divider-soft: oklch(0.949 0 0);
   --ink-muted-80: oklch(0.323 0 0);
   --body-muted: oklch(0.829 0 0);
+
+  --good: oklch(0.723 0.196 145);
+  --good-soft: oklch(0.929 0.03 149);
+  --warn: oklch(0.551 0.134 52);
+  --bad: oklch(0.51 0.185 25);
+  --terra: oklch(0.543 0.177 37);
+  --surface-avatar-warm: oklch(0.912 0.012 75);
 }
 
 @theme inline {
@@ -103,6 +110,13 @@
   --color-ink-muted-80: var(--ink-muted-80);
   --color-body-muted: var(--body-muted);
 
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-terra: var(--terra);
+  --color-surface-avatar-warm: var(--surface-avatar-warm);
+
   --radius-none: 0;
   --radius-xs: 5px;
   --radius-sm: 8px;
@@ -156,6 +170,17 @@
   --sidebar-accent-foreground: oklch(1 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.679 0.181 247);
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes hf-shimmer {

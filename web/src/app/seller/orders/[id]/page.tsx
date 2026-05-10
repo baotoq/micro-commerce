@@ -1,4 +1,4 @@
-import { ChevronLeft, MessageSquare } from "lucide-react";
+import { ChevronLeft, MessageSquare, X } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { OrderDetailCustomer } from "@/components/seller/order-detail-customer";
@@ -25,48 +25,49 @@ export default async function OrderDetailPage({
         <div className="flex items-center gap-2">
           <Link
             href="/seller/orders"
-            className="flex items-center justify-center rounded-lg p-1 text-[#1d1d1f]/40 hover:bg-black/[0.04]"
+            className="flex items-center justify-center rounded-lg p-1 text-muted-foreground hover:bg-black/[0.04]"
             aria-label="Back to orders"
           >
             <ChevronLeft size={14} />
           </Link>
-          <Link href="/seller/orders" className="text-xs text-[#1d1d1f]/50">
+          <Link href="/seller/orders" className="text-xs text-muted-foreground">
             Orders /
           </Link>
-          <span className="font-mono text-sm font-semibold text-[#1d1d1f]">
+          <span className="font-mono text-sm font-semibold text-foreground">
             {order.id}
           </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-2.5 py-1 text-[11px] font-semibold text-orange-700">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500" />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-warn/15 px-2.5 py-1 text-[11px] font-semibold text-warn">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-warn" />
             {order.status}
           </span>
-          <span className="text-[11px] text-[#1d1d1f]/50">
+          <span className="text-[11px] text-muted-foreground">
             · {order.customerShort} · {order.age}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="flex items-center gap-1.5 rounded-lg border border-black/[0.12] px-3 py-1.5 text-xs font-medium text-[#1d1d1f]"
+            className="flex items-center gap-1.5 rounded-lg border border-black/[0.12] px-3 py-1.5 text-xs font-medium text-foreground"
           >
             <MessageSquare size={11} />
             Message
           </button>
           <button
             type="button"
-            className="rounded-lg border border-black/[0.12] px-3 py-1.5 text-xs font-medium text-[#1d1d1f]"
+            className="rounded-lg border border-black/[0.12] px-3 py-1.5 text-xs font-medium text-foreground"
           >
             Print slip
           </button>
           <button
             type="button"
-            className="rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
           >
+            <X size={11} />
             Cancel order
           </button>
           <button
             type="button"
-            className="rounded-xl bg-[#1d1d1f] px-3 py-1.5 text-xs font-semibold text-white"
+            className="rounded-lg bg-foreground px-3 py-1.5 text-xs font-semibold text-white"
           >
             Buy label · {order.outstandingProductName}
           </button>

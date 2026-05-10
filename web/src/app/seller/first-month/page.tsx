@@ -40,8 +40,11 @@ function AreaChart({ data }: { data: number[] }) {
       role="img"
       aria-label="Daily revenue chart"
     >
-      <path d={area} fill="rgba(194,65,12,0.10)" />
-      <path d={path} fill="none" stroke="#c2410c" strokeWidth="1.5" />
+      <path
+        d={area}
+        fill="color-mix(in oklch, var(--terra) 10%, transparent)"
+      />
+      <path d={path} fill="none" stroke="var(--terra)" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -60,14 +63,14 @@ export default function FirstMonthPage() {
           <>
             <button
               type="button"
-              className="rounded-full border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-black/5"
+              className="rounded-full border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-foreground hover:bg-black/5"
               style={{ background: "transparent", cursor: "pointer" }}
             >
               Compare
             </button>
             <button
               type="button"
-              className="rounded-full border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-black/5"
+              className="rounded-full border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-foreground hover:bg-black/5"
               style={{ background: "transparent", cursor: "pointer" }}
             >
               Export
@@ -87,7 +90,7 @@ export default function FirstMonthPage() {
               key={kpi.label}
               className="rounded-xl border border-black/[0.06] bg-white p-4"
             >
-              <p className="mb-1.5 text-[11px] text-[#1d1d1f]/60">
+              <p className="mb-1.5 text-[11px] text-muted-foreground">
                 {kpi.label}
               </p>
               <div
@@ -96,16 +99,13 @@ export default function FirstMonthPage() {
               >
                 {kpi.value}
               </div>
-              <p
-                className="mt-1 text-[11px] font-semibold"
-                style={{ color: "#34c759" }}
-              >
+              <p className="mt-1 text-[11px] font-semibold text-good">
                 ↑ {kpi.delta}
               </p>
               <div className="mt-2 h-8">
                 <Sparkline
                   points={kpi.spark}
-                  className="h-8 w-full text-[#1d1d1f]/60"
+                  className="h-8 w-full text-muted-foreground"
                 />
               </div>
             </div>
@@ -121,7 +121,9 @@ export default function FirstMonthPage() {
           <div className="rounded-xl border border-black/[0.06] bg-white p-5">
             <div className="mb-3.5 flex items-start justify-between">
               <div>
-                <p className="text-[11px] text-[#1d1d1f]/60">Daily revenue</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Daily revenue
+                </p>
                 <div
                   className="mt-0.5 font-semibold tabular-nums"
                   style={{ fontSize: 24 }}
@@ -133,16 +135,11 @@ export default function FirstMonthPage() {
                 {["Day", "Week", "Month"].map((p) => (
                   <span
                     key={p}
-                    className="rounded-full px-2.5 py-1 text-[11px] font-medium"
-                    style={
+                    className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
                       p === "Month"
-                        ? { background: "#1d1d1f", color: "white" }
-                        : {
-                            background: "#f5f5f7",
-                            color: "#1d1d1f99",
-                            border: "1px solid #e0e0e0",
-                          }
-                    }
+                        ? "bg-foreground text-background"
+                        : "border border-black/10 bg-muted text-foreground/60"
+                    }`}
                   >
                     {p}
                   </span>
@@ -159,7 +156,7 @@ export default function FirstMonthPage() {
                 style={{
                   left: "11%",
                   top: 16,
-                  background: "#1d1d1f",
+                  background: "var(--foreground)",
                   color: "white",
                   fontSize: 11,
                   padding: "6px 10px",
@@ -175,7 +172,7 @@ export default function FirstMonthPage() {
                     bottom: -4,
                     width: 8,
                     height: 8,
-                    background: "#1d1d1f",
+                    background: "var(--foreground)",
                     transform: "rotate(45deg)",
                   }}
                 />
@@ -183,7 +180,7 @@ export default function FirstMonthPage() {
             </div>
 
             {/* Date axis */}
-            <div className="mt-2 flex justify-between text-[11px] text-[#1d1d1f]/60">
+            <div className="mt-2 flex justify-between text-[11px] text-muted-foreground">
               <span>Mar 12</span>
               <span>Mar 19</span>
               <span>Mar 26</span>
@@ -203,12 +200,12 @@ export default function FirstMonthPage() {
                 ★ Insight
               </p>
               <h3
-                className="mb-1.5 font-semibold leading-snug text-[#1d1d1f]"
+                className="mb-1.5 font-semibold leading-snug text-foreground"
                 style={{ fontSize: 15 }}
               >
                 Friday afternoons sell 2.3× more than the rest of the week.
               </h3>
-              <p className="text-[13px] text-[#1d1d1f]/60">
+              <p className="text-[13px] text-muted-foreground">
                 Try posting new listings Thursday evening — they tend to land in
                 feeds before the Friday rush.
               </p>
@@ -216,7 +213,9 @@ export default function FirstMonthPage() {
 
             {/* Top sellers card */}
             <div className="rounded-xl border border-black/[0.06] bg-white p-5">
-              <h4 className="mb-3 font-semibold text-[#1d1d1f]">Top sellers</h4>
+              <h4 className="mb-3 font-semibold text-foreground">
+                Top sellers
+              </h4>
               <div className="flex flex-col gap-3">
                 {topSellers.map((seller) => (
                   <div key={seller.sku} className="flex items-center gap-2">
@@ -228,14 +227,14 @@ export default function FirstMonthPage() {
                       }}
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-semibold text-[#1d1d1f] truncate">
+                      <p className="text-[13px] font-semibold text-foreground truncate">
                         {seller.name}
                       </p>
-                      <p className="text-[11px] text-[#1d1d1f]/60">
+                      <p className="text-[11px] text-muted-foreground">
                         {seller.soldLabel}
                       </p>
                     </div>
-                    <span className="text-[13px] font-medium tabular-nums text-[#1d1d1f]">
+                    <span className="text-[13px] font-medium tabular-nums text-foreground">
                       {formatMoney(seller.revenue)}
                     </span>
                   </div>

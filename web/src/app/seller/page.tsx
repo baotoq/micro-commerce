@@ -20,7 +20,7 @@ export default function SellerOverview() {
     <section className="px-10 py-8">
       <header className="flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-wider text-[#1d1d1f]/60">
+          <p className="text-xs uppercase tracking-wider text-foreground/60">
             {DATE_LABEL}
           </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight">
@@ -28,15 +28,15 @@ export default function SellerOverview() {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href="/seller/welcome"
-            className="rounded-full px-4 py-2 text-sm font-medium text-[#1d1d1f] hover:bg-black/5"
+          <button
+            type="button"
+            className="rounded-full border border-black/[0.12] px-4 py-2 text-sm font-medium text-foreground hover:bg-black/[0.04]"
           >
-            ← Back to welcome
-          </Link>
+            Export
+          </button>
           <Link
             href="/seller/listings/new"
-            className="rounded-full bg-[#1d1d1f] px-4 py-2 text-sm font-medium text-white hover:bg-[#1d1d1f]/90"
+            className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
           >
             + New listing
           </Link>

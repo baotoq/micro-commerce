@@ -65,9 +65,9 @@ const PHOTO_TONES = ["#e2d5c8", "#efe8d9", "#cfc7c2", "#d8c0a8"];
 
 const STATUS_CHIP: Record<Variant["status"], string> = {
   Active:
-    "rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700",
-  Low: "rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700",
-  Out: "rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-700",
+    "rounded-full bg-good/15 px-2 py-0.5 text-[11px] font-medium text-good",
+  Low: "rounded-full bg-warn/15 px-2 py-0.5 text-[11px] font-medium text-warn",
+  Out: "rounded-full bg-bad/15 px-2 py-0.5 text-[11px] font-medium text-bad",
 };
 
 const money = (n: number) => `$${n}`;
@@ -90,27 +90,27 @@ export default async function ListingEditPage({
   const slug = slugify(listing.name);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-black/[0.06] bg-white px-7 py-4">
         <div className="flex items-center gap-3">
           <Link
             href="/seller/listings"
             aria-label="Back"
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#f5f5f7]"
+            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-canvas-parchment"
           >
             ‹
           </Link>
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-[#1d1d1f]/60">
+            <p className="text-[11px] uppercase tracking-wider text-foreground/60">
               Listings · {listing.category}
             </p>
-            <h1 className="mt-0.5 text-[24px] font-semibold leading-none tracking-tight text-[#1d1d1f]">
+            <h1 className="mt-0.5 text-[24px] font-semibold leading-none tracking-tight text-foreground">
               {listing.name}
             </h1>
           </div>
-          <span className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+          <span className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-warn/15 px-2.5 py-1 text-[11px] font-medium text-warn">
+            <span className="h-1.5 w-1.5 rounded-full bg-warn" />
             Unsaved changes
           </span>
         </div>
@@ -141,10 +141,10 @@ export default async function ListingEditPage({
           <div className="rounded-xl border border-black/[0.06] bg-white p-5">
             <div className="mb-3.5 flex items-end justify-between">
               <div>
-                <h2 className="text-[15px] font-semibold text-[#1d1d1f]">
+                <h2 className="text-[15px] font-semibold text-foreground">
                   Variant matrix
                 </h2>
-                <p className="text-[11px] text-[#1d1d1f]/60">
+                <p className="text-[11px] text-foreground/60">
                   Size × Glaze · 6 combinations
                 </p>
               </div>
@@ -155,7 +155,7 @@ export default async function ListingEditPage({
 
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-black/[0.06] text-left text-[11px] uppercase tracking-wider text-[#1d1d1f]/50">
+                <tr className="border-b border-black/[0.06] text-left text-[11px] uppercase tracking-wider text-foreground/50">
                   <th className="py-2.5 pr-2 font-medium">Variant</th>
                   <th className="px-2 py-2.5 font-medium">SKU</th>
                   <th className="px-2 py-2.5 font-medium">Price</th>
@@ -174,37 +174,24 @@ export default async function ListingEditPage({
                         : undefined
                     }
                   >
-                    <td className="py-3 pr-2 font-medium text-[#1d1d1f]">
+                    <td className="py-3 pr-2 font-medium text-foreground">
                       <span className="inline-flex items-center gap-2">
                         {v.changed && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          <span className="h-1.5 w-1.5 rounded-full bg-good" />
                         )}
                         {v.label}
                       </span>
                     </td>
-                    <td className="px-2 py-3 font-mono text-[12px] text-[#1d1d1f]/60">
+                    <td className="px-2 py-3 font-mono text-[12px] text-foreground/60">
                       {v.sku}
                     </td>
                     <td
-                      className="px-2 py-3 tabular-nums"
-                      style={{
-                        fontWeight: v.changed ? 600 : 400,
-                        color: v.changed ? "#16a34a" : "#1d1d1f",
-                      }}
+                      className={`px-2 py-3 tabular-nums ${v.changed ? "font-semibold text-good" : "font-normal text-foreground"}`}
                     >
                       {money(v.price)}
                     </td>
                     <td
-                      className="px-2 py-3 tabular-nums"
-                      style={{
-                        color:
-                          v.stock === 0
-                            ? "#dc2626"
-                            : v.stock < 5
-                              ? "#b45309"
-                              : "#1d1d1f",
-                        fontWeight: 500,
-                      }}
+                      className={`px-2 py-3 tabular-nums ${v.stock === 0 ? "text-bad" : v.stock < 5 ? "text-warn" : "text-foreground"}`}
                     >
                       {v.stock}
                     </td>
@@ -215,7 +202,7 @@ export default async function ListingEditPage({
                 ))}
               </tbody>
             </table>
-            <p className="mt-3.5 text-[11px] text-[#1d1d1f]/60">
+            <p className="mt-3.5 text-[11px] text-foreground/60">
               ● 2 variants updated · prices +10%
             </p>
           </div>
@@ -223,7 +210,7 @@ export default async function ListingEditPage({
           {/* Right column */}
           <div className="flex flex-col gap-3">
             <div className="rounded-xl border border-black/[0.06] bg-white p-[18px]">
-              <h3 className="mb-3 text-[13.5px] font-semibold text-[#1d1d1f]">
+              <h3 className="mb-3 text-[13.5px] font-semibold text-foreground">
                 Photos · 4 of 8
               </h3>
               <div className="grid grid-cols-3 gap-2">
@@ -235,7 +222,7 @@ export default async function ListingEditPage({
                   />
                 ))}
                 <div
-                  className="flex items-center justify-center rounded-md border-[1.5px] border-dashed border-black/20 text-[#1d1d1f]/40"
+                  className="flex items-center justify-center rounded-md border-[1.5px] border-dashed border-black/20 text-foreground/40"
                   style={{ height: 88 }}
                 >
                   +
@@ -244,10 +231,10 @@ export default async function ListingEditPage({
             </div>
 
             <div className="rounded-xl border border-black/[0.06] bg-white p-[18px]">
-              <h3 className="mb-2.5 text-[13.5px] font-semibold text-[#1d1d1f]">
+              <h3 className="mb-2.5 text-[13.5px] font-semibold text-foreground">
                 Status
               </h3>
-              <div className="flex gap-1 rounded-lg bg-[#f5f5f7] p-[3px]">
+              <div className="flex gap-1 rounded-lg bg-canvas-parchment p-[3px]">
                 {["Active", "Draft", "Archived"].map((s, i) => (
                   <Button
                     key={s}
@@ -255,17 +242,17 @@ export default async function ListingEditPage({
                     size="sm"
                     className={
                       i === 0
-                        ? "flex-1 bg-white text-[#1d1d1f] shadow-sm hover:bg-white"
-                        : "flex-1 bg-transparent text-[#1d1d1f] hover:bg-transparent"
+                        ? "flex-1 bg-white text-foreground shadow-sm hover:bg-white"
+                        : "flex-1 bg-transparent text-foreground hover:bg-transparent"
                     }
                   >
                     {s}
                   </Button>
                 ))}
               </div>
-              <p className="mt-2.5 text-[11px] text-[#1d1d1f]/60">
+              <p className="mt-2.5 text-[11px] text-foreground/60">
                 Visible at{" "}
-                <span className="font-mono text-[#1d1d1f]">/{slug}</span>
+                <span className="font-mono text-foreground">/{slug}</span>
               </p>
             </div>
           </div>

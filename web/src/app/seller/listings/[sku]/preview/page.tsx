@@ -32,39 +32,39 @@ export default async function ListingPreviewPage({
   const slug = slugify(listing.name);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-black/[0.06] bg-white px-7 py-4">
         <div className="flex items-center gap-3">
           <Link
             href={`/seller/listings/${sku}/edit`}
             aria-label="Back"
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#f5f5f7]"
+            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-canvas-parchment"
           >
             ‹
           </Link>
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-[#1d1d1f]/60">
+            <p className="text-[11px] uppercase tracking-wider text-foreground/60">
               Preview · {listing.name}
             </p>
-            <h1 className="mt-0.5 text-[22px] font-semibold leading-none tracking-tight text-[#1d1d1f]">
+            <h1 className="mt-0.5 text-[22px] font-semibold leading-none tracking-tight text-foreground">
               How shoppers will see it
             </h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex gap-1 rounded-lg bg-[#f5f5f7] p-[3px]">
+          <div className="flex gap-1 rounded-lg bg-canvas-parchment p-[3px]">
             <Button
               variant="ghost"
               size="sm"
-              className="bg-white text-[#1d1d1f] shadow-sm hover:bg-white"
+              className="bg-white text-foreground shadow-sm hover:bg-white"
             >
               Desktop
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className="bg-transparent text-[#1d1d1f] hover:bg-transparent"
+              className="bg-transparent text-foreground hover:bg-transparent"
             >
               Mobile
             </Button>
@@ -82,7 +82,7 @@ export default async function ListingPreviewPage({
       </div>
 
       {/* Body */}
-      <div className="flex flex-1 overflow-hidden bg-[#f5f5f7]">
+      <div className="flex flex-1 overflow-hidden bg-canvas-parchment">
         {/* Browser preview */}
         <div className="flex flex-1 items-center justify-center p-6">
           <div
@@ -108,7 +108,7 @@ export default async function ListingPreviewPage({
                 <span aria-hidden="true" className="text-[10px]">
                   🔒
                 </span>
-                <span className="text-[11px] text-[#1d1d1f]/60">
+                <span className="text-[11px] text-foreground/60">
                   alex-studio.micro.shop/{slug}
                 </span>
               </div>
@@ -122,44 +122,41 @@ export default async function ListingPreviewPage({
             >
               <div style={{ background: "#e2d5c8" }} />
               <div className="flex flex-col p-7">
-                <p className="text-[11px] uppercase tracking-wider text-[#1d1d1f]/60">
+                <p className="text-[11px] uppercase tracking-wider text-foreground/60">
                   Alex Studio · {listing.category}
                 </p>
-                <h2 className="mt-1.5 text-[32px] font-semibold leading-none tracking-tight text-[#1d1d1f]">
+                <h2 className="mt-1.5 text-[32px] font-semibold leading-none tracking-tight text-foreground">
                   {listing.name}
                 </h2>
-                <p className="mt-2.5 text-[22px] font-semibold tabular-nums text-[#1d1d1f]">
+                <p className="mt-2.5 text-[22px] font-semibold tabular-nums text-foreground">
                   $95
                 </p>
-                <p className="mt-1 text-[11px] text-[#1d1d1f]/60">
+                <p className="mt-1 text-[11px] text-foreground/60">
                   Medium · Persimmon · 4 in stock
                 </p>
 
-                <p className="mt-3.5 mb-1.5 text-[11px] font-medium text-[#1d1d1f]">
+                <p className="mt-3.5 mb-1.5 text-[11px] font-medium text-foreground">
                   SIZE
                 </p>
                 <div className="flex gap-1">
-                  <span className="rounded-full bg-[#f5f5f7] px-3 py-1 text-[12px] font-medium text-[#1d1d1f]">
+                  <span className="rounded-full bg-canvas-parchment px-3 py-1 text-[12px] font-medium text-foreground">
                     Small
                   </span>
-                  <span className="rounded-full bg-[#1d1d1f] px-3 py-1 text-[12px] font-medium text-white">
+                  <span className="rounded-full bg-foreground px-3 py-1 text-[12px] font-medium text-white">
                     Medium
                   </span>
-                  <span className="rounded-full bg-[#f5f5f7] px-3 py-1 text-[12px] font-medium text-[#1d1d1f]/50">
+                  <span className="rounded-full bg-canvas-parchment px-3 py-1 text-[12px] font-medium text-foreground/50">
                     Large · out
                   </span>
                 </div>
 
-                <p className="mt-3.5 mb-1.5 text-[11px] font-medium text-[#1d1d1f]">
+                <p className="mt-3.5 mb-1.5 text-[11px] font-medium text-foreground">
                   GLAZE
                 </p>
                 <div className="flex gap-2">
                   <span
-                    className="h-6 w-6 rounded-full"
-                    style={{
-                      background: "#c2410c",
-                      border: "2px solid #1d1d1f",
-                    }}
+                    className="h-6 w-6 rounded-full ring-2 ring-foreground"
+                    style={{ background: "#c2410c" }}
                   />
                   <span
                     className="h-6 w-6 rounded-full border border-black/[0.1]"
@@ -168,7 +165,7 @@ export default async function ListingPreviewPage({
                 </div>
 
                 <div className="flex-1" />
-                <Button className="mt-3 h-11 w-full rounded-lg">
+                <Button className="mt-3 h-11 w-full rounded-pill">
                   Add to bag · $95
                 </Button>
               </div>
@@ -179,35 +176,32 @@ export default async function ListingPreviewPage({
         {/* Health rail */}
         <aside className="w-[320px] shrink-0 overflow-auto border-l border-black/[0.06] bg-white p-[22px]">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-[13.5px] font-semibold text-[#1d1d1f]">
+            <h2 className="text-[13.5px] font-semibold text-foreground">
               Listing health
             </h2>
-            <span className="text-[13.5px] font-semibold tabular-nums text-emerald-600">
+            <span className="text-[13.5px] font-semibold tabular-nums text-good">
               96
             </span>
           </div>
           <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-black/[0.06]">
-            <div className="h-full w-[96%] rounded-full bg-emerald-500" />
+            <div className="h-full w-[96%] rounded-full bg-good" />
           </div>
           <div className="flex flex-col gap-3">
             {CHECKS.map((c) => (
               <div key={c.label} className="flex items-start gap-2">
                 <span
                   aria-hidden="true"
-                  className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-white"
-                  style={{
-                    background: c.tone === "good" ? "#16a34a" : "#d97706",
-                  }}
+                  className={`mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-white ${c.tone === "good" ? "bg-good" : "bg-warn"}`}
                 >
                   <span className="text-[10px] font-bold">
                     {c.tone === "good" ? "✓" : "i"}
                   </span>
                 </span>
                 <div className="flex-1">
-                  <div className="text-[12.5px] font-medium text-[#1d1d1f]">
+                  <div className="text-[12.5px] font-medium text-foreground">
                     {c.label}
                   </div>
-                  <div className="text-[11px] text-[#1d1d1f]/60">{c.sub}</div>
+                  <div className="text-[11px] text-foreground/60">{c.sub}</div>
                 </div>
               </div>
             ))}

@@ -22,9 +22,7 @@ test.describe("Seller listings — published", () => {
         "Persimmon vase published · 2 variants updated, 1 went live.",
       ),
     ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "View shop →" }),
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "View shop →" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Undo" })).toBeVisible();
 
     // KPI cards

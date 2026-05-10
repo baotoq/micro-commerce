@@ -21,19 +21,12 @@ export default function AnalyticsPage() {
         subtitle="Apr 1 – Apr 30 · vs Mar 1 – Mar 30"
         actions={
           <>
-            <div
-              className="flex gap-1 rounded-lg p-0.5"
-              style={{ background: "var(--paper-2, #f5f5f7)" }}
-            >
+            <div className="flex gap-1 rounded-lg bg-muted p-0.5">
               {rangeOptions.map((opt, i) => (
                 <button
                   key={opt}
                   type="button"
-                  className="rounded-md px-2.5 py-1 text-xs font-medium"
-                  style={{
-                    background: i === 1 ? "white" : "transparent",
-                    boxShadow: i === 1 ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-                  }}
+                  className={`rounded-md px-2.5 py-1 text-xs font-medium ${i === 1 ? "bg-white shadow-sm" : "bg-transparent"}`}
                 >
                   {opt}
                 </button>
@@ -71,39 +64,39 @@ export default function AnalyticsPage() {
           style={{ gridTemplateColumns: "2fr 1fr" }}
         >
           {/* Revenue over time */}
-          <div className="rounded-xl border border-black/[0.06] bg-white p-5">
+          <div className="rounded-lg border border-black/[0.06] bg-white p-5">
             <div className="mb-3.5 flex items-start justify-between">
               <div>
-                <h3 className="text-[15px] font-semibold text-[#1d1d1f]">
+                <h3 className="text-[15px] font-semibold text-foreground">
                   Revenue over time
                 </h3>
-                <p className="mt-0.5 text-[11px] text-[#1d1d1f]/50">
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
                   Daily, by source
                 </p>
               </div>
-              <div className="flex gap-3 text-[11px] text-[#1d1d1f]/60">
+              <div className="flex gap-3 text-[11px] text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[#1d1d1f]" />
+                  <span className="inline-block h-2 w-2 rounded-full bg-foreground" />
                   Organic
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[#c2410c]" />
+                  <span className="inline-block h-2 w-2 rounded-full bg-terra" />
                   Social
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[#1d1d1f]/30" />
+                  <span className="inline-block h-2 w-2 rounded-full bg-foreground/30" />
                   Direct
                 </span>
               </div>
             </div>
             {/* Area chart placeholder */}
             <div
-              className="w-full rounded-lg bg-[#f5f5f7]"
+              className="w-full rounded-lg bg-canvas-parchment"
               style={{ height: 220 }}
               aria-label="Revenue over time chart"
               role="img"
             />
-            <div className="mt-2 flex justify-between text-[11px] text-[#1d1d1f]/40">
+            <div className="mt-2 flex justify-between text-[11px] text-muted-foreground">
               <span>Apr 1</span>
               <span>Apr 8</span>
               <span>Apr 15</span>

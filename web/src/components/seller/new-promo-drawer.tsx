@@ -77,13 +77,13 @@ export function NewPromoDrawer() {
           borderBottom: "1px solid rgba(0,0,0,0.06)",
         }}
       >
-        <h2 className="text-[18px] font-semibold text-[#1d1d1f]">
+        <h2 className="text-[18px] font-semibold text-foreground">
           New promotion
         </h2>
         <button
           type="button"
           aria-label="Close"
-          className="flex h-8 w-8 items-center justify-center rounded-full text-[#1d1d1f]/50 hover:bg-black/[0.04]"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-black/[0.04]"
         >
           <CloseIcon />
         </button>
@@ -93,7 +93,7 @@ export function NewPromoDrawer() {
       <div className="grow overflow-auto" style={{ padding: 22 }}>
         {/* CODE section */}
         <div
-          className="text-[10px] font-semibold uppercase tracking-wider text-[#1d1d1f]/50"
+          className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
           style={{ marginBottom: 8 }}
         >
           Code
@@ -104,36 +104,36 @@ export function NewPromoDrawer() {
           style={{
             height: 44,
             padding: "0 14px",
-            border: "1.5px solid #1d1d1f",
+            border: "1.5px solid var(--foreground)",
             borderRadius: 10,
           }}
         >
-          <span className="font-mono text-[15px] font-semibold text-[#1d1d1f]">
+          <span className="font-mono text-[15px] font-semibold text-foreground">
             STUDIO15
           </span>
           <span className="flex-1" />
           <button
             type="button"
-            className="flex h-[26px] items-center gap-1 rounded-lg px-2 text-xs font-medium text-[#1d1d1f]/60 hover:bg-black/[0.04]"
+            className="flex h-[26px] items-center gap-1 rounded-lg px-2 text-xs font-medium text-muted-foreground hover:bg-black/[0.04]"
           >
             <RefreshIcon />
             Generate
           </button>
         </div>
-        <div className="mt-2 text-xs text-[#1d1d1f]/50">
+        <div className="mt-2 text-xs text-muted-foreground">
           Buyers will type or click this at checkout
         </div>
 
         {/* DISCOUNT section */}
         <div
-          className="text-[10px] font-semibold uppercase tracking-wider text-[#1d1d1f]/50"
+          className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
           style={{ margin: "20px 0 8px" }}
         >
           Discount
         </div>
         <div
           className="flex w-fit gap-0 rounded-full p-[3px]"
-          style={{ background: "#f5f5f7" }}
+          style={{ background: "var(--canvas-parchment)" }}
         >
           {DISCOUNT_OPTIONS.map((opt, i) => (
             <span
@@ -143,7 +143,10 @@ export function NewPromoDrawer() {
                 padding: "6px 14px",
                 fontWeight: i === 0 ? 600 : 400,
                 background: i === 0 ? "white" : "transparent",
-                color: i === 0 ? "#1d1d1f" : "#1d1d1f99",
+                color:
+                  i === 0
+                    ? "var(--foreground)"
+                    : "color-mix(in oklch, var(--foreground) 60%, transparent)",
                 boxShadow: i === 0 ? "0 1px 2px rgba(0,0,0,0.06)" : "none",
               }}
             >
@@ -157,7 +160,7 @@ export function NewPromoDrawer() {
             style={{
               height: 56,
               padding: "0 18px",
-              border: "1.5px solid #1d1d1f",
+              border: "1.5px solid var(--foreground)",
               borderRadius: 10,
             }}
           >
@@ -167,16 +170,18 @@ export function NewPromoDrawer() {
             >
               15
             </span>
-            <span className="text-[15px] font-medium text-[#1d1d1f]/50">%</span>
+            <span className="text-[15px] font-medium text-muted-foreground">
+              %
+            </span>
           </div>
-          <span className="text-sm text-[#1d1d1f]/50">
+          <span className="text-sm text-muted-foreground">
             off the entire order
           </span>
         </div>
 
         {/* WHO CAN USE IT section */}
         <div
-          className="text-[10px] font-semibold uppercase tracking-wider text-[#1d1d1f]/50"
+          className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
           style={{ margin: "22px 0 8px" }}
         >
           Who can use it
@@ -190,27 +195,27 @@ export function NewPromoDrawer() {
                 padding: 12,
                 borderRadius: 10,
                 border: opt.on
-                  ? "1.5px solid #1d1d1f"
+                  ? "1.5px solid var(--foreground)"
                   : "1px solid rgba(0,0,0,0.1)",
-                background: opt.on ? "#f5f5f7" : "white",
+                background: opt.on ? "var(--canvas-parchment)" : "white",
               }}
             >
               <span
                 className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
-                style={{ border: "1.5px solid #1d1d1f" }}
+                style={{ border: "1.5px solid var(--foreground)" }}
               >
                 {opt.on && (
                   <span
                     className="h-2 w-2 rounded-full"
-                    style={{ background: "#1d1d1f" }}
+                    style={{ background: "var(--foreground)" }}
                   />
                 )}
               </span>
               <div>
-                <div className="text-[13px] font-semibold text-[#1d1d1f]">
+                <div className="text-[13px] font-semibold text-foreground">
                   {opt.label}
                 </div>
-                <div className="text-xs text-[#1d1d1f]/50">{opt.sub}</div>
+                <div className="text-xs text-muted-foreground">{opt.sub}</div>
               </div>
             </div>
           ))}
@@ -218,7 +223,7 @@ export function NewPromoDrawer() {
 
         {/* LIMITS section */}
         <div
-          className="text-[10px] font-semibold uppercase tracking-wider text-[#1d1d1f]/50"
+          className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
           style={{ margin: "22px 0 8px" }}
         >
           Limits
@@ -229,7 +234,7 @@ export function NewPromoDrawer() {
               key={limit.label}
               className="rounded-xl border border-black/[0.06] bg-white p-3"
             >
-              <div className="text-xs text-[#1d1d1f]/50">{limit.label}</div>
+              <div className="text-xs text-muted-foreground">{limit.label}</div>
               <div
                 className="mt-0.5 font-semibold tabular-nums"
                 style={{
@@ -245,19 +250,19 @@ export function NewPromoDrawer() {
         {/* Forecast callout */}
         <div
           className="mt-[18px] rounded-xl p-3.5"
-          style={{ background: "#f5f5f7" }}
+          style={{ background: "var(--canvas-parchment)" }}
         >
           <div className="mb-1 flex items-center gap-2">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span className="text-[12.5px] font-semibold text-[#1d1d1f]">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-good" />
+            <span className="text-[12.5px] font-semibold text-foreground">
               Forecast
             </span>
           </div>
-          <p className="text-xs text-[#1d1d1f]/50">
+          <p className="text-xs text-muted-foreground">
             At your follower count, expect{" "}
-            <b className="text-[#1d1d1f]">~24 redemptions</b> driving{" "}
-            <b className="text-[#1d1d1f]">$420–$640</b> in incremental revenue.
-            Margin impact: <b className="text-[#1d1d1f]">-$72</b>.
+            <b className="text-foreground">~24 redemptions</b> driving{" "}
+            <b className="text-foreground">$420–$640</b> in incremental revenue.
+            Margin impact: <b className="text-foreground">-$72</b>.
           </p>
         </div>
       </div>
@@ -272,13 +277,13 @@ export function NewPromoDrawer() {
       >
         <button
           type="button"
-          className="rounded-xl border border-black/[0.12] px-4 py-2 text-sm font-medium text-[#1d1d1f] hover:bg-black/[0.04]"
+          className="rounded-xl border border-black/[0.12] px-4 py-2 text-sm font-medium text-foreground hover:bg-black/[0.04]"
         >
           Save draft
         </button>
         <button
           type="button"
-          className="rounded-xl bg-[#1d1d1f] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d1d1f]/90"
+          className="rounded-xl bg-foreground px-4 py-2 text-sm font-semibold text-white hover:bg-foreground/90"
         >
           Activate · Tue 12:00 AM
         </button>

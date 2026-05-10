@@ -1,3 +1,4 @@
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { money } from "@/lib/money";
 import { getLedgerEntries, getPayoutSummary } from "@/lib/seller/data";
@@ -10,7 +11,7 @@ export default function PayoutsPage() {
     <div className="flex flex-col min-h-screen">
       <div className="flex items-center justify-between border-b border-black/[0.06] bg-white px-7 py-5">
         <div>
-          <p className="text-xs uppercase tracking-wider text-[#1d1d1f]/60">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
             Finance · all time
           </p>
           {/* aria-label keeps accessible name "Payouts" for getByRole(heading),
@@ -18,31 +19,17 @@ export default function PayoutsPage() {
               getByText("Payouts",exact) only matches the filter chip, not this h1. */}
           <h1
             aria-label="Payouts"
-            className="mt-1 text-3xl font-semibold tracking-tight text-[#1d1d1f]"
+            className="mt-1 text-3xl font-semibold tracking-tight text-foreground"
           >
             Payouts{" "}
-            <span aria-hidden="true" className="text-[#1d1d1f]/20 text-xl">
+            <span aria-hidden="true" className="text-muted-foreground text-xl">
               –
             </span>
           </h1>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">
-            <svg
-              aria-hidden="true"
-              width="11"
-              height="11"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
+            <Download aria-hidden="true" className="h-[11px] w-[11px]" />
             Statements
           </Button>
         </div>
@@ -56,22 +43,22 @@ export default function PayoutsPage() {
         >
           {/* Last payout card */}
           <div className="bg-white rounded-xl border border-black/[0.06] p-7">
-            <p className="text-[11px] text-[#1d1d1f]/50 mb-1.5">
+            <p className="text-[11px] text-muted-foreground mb-1.5">
               Last payout · sent today
             </p>
             <div className="flex items-end gap-3">
               <span
-                className="font-semibold tabular-nums text-[#1d1d1f] leading-none"
+                className="font-semibold tabular-nums text-foreground leading-none"
                 style={{ fontSize: 64, letterSpacing: "-0.02em" }}
               >
                 {money(summary.lastPayout)}
               </span>
-              <span className="text-[11px] font-medium px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 mb-3 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+              <span className="text-[11px] font-medium px-2 py-1 rounded-full bg-good/15 text-good mb-3 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-good inline-block" />
                 {summary.lastPayoutSentLabel}
               </span>
             </div>
-            <p className="text-sm text-[#1d1d1f]/50 mt-3.5 max-w-md">
+            <p className="text-sm text-muted-foreground mt-3.5 max-w-md">
               Nine orders, less Micro&#x27;s 4% and three shipping labels. We
               send payouts every Tuesday — you can switch to instant from
               Settings.
@@ -89,23 +76,25 @@ export default function PayoutsPage() {
           {/* Sub-cards */}
           <div className="flex flex-col gap-5">
             <div className="bg-white rounded-xl border border-black/[0.06] p-5">
-              <p className="text-[11px] text-[#1d1d1f]/50">
+              <p className="text-[11px] text-muted-foreground">
                 Available · next payout
               </p>
-              <p className="text-[28px] font-semibold tabular-nums text-[#1d1d1f] leading-none mt-1.5">
+              <p className="text-[28px] font-semibold tabular-nums text-foreground leading-none mt-1.5">
                 {money(summary.available)}
               </p>
-              <p className="text-[11px] text-[#1d1d1f]/50 mt-1.5">
+              <p className="text-[11px] text-muted-foreground mt-1.5">
                 From {summary.availableFromOrders} orders · sends{" "}
                 {summary.availableSendsOn}
               </p>
             </div>
             <div className="bg-white rounded-xl border border-black/[0.06] p-5">
-              <p className="text-[11px] text-[#1d1d1f]/50">Lifetime earned</p>
-              <p className="text-[28px] font-semibold tabular-nums text-[#1d1d1f] leading-none mt-1.5">
+              <p className="text-[11px] text-muted-foreground">
+                Lifetime earned
+              </p>
+              <p className="text-[28px] font-semibold tabular-nums text-foreground leading-none mt-1.5">
                 {money(summary.lifetime)}
               </p>
-              <p className="text-[11px] text-[#1d1d1f]/50 mt-1.5">
+              <p className="text-[11px] text-muted-foreground mt-1.5">
                 {summary.lifetimeOrders} orders · {summary.lifetimeRange}
               </p>
             </div>
@@ -116,7 +105,7 @@ export default function PayoutsPage() {
         <div className="bg-white rounded-xl border border-black/[0.06] overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-black/[0.06]">
-            <h3 className="text-[15px] font-semibold text-[#1d1d1f]">
+            <h3 className="text-[15px] font-semibold text-foreground">
               Activity
             </h3>
             <div className="flex items-center gap-1">
@@ -125,8 +114,8 @@ export default function PayoutsPage() {
                   key={c}
                   className={`text-[11px] px-2.5 py-1 rounded-full cursor-pointer ${
                     i === 0
-                      ? "bg-[#1d1d1f] text-white"
-                      : "bg-[#f0f0f0] text-[#1d1d1f]"
+                      ? "bg-foreground text-white"
+                      : "bg-muted text-foreground"
                   }`}
                 >
                   {c}
@@ -139,14 +128,14 @@ export default function PayoutsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-black/[0.04]">
-                <th className="text-left text-[11px] font-medium text-[#1d1d1f]/40 px-5 py-2.5">
+                <th className="text-left text-[11px] font-medium text-muted-foreground px-5 py-2.5">
                   Date
                 </th>
-                <th className="text-left text-[11px] font-medium text-[#1d1d1f]/40 px-3 py-2.5">
+                <th className="text-left text-[11px] font-medium text-muted-foreground px-3 py-2.5">
                   Description
                 </th>
-                <th className="text-left text-[11px] font-medium text-[#1d1d1f]/40 px-3 py-2.5" />
-                <th className="text-right text-[11px] font-medium text-[#1d1d1f]/40 px-5 py-2.5">
+                <th className="text-left text-[11px] font-medium text-muted-foreground px-3 py-2.5" />
+                <th className="text-right text-[11px] font-medium text-muted-foreground px-5 py-2.5">
                   Amount
                 </th>
               </tr>
@@ -156,10 +145,10 @@ export default function PayoutsPage() {
                 const isPayout = row.type === "payout";
                 const isFee = row.amount < 0;
                 const amountColor = isFee
-                  ? "#1d1d1f66"
+                  ? "color-mix(in oklch, var(--foreground) 40%, transparent)"
                   : isPayout
-                    ? "#1d1d1f"
-                    : "#16a34a";
+                    ? "var(--foreground)"
+                    : undefined;
                 const amountLabel = isFee
                   ? `−${money(Math.abs(row.amount))}`
                   : isPayout
@@ -171,35 +160,35 @@ export default function PayoutsPage() {
                     key={`${row.date}-${row.label}`}
                     className="border-b border-black/[0.04] last:border-0"
                   >
-                    <td className="px-5 py-3 font-mono text-[12px] text-[#1d1d1f]/50 whitespace-nowrap">
+                    <td className="px-5 py-3 font-mono text-[12px] text-muted-foreground whitespace-nowrap">
                       {row.date}
                     </td>
                     <td className="px-3 py-3">
-                      <p className="text-[13px] font-semibold text-[#1d1d1f]">
+                      <p className="text-[13px] font-semibold text-foreground">
                         {row.label}
                       </p>
-                      <p className="text-[11px] text-[#1d1d1f]/50">
+                      <p className="text-[11px] text-muted-foreground">
                         {row.subject}
                       </p>
                     </td>
                     <td className="px-3 py-3">
                       {isPayout && !isFee ? (
-                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-good/15 text-good">
                           Payout
                         </span>
                       ) : isFee ? (
-                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#f0f0f0] text-[#1d1d1f]/60">
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                           Fee
                         </span>
                       ) : (
-                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#f0f0f0] text-[#1d1d1f]/60">
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                           Sale
                         </span>
                       )}
                     </td>
                     <td
-                      className="px-5 py-3 text-right text-[13px] font-semibold tabular-nums whitespace-nowrap"
-                      style={{ color: amountColor }}
+                      className={`px-5 py-3 text-right text-[13px] font-semibold tabular-nums whitespace-nowrap ${!isFee && !isPayout ? "text-good" : ""}`}
+                      style={amountColor ? { color: amountColor } : undefined}
                     >
                       {amountLabel}
                     </td>

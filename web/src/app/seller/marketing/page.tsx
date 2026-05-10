@@ -17,20 +17,20 @@ export default function MarketingPage() {
           <>
             <button
               type="button"
-              className="inline-flex items-center rounded-lg border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-black/[0.04]"
+              className="inline-flex items-center rounded-lg border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-foreground hover:bg-black/[0.04]"
             >
               Save draft
             </button>
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-black/[0.04]"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-black/20 px-3.5 py-1.5 text-[13px] font-medium text-foreground hover:bg-black/[0.04]"
             >
               <Eye className="size-3.5" aria-hidden />
               Send test
             </button>
             <button
               type="button"
-              className="inline-flex items-center rounded-lg bg-[#1d1d1f] px-3.5 py-1.5 text-[13px] font-medium text-white hover:bg-[#1d1d1f]/90"
+              className="inline-flex items-center rounded-lg bg-foreground px-3.5 py-1.5 text-[13px] font-medium text-white hover:bg-foreground/90"
             >
               Schedule send
             </button>
@@ -54,7 +54,7 @@ export default function MarketingPage() {
           style={{
             width: 480,
             padding: "24px 28px",
-            background: "#f5f5f7",
+            background: "var(--canvas-parchment)",
           }}
         >
           <EmailPreview draft={draft} />

@@ -40,7 +40,7 @@ export default function PayoutErrorPage() {
               width: 28,
               height: 28,
               borderRadius: 999,
-              background: "var(--bad, #c0392b)",
+              background: "var(--bad)",
               color: "white",
             }}
           >
@@ -48,13 +48,13 @@ export default function PayoutErrorPage() {
           </span>
           <div className="flex-1">
             <h4
-              className="font-semibold text-[#1d1d1f] text-[15px] leading-snug"
+              className="font-semibold text-foreground text-[15px] leading-snug"
               style={{ marginBottom: 2 }}
             >
               We couldn&apos;t send your Tuesday payout · {money(HELD_AMOUNT)}{" "}
               held
             </h4>
-            <p className="text-sm text-[#1d1d1f]/60">
+            <p className="text-sm text-muted-foreground">
               Your bank rejected the transfer (account ending 4421). This
               sometimes happens after an address change. Update the account and
               we&apos;ll retry within an hour.
@@ -68,7 +68,7 @@ export default function PayoutErrorPage() {
             <Link
               href="/seller/payouts"
               role="button"
-              className="inline-flex items-center justify-center rounded-[min(var(--radius-md),12px)] bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground h-7"
+              className="inline-flex items-center justify-center rounded-pill bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground h-7"
             >
               Update bank →
             </Link>
@@ -83,24 +83,27 @@ export default function PayoutErrorPage() {
           style={{
             padding: 24,
             marginBottom: 20,
-            borderColor: "var(--bad, #c0392b)",
+            borderColor: "var(--bad)",
           }}
         >
           <div className="flex items-end justify-between">
             <div>
               <p
                 className="text-[11px] font-semibold uppercase tracking-wide"
-                style={{ color: "var(--bad, #c0392b)", marginBottom: 6 }}
+                style={{ color: "var(--bad)", marginBottom: 6 }}
               >
                 ● Payout held
               </p>
               <p
-                className="font-semibold tabular-nums text-[#1d1d1f] leading-none"
+                className="font-semibold tabular-nums text-foreground leading-none"
                 style={{ fontSize: 36 }}
               >
                 {money(HELD_AMOUNT)}
               </p>
-              <p className="text-sm text-[#1d1d1f]/60" style={{ marginTop: 6 }}>
+              <p
+                className="text-sm text-muted-foreground"
+                style={{ marginTop: 6 }}
+              >
                 9 orders · weekly batch · would have arrived Wed
               </p>
             </div>
@@ -113,17 +116,17 @@ export default function PayoutErrorPage() {
           <hr className="border-black/[0.06]" style={{ margin: "18px 0" }} />
 
           <div className="flex items-start gap-3">
-            <Info size={14} className="text-[#1d1d1f]/50 mt-0.5 shrink-0" />
+            <Info size={14} className="text-muted-foreground mt-0.5 shrink-0" />
             <div>
               <h4
-                className="font-semibold text-[#1d1d1f]"
+                className="font-semibold text-foreground"
                 style={{ fontSize: 13, marginBottom: 2 }}
               >
                 What&apos;s happening
               </h4>
-              <p className="text-sm text-[#1d1d1f]/60">
+              <p className="text-sm text-muted-foreground">
                 Stripe returned{" "}
-                <code className="font-mono text-[#1d1d1f]">
+                <code className="font-mono text-foreground">
                   R03 · No account / unable to locate
                 </code>
                 . The funds are safe with us; nothing left your shop. Once you
@@ -144,9 +147,9 @@ export default function PayoutErrorPage() {
               className="rounded-xl border border-black/[0.06] bg-white"
               style={{ padding: 18 }}
             >
-              <p className="text-[11px] text-[#1d1d1f]/60">{kpi.label}</p>
+              <p className="text-[11px] text-muted-foreground">{kpi.label}</p>
               <p
-                className="font-semibold tabular-nums text-[#1d1d1f] leading-none"
+                className="font-semibold tabular-nums text-foreground leading-none"
                 style={{ fontSize: 28, marginTop: 6 }}
               >
                 {kpi.value}
@@ -154,7 +157,7 @@ export default function PayoutErrorPage() {
               <div style={{ height: 32, marginTop: 8 }}>
                 <Sparkline
                   points={SPARK_POINTS}
-                  className="h-8 w-full text-[#1d1d1f]/40"
+                  className="h-8 w-full text-muted-foreground"
                 />
               </div>
             </div>

@@ -11,14 +11,13 @@ export default function OnboardPage() {
   const steps = getSetupSteps();
 
   return (
-    <div className="flex min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
+    <div className="flex min-h-screen bg-canvas-parchment text-foreground">
       {/* Left rail */}
       <div
-        className="flex flex-col bg-white"
+        className="flex flex-col bg-white border-r border-border"
         style={{
           width: 280,
           padding: "40px 28px",
-          borderRight: "1px solid #e0e0e0",
           flexShrink: 0,
         }}
       >
@@ -26,15 +25,15 @@ export default function OnboardPage() {
           <span className="font-semibold" style={{ fontSize: 18 }}>
             micro.
           </span>
-          <span className="ml-1 text-[11px] text-[#1d1d1f]/60">
+          <span className="ml-1 text-[11px] text-foreground/60">
             Open a shop
           </span>
         </div>
 
-        <p className="mb-1.5 text-[11px] text-[#1d1d1f]/60">Step 2 of 6</p>
-        <div className="mb-5 h-1 overflow-hidden rounded-full bg-[#e0e0e0]">
+        <p className="mb-1.5 text-[11px] text-foreground/60">Step 2 of 6</p>
+        <div className="mb-5 h-1 overflow-hidden rounded-full bg-border">
           <div
-            className="h-full rounded-full bg-[#1d1d1f]"
+            className="h-full rounded-full bg-foreground"
             style={{ width: "33%" }}
           />
         </div>
@@ -51,12 +50,14 @@ export default function OnboardPage() {
                     width: 22,
                     height: 22,
                     background: isDone
-                      ? "#34c759"
+                      ? "var(--good)"
                       : isActive
-                        ? "#1d1d1f"
-                        : "#f5f5f7",
-                    color: isDone || isActive ? "white" : "#1d1d1f99",
-                    border: isDone || isActive ? "none" : "1px solid #e0e0e0",
+                        ? "var(--foreground)"
+                        : "var(--canvas-parchment)",
+                    color: isDone || isActive ? "white" : "var(--foreground)",
+                    opacity: isDone || isActive ? 1 : 0.6,
+                    border:
+                      isDone || isActive ? "none" : "1px solid var(--border)",
                   }}
                 >
                   {isDone ? (
@@ -83,7 +84,8 @@ export default function OnboardPage() {
                 <span
                   className="text-[13px]"
                   style={{
-                    color: isActive ? "#1d1d1f" : "#1d1d1f99",
+                    color: isActive ? "var(--foreground)" : "var(--foreground)",
+                    opacity: isActive ? 1 : 0.6,
                     fontWeight: isActive ? 600 : 400,
                   }}
                 >
@@ -94,17 +96,11 @@ export default function OnboardPage() {
           })}
         </div>
 
-        <div
-          className="mt-8 rounded-lg p-3.5"
-          style={{ background: "#f5f5f7" }}
-        >
-          <p
-            className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
-            style={{ color: "#c2410c" }}
-          >
+        <div className="mt-8 rounded-lg p-3.5 bg-canvas-parchment">
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-terra">
             Tip
           </p>
-          <p className="text-[12px] text-[#1d1d1f]/60">
+          <p className="text-[12px] text-foreground/60">
             Add payouts last if you'd like — you can launch in draft and finish
             this when an order comes in.
           </p>
@@ -114,22 +110,22 @@ export default function OnboardPage() {
       {/* Right form */}
       <div className="flex-1 overflow-y-auto" style={{ padding: "60px 56px" }}>
         <div style={{ maxWidth: 620 }}>
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[#1d1d1f]/60">
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-foreground/60">
             Step 2 · Location &amp; payouts
           </p>
           <h1
             className="font-semibold leading-tight tracking-tight"
-            style={{ fontSize: 40, letterSpacing: "-0.02em" }}
+            style={{ fontSize: 40, letterSpacing: "-0.374px" }}
           >
             Where are you shipping from, and where should we send the money?
           </h1>
 
           {/* Studio location card */}
           <div className="mt-7 rounded-lg border border-black/[0.06] bg-white p-6">
-            <h2 className="mb-1 text-[15px] font-semibold text-[#1d1d1f]">
+            <h2 className="mb-1 text-[15px] font-semibold text-foreground">
               Studio location
             </h2>
-            <p className="mb-3.5 text-[13px] text-[#1d1d1f]/60">
+            <p className="mb-3.5 text-[13px] text-foreground/60">
               Customers see only your city &amp; state.
             </p>
             <div
@@ -137,16 +133,16 @@ export default function OnboardPage() {
               style={{ gridTemplateColumns: "2fr 1fr" }}
             >
               <div>
-                <p className="mb-1 text-[11px] text-[#1d1d1f]/60">
+                <p className="mb-1 text-[11px] text-foreground/60">
                   Address line 1
                 </p>
-                <div className="flex h-9 items-center rounded-lg border border-black/[0.06] px-3 text-[13px]">
+                <div className="flex h-9 items-center rounded-sm border border-black/[0.06] px-3 text-[13px]">
                   410 Linden St
                 </div>
               </div>
               <div>
-                <p className="mb-1 text-[11px] text-[#1d1d1f]/60">City</p>
-                <div className="flex h-9 items-center rounded-lg border border-black/[0.06] px-3 text-[13px]">
+                <p className="mb-1 text-[11px] text-foreground/60">City</p>
+                <div className="flex h-9 items-center rounded-sm border border-black/[0.06] px-3 text-[13px]">
                   Oakland
                 </div>
               </div>
@@ -157,14 +153,14 @@ export default function OnboardPage() {
           <div className="mt-4 rounded-lg border border-black/[0.06] bg-white p-6">
             <div className="mb-3.5 flex items-center justify-between">
               <div>
-                <h2 className="mb-0.5 text-[15px] font-semibold text-[#1d1d1f]">
+                <h2 className="mb-0.5 text-[15px] font-semibold text-foreground">
                   Where to send your payouts
                 </h2>
-                <p className="text-[13px] text-[#1d1d1f]/60">
+                <p className="text-[13px] text-foreground/60">
                   Pick one — you can add more later.
                 </p>
               </div>
-              <span className="rounded-full bg-[#f5f5f7] px-2.5 py-1 text-[11px] text-[#1d1d1f]/60">
+              <span className="rounded-full bg-canvas-parchment px-2.5 py-1 text-[11px] text-foreground/60">
                 256-bit · Stripe
               </span>
             </div>
@@ -178,13 +174,15 @@ export default function OnboardPage() {
                   className="rounded-lg p-3.5"
                   style={{
                     border: opt.selected
-                      ? "1.5px solid #1d1d1f"
-                      : "1px solid #e0e0e0",
-                    background: opt.selected ? "#f5f5f7" : "white",
+                      ? "1.5px solid var(--foreground)"
+                      : "1px solid var(--border)",
+                    background: opt.selected
+                      ? "var(--canvas-parchment)"
+                      : "white",
                   }}
                 >
                   <div className="mb-1.5 flex items-center justify-between">
-                    <span className="text-[#1d1d1f]/40 text-sm">
+                    <span className="text-sm text-foreground/40">
                       {opt.label === "Bank account"
                         ? "🏦"
                         : opt.label === "Debit card"
@@ -193,12 +191,8 @@ export default function OnboardPage() {
                     </span>
                     {opt.selected && (
                       <span
-                        className="flex items-center justify-center rounded-full"
-                        style={{
-                          width: 18,
-                          height: 18,
-                          background: "#1d1d1f",
-                        }}
+                        className="flex items-center justify-center rounded-full bg-foreground"
+                        style={{ width: 18, height: 18 }}
                       >
                         <svg
                           width="10"
@@ -219,10 +213,10 @@ export default function OnboardPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-[13px] font-semibold text-[#1d1d1f]">
+                  <p className="text-[13px] font-semibold text-foreground">
                     {opt.label}
                   </p>
-                  <p className="text-[11px] text-[#1d1d1f]/60">{opt.sub}</p>
+                  <p className="text-[11px] text-foreground/60">{opt.sub}</p>
                 </div>
               ))}
             </div>
@@ -234,13 +228,13 @@ export default function OnboardPage() {
             <Link
               href="/seller/apply"
               role="button"
-              className="rounded-full px-5 py-2.5 text-sm font-medium text-[#1d1d1f] hover:bg-black/5"
+              className="rounded-full px-5 py-2.5 text-sm font-medium text-foreground hover:bg-black/5"
             >
               ← Back
             </Link>
             <button
               type="button"
-              className="rounded-full bg-[#0066cc] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#0055aa]"
+              className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-[#0055aa]"
               style={{ border: "none", cursor: "pointer" }}
             >
               Continue · Brand
