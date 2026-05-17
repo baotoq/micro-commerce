@@ -11,6 +11,7 @@ builder.AddRedisClientBuilder("cache")
 builder.AddInfrastructure();
 
 builder.Services.AddApplication();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddDaprClient();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
