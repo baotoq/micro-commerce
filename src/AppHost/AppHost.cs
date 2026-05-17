@@ -5,15 +5,16 @@ var builder = DistributedApplication.CreateBuilder(args);
 var cache = builder.AddRedis("cache");
 
 var postgres = builder.AddPostgres("postgres")
-    .AddDatabase("microcommerce");
+    .AddDatabase("catalogdb");
 
-var server = builder.AddProject<Projects.MicroCommerce_Server>("server")
+var server = builder.AddProject<Projects.MicroCommerce_Catalog>("catalog-api")
     .WithReference(cache)
     .WithReference(postgres)
     .WaitFor(cache)
     .WaitFor(postgres)
     .WithHttpHealthCheck("/health")
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .WithDaprSidecar();
 
 if (builder.Environment.EnvironmentName != "Testing")
 {

@@ -11,6 +11,7 @@ builder.AddRedisClientBuilder("cache")
 builder.AddInfrastructure();
 
 builder.Services.AddApplication();
+builder.Services.AddDaprClient();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 

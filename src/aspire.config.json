@@ -1,5 +1,5 @@
 {
   "appHost": {
-    "path": "MicroCommerce.AppHost/MicroCommerce.AppHost.csproj"
+    "path": "AppHost/MicroCommerce.AppHost.csproj"
   }
 }

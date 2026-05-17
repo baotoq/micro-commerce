@@ -11,7 +11,7 @@ public class ApiFixture : IAsyncLifetime
 
     public HttpClient HttpClient { get; private set; } = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Testing");
 
@@ -25,14 +25,15 @@ public class ApiFixture : IAsyncLifetime
         await _app.StartAsync();
 
         await _app.ResourceNotifications
-            .WaitForResourceHealthyAsync("server")
+            .WaitForResourceHealthyAsync("catalog-api")
             .WaitAsync(TimeSpan.FromSeconds(120));
 
-        HttpClient = _app.CreateHttpClient("server");
+        HttpClient = _app.CreateHttpClient("catalog-api");
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         HttpClient.Dispose();
         if (_app != null)
             await _app.DisposeAsync();

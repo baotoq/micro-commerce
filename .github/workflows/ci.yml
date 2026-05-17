@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master]
+
+jobs:
+  unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Domain tests
+        run: dotnet test -c Release Services/Catalog.API/tests/Domain.Tests/MicroCommerce.Catalog.Domain.Tests.csproj
+
+      - name: Application tests
+        run: dotnet test -c Release Services/Catalog.API/tests/Application.Tests/MicroCommerce.Catalog.Application.Tests.csproj
+
+  integration:
+    name: Functional & Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit
+    defaults:
+      run:
+        working-directory: src
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Functional tests
+        run: dotnet test -c Release Services/Catalog.API/tests/FunctionalTests/MicroCommerce.Catalog.FunctionalTests.csproj
+
+      - name: Integration tests
+        run: dotnet test -c Release Services/Catalog.API/tests/IntegrationTests/MicroCommerce.Catalog.IntegrationTests.csproj

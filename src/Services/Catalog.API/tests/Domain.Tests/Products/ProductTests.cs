@@ -61,4 +61,28 @@ public class ProductTests
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             product.Update("Widget", "Electronics", -1m, 10, ProductStatus.Active));
     }
+
+    [Fact]
+    public void Product_Update_EmptyName_Throws()
+    {
+        var product = new Product(ValidSku(), "Widget", "Electronics", 9.99m, 10, ProductStatus.Active);
+        Assert.Throws<ArgumentException>(() =>
+            product.Update("", "Electronics", 9.99m, 10, ProductStatus.Active));
+    }
+
+    [Fact]
+    public void Product_Update_EmptyCategory_Throws()
+    {
+        var product = new Product(ValidSku(), "Widget", "Electronics", 9.99m, 10, ProductStatus.Active);
+        Assert.Throws<ArgumentException>(() =>
+            product.Update("Widget", "", 9.99m, 10, ProductStatus.Active));
+    }
+
+    [Fact]
+    public void Product_Update_NegativeInventory_Throws()
+    {
+        var product = new Product(ValidSku(), "Widget", "Electronics", 9.99m, 10, ProductStatus.Active);
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            product.Update("Widget", "Electronics", 9.99m, -1, ProductStatus.Active));
+    }
 }

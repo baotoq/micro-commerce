@@ -9,6 +9,7 @@
     <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Domain\MicroCommerce.Domain.csproj" />
+    <ProjectReference Include="..\Domain\MicroCommerce.Catalog.Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure\MicroCommerce.Catalog.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

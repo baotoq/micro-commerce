@@ -4,11 +4,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <RootNamespace>MicroCommerce.Catalog.Domain.Tests</RootNamespace>
+    <RootNamespace>MicroCommerce.Catalog.IntegrationTests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Testing" Version="13.3.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
   </ItemGroup>
@@ -16,6 +17,7 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Domain\MicroCommerce.Domain.csproj" />
+    <ProjectReference Include="..\..\..\..\AppHost\MicroCommerce.AppHost.csproj" />
+    <ProjectReference Include="..\..\src\Application\MicroCommerce.Catalog.Application.csproj" />
   </ItemGroup>
 </Project>

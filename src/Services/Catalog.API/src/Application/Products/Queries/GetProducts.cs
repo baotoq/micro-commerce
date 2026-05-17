@@ -23,7 +23,7 @@ public class GetProductsHandler(AppDbContext db) : IRequestHandler<GetProductsQu
             var search = request.Search;
             query = query.Where(p =>
                 EF.Functions.ILike(p.Name, $"%{search}%") ||
-                EF.Functions.ILike(EF.Property<string>(p, "Sku"), $"%{search}%"));
+                EF.Functions.ILike(p.Category, $"%{search}%"));
         }
 
         var total = await query.CountAsync(ct);

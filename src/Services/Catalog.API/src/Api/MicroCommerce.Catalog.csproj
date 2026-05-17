@@ -8,16 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\MicroCommerce.Application.csproj" />
-    <ProjectReference Include="..\Infrastructure\MicroCommerce.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="MicroCommerce.IntegrationTests" />
+    <InternalsVisibleTo Include="MicroCommerce.Catalog.IntegrationTests" />
+    <InternalsVisibleTo Include="MicroCommerce.Catalog.FunctionalTests" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.3.3" />
+    <PackageReference Include="Dapr.AspNetCore" Version="1.17.9" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.5.0" />
     <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="10.5.0" />
@@ -26,5 +23,10 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application\MicroCommerce.Catalog.Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\MicroCommerce.Catalog.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

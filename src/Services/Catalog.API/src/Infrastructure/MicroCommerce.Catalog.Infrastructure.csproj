@@ -11,6 +11,6 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Domain\MicroCommerce.Domain.csproj" />
+    <ProjectReference Include="..\Domain\MicroCommerce.Catalog.Domain.csproj" />
   </ItemGroup>
 </Project>

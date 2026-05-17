@@ -16,15 +16,16 @@ public class ProductsWriteTests(ApiFixture fixture)
     [Fact]
     public async Task CreateProduct_ValidRequest_Returns201WithLocation()
     {
+        var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
         var command = new CreateProductCommand(sku, "Integration Test Vase", "Vessels", 49.99m, 10, "active");
 
-        var response = await _client.PostAsJsonAsync("/api/products", command);
+        var response = await _client.PostAsJsonAsync("/api/products", command, ct);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
 
-        var created = await response.Content.ReadFromJsonAsync<ProductDto>();
+        var created = await response.Content.ReadFromJsonAsync<ProductDto>(ct);
         Assert.NotNull(created);
         Assert.Equal(sku.ToUpperInvariant(), created.Sku);
         Assert.Equal("Integration Test Vase", created.Name);
@@ -34,12 +35,13 @@ public class ProductsWriteTests(ApiFixture fixture)
     [Fact]
     public async Task CreateProduct_DuplicateSku_Returns409()
     {
+        var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
         var command = new CreateProductCommand(sku, "Original", "Vessels", 49.99m, 10, "active");
-        await _client.PostAsJsonAsync("/api/products", command);
+        await _client.PostAsJsonAsync("/api/products", command, ct);
 
         var response = await _client.PostAsJsonAsync("/api/products",
-            command with { Name = "Duplicate" });
+            command with { Name = "Duplicate" }, ct);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
@@ -47,14 +49,15 @@ public class ProductsWriteTests(ApiFixture fixture)
     [Fact]
     public async Task GetProductBySku_AfterCreate_Returns200()
     {
+        var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
         await _client.PostAsJsonAsync("/api/products",
-            new CreateProductCommand(sku, "Lookup Test", "Tableware", 25m, 3, "draft"));
+            new CreateProductCommand(sku, "Lookup Test", "Tableware", 25m, 3, "draft"), ct);
 
-        var response = await _client.GetAsync($"/api/products/{sku}");
+        var response = await _client.GetAsync($"/api/products/{sku}", ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var product = await response.Content.ReadFromJsonAsync<ProductDto>();
+        var product = await response.Content.ReadFromJsonAsync<ProductDto>(ct);
         Assert.NotNull(product);
         Assert.Equal(sku.ToUpperInvariant(), product.Sku);
     }
@@ -62,15 +65,16 @@ public class ProductsWriteTests(ApiFixture fixture)
     [Fact]
     public async Task UpdateProduct_KnownSku_Returns200WithUpdatedData()
     {
+        var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
         await _client.PostAsJsonAsync("/api/products",
-            new CreateProductCommand(sku, "Before Update", "Drinkware", 20m, 5, "draft"));
+            new CreateProductCommand(sku, "Before Update", "Drinkware", 20m, 5, "draft"), ct);
 
         var update = new UpdateProductCommand(sku, "After Update", "Tableware", 35m, 8, "active");
-        var response = await _client.PutAsJsonAsync($"/api/products/{sku}", update);
+        var response = await _client.PutAsJsonAsync($"/api/products/{sku}", update, ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var updated = await response.Content.ReadFromJsonAsync<ProductDto>();
+        var updated = await response.Content.ReadFromJsonAsync<ProductDto>(ct);
         Assert.NotNull(updated);
         Assert.Equal("After Update", updated.Name);
         Assert.Equal("active", updated.Status);
@@ -81,7 +85,7 @@ public class ProductsWriteTests(ApiFixture fixture)
     public async Task UpdateProduct_UnknownSku_Returns404()
     {
         var update = new UpdateProductCommand("NOSUCH-SKU-999", "X", "Y", 1m, 1, "draft");
-        var response = await _client.PutAsJsonAsync("/api/products/NOSUCH-SKU-999", update);
+        var response = await _client.PutAsJsonAsync("/api/products/NOSUCH-SKU-999", update, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -89,21 +93,22 @@ public class ProductsWriteTests(ApiFixture fixture)
     [Fact]
     public async Task DeleteProduct_KnownSku_Returns204AndRemoves()
     {
+        var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
         await _client.PostAsJsonAsync("/api/products",
-            new CreateProductCommand(sku, "To Delete", "Vessels", 15m, 1, "draft"));
+            new CreateProductCommand(sku, "To Delete", "Vessels", 15m, 1, "draft"), ct);
 
-        var deleteResponse = await _client.DeleteAsync($"/api/products/{sku}");
+        var deleteResponse = await _client.DeleteAsync($"/api/products/{sku}", ct);
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
-        var getResponse = await _client.GetAsync($"/api/products/{sku}");
+        var getResponse = await _client.GetAsync($"/api/products/{sku}", ct);
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
 
     [Fact]
     public async Task DeleteProduct_UnknownSku_Returns404()
     {
-        var response = await _client.DeleteAsync("/api/products/NOSUCH-SKU-888");
+        var response = await _client.DeleteAsync("/api/products/NOSUCH-SKU-888", TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }

@@ -7,7 +7,7 @@ public static class InfrastructureExtensions
 {
     public static IHostApplicationBuilder AddInfrastructure(this IHostApplicationBuilder builder)
     {
-        builder.AddNpgsqlDbContext<AppDbContext>("microcommerce");
+        builder.AddNpgsqlDbContext<AppDbContext>("catalogdb");
         return builder;
     }
 }

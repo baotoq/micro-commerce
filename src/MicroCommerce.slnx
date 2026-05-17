@@ -5,14 +5,16 @@
   <Folder Name="/Services/">
     <Folder Name="/Services/Catalog.API/">
       <Folder Name="/Services/Catalog.API/src/">
-        <Project Path="Services/Catalog.API/src/Domain/MicroCommerce.Domain.csproj" />
-        <Project Path="Services/Catalog.API/src/Infrastructure/MicroCommerce.Infrastructure.csproj" />
-        <Project Path="Services/Catalog.API/src/Application/MicroCommerce.Application.csproj" />
-        <Project Path="Services/Catalog.API/src/Api/MicroCommerce.Server.csproj" />
+        <Project Path="Services/Catalog.API/src/Domain/MicroCommerce.Catalog.Domain.csproj" />
+        <Project Path="Services/Catalog.API/src/Infrastructure/MicroCommerce.Catalog.Infrastructure.csproj" />
+        <Project Path="Services/Catalog.API/src/Application/MicroCommerce.Catalog.Application.csproj" />
+        <Project Path="Services/Catalog.API/src/Api/MicroCommerce.Catalog.csproj" />
       </Folder>
       <Folder Name="/Services/Catalog.API/tests/">
-        <Project Path="Services/Catalog.API/tests/Domain.Tests/MicroCommerce.Domain.Tests.csproj" />
-        <Project Path="Services/Catalog.API/tests/IntegrationTests/MicroCommerce.IntegrationTests.csproj" />
+        <Project Path="Services/Catalog.API/tests/Domain.Tests/MicroCommerce.Catalog.Domain.Tests.csproj" />
+        <Project Path="Services/Catalog.API/tests/Application.Tests/MicroCommerce.Catalog.Application.Tests.csproj" />
+        <Project Path="Services/Catalog.API/tests/IntegrationTests/MicroCommerce.Catalog.IntegrationTests.csproj" />
+        <Project Path="Services/Catalog.API/tests/FunctionalTests/MicroCommerce.Catalog.FunctionalTests.csproj" />
       </Folder>
     </Folder>
   </Folder>

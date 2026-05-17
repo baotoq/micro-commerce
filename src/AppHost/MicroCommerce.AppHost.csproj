@@ -12,9 +12,10 @@
     <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.3.3" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.3.3" />
     <PackageReference Include="Aspire.Hosting.Redis" Version="13.3.3" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Dapr" Version="13.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Services\Catalog.API\src\Api\MicroCommerce.Server.csproj" />
+    <ProjectReference Include="..\Services\Catalog.API\src\Api\MicroCommerce.Catalog.csproj" />
   </ItemGroup>
 </Project>
