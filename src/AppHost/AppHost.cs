@@ -7,7 +7,7 @@ var cache = builder.AddRedis("cache");
 var postgres = builder.AddPostgres("postgres")
     .AddDatabase("catalogdb");
 
-var server = builder.AddProject<Projects.MicroCommerce_Catalog>("catalog-api")
+var catalog = builder.AddProject<Projects.MicroCommerce_Catalog>("catalog-api")
     .WithReference(cache)
     .WithReference(postgres)
     .WaitFor(cache)
@@ -19,8 +19,8 @@ var server = builder.AddProject<Projects.MicroCommerce_Catalog>("catalog-api")
 if (builder.Environment.EnvironmentName != "Testing")
 {
     builder.AddNextJsApp("web", "../web")
-        .WithEnvironment("API_URL", server.GetEndpoint("http"))
-        .WaitFor(server)
+        .WithEnvironment("API_URL", catalog.GetEndpoint("http"))
+        .WaitFor(catalog)
         .WithExternalHttpEndpoints();
 }
 
