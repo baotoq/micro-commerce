@@ -1,4 +1,5 @@
 using MediatR;
+using MicroCommerce.Catalog.Application.Products.Events;
 using MicroCommerce.Catalog.Domain.Products;
 using MicroCommerce.Catalog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ namespace MicroCommerce.Catalog.Application.Products.Commands;
 
 public record DeleteProductCommand(string Sku) : IRequest<bool>;
 
-public class DeleteProductHandler(AppDbContext db) : IRequestHandler<DeleteProductCommand, bool>
+public class DeleteProductHandler(AppDbContext db, IPublisher publisher) : IRequestHandler<DeleteProductCommand, bool>
 {
     public async Task<bool> Handle(DeleteProductCommand request, CancellationToken ct)
     {
@@ -17,6 +18,7 @@ public class DeleteProductHandler(AppDbContext db) : IRequestHandler<DeleteProdu
 
         db.Products.Remove(product);
         await db.SaveChangesAsync(ct);
+        await publisher.Publish(new ProductDeletedEvent(request.Sku), ct);
         return true;
     }
 }
