@@ -45,10 +45,18 @@ function Ico({
   );
 }
 
-export default async function ListingsPage() {
+const PAGE_SIZE = 9;
+
+export default async function ListingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam ?? "1") || 1);
   const [counts, listings] = await Promise.all([
     getListingCounts(),
-    getListings(),
+    getListings({ page, limit: PAGE_SIZE }),
   ]);
   return (
     <section>
@@ -107,7 +115,12 @@ export default async function ListingsPage() {
       </div>
 
       <div className="px-7 py-6">
-        <ListingsTable listings={listings} pageSize={9} />
+        <ListingsTable
+          listings={listings.items}
+          currentPage={listings.page}
+          pageSize={listings.pageSize}
+          total={listings.total}
+        />
       </div>
     </section>
   );

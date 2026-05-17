@@ -134,9 +134,13 @@ export function getTodayItems(): TodayItem[] {
 
 // Listings are persisted by the Catalog API. Dev/e2e data is seeded by the
 // SeedData/products.json fixture in src/Services/Catalog.API/src/Api.
-export async function getListings(): Promise<Listing[]> {
-  const result = await fetchProducts({ limit: 100 });
-  return result.items;
+export async function getListings(
+  query: { page?: number; limit?: number } = {},
+) {
+  return fetchProducts({
+    page: query.page ?? 1,
+    limit: query.limit ?? 9,
+  });
 }
 
 export async function getListingBySku(sku: string): Promise<Listing | null> {

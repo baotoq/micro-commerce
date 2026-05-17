@@ -1,6 +1,15 @@
 // web/src/components/seller/listings-table.tsx
 
+import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Table,
   TableBody,
@@ -10,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { money } from "@/lib/money";
+import { pageHref, paginate } from "@/lib/pagination";
 import type { Listing } from "@/lib/seller/types";
 import { cn } from "@/lib/utils";
 
@@ -26,57 +36,21 @@ const TONE_BY_CATEGORY: Record<string, string> = {
   Drinkware: "bg-[#F0E8D7]",
 };
 
-function ChevLeft({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <title>chevron left</title>
-      <path d="M12 5l-5 5 5 5" />
-    </svg>
-  );
-}
-
-function ChevRight({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <title>chevron right</title>
-      <path d="M8 5l5 5-5 5" />
-    </svg>
-  );
-}
-
 export function ListingsTable({
   listings,
+  currentPage = 1,
   pageSize = 9,
+  total,
 }: {
   listings: Listing[];
+  currentPage?: number;
   pageSize?: number;
+  total?: number;
 }) {
-  const visible = Math.min(pageSize, listings.length);
-  const rows = listings.slice(0, visible);
-  const totalPages = Math.max(1, Math.ceil(listings.length / pageSize));
-  const pages = [1, 2, 3].filter((p) => p <= totalPages);
+  const totalRows = total ?? listings.length;
+  const view = paginate(currentPage, totalRows, pageSize);
+  const rows = listings;
+  const disabledNav = "pointer-events-none opacity-40";
 
   return (
     <div className="overflow-hidden rounded-lg border border-black/[0.06] bg-white">
@@ -160,7 +134,7 @@ export function ListingsTable({
                     aria-label={`Edit ${l.name}`}
                     className="inline-flex size-7 items-center justify-center rounded-md text-foreground/40 hover:bg-black/[0.04] hover:text-foreground"
                   >
-                    <ChevRight />
+                    <ChevronRightIcon className="size-3.5" />
                   </Link>
                 </TableCell>
               </TableRow>
@@ -170,40 +144,41 @@ export function ListingsTable({
       </Table>
       <div className="flex items-center justify-between border-t border-black/[0.06] bg-white px-4 py-3 text-xs">
         <span className="text-foreground/60">
-          {visible} of {listings.length} shown
+          {rows.length} of {totalRows} shown
         </span>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            aria-label="Previous page"
-            className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-foreground/70 hover:bg-black/[0.03]"
-          >
-            <ChevLeft />
-          </button>
-          {pages.map((p, i) => (
-            <button
-              key={p}
-              type="button"
-              aria-current={i === 0 ? "page" : undefined}
-              aria-label={`Page ${p}`}
-              className={cn(
-                "inline-flex size-7 items-center justify-center rounded-md text-xs font-medium",
-                i === 0
-                  ? "bg-foreground text-white"
-                  : "text-foreground/70 hover:bg-black/[0.03]",
+        <Pagination className="mx-0 w-auto justify-end">
+          <PaginationContent>
+            <PaginationItem>
+              {view.prevPage ? (
+                <PaginationPrevious href={pageHref(view.prevPage)} />
+              ) : (
+                <PaginationPrevious
+                  aria-disabled
+                  tabIndex={-1}
+                  className={disabledNav}
+                />
               )}
-            >
-              {p}
-            </button>
-          ))}
-          <button
-            type="button"
-            aria-label="Next page"
-            className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-foreground/70 hover:bg-black/[0.03]"
-          >
-            <ChevRight />
-          </button>
-        </div>
+            </PaginationItem>
+            {view.window.map((p) => (
+              <PaginationItem key={p}>
+                <PaginationLink href={pageHref(p)} isActive={p === view.page}>
+                  {p}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              {view.nextPage ? (
+                <PaginationNext href={pageHref(view.nextPage)} />
+              ) : (
+                <PaginationNext
+                  aria-disabled
+                  tabIndex={-1}
+                  className={disabledNav}
+                />
+              )}
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
