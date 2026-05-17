@@ -1,4 +1,7 @@
 // web/src/app/seller/listings/[sku]/edit/page.tsx
+
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -84,7 +87,7 @@ export default async function ListingEditPage({
   params: Promise<{ sku: string }>;
 }) {
   const { sku } = await params;
-  const listing = getListingBySku(sku);
+  const listing = await getListingBySku(sku);
   if (!listing) notFound();
 
   const slug = slugify(listing.name);

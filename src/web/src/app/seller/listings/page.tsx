@@ -1,5 +1,7 @@
 // web/src/app/seller/listings/page.tsx
 
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { FilterChips } from "@/components/seller/filter-chips";
 import { ListingsTable } from "@/components/seller/listings-table";
@@ -43,8 +45,11 @@ function Ico({
   );
 }
 
-export default function ListingsPage() {
-  const counts = getListingCounts();
+export default async function ListingsPage() {
+  const [counts, listings] = await Promise.all([
+    getListingCounts(),
+    getListings(),
+  ]);
   return (
     <section>
       <SellerTopbar
@@ -102,7 +107,7 @@ export default function ListingsPage() {
       </div>
 
       <div className="px-7 py-6">
-        <ListingsTable listings={getListings()} pageSize={9} />
+        <ListingsTable listings={listings} pageSize={9} />
       </div>
     </section>
   );

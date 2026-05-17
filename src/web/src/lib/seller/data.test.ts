@@ -12,9 +12,6 @@ import {
   getFunnel,
   getLaunchChecklist,
   getLedgerEntries,
-  getListingBySku,
-  getListingCounts,
-  getListings,
   getMarketingDraft,
   getOrderDetail,
   getOrderDetailFull,
@@ -42,34 +39,6 @@ describe("seller mock data", () => {
     expect(BRAND.name).toBe("Micro Commerce");
     expect(BRAND.owner).toBe("Alex");
     expect(TODAY).toBeInstanceOf(Date);
-  });
-
-  it("ships exactly 42 listings", () => {
-    expect(getListings()).toHaveLength(42);
-  });
-
-  it("has unique listing SKUs", () => {
-    const skus = getListings().map((l) => l.sku);
-    expect(new Set(skus).size).toBe(skus.length);
-  });
-
-  it("listing counts sum to total and match the spec", () => {
-    const c = getListingCounts();
-    expect(c.total).toBe(42);
-    expect(c.active).toBe(34);
-    expect(c.low).toBe(3);
-    expect(c.out).toBe(1);
-    expect(c.draft).toBe(4);
-    expect(c.active + c.low + c.out + c.draft).toBe(c.total);
-  });
-
-  it("counts derived from listings array equal getListingCounts", () => {
-    const listings = getListings();
-    const c = getListingCounts();
-    expect(listings.filter((l) => l.status === "active").length).toBe(c.active);
-    expect(listings.filter((l) => l.status === "low").length).toBe(c.low);
-    expect(listings.filter((l) => l.status === "out").length).toBe(c.out);
-    expect(listings.filter((l) => l.status === "draft").length).toBe(c.draft);
   });
 
   it("returns 7 revenue points", () => {
@@ -123,16 +92,8 @@ describe("seller mock data", () => {
     expect(getTodayItems().length).toBeGreaterThan(0);
   });
 
-  it("getListingBySku returns the matching listing", () => {
-    const listing = getListingBySku("MC-VS-001");
-    expect(listing).not.toBeNull();
-    expect(listing?.sku).toBe("MC-VS-001");
-    expect(listing?.name).toBe("Persimmon vase");
-  });
-
-  it("getListingBySku returns null for an unknown sku", () => {
-    expect(getListingBySku("MC-NOPE-404")).toBeNull();
-  });
+  // Listings are now persisted by the Catalog API; coverage lives in
+  // src/lib/catalog/api.test.ts.
 });
 
 describe("seller management data — orders inbox", () => {
