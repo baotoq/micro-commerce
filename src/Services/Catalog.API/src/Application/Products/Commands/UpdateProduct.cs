@@ -1,5 +1,6 @@
 using MediatR;
 using MicroCommerce.Catalog.Application.Products.Dtos;
+using MicroCommerce.Catalog.Application.Products.Events;
 using MicroCommerce.Catalog.Domain.Products;
 using MicroCommerce.Catalog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ namespace MicroCommerce.Catalog.Application.Products.Commands;
 
 public record UpdateProductCommand(string Sku, string Name, string Category, decimal Price, int Inventory, string Status) : IRequest<ProductDto?>;
 
-public class UpdateProductHandler(AppDbContext db) : IRequestHandler<UpdateProductCommand, ProductDto?>
+public class UpdateProductHandler(AppDbContext db, IPublisher publisher) : IRequestHandler<UpdateProductCommand, ProductDto?>
 {
     public async Task<ProductDto?> Handle(UpdateProductCommand request, CancellationToken ct)
     {
@@ -18,6 +19,9 @@ public class UpdateProductHandler(AppDbContext db) : IRequestHandler<UpdateProdu
 
         product.Update(request.Name, request.Category, request.Price, request.Inventory, CreateProductHandler.ParseStatus(request.Status));
         await db.SaveChangesAsync(ct);
-        return CreateProductHandler.ToDto(product);
+
+        var dto = CreateProductHandler.ToDto(product);
+        await publisher.Publish(new ProductUpdatedEvent(dto.Sku, dto.Name, dto.Category, dto.Price, dto.Inventory, dto.Status), ct);
+        return dto;
     }
 }
