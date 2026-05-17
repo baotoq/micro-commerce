@@ -30,7 +30,7 @@ This starts Redis, PostgreSQL, the Catalog API (with Dapr sidecar), and the Next
 - `npm run lint` — Biome check (lint + import organization)
 - `npm run format` — Biome format with `--write`
 - `npm test` — Vitest unit + component tests (jsdom)
-- `npm run e2e` — Playwright e2e specs in `e2e/` (Chromium-only; auto-starts dev server)
+- `npm run e2e` — Playwright e2e specs in `e2e/` (Chromium-only). Requires a running stack; the listings specs hit the real Catalog API. Either start the Aspire AppHost (`dotnet run --project src/AppHost`) and trigger the `playwright` resource from the dashboard, or run AppHost in one terminal and `BASE_URL=<web-endpoint> npm run e2e` in another.
 
 ### .NET backend
 

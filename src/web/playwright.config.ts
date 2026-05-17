@@ -1,7 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
-const baseURL = `http://localhost:${PORT}`;
+// Aspire injects the web service URL as `services__web__http__0` when this
+// runner is started as an AppHost child. BASE_URL lets a developer point at any
+// already-running stack (e.g., AppHost launched manually in another terminal).
+const baseURL =
+  process.env.services__web__http__0 ??
+  process.env.BASE_URL ??
+  "http://localhost:3000";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -20,12 +25,4 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
-    command: `npm run dev -- --port ${PORT}`,
-    url: baseURL,
-    reuseExistingServer: true,
-    timeout: 120_000,
-    stdout: "ignore",
-    stderr: "pipe",
-  },
 });
