@@ -15,6 +15,6 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Server\MicroCommerce.Domain\MicroCommerce.Domain.csproj" />
+    <ProjectReference Include="..\..\Catalog.API\MicroCommerce.Domain\MicroCommerce.Domain.csproj" />
   </ItemGroup>
 </Project>

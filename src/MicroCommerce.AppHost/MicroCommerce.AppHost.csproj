@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Services\Server\MicroCommerce.Server.csproj" />
+    <ProjectReference Include="..\Services\Catalog.API\MicroCommerce.Server.csproj" />
   </ItemGroup>
 
   <ItemGroup>

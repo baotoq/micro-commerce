@@ -17,6 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\MicroCommerce.AppHost\MicroCommerce.AppHost.csproj" />
-    <ProjectReference Include="..\..\Server\MicroCommerce.Application\MicroCommerce.Application.csproj" />
+    <ProjectReference Include="..\..\Catalog.API\MicroCommerce.Application\MicroCommerce.Application.csproj" />
   </ItemGroup>
 </Project>
