@@ -113,9 +113,15 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 - Mock `DaprClient`, fire the notification, assert `PublishEventAsync` called with correct pubsub name, topic, and payload.
 - No I/O.
 
+### FunctionalTests test fixture
+
+The notification handlers call `DaprClient.PublishEventAsync` synchronously inside the request pipeline (MediatR's default `ForeachAwaitPublisher`). Without a Dapr sidecar reachable, the publish throws and the endpoint returns 500. The `WebApplicationFactory<Program>` fixture therefore needs Dapr available.
+
+`CatalogWebApplicationFactory` is extended to start a `daprio/daprd:1.15.0` container alongside the existing PostgreSQL container, mount an in-memory `pubsub.yaml` component, and override the `DaprClient` registration to point at the container's mapped gRPC port. No subscribers are wired; the sidecar accepts publishes and discards them.
+
 ### Unchanged
 
-- `FunctionalTests` and `IntegrationTests` — Dapr publishing is a side effect that does not change HTTP responses.
+- `IntegrationTests` — the Aspire `DistributedApplicationTestingBuilder` already provides a real Dapr sidecar via `WithDaprSidecar`, so no change is needed there.
 
 ## Out of Scope
 
