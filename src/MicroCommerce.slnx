@@ -1,9 +1,9 @@
 <Solution>
-  <Project Path="MicroCommerce.AppHost/MicroCommerce.AppHost.csproj" />
-  <Project Path="Services/Catalog.API/MicroCommerce.Domain/MicroCommerce.Domain.csproj" />
-  <Project Path="Services/Catalog.API/MicroCommerce.Infrastructure/MicroCommerce.Infrastructure.csproj" />
-  <Project Path="Services/Catalog.API/MicroCommerce.Application/MicroCommerce.Application.csproj" />
-  <Project Path="Services/Catalog.API/MicroCommerce.Server.csproj" />
-  <Project Path="Services/tests/MicroCommerce.Domain.Tests/MicroCommerce.Domain.Tests.csproj" />
-  <Project Path="Services/tests/MicroCommerce.IntegrationTests/MicroCommerce.IntegrationTests.csproj" />
+  <Project Path="AppHost/MicroCommerce.AppHost.csproj" />
+  <Project Path="Services/Catalog.API/src/Domain/MicroCommerce.Domain.csproj" />
+  <Project Path="Services/Catalog.API/src/Infrastructure/MicroCommerce.Infrastructure.csproj" />
+  <Project Path="Services/Catalog.API/src/Application/MicroCommerce.Application.csproj" />
+  <Project Path="Services/Catalog.API/src/Api/MicroCommerce.Server.csproj" />
+  <Project Path="Services/Catalog.API/tests/Domain.Tests/MicroCommerce.Domain.Tests.csproj" />
+  <Project Path="Services/Catalog.API/tests/IntegrationTests/MicroCommerce.IntegrationTests.csproj" />
 </Solution>

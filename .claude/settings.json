@@ -30,7 +30,8 @@
     "sourcegraph@claude-plugins-official": true,
     "playwright@claude-plugins-official": true,
     "oh-my-claudecode@omc": true,
-    "andrej-karpathy-skills@karpathy-skills": true
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "testcontainers@testcontainers-claude-skills": true
   },
   "skipDangerousModePermissionPrompt": true
 }
