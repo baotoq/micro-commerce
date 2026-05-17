@@ -7,8 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MicroCommerce.Application\MicroCommerce.Application.csproj" />
-    <ProjectReference Include="..\..\MicroCommerce.Infrastructure\MicroCommerce.Infrastructure.csproj" />
+    <Compile Remove="MicroCommerce.Domain\**\*;MicroCommerce.Infrastructure\**\*;MicroCommerce.Application\**\*" />
+    <Content Remove="MicroCommerce.Domain\**\*;MicroCommerce.Infrastructure\**\*;MicroCommerce.Application\**\*" />
+    <EmbeddedResource Remove="MicroCommerce.Domain\**\*;MicroCommerce.Infrastructure\**\*;MicroCommerce.Application\**\*" />
+    <None Remove="MicroCommerce.Domain\**\*;MicroCommerce.Infrastructure\**\*;MicroCommerce.Application\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="MicroCommerce.Application\MicroCommerce.Application.csproj" />
+    <ProjectReference Include="MicroCommerce.Infrastructure\MicroCommerce.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
