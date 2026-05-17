@@ -2,6 +2,7 @@ using MicroCommerce.Catalog.Application;
 using MicroCommerce.Catalog.Infrastructure;
 using MicroCommerce.Catalog.Infrastructure.Persistence;
 using MicroCommerce.Catalog.Api.Endpoints;
+using MicroCommerce.Catalog.Api.SeedData;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,12 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.EnsureCreatedAsync();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.EnsureCreatedAsync();
+    if (app.Configuration.GetValue<bool>("SEED_PRODUCTS"))
+    {
+        await ProductSeeder.SeedAsync(db, app.Environment.ContentRootPath);
+    }
 }
 
 app.UseExceptionHandler();
