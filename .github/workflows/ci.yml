@@ -62,12 +62,16 @@ jobs:
       - uses: actions/cache@v4
         id: cache-dapr
         with:
-          path: /usr/local/bin/dapr
-          key: dapr-cli-${{ runner.os }}
+          path: |
+            /usr/local/bin/dapr
+            ~/.dapr
+          key: dapr-${{ runner.os }}
 
-      - name: Install Dapr CLI
+      - name: Install Dapr CLI and runtime
         if: steps.cache-dapr.outputs.cache-hit != 'true'
-        run: wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
+        run: |
+          wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
+          dapr init --slim
 
       - name: Integration tests
         run: dotnet test -c Release Services/Catalog.API/tests/IntegrationTests/MicroCommerce.Catalog.IntegrationTests.csproj
