@@ -9,11 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MicroCommerce.Server\MicroCommerce.Server.csproj" />
+    <ProjectReference Include="..\Services\Server\MicroCommerce.Server.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.3.3" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.3.3" />
     <PackageReference Include="Aspire.Hosting.Redis" Version="13.3.3" />
   </ItemGroup>
 </Project>
