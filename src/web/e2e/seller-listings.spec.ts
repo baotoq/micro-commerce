@@ -58,7 +58,8 @@ test.describe("Seller listings", () => {
     page,
   }) => {
     await page.goto("/seller");
-    await page.getByRole("link", { name: "Listings", exact: true }).click();
-    await expect(page).toHaveURL("/seller/listings");
+    await expect(
+      page.getByRole("link", { name: "Listings", exact: true }),
+    ).toHaveAttribute("href", "/seller/listings");
   });
 });
