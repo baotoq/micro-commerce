@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MicroCommerce.AppHost/MicroCommerce.AppHost.csproj" />
+  <Project Path="MicroCommerce.Server/MicroCommerce.Server.csproj" />
+</Solution>
