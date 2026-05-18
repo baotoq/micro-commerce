@@ -3,8 +3,8 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { FilterChips, type FilterKey } from "@/components/seller/filter-chips";
-import { ListingsTable } from "@/components/seller/listings-table";
+import type { FilterKey } from "@/components/seller/filter-chips";
+import { ListingsBrowser } from "@/components/seller/listings-browser";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,49 +96,48 @@ export default async function ListingsPage({
         }
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/[0.06] bg-white px-7 py-3.5">
-        <FilterChips counts={counts} active={filter} />
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Ico
-              name="search"
-              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-foreground/50"
-            />
-            <Input
-              type="search"
-              placeholder="Search products…"
-              aria-label="Search products"
-              className="h-8 w-56 rounded-full bg-canvas-parchment pl-8 text-xs"
-            />
+      <ListingsBrowser
+        counts={counts}
+        initialStatus={filter}
+        initialListings={listings.items}
+        initialPage={listings.page}
+        initialTotal={listings.total}
+        pageSize={listings.pageSize}
+        filterRowClassName="flex flex-wrap items-center justify-between gap-3 border-b border-black/[0.06] bg-white px-7 py-3.5"
+        tableWrapperClassName="px-7 py-6"
+        rightSlot={
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Ico
+                name="search"
+                className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-foreground/50"
+              />
+              <Input
+                type="search"
+                placeholder="Search products…"
+                aria-label="Search products"
+                className="h-8 w-56 rounded-full bg-canvas-parchment pl-8 text-xs"
+              />
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5 rounded-full text-xs"
+            >
+              <Ico name="filter" />
+              Collection
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5 rounded-full text-xs"
+            >
+              <Ico name="sort" />
+              Best-selling
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1.5 rounded-full text-xs"
-          >
-            <Ico name="filter" />
-            Collection
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1.5 rounded-full text-xs"
-          >
-            <Ico name="sort" />
-            Best-selling
-          </Button>
-        </div>
-      </div>
-
-      <div className="px-7 py-6">
-        <ListingsTable
-          listings={listings.items}
-          currentPage={listings.page}
-          pageSize={listings.pageSize}
-          total={listings.total}
-          status={status}
-        />
-      </div>
+        }
+      />
     </section>
   );
 }

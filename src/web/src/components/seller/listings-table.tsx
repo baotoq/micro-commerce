@@ -86,6 +86,11 @@ export function ListingsTable({
   status?: ListingStatus;
 }) {
   const [page, setPage] = useState(currentPage);
+  const [prevStatus, setPrevStatus] = useState(status);
+  if (prevStatus !== status) {
+    setPrevStatus(status);
+    setPage(1);
+  }
 
   const initialPage: ProductPage = {
     items: listings,
@@ -94,10 +99,18 @@ export function ListingsTable({
     pageSize,
   };
 
+  // initialData applies only to the queryKey representing the server-rendered
+  // bundle. When status or page diverges from the server values, drop it so
+  // TanStack fetches fresh data for the new key.
+  const seedStatusRef = useRef(status);
+  const isSeedKey = page === currentPage && status === seedStatusRef.current;
+  const initialDataUpdatedAt = useRef(Date.now()).current;
+
   const { data, isFetching } = useQuery<ProductPage>({
     queryKey: ["listings", page, pageSize, status ?? "all"],
     queryFn: () => fetchListingsPage(page, pageSize, status),
-    initialData: page === currentPage ? initialPage : undefined,
+    initialData: isSeedKey ? initialPage : undefined,
+    initialDataUpdatedAt: isSeedKey ? initialDataUpdatedAt : undefined,
     placeholderData: keepPreviousData,
     staleTime: 30_000,
   });
