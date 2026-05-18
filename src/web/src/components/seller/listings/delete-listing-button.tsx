@@ -10,13 +10,34 @@ export function DeleteListingButton({ sku }: { sku: string }) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const confirmRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
     confirmRef.current?.focus();
 
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusable = dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
@@ -56,6 +77,7 @@ export function DeleteListingButton({ sku }: { sku: string }) {
 
           {/* Dialog */}
           <div
+            ref={dialogRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="delete-dialog-title"
