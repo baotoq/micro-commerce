@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { getMarketingDraft } from "@/lib/seller/data";
+import { getMarketingDraft } from "@/lib/seller/marketing/data";
 import { EmailComposerSchedule } from "./email-composer-schedule";
 
 describe("EmailComposerSchedule", () => {

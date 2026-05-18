@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MarketingTop } from "@/components/seller/marketing-top";
-import { getApplication } from "@/lib/seller/data";
+import { getApplication } from "@/lib/seller/application/data";
 
 export default function ApplyPage() {
   const app = getApplication();

@@ -9,7 +9,7 @@ import {
   getOrderInbox,
   getOrderInboxSummary,
   getOrderInboxTabs,
-} from "@/lib/seller/data";
+} from "@/lib/seller/orders/data";
 
 const SELECTED_COUNT = 3;
 

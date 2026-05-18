@@ -1,5 +1,5 @@
 // web/src/components/seller/revenue-chart.tsx
-import type { RevenuePoint } from "@/lib/seller/types";
+import type { RevenuePoint } from "@/lib/seller/analytics/types";
 
 export function RevenueChart({ points }: { points: RevenuePoint[] }) {
   const max = Math.max(...points.map((p) => p.amount), 1);

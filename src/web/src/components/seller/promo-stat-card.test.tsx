@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { PromoStatCard } from "@/components/seller/promo-stat-card";
-import type { PromoStat } from "@/lib/seller/types";
+import type { PromoStat } from "@/lib/seller/promos/types";
 
 const STAT: PromoStat = {
   label: "Redemptions",

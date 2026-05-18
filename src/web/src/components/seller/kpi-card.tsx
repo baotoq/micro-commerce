@@ -1,7 +1,7 @@
 // web/src/components/seller/kpi-card.tsx
 
 import { money } from "@/lib/money";
-import type { KpiPoint } from "@/lib/seller/types";
+import type { KpiPoint } from "@/lib/seller/analytics/types";
 
 function format(value: number, fmt: KpiPoint["format"]) {
   if (fmt === "currency") return money(value);

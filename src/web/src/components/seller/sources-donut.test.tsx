@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SourcesDonut } from "@/components/seller/sources-donut";
-import type { SourceBreakdown } from "@/lib/seller/types";
+import type { SourceBreakdown } from "@/lib/seller/analytics/types";
 
 describe("SourcesDonut", () => {
   const sources: SourceBreakdown[] = [

@@ -8,7 +8,7 @@ import {
   type FilterKey,
 } from "@/components/seller/filter-chips";
 import { ListingsTable } from "@/components/seller/listings-table";
-import type { Listing, ListingCounts, ListingStatus } from "@/lib/seller/types";
+import type { Listing, ListingCounts, ListingStatus } from "@/lib/seller/listings/types";
 
 const FILTER_KEYS: readonly FilterKey[] = [
   "all",

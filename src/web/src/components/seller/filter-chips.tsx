@@ -3,7 +3,7 @@
 
 import type { MouseEvent } from "react";
 import { Badge } from "@/components/ui/badge";
-import type { ListingCounts } from "@/lib/seller/types";
+import type { ListingCounts } from "@/lib/seller/listings/types";
 
 export type FilterKey = "all" | "active" | "low" | "out" | "draft";
 

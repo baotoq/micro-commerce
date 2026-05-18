@@ -1,5 +1,5 @@
 import { Sparkline } from "@/components/seller/sparkline";
-import type { PromoStat } from "@/lib/seller/types";
+import type { PromoStat } from "@/lib/seller/promos/types";
 
 export function PromoStatCard({ stat }: { stat: PromoStat }) {
   return (

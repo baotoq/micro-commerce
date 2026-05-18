@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 import { money } from "@/lib/money";
-import type { OrderFulfillment } from "@/lib/seller/types";
+import type { OrderFulfillment } from "@/lib/seller/orders/types";
 
 const TONE_BG: Record<string, string> = {
   clay: "#d6c2a8",

@@ -1,4 +1,4 @@
-import type { MarketingDraft } from "@/lib/seller/types";
+import type { MarketingDraft } from "@/lib/seller/marketing/types";
 
 function Switch({ on }: { on: boolean }) {
   return (

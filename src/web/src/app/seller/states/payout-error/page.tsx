@@ -4,7 +4,7 @@ import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { Sparkline } from "@/components/seller/sparkline";
 import { Button } from "@/components/ui/button";
 import { money } from "@/lib/money";
-import { BRAND, DATE_LABEL } from "@/lib/seller/data";
+import { BRAND, DATE_LABEL } from "@/lib/seller/brand";
 
 const HELD_AMOUNT = 1284.62;
 

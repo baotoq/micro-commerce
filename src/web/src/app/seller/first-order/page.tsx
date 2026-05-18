@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { Sparkline } from "@/components/seller/sparkline";
-import { getFirstOrderStats } from "@/lib/seller/data";
+import { getFirstOrderStats } from "@/lib/seller/onboarding/data";
 
 export default function FirstOrderPage() {
   const stats = getFirstOrderStats();

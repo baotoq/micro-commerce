@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { PromosTabs } from "@/components/seller/promos-tabs";
-import type { PromoTab } from "@/lib/seller/types";
+import type { PromoTab } from "@/lib/seller/promos/types";
 
 const TABS: PromoTab[] = [
   { label: "Active", count: 3, on: true },

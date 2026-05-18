@@ -5,14 +5,10 @@ import { KpiCard } from "@/components/seller/kpi-card";
 import { RecentOrders } from "@/components/seller/recent-orders";
 import { RevenueChart } from "@/components/seller/revenue-chart";
 import { TodayPanel } from "@/components/seller/today-panel";
-import {
-  BRAND,
-  DATE_LABEL,
-  getOverviewKpis,
-  getRecentOrders,
-  getRevenueSeries,
-  getTodayItems,
-} from "@/lib/seller/data";
+import { getOverviewKpis, getRevenueSeries } from "@/lib/seller/analytics/data";
+import { BRAND, DATE_LABEL } from "@/lib/seller/brand";
+import { getTodayItems } from "@/lib/seller/dashboard/data";
+import { getRecentOrders } from "@/lib/seller/orders/data";
 
 export default function SellerOverview() {
   const kpis = getOverviewKpis();

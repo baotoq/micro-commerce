@@ -1,5 +1,5 @@
 // web/src/components/seller/today-panel.tsx
-import type { TodayItem } from "@/lib/seller/types";
+import type { TodayItem } from "@/lib/seller/dashboard/types";
 
 export function TodayPanel({ items }: { items: TodayItem[] }) {
   return (

@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { money } from "@/lib/money";
-import type { Order } from "@/lib/seller/types";
+import type { Order } from "@/lib/seller/orders/types";
 
 export function RecentOrders({ orders }: { orders: Order[] }) {
   return (

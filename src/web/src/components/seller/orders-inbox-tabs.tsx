@@ -1,4 +1,4 @@
-import type { OrderInboxTab } from "@/lib/seller/types";
+import type { OrderInboxTab } from "@/lib/seller/orders/types";
 
 export function OrdersInboxTabs({ tabs }: { tabs: OrderInboxTab[] }) {
   return (

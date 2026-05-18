@@ -1,6 +1,6 @@
 import { Bell } from "lucide-react";
 import type React from "react";
-import { BRAND } from "@/lib/seller/data";
+import { BRAND } from "@/lib/seller/brand";
 
 export function SellerTopbar({
   title,

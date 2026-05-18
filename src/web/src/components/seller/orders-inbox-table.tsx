@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { money } from "@/lib/money";
-import type { OrderInboxRow, StatusTone } from "@/lib/seller/types";
+import type { OrderInboxRow, StatusTone } from "@/lib/seller/orders/types";
 
 function ChevronRight() {
   return (

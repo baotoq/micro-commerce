@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { OrderRefund } from "@/lib/seller/types";
+import type { OrderRefund } from "@/lib/seller/orders/types";
 import { OrderDetailRefund } from "./order-detail-refund";
 
 const BASE_REFUND: OrderRefund = {

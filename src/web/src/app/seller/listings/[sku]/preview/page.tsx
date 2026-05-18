@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { getListingBySku } from "@/lib/seller/data";
+import { getListingBySku } from "@/lib/seller/listings/data";
 
 type Check = { label: string; sub: string; tone: "good" | "warn" };
 

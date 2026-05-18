@@ -1,7 +1,7 @@
 // web/src/components/seller/sidebar.tsx
 
 import { SidebarNav } from "@/components/seller/sidebar-nav";
-import { BRAND } from "@/lib/seller/data";
+import { BRAND } from "@/lib/seller/brand";
 
 const NAV = [
   { label: "Overview", href: "/seller" },

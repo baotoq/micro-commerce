@@ -4,7 +4,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ListingsTable } from "@/components/seller/listings-table";
-import type { Listing } from "@/lib/seller/types";
+import type { Listing } from "@/lib/seller/listings/types";
 
 const make = (n: number, offset = 0): Listing[] =>
   Array.from({ length: n }, (_, i) => ({

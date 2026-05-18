@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { money } from "@/lib/money";
 import { paginate } from "@/lib/pagination";
-import type { Listing, ListingStatus } from "@/lib/seller/types";
+import type { Listing, ListingStatus } from "@/lib/seller/listings/types";
 import { cn } from "@/lib/utils";
 
 const STATUS_STYLES: Record<Listing["status"], string> = {

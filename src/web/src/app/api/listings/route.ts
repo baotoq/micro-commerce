@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchProducts, type ProductQuery } from "@/lib/catalog/api";
-import type { ListingStatus } from "@/lib/seller/types";
+import type { ListingStatus } from "@/lib/seller/listings/types";
 
 const DEFAULT_LIMIT = 9;
 const STATUS_VALUES: readonly ListingStatus[] = [

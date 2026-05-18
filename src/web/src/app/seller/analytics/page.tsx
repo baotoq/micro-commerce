@@ -10,7 +10,7 @@ import {
   getRangeOptions,
   getSources,
   getTopProducts,
-} from "@/lib/seller/data";
+} from "@/lib/seller/analytics/data";
 
 export default function AnalyticsPage() {
   const rangeOptions = getRangeOptions();

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { OrderTimelineEvent } from "@/lib/seller/types";
+import type { OrderTimelineEvent } from "@/lib/seller/orders/types";
 import { OrderDetailTimeline } from "./order-detail-timeline";
 
 const TIMELINE: OrderTimelineEvent[] = [

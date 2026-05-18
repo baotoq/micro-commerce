@@ -1,7 +1,7 @@
 // web/src/components/seller/analytics-kpi-row.tsx
 
 import { KpiCard } from "@/components/seller/kpi-card";
-import type { KpiPoint } from "@/lib/seller/types";
+import type { KpiPoint } from "@/lib/seller/analytics/types";
 
 export function AnalyticsKpiRow({ kpis }: { kpis: KpiPoint[] }) {
   return (

@@ -7,7 +7,7 @@ import { OrderDetailInternalNote } from "@/components/seller/order-detail-intern
 import { OrderDetailRefund } from "@/components/seller/order-detail-refund";
 import { OrderDetailSummary } from "@/components/seller/order-detail-summary";
 import { OrderDetailTimeline } from "@/components/seller/order-detail-timeline";
-import { getOrderDetailFull } from "@/lib/seller/data";
+import { getOrderDetailFull } from "@/lib/seller/orders/data";
 
 export default async function OrderDetailPage({
   params,

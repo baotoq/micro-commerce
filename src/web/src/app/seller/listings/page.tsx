@@ -8,8 +8,8 @@ import { ListingsBrowser } from "@/components/seller/listings-browser";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getListingCounts, getListings } from "@/lib/seller/data";
-import type { ListingStatus } from "@/lib/seller/types";
+import { getListingCounts, getListings } from "@/lib/seller/listings/data";
+import type { ListingStatus } from "@/lib/seller/listings/types";
 import { cn } from "@/lib/utils";
 
 const FILTER_KEYS: readonly FilterKey[] = [

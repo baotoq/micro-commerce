@@ -1,6 +1,6 @@
 import { Check, ChevronDown } from "lucide-react";
 import { money } from "@/lib/money";
-import type { OrderRefund } from "@/lib/seller/types";
+import type { OrderRefund } from "@/lib/seller/orders/types";
 
 export function OrderDetailRefund({ refund }: { refund: OrderRefund }) {
   return (

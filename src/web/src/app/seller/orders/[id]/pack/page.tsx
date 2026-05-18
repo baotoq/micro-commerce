@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getOrderDetail, getShippingOptions } from "@/lib/seller/data";
+import { getOrderDetail, getShippingOptions } from "@/lib/seller/orders/data";
 
 export default async function PackShipPage(props: {
   params: Promise<{ id: string }>;

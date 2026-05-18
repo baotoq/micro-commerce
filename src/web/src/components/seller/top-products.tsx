@@ -1,7 +1,7 @@
 // web/src/components/seller/top-products.tsx
 
 import { money } from "@/lib/money";
-import type { TopProduct } from "@/lib/seller/types";
+import type { TopProduct } from "@/lib/seller/analytics/types";
 
 export function TopProducts({ products }: { products: TopProduct[] }) {
   const max = Math.max(...products.map((p) => p.revenue), 1);

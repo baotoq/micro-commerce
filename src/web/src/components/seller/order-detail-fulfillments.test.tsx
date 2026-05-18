@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { OrderFulfillment } from "@/lib/seller/types";
+import type { OrderFulfillment } from "@/lib/seller/orders/types";
 import { OrderDetailFulfillments } from "./order-detail-fulfillments";
 
 const SHIPPED: OrderFulfillment = {

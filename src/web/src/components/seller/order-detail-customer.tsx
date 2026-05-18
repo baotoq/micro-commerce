@@ -1,4 +1,4 @@
-import type { OrderCustomer } from "@/lib/seller/types";
+import type { OrderCustomer } from "@/lib/seller/orders/types";
 
 export function OrderDetailCustomer({ customer }: { customer: OrderCustomer }) {
   const initials = customer.shortName

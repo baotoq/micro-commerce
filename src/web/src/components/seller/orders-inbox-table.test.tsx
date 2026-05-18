@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { OrderInboxRow } from "@/lib/seller/types";
+import type { OrderInboxRow } from "@/lib/seller/orders/types";
 import { OrdersInboxTable } from "./orders-inbox-table";
 
 const FIXTURE: OrderInboxRow[] = [

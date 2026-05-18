@@ -1,5 +1,5 @@
 import { money } from "@/lib/money";
-import type { OrderSummary } from "@/lib/seller/types";
+import type { OrderSummary } from "@/lib/seller/orders/types";
 
 export function OrderDetailSummary({ summary }: { summary: OrderSummary }) {
   return (

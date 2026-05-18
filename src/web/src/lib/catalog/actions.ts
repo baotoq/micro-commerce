@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { Listing, ListingStatus } from "@/lib/seller/types";
+import type { Listing, ListingStatus } from "@/lib/seller/listings/types";
 import { createProduct, deleteProduct, updateProduct } from "./api";
 
 const STATUSES: ListingStatus[] = ["active", "low", "out", "draft"];

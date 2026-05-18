@@ -1,5 +1,5 @@
 // web/src/components/seller/sources-donut.tsx
-import type { SourceBreakdown } from "@/lib/seller/types";
+import type { SourceBreakdown } from "@/lib/seller/analytics/types";
 
 const PALETTE = [
   "var(--foreground)",

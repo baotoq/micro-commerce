@@ -1,5 +1,5 @@
 import { Check, Info, MessageSquare, Package, Truck } from "lucide-react";
-import type { OrderTimelineEvent } from "@/lib/seller/types";
+import type { OrderTimelineEvent } from "@/lib/seller/orders/types";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   check: <Check size={12} strokeWidth={2.4} />,

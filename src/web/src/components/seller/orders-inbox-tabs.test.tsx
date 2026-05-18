@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { OrderInboxTab } from "@/lib/seller/types";
+import type { OrderInboxTab } from "@/lib/seller/orders/types";
 import { OrdersInboxTabs } from "./orders-inbox-tabs";
 
 const TABS: OrderInboxTab[] = [

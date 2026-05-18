@@ -3,7 +3,7 @@ import { PromoStatCard } from "@/components/seller/promo-stat-card";
 import { PromosTable } from "@/components/seller/promos-table";
 import { PromosTabs } from "@/components/seller/promos-tabs";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
-import { getPromoStats, getPromos, getPromoTabs } from "@/lib/seller/data";
+import { getPromoStats, getPromos, getPromoTabs } from "@/lib/seller/promos/data";
 
 export default function PromosPage() {
   const stats = getPromoStats();

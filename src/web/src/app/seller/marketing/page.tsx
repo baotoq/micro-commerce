@@ -4,7 +4,7 @@ import { EmailComposerContent } from "@/components/seller/email-composer-content
 import { EmailComposerSchedule } from "@/components/seller/email-composer-schedule";
 import { EmailPreview } from "@/components/seller/email-preview";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
-import { getMarketingDraft } from "@/lib/seller/data";
+import { getMarketingDraft } from "@/lib/seller/marketing/data";
 
 export default function MarketingPage() {
   const draft = getMarketingDraft();

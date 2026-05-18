@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { BRAND, getMarketingDraft } from "@/lib/seller/data";
+import { BRAND } from "@/lib/seller/brand";
+import { getMarketingDraft } from "@/lib/seller/marketing/data";
 import { EmailPreview } from "./email-preview";
 
 describe("EmailPreview", () => {

@@ -4,7 +4,7 @@ import {
   getFirstMonthKpis,
   getFirstMonthSeries,
   getFirstMonthTopSellers,
-} from "@/lib/seller/data";
+} from "@/lib/seller/onboarding/data";
 
 const TONE_COLORS: Record<string, string> = {
   clay: "#c2410c",

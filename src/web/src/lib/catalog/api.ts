@@ -1,5 +1,5 @@
 import "server-only";
-import type { Listing, ListingCounts, ListingStatus } from "@/lib/seller/types";
+import type { Listing, ListingCounts, ListingStatus } from "@/lib/seller/listings/types";
 
 const FETCH_OPTS: RequestInit = { cache: "no-store" };
 

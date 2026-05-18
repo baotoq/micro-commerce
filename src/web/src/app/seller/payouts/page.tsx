@@ -1,7 +1,7 @@
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { money } from "@/lib/money";
-import { getLedgerEntries, getPayoutSummary } from "@/lib/seller/data";
+import { getLedgerEntries, getPayoutSummary } from "@/lib/seller/payouts/data";
 
 export default function PayoutsPage() {
   const summary = getPayoutSummary();

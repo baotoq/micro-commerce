@@ -1,4 +1,4 @@
-import type { PromoTab } from "@/lib/seller/types";
+import type { PromoTab } from "@/lib/seller/promos/types";
 
 export function PromosTabs({ tabs }: { tabs: PromoTab[] }) {
   return (

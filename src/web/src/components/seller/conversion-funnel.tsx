@@ -1,5 +1,5 @@
 // web/src/components/seller/conversion-funnel.tsx
-import type { FunnelStage } from "@/lib/seller/types";
+import type { FunnelStage } from "@/lib/seller/analytics/types";
 
 export function ConversionFunnel({ stages }: { stages: FunnelStage[] }) {
   const top = stages[0]?.count || 1;

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSetupSteps } from "@/lib/seller/data";
+import { getSetupSteps } from "@/lib/seller/application/data";
 
 const PAYOUT_OPTIONS = [
   { label: "Bank account", sub: "ACH · 1–2 days", selected: true },

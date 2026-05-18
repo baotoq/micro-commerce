@@ -1,4 +1,4 @@
-import type { PromoCode } from "@/lib/seller/types";
+import type { PromoCode } from "@/lib/seller/promos/types";
 
 function ShareIcon() {
   return (

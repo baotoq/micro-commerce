@@ -1,4 +1,4 @@
-import type { MarketingDraft } from "@/lib/seller/types";
+import type { MarketingDraft } from "@/lib/seller/marketing/types";
 
 export function EmailPreview({ draft }: { draft: MarketingDraft }) {
   return (
