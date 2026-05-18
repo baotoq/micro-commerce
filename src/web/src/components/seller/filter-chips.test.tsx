@@ -19,15 +19,38 @@ describe("FilterChips", () => {
     }
   });
 
-  it("marks the active chip with aria-pressed=true and others with aria-pressed=false", () => {
-    render(<FilterChips counts={counts} active="active" />);
-    expect(screen.getByRole("button", { name: /Active · 34/ })).toHaveAttribute(
-      "aria-pressed",
-      "true",
+  it("renders each chip as a link to the listings page with the matching status query (no status for 'all')", () => {
+    render(<FilterChips counts={counts} active="all" />);
+    expect(screen.getByRole("link", { name: /All · 42/ })).toHaveAttribute(
+      "href",
+      "/seller/listings",
     );
-    expect(screen.getByRole("button", { name: /All · 42/ })).toHaveAttribute(
-      "aria-pressed",
-      "false",
+    expect(screen.getByRole("link", { name: /Active · 34/ })).toHaveAttribute(
+      "href",
+      "/seller/listings?status=active",
+    );
+    expect(screen.getByRole("link", { name: /Low · 3/ })).toHaveAttribute(
+      "href",
+      "/seller/listings?status=low",
+    );
+    expect(screen.getByRole("link", { name: /Out · 1/ })).toHaveAttribute(
+      "href",
+      "/seller/listings?status=out",
+    );
+    expect(screen.getByRole("link", { name: /Drafts · 4/ })).toHaveAttribute(
+      "href",
+      "/seller/listings?status=draft",
+    );
+  });
+
+  it("marks the active chip with aria-current=page and leaves others without it", () => {
+    render(<FilterChips counts={counts} active="active" />);
+    expect(screen.getByRole("link", { name: /Active · 34/ })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.getByRole("link", { name: /All · 42/ })).not.toHaveAttribute(
+      "aria-current",
     );
   });
 });

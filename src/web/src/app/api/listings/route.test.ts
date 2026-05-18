@@ -39,4 +39,18 @@ describe("GET /api/listings", () => {
     await GET(new Request("http://localhost/api/listings?page=abc"));
     expect(fetchProducts).toHaveBeenCalledWith({ page: 1, limit: 9 });
   });
+
+  it("forwards a recognized status filter to fetchProducts", async () => {
+    await GET(new Request("http://localhost/api/listings?status=active"));
+    expect(fetchProducts).toHaveBeenCalledWith({
+      page: 1,
+      limit: 9,
+      status: "active",
+    });
+  });
+
+  it("ignores unknown status values", async () => {
+    await GET(new Request("http://localhost/api/listings?status=bogus"));
+    expect(fetchProducts).toHaveBeenCalledWith({ page: 1, limit: 9 });
+  });
 });

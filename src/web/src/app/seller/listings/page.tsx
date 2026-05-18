@@ -3,13 +3,26 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { FilterChips } from "@/components/seller/filter-chips";
+import { FilterChips, type FilterKey } from "@/components/seller/filter-chips";
 import { ListingsTable } from "@/components/seller/listings-table";
 import { SellerTopbar } from "@/components/seller/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getListingCounts, getListings } from "@/lib/seller/data";
+import type { ListingStatus } from "@/lib/seller/types";
 import { cn } from "@/lib/utils";
+
+const FILTER_KEYS: readonly FilterKey[] = [
+  "all",
+  "active",
+  "low",
+  "out",
+  "draft",
+];
+
+function parseFilter(raw: string | undefined): FilterKey {
+  return FILTER_KEYS.find((k) => k === raw) ?? "all";
+}
 
 const ICON_PATH = {
   upload: "M10 14V3m-4 4l4-4 4 4M3 16h14",
@@ -50,13 +63,16 @@ const PAGE_SIZE = 9;
 export default async function ListingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; status?: string }>;
 }) {
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, status: statusParam } = await searchParams;
   const page = Math.max(1, Number(pageParam ?? "1") || 1);
+  const filter = parseFilter(statusParam);
+  const status: ListingStatus | undefined =
+    filter === "all" ? undefined : filter;
   const [counts, listings] = await Promise.all([
     getListingCounts(),
-    getListings({ page, limit: PAGE_SIZE }),
+    getListings({ page, limit: PAGE_SIZE, status }),
   ]);
   return (
     <section>
@@ -81,7 +97,7 @@ export default async function ListingsPage({
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/[0.06] bg-white px-7 py-3.5">
-        <FilterChips counts={counts} active="all" />
+        <FilterChips counts={counts} active={filter} />
         <div className="flex items-center gap-2">
           <div className="relative">
             <Ico
@@ -120,6 +136,7 @@ export default async function ListingsPage({
           currentPage={listings.page}
           pageSize={listings.pageSize}
           total={listings.total}
+          status={status}
         />
       </div>
     </section>

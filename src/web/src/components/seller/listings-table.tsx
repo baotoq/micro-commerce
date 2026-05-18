@@ -22,8 +22,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { money } from "@/lib/money";
-import { pageHref, paginate } from "@/lib/pagination";
-import type { Listing } from "@/lib/seller/types";
+import { paginate } from "@/lib/pagination";
+import type { Listing, ListingStatus } from "@/lib/seller/types";
 import { cn } from "@/lib/utils";
 
 const STATUS_STYLES: Record<Listing["status"], string> = {
@@ -49,10 +49,27 @@ type ProductPage = {
 async function fetchListingsPage(
   page: number,
   pageSize: number,
+  status: ListingStatus | undefined,
 ): Promise<ProductPage> {
-  const res = await fetch(`/api/listings?page=${page}&limit=${pageSize}`);
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(pageSize),
+  });
+  if (status) params.set("status", status);
+  const res = await fetch(`/api/listings?${params.toString()}`);
   if (!res.ok) throw new Error(`GET /api/listings failed: ${res.status}`);
   return (await res.json()) as ProductPage;
+}
+
+function buildPageHref(
+  page: number,
+  status: ListingStatus | undefined,
+): string {
+  const params = new URLSearchParams();
+  if (status) params.set("status", status);
+  if (page > 1) params.set("page", String(page));
+  const qs = params.toString();
+  return qs ? `?${qs}` : "?";
 }
 
 export function ListingsTable({
@@ -60,11 +77,13 @@ export function ListingsTable({
   currentPage = 1,
   pageSize = 9,
   total,
+  status,
 }: {
   listings: Listing[];
   currentPage?: number;
   pageSize?: number;
   total?: number;
+  status?: ListingStatus;
 }) {
   const [page, setPage] = useState(currentPage);
 
@@ -76,8 +95,8 @@ export function ListingsTable({
   };
 
   const { data, isFetching } = useQuery<ProductPage>({
-    queryKey: ["listings", page, pageSize],
-    queryFn: () => fetchListingsPage(page, pageSize),
+    queryKey: ["listings", page, pageSize, status ?? "all"],
+    queryFn: () => fetchListingsPage(page, pageSize, status),
     initialData: page === currentPage ? initialPage : undefined,
     placeholderData: keepPreviousData,
     staleTime: 30_000,
@@ -95,9 +114,10 @@ export function ListingsTable({
       return;
     }
     const path = window.location.pathname;
-    const target = page === 1 ? path : `${path}?page=${page}`;
+    const href = buildPageHref(page, status);
+    const target = href === "?" ? path : `${path}${href}`;
     window.history.replaceState(null, "", target);
-  }, [page]);
+  }, [page, status]);
 
   // Capture-phase handler runs before any bubble-phase listener (Base UI
   // composes its own onClick during bubble) so we can guarantee that the
@@ -228,7 +248,7 @@ export function ListingsTable({
             <PaginationItem>
               {view.prevPage ? (
                 <PaginationPrevious
-                  href={pageHref(view.prevPage)}
+                  href={buildPageHref(view.prevPage, status)}
                   onClickCapture={handleNav(view.prevPage)}
                 />
               ) : (
@@ -242,7 +262,7 @@ export function ListingsTable({
             {view.window.map((p) => (
               <PaginationItem key={p}>
                 <PaginationLink
-                  href={pageHref(p)}
+                  href={buildPageHref(p, status)}
                   isActive={p === view.page}
                   onClickCapture={handleNav(p)}
                 >
@@ -253,7 +273,7 @@ export function ListingsTable({
             <PaginationItem>
               {view.nextPage ? (
                 <PaginationNext
-                  href={pageHref(view.nextPage)}
+                  href={buildPageHref(view.nextPage, status)}
                   onClickCapture={handleNav(view.nextPage)}
                 />
               ) : (
