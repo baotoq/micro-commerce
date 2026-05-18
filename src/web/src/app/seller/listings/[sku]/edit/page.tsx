@@ -4,9 +4,10 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { DeleteListingButton } from "@/components/seller/listings/delete-listing-button";
+import { EditListingForm } from "@/components/seller/listings/edit-listing-form";
+import { buttonVariants } from "@/components/ui/button";
 import { getListingBySku } from "@/lib/seller/listings/data";
-import { cn } from "@/lib/utils";
 
 type Variant = {
   label: string;
@@ -75,12 +76,6 @@ const STATUS_CHIP: Record<Variant["status"], string> = {
 
 const money = (n: number) => `$${n}`;
 
-const slugify = (s: string) =>
-  s
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-
 export default async function ListingEditPage({
   params,
 }: {
@@ -89,8 +84,6 @@ export default async function ListingEditPage({
   const { sku } = await params;
   const listing = await getListingBySku(sku);
   if (!listing) notFound();
-
-  const slug = slugify(listing.name);
 
   return (
     <div className="flex flex-col">
@@ -112,24 +105,15 @@ export default async function ListingEditPage({
               {listing.name}
             </h1>
           </div>
-          <span className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-warn/15 px-2.5 py-1 text-[11px] font-medium text-warn">
-            <span className="h-1.5 w-1.5 rounded-full bg-warn" />
-            Unsaved changes
-          </span>
         </div>
+        {/* Action area */}
         <div className="flex gap-2">
+          <DeleteListingButton sku={sku} />
           <Link
             href="/seller/listings"
             className={buttonVariants({ variant: "ghost" })}
           >
-            Discard
-          </Link>
-          <Button variant="outline">Save draft</Button>
-          <Link
-            href={`/seller/listings/${sku}/preview`}
-            className={cn(buttonVariants())}
-          >
-            Publish →
+            Cancel
           </Link>
         </div>
       </div>
@@ -151,9 +135,6 @@ export default async function ListingEditPage({
                   Size × Glaze · 6 combinations
                 </p>
               </div>
-              <Button variant="outline" size="sm">
-                + Add option
-              </Button>
             </div>
 
             <table className="w-full text-sm">
@@ -212,6 +193,7 @@ export default async function ListingEditPage({
 
           {/* Right column */}
           <div className="flex flex-col gap-3">
+            {/* Photos card */}
             <div className="rounded-xl border border-black/[0.06] bg-white p-[18px]">
               <h3 className="mb-3 text-[13.5px] font-semibold text-foreground">
                 Photos · 4 of 8
@@ -233,31 +215,8 @@ export default async function ListingEditPage({
               </div>
             </div>
 
-            <div className="rounded-xl border border-black/[0.06] bg-white p-[18px]">
-              <h3 className="mb-2.5 text-[13.5px] font-semibold text-foreground">
-                Status
-              </h3>
-              <div className="flex gap-1 rounded-lg bg-canvas-parchment p-[3px]">
-                {["Active", "Draft", "Archived"].map((s, i) => (
-                  <Button
-                    key={s}
-                    variant="ghost"
-                    size="sm"
-                    className={
-                      i === 0
-                        ? "flex-1 bg-white text-foreground shadow-sm hover:bg-white"
-                        : "flex-1 bg-transparent text-foreground hover:bg-transparent"
-                    }
-                  >
-                    {s}
-                  </Button>
-                ))}
-              </div>
-              <p className="mt-2.5 text-[11px] text-foreground/60">
-                Visible at{" "}
-                <span className="font-mono text-foreground">/{slug}</span>
-              </p>
-            </div>
+            {/* Edit form — replaces static header card / pricing sections */}
+            <EditListingForm listing={listing} />
           </div>
         </div>
       </div>

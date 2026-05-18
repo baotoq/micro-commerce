@@ -13,18 +13,19 @@ test.describe("New listing editor", () => {
     await expect(
       page.getByRole("button", { name: "Save draft", exact: true }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: /Publish/ })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Publish/ }),
+    ).toBeVisible();
 
     await expect(page.getByRole("heading", { name: /Photos/ })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: /Title & description/ }),
     ).toBeVisible();
-    await expect(
-      page.getByText("Persimmon vase", { exact: true }),
-    ).toBeVisible();
+    await expect(page.getByLabel("SKU")).toBeVisible();
+    await expect(page.getByLabel("Name")).toBeVisible();
     await expect(page.getByRole("heading", { name: /Pricing/ })).toBeVisible();
-    await expect(page.getByText("$86.00", { exact: true })).toBeVisible();
-    await expect(page.getByText("12", { exact: true }).first()).toBeVisible();
+    await expect(page.getByLabel("Price")).toBeVisible();
+    await expect(page.getByLabel("Total in stock")).toBeVisible();
     await expect(
       page.getByRole("heading", { name: /Category & tags/ }),
     ).toBeVisible();
