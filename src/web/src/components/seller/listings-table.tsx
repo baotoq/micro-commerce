@@ -114,17 +114,15 @@ export function ListingsTable({
   return (
     <div className="relative overflow-hidden rounded-lg border border-black/[0.06] bg-white">
       {isFetching && (
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-center bg-white/60 py-2 text-xs text-foreground/60 backdrop-blur-[1px]"
-          role="status"
-          aria-live="polite"
-        >
-          <Loader2Icon
-            className="size-3.5 animate-spin"
-            data-testid="listings-loading-spinner"
-          />
-          <span className="ml-1.5">Loading…</span>
-        </div>
+        <output className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-foreground/70 shadow-sm ring-1 ring-black/[0.06]">
+            <Loader2Icon
+              className="size-3.5 animate-spin"
+              data-testid="listings-loading-spinner"
+            />
+            Loading…
+          </span>
+        </output>
       )}
       <Table>
         <TableHeader>
@@ -215,8 +213,15 @@ export function ListingsTable({
         </TableBody>
       </Table>
       <div className="flex items-center justify-between border-t border-black/[0.06] bg-white px-4 py-3 text-xs">
-        <span className="text-foreground/60">
+        <span className="inline-flex items-center gap-1.5 text-foreground/60">
           {rows.length} of {totalRows} shown
+          {isFetching && (
+            <Loader2Icon
+              className="size-3 animate-spin text-foreground/50"
+              data-testid="listings-pagination-spinner"
+              aria-label="Loading next page"
+            />
+          )}
         </span>
         <Pagination className="mx-0 w-auto justify-end">
           <PaginationContent>
