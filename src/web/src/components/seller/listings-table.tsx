@@ -2,7 +2,7 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon, Loader2Icon } from "lucide-react";
 import Link from "next/link";
 import { type MouseEvent, useEffect, useRef, useState } from "react";
 import {
@@ -112,7 +112,20 @@ export function ListingsTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-black/[0.06] bg-white">
+    <div className="relative overflow-hidden rounded-lg border border-black/[0.06] bg-white">
+      {isFetching && (
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-center bg-white/60 py-2 text-xs text-foreground/60 backdrop-blur-[1px]"
+          role="status"
+          aria-live="polite"
+        >
+          <Loader2Icon
+            className="size-3.5 animate-spin"
+            data-testid="listings-loading-spinner"
+          />
+          <span className="ml-1.5">Loading…</span>
+        </div>
+      )}
       <Table>
         <TableHeader>
           <TableRow>
