@@ -1,7 +1,10 @@
 // web/src/components/seller/listings-table.tsx
+"use client";
 
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -36,6 +39,22 @@ const TONE_BY_CATEGORY: Record<string, string> = {
   Drinkware: "bg-[#F0E8D7]",
 };
 
+type ProductPage = {
+  items: Listing[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
+async function fetchListingsPage(
+  page: number,
+  pageSize: number,
+): Promise<ProductPage> {
+  const res = await fetch(`/api/listings?page=${page}&limit=${pageSize}`);
+  if (!res.ok) throw new Error(`GET /api/listings failed: ${res.status}`);
+  return (await res.json()) as ProductPage;
+}
+
 export function ListingsTable({
   listings,
   currentPage = 1,
@@ -47,10 +66,50 @@ export function ListingsTable({
   pageSize?: number;
   total?: number;
 }) {
-  const totalRows = total ?? listings.length;
-  const view = paginate(currentPage, totalRows, pageSize);
-  const rows = listings;
+  const [page, setPage] = useState(currentPage);
+
+  const initialPage: ProductPage = {
+    items: listings,
+    total: total ?? listings.length,
+    page: currentPage,
+    pageSize,
+  };
+
+  const { data, isFetching } = useQuery<ProductPage>({
+    queryKey: ["listings", page, pageSize],
+    queryFn: () => fetchListingsPage(page, pageSize),
+    initialData: page === currentPage ? initialPage : undefined,
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
+  });
+
+  const view = paginate(page, data?.total ?? 0, pageSize);
+  const rows = data?.items ?? [];
+  const totalRows = data?.total ?? 0;
   const disabledNav = "pointer-events-none opacity-40";
+
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const path = window.location.pathname;
+    const target = page === 1 ? path : `${path}?page=${page}`;
+    window.history.replaceState(null, "", target);
+  }, [page]);
+
+  // Capture-phase handler runs before any bubble-phase listener (Base UI
+  // composes its own onClick during bubble) so we can guarantee that the
+  // browser's <a href> navigation is suppressed before anything else runs.
+  function handleNav(target: number | null) {
+    return (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (target == null || target === page) return;
+      setPage(target);
+    };
+  }
 
   return (
     <div className="overflow-hidden rounded-lg border border-black/[0.06] bg-white">
@@ -68,7 +127,7 @@ export function ListingsTable({
             <TableHead className="w-8" aria-label="Open" />
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody aria-busy={isFetching}>
           {rows.map((l) => {
             const sales = Math.max(0, Math.round(l.views7d / 28));
             const stockTone =
@@ -150,7 +209,10 @@ export function ListingsTable({
           <PaginationContent>
             <PaginationItem>
               {view.prevPage ? (
-                <PaginationPrevious href={pageHref(view.prevPage)} />
+                <PaginationPrevious
+                  href={pageHref(view.prevPage)}
+                  onClickCapture={handleNav(view.prevPage)}
+                />
               ) : (
                 <PaginationPrevious
                   aria-disabled
@@ -161,14 +223,21 @@ export function ListingsTable({
             </PaginationItem>
             {view.window.map((p) => (
               <PaginationItem key={p}>
-                <PaginationLink href={pageHref(p)} isActive={p === view.page}>
+                <PaginationLink
+                  href={pageHref(p)}
+                  isActive={p === view.page}
+                  onClickCapture={handleNav(p)}
+                >
                   {p}
                 </PaginationLink>
               </PaginationItem>
             ))}
             <PaginationItem>
               {view.nextPage ? (
-                <PaginationNext href={pageHref(view.nextPage)} />
+                <PaginationNext
+                  href={pageHref(view.nextPage)}
+                  onClickCapture={handleNav(view.nextPage)}
+                />
               ) : (
                 <PaginationNext
                   aria-disabled
