@@ -1,7 +1,7 @@
 import { AlertTriangle, Info } from "lucide-react";
 import Link from "next/link";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
-import { Sparkline } from "@/components/seller/sparkline";
+import { Sparkline } from "@/components/seller/shared/sparkline";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { Button } from "@/components/ui/button";
 import { money } from "@/lib/money";
 import { BRAND, DATE_LABEL } from "@/lib/seller/brand";

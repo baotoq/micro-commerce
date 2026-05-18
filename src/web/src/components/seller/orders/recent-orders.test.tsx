@@ -1,7 +1,7 @@
 // web/src/components/seller/recent-orders.test.tsx
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { RecentOrders } from "@/components/seller/recent-orders";
+import { RecentOrders } from "@/components/seller/orders/recent-orders";
 
 describe("RecentOrders", () => {
   const orders = [

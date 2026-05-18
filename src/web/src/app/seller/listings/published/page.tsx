@@ -1,7 +1,7 @@
 // web/src/app/seller/listings/published/page.tsx
 import { Check } from "lucide-react";
 import Link from "next/link";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

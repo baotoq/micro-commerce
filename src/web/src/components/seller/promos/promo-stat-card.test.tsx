@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { PromoStatCard } from "@/components/seller/promo-stat-card";
+import { PromoStatCard } from "@/components/seller/promos/promo-stat-card";
 import type { PromoStat } from "@/lib/seller/promos/types";
 
 const STAT: PromoStat = {

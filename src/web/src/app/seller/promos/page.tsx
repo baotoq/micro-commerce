@@ -1,9 +1,13 @@
-import { NewPromoDrawer } from "@/components/seller/new-promo-drawer";
-import { PromoStatCard } from "@/components/seller/promo-stat-card";
-import { PromosTable } from "@/components/seller/promos-table";
-import { PromosTabs } from "@/components/seller/promos-tabs";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
-import { getPromoStats, getPromos, getPromoTabs } from "@/lib/seller/promos/data";
+import { NewPromoDrawer } from "@/components/seller/promos/new-promo-drawer";
+import { PromoStatCard } from "@/components/seller/promos/promo-stat-card";
+import { PromosTable } from "@/components/seller/promos/promos-table";
+import { PromosTabs } from "@/components/seller/promos/promos-tabs";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
+import {
+  getPromoStats,
+  getPromos,
+  getPromoTabs,
+} from "@/lib/seller/promos/data";
 
 export default function PromosPage() {
   const stats = getPromoStats();

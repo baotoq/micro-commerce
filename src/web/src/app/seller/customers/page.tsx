@@ -1,4 +1,4 @@
-import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 
 export default function CustomersPage() {
   return (

@@ -1,12 +1,12 @@
 import { ChevronLeft, MessageSquare, X } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { OrderDetailCustomer } from "@/components/seller/order-detail-customer";
-import { OrderDetailFulfillments } from "@/components/seller/order-detail-fulfillments";
-import { OrderDetailInternalNote } from "@/components/seller/order-detail-internal-note";
-import { OrderDetailRefund } from "@/components/seller/order-detail-refund";
-import { OrderDetailSummary } from "@/components/seller/order-detail-summary";
-import { OrderDetailTimeline } from "@/components/seller/order-detail-timeline";
+import { OrderDetailCustomer } from "@/components/seller/orders/order-detail-customer";
+import { OrderDetailFulfillments } from "@/components/seller/orders/order-detail-fulfillments";
+import { OrderDetailInternalNote } from "@/components/seller/orders/order-detail-internal-note";
+import { OrderDetailRefund } from "@/components/seller/orders/order-detail-refund";
+import { OrderDetailSummary } from "@/components/seller/orders/order-detail-summary";
+import { OrderDetailTimeline } from "@/components/seller/orders/order-detail-timeline";
 import { getOrderDetailFull } from "@/lib/seller/orders/data";
 
 export default async function OrderDetailPage({

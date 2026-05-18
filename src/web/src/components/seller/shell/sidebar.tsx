@@ -1,6 +1,6 @@
 // web/src/components/seller/sidebar.tsx
 
-import { SidebarNav } from "@/components/seller/sidebar-nav";
+import { SidebarNav } from "@/components/seller/shell/sidebar-nav";
 import { BRAND } from "@/lib/seller/brand";
 
 const NAV = [

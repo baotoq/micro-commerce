@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 
 describe("SellerTopbar", () => {
   it("renders the title", () => {

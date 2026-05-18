@@ -1,7 +1,7 @@
 // web/src/components/seller/top-products.test.tsx
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { TopProducts } from "@/components/seller/top-products";
+import { TopProducts } from "@/components/seller/analytics/top-products";
 
 describe("TopProducts", () => {
   const products = [

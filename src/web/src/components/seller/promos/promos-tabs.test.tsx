@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { PromosTabs } from "@/components/seller/promos-tabs";
+import { PromosTabs } from "@/components/seller/promos/promos-tabs";
 import type { PromoTab } from "@/lib/seller/promos/types";
 
 const TABS: PromoTab[] = [

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { money } from "@/lib/money";
 import { BRAND } from "@/lib/seller/brand";
 

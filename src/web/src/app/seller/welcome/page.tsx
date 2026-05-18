@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { Button } from "@/components/ui/button";
 import { getLaunchChecklist } from "@/lib/seller/application/data";
 import { getDayOneStats } from "@/lib/seller/onboarding/data";

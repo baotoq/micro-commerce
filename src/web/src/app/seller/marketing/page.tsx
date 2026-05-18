@@ -1,9 +1,9 @@
 import { Eye } from "lucide-react";
-import { EmailComposerAudience } from "@/components/seller/email-composer-audience";
-import { EmailComposerContent } from "@/components/seller/email-composer-content";
-import { EmailComposerSchedule } from "@/components/seller/email-composer-schedule";
-import { EmailPreview } from "@/components/seller/email-preview";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { EmailComposerAudience } from "@/components/seller/marketing/email-composer-audience";
+import { EmailComposerContent } from "@/components/seller/marketing/email-composer-content";
+import { EmailComposerSchedule } from "@/components/seller/marketing/email-composer-schedule";
+import { EmailPreview } from "@/components/seller/marketing/email-preview";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { getMarketingDraft } from "@/lib/seller/marketing/data";
 
 export default function MarketingPage() {

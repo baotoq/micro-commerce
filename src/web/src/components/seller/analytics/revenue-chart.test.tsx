@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { RevenueChart } from "@/components/seller/revenue-chart";
+import { RevenueChart } from "@/components/seller/analytics/revenue-chart";
 import type { RevenuePoint } from "@/lib/seller/analytics/types";
 
 describe("RevenueChart", () => {

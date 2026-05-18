@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MarketingTop } from "@/components/seller/marketing-top";
+import { MarketingTop } from "@/components/seller/marketing/marketing-top";
 import { getApplication } from "@/lib/seller/application/data";
 
 export default function ApplyPage() {

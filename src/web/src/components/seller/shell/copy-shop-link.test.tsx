@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { CopyShopLink } from "@/components/seller/copy-shop-link";
+import { CopyShopLink } from "@/components/seller/shell/copy-shop-link";
 
 describe("CopyShopLink", () => {
   it("renders button with domain text", () => {

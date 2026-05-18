@@ -1,7 +1,7 @@
 // web/src/components/seller/conversion-funnel.test.tsx
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { ConversionFunnel } from "@/components/seller/conversion-funnel";
+import { ConversionFunnel } from "@/components/seller/analytics/conversion-funnel";
 
 describe("ConversionFunnel", () => {
   const stages = [

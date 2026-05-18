@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { AnalyticsKpiRow } from "@/components/seller/analytics-kpi-row";
+import { AnalyticsKpiRow } from "@/components/seller/analytics/analytics-kpi-row";
 import type { KpiPoint } from "@/lib/seller/analytics/types";
 
 describe("AnalyticsKpiRow", () => {

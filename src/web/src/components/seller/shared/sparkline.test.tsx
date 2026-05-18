@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Sparkline } from "@/components/seller/sparkline";
+import { Sparkline } from "@/components/seller/shared/sparkline";
 
 describe("Sparkline", () => {
   it("renders an svg with aria-label", () => {

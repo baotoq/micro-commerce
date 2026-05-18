@@ -1,10 +1,10 @@
 import { Plus, Upload } from "lucide-react";
-import { OrdersInboxBulkBar } from "@/components/seller/orders-inbox-bulk-bar";
-import { OrdersInboxFilterRow } from "@/components/seller/orders-inbox-filter-row";
-import { OrdersInboxPagination } from "@/components/seller/orders-inbox-pagination";
-import { OrdersInboxTable } from "@/components/seller/orders-inbox-table";
-import { OrdersInboxTabs } from "@/components/seller/orders-inbox-tabs";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { OrdersInboxBulkBar } from "@/components/seller/orders/orders-inbox-bulk-bar";
+import { OrdersInboxFilterRow } from "@/components/seller/orders/orders-inbox-filter-row";
+import { OrdersInboxPagination } from "@/components/seller/orders/orders-inbox-pagination";
+import { OrdersInboxTable } from "@/components/seller/orders/orders-inbox-table";
+import { OrdersInboxTabs } from "@/components/seller/orders/orders-inbox-tabs";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import {
   getOrderInbox,
   getOrderInboxSummary,

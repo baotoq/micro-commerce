@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { MarketingTop } from "@/components/seller/marketing-top";
+import { MarketingTop } from "@/components/seller/marketing/marketing-top";
 
 describe("MarketingTop", () => {
   it("renders the brand name", () => {

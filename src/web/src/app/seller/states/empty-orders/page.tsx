@@ -1,7 +1,7 @@
 // web/src/app/seller/states/empty-orders/page.tsx
 import { Inbox } from "lucide-react";
 import Link from "next/link";
-import { CopyShopLink } from "@/components/seller/copy-shop-link";
+import { CopyShopLink } from "@/components/seller/shell/copy-shop-link";
 
 const DOMAIN = "alex-studio.micro.shop";
 

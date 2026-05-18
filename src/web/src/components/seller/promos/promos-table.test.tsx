@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { PromosTable } from "@/components/seller/promos-table";
+import { PromosTable } from "@/components/seller/promos/promos-table";
 import type { PromoCode } from "@/lib/seller/promos/types";
 
 const FIXTURE: PromoCode[] = [

@@ -3,9 +3,9 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import type { FilterKey } from "@/components/seller/filter-chips";
-import { ListingsBrowser } from "@/components/seller/listings-browser";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
+import type { FilterKey } from "@/components/seller/listings/filter-chips";
+import { ListingsBrowser } from "@/components/seller/listings/listings-browser";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getListingCounts, getListings } from "@/lib/seller/listings/data";

@@ -1,10 +1,10 @@
 // web/src/app/seller/page.tsx
 
 import Link from "next/link";
-import { KpiCard } from "@/components/seller/kpi-card";
-import { RecentOrders } from "@/components/seller/recent-orders";
-import { RevenueChart } from "@/components/seller/revenue-chart";
-import { TodayPanel } from "@/components/seller/today-panel";
+import { KpiCard } from "@/components/seller/analytics/kpi-card";
+import { RevenueChart } from "@/components/seller/analytics/revenue-chart";
+import { TodayPanel } from "@/components/seller/dashboard/today-panel";
+import { RecentOrders } from "@/components/seller/orders/recent-orders";
 import { getOverviewKpis, getRevenueSeries } from "@/lib/seller/analytics/data";
 import { BRAND, DATE_LABEL } from "@/lib/seller/brand";
 import { getTodayItems } from "@/lib/seller/dashboard/data";

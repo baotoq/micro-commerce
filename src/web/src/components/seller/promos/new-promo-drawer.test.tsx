@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { NewPromoDrawer } from "@/components/seller/new-promo-drawer";
+import { NewPromoDrawer } from "@/components/seller/promos/new-promo-drawer";
 
 describe("NewPromoDrawer", () => {
   it("renders the drawer heading", () => {

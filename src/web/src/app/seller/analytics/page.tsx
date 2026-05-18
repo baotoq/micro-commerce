@@ -1,8 +1,8 @@
-import { AnalyticsKpiRow } from "@/components/seller/analytics-kpi-row";
-import { ConversionFunnel } from "@/components/seller/conversion-funnel";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
-import { SourcesDonut } from "@/components/seller/sources-donut";
-import { TopProducts } from "@/components/seller/top-products";
+import { AnalyticsKpiRow } from "@/components/seller/analytics/analytics-kpi-row";
+import { ConversionFunnel } from "@/components/seller/analytics/conversion-funnel";
+import { SourcesDonut } from "@/components/seller/analytics/sources-donut";
+import { TopProducts } from "@/components/seller/analytics/top-products";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { Button } from "@/components/ui/button";
 import {
   getAnalyticsKpis,

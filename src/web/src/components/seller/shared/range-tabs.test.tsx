@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { RangeTabs } from "@/components/seller/range-tabs";
+import { RangeTabs } from "@/components/seller/shared/range-tabs";
 
 const OPTIONS = ["7d", "30d", "90d", "1y"];
 

@@ -1,7 +1,7 @@
 // web/src/components/seller/today-panel.test.tsx
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { TodayPanel } from "@/components/seller/today-panel";
+import { TodayPanel } from "@/components/seller/dashboard/today-panel";
 
 describe("TodayPanel", () => {
   const items = [

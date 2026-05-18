@@ -1,7 +1,7 @@
 // web/src/components/seller/filter-chips.test.tsx
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { FilterChips } from "@/components/seller/filter-chips";
+import { FilterChips } from "@/components/seller/listings/filter-chips";
 
 describe("FilterChips", () => {
   const counts = { total: 42, active: 34, low: 3, out: 1, draft: 4 };

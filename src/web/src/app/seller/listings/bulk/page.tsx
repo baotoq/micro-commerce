@@ -1,6 +1,6 @@
 // web/src/app/seller/listings/bulk/page.tsx
 import Link from "next/link";
-import { SellerTopbar } from "@/components/seller/seller-topbar";
+import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
