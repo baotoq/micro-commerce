@@ -6,7 +6,24 @@ import { productInputSchema } from "./schema";
 
 export type ActionResult =
   | { ok: true; sku: string }
-  | { ok: false; error: string; fieldErrors?: Record<string, string[]> };
+  | {
+      ok: false;
+      error: string;
+      fieldErrors?: Record<string, string[]>;
+      values?: Record<string, string>;
+    };
+
+// `<form action={serverAction}>` resets uncontrolled inputs after every submit,
+// so on validation failure we round-trip the raw entries back to the client and
+// let the form re-seed `defaultValue` from them — otherwise the user's typed
+// fields go blank when any single field fails validation.
+function rawFormValues(formData: FormData): Record<string, string> {
+  const values: Record<string, string> = {};
+  for (const [key, value] of formData.entries()) {
+    if (typeof value === "string") values[key] = value;
+  }
+  return values;
+}
 
 export async function createListingAction(
   formData: FormData,
@@ -21,7 +38,12 @@ export async function createListingAction(
     )) {
       fieldErrors[field] = issues ?? [];
     }
-    return { ok: false, error: "Invalid input", fieldErrors };
+    return {
+      ok: false,
+      error: "Invalid input",
+      fieldErrors,
+      values: rawFormValues(formData),
+    };
   }
 
   try {
@@ -52,7 +74,12 @@ export async function updateListingAction(
     )) {
       fieldErrors[field] = issues ?? [];
     }
-    return { ok: false, error: "Invalid input", fieldErrors };
+    return {
+      ok: false,
+      error: "Invalid input",
+      fieldErrors,
+      values: rawFormValues(formData),
+    };
   }
 
   const { sku: _sku, ...rest } = parsed.data;

@@ -30,4 +30,43 @@ test.describe("New listing editor", () => {
     await expect(page.getByText(/Listing health/)).toBeVisible();
     await expect(page.getByText("92", { exact: true })).toBeVisible();
   });
+
+  // Guards a React-Compiler-vs-react-hook-form interaction: when the compiler
+  // memoizes `useFormField`, FormMessage never sees error updates. Unit tests
+  // can't catch this because Vitest doesn't run the compiler — this spec does.
+  test("shows required errors only after the user dirties a field or submits", async ({
+    page,
+  }) => {
+    await page.goto("/seller/listings/new");
+
+    const sku = page.getByLabel("SKU");
+
+    // Bare focus+blur (touched but not dirty) — no error should appear.
+    await sku.focus();
+    await page.getByLabel("Name").focus();
+    await expect(page.getByText("SKU is required")).toHaveCount(0);
+
+    // Dirty + cleared — required error fires.
+    await sku.fill("X");
+    await sku.press("Backspace");
+    await expect(page.getByText("SKU is required")).toBeVisible();
+
+    // Filling a valid value clears the error.
+    await sku.fill("MC-VS-009");
+    await expect(page.getByText("SKU is required")).toHaveCount(0);
+  });
+
+  test("submitting an empty form shows required errors for every mandatory field", async ({
+    page,
+  }) => {
+    await page.goto("/seller/listings/new");
+
+    await page.getByRole("button", { name: /Publish/ }).click();
+
+    await expect(page.getByText("SKU is required")).toBeVisible();
+    await expect(page.getByText("Name is required")).toBeVisible();
+    await expect(page.getByText("Category is required")).toBeVisible();
+    await expect(page.getByText("Price is required")).toBeVisible();
+    await expect(page.getByText("Inventory is required")).toBeVisible();
+  });
 });

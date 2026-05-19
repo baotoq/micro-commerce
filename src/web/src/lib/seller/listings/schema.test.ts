@@ -54,6 +54,26 @@ describe("productInputSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("fails when price is an empty string", () => {
+    const result = productInputSchema.safeParse({ ...valid, price: "" });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.flatten().fieldErrors.price?.[0]).toMatch(
+        /price is required/i,
+      );
+    }
+  });
+
+  it("fails when inventory is an empty string", () => {
+    const result = productInputSchema.safeParse({ ...valid, inventory: "" });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.flatten().fieldErrors.inventory?.[0]).toMatch(
+        /inventory is required/i,
+      );
+    }
+  });
+
   it("fails when inventory is not an integer", () => {
     const result = productInputSchema.safeParse({ ...valid, inventory: "3.5" });
     expect(result.success).toBe(false);

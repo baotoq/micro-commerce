@@ -9,13 +9,23 @@ export const productInputSchema = z.object({
     .transform((v) => v.toUpperCase()),
   name: z.string().trim().min(1, "Name is required").max(120),
   category: z.string().trim().min(1, "Category is required").max(80),
-  price: z.coerce
-    .number({ error: "Price must be a number" })
-    .min(0, "Price must be non-negative"),
-  inventory: z.coerce
-    .number({ error: "Inventory must be a number" })
-    .int("Inventory must be an integer")
-    .min(0, "Inventory must be non-negative"),
+  // Check for empty *before* converting — `Number("")` is 0, which would
+  // silently satisfy `>= 0` and hide the required-field state.
+  price: z
+    .string()
+    .trim()
+    .min(1, "Price is required")
+    .transform((v) => Number(v))
+    .refine((n) => !Number.isNaN(n), "Price must be a number")
+    .refine((n) => n >= 0, "Price must be non-negative"),
+  inventory: z
+    .string()
+    .trim()
+    .min(1, "Inventory is required")
+    .transform((v) => Number(v))
+    .refine((n) => !Number.isNaN(n), "Inventory must be a number")
+    .refine((n) => Number.isInteger(n), "Inventory must be an integer")
+    .refine((n) => n >= 0, "Inventory must be non-negative"),
   status: z.enum(["active", "low", "out", "draft"]),
 });
 

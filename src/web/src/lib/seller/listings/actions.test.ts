@@ -72,6 +72,24 @@ describe("createListingAction", () => {
     expect(api.createProduct).not.toHaveBeenCalled();
   });
 
+  it("returns the submitted values on validation failure so the form can repopulate", async () => {
+    const result = await createListingAction(
+      makeFormData({ ...validFormData, category: "" }),
+    );
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.values).toEqual({
+        sku: "TEST-001",
+        name: "Test Product",
+        category: "",
+        price: "19.99",
+        inventory: "5",
+        status: "active",
+      });
+    }
+  });
+
   it("returns ok:false with duplicate message on 409", async () => {
     vi.mocked(api.createProduct).mockRejectedValueOnce(
       new Error("Product with SKU 'TEST-001' already exists."),
