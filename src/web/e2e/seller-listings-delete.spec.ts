@@ -106,6 +106,49 @@ test.describe("Seller listings — delete", () => {
     }).catch(() => {});
   });
 
+  test("listings table refreshes when user visited the index before deleting", async ({
+    page,
+  }) => {
+    const sku = `TEST-DELETE-CACHE-${Date.now()}`;
+
+    const res = await fetch(`${API_URL}/api/products`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sku,
+        name: "Cache Stale Repro",
+        category: "Ceramics",
+        price: 49.99,
+        inventory: 5,
+        status: "active",
+      }),
+    });
+    expect(res.ok).toBeTruthy();
+
+    // Prime the TanStack Query cache by landing on the listings page first.
+    // The bug only reproduces when ["listings"] already has an entry; if the
+    // user arrives at the edit page cold, the cache is empty and the fresh
+    // server `initialData` is used regardless.
+    await page.goto("/seller/listings");
+    await expect(
+      page.getByRole("cell", { name: sku, exact: true }),
+    ).toBeVisible({
+      timeout: 8000,
+    });
+
+    await page.goto(`/seller/listings/${sku}/edit`);
+    await page.getByRole("button", { name: "Delete listing" }).click();
+    await page
+      .getByRole("alertdialog")
+      .getByRole("button", { name: "Delete" })
+      .click();
+
+    await expect(page).toHaveURL("/seller/listings", { timeout: 8000 });
+    await expect(
+      page.getByRole("cell", { name: sku, exact: true }),
+    ).not.toBeVisible();
+  });
+
   test("modal closes on Escape key", async ({ page }) => {
     const sku = `TEST-DELETE-ESC-${Date.now()}`;
 
