@@ -5,7 +5,10 @@ import type {
   ListingStatus,
 } from "@/lib/seller/listings/types";
 
-const FETCH_OPTS: RequestInit = { cache: "no-store" };
+// Cache Components: the read loaders in lib/seller/listings/data.ts opt
+// into `"use cache"` + `cacheTag("listings")`, so we no longer pin every
+// request to `cache: "no-store"`. Mutating calls (POST/PUT/DELETE) still
+// pass `cache: "no-store"` inline since they should never hit the cache.
 
 function apiBase(): string {
   const url = process.env.API_URL;
@@ -40,13 +43,13 @@ export async function fetchProducts(
   if (query.status) url.searchParams.set("status", query.status);
   if (query.search) url.searchParams.set("search", query.search);
 
-  const res = await fetch(url, FETCH_OPTS);
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`GET /api/products failed: ${res.status}`);
   return (await res.json()) as ProductPage;
 }
 
 export async function fetchProductCounts(): Promise<ListingCounts> {
-  const res = await fetch(`${apiBase()}/api/products/counts`, FETCH_OPTS);
+  const res = await fetch(`${apiBase()}/api/products/counts`);
   if (!res.ok)
     throw new Error(`GET /api/products/counts failed: ${res.status}`);
   return (await res.json()) as ListingCounts;
@@ -55,7 +58,6 @@ export async function fetchProductCounts(): Promise<ListingCounts> {
 export async function fetchProductBySku(sku: string): Promise<Listing | null> {
   const res = await fetch(
     `${apiBase()}/api/products/${encodeURIComponent(sku)}`,
-    FETCH_OPTS,
   );
   if (res.status === 404) return null;
   if (!res.ok)
@@ -74,7 +76,7 @@ export type ProductInput = {
 
 export async function createProduct(input: ProductInput): Promise<Listing> {
   const res = await fetch(`${apiBase()}/api/products`, {
-    ...FETCH_OPTS,
+    cache: "no-store",
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
@@ -93,7 +95,7 @@ export async function updateProduct(
   const res = await fetch(
     `${apiBase()}/api/products/${encodeURIComponent(sku)}`,
     {
-      ...FETCH_OPTS,
+      cache: "no-store",
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sku, ...input }),
@@ -109,7 +111,7 @@ export async function deleteProduct(sku: string): Promise<boolean> {
   const res = await fetch(
     `${apiBase()}/api/products/${encodeURIComponent(sku)}`,
     {
-      ...FETCH_OPTS,
+      cache: "no-store",
       method: "DELETE",
     },
   );

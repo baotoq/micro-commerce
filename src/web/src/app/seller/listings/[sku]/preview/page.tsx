@@ -1,7 +1,3 @@
-// web/src/app/seller/listings/[sku]/preview/page.tsx
-
-export const dynamic = "force-dynamic";
-
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";

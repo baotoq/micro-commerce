@@ -1,14 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ updateTag: vi.fn() }));
 vi.mock("@/lib/catalog/api", () => ({
   createProduct: vi.fn(),
   updateProduct: vi.fn(),
   deleteProduct: vi.fn(),
 }));
 
-import { revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 import * as api from "@/lib/catalog/api";
 import {
   createListingAction,
@@ -56,7 +56,7 @@ describe("createListingAction", () => {
     expect(api.createProduct).toHaveBeenCalledWith(
       expect.objectContaining({ sku: "TEST-001", price: 19.99, inventory: 5 }),
     );
-    expect(revalidatePath).toHaveBeenCalledWith("/seller/listings");
+    expect(updateTag).toHaveBeenCalledWith("listings");
   });
 
   it("returns fieldErrors when input is invalid", async () => {
@@ -121,10 +121,7 @@ describe("updateListingAction", () => {
       "TEST-001",
       expect.objectContaining({ name: "Test Product", price: 19.99 }),
     );
-    expect(revalidatePath).toHaveBeenCalledWith("/seller/listings");
-    expect(revalidatePath).toHaveBeenCalledWith(
-      "/seller/listings/TEST-001/edit",
-    );
+    expect(updateTag).toHaveBeenCalledWith("listings");
   });
 
   it("returns ok:false with friendly error on 404 (null response)", async () => {
@@ -164,10 +161,7 @@ describe("deleteListingAction", () => {
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.sku).toBe("TEST-001");
     expect(api.deleteProduct).toHaveBeenCalledWith("TEST-001");
-    expect(revalidatePath).toHaveBeenCalledWith("/seller/listings");
-    expect(revalidatePath).toHaveBeenCalledWith(
-      "/seller/listings/TEST-001/edit",
-    );
+    expect(updateTag).toHaveBeenCalledWith("listings");
   });
 
   it("returns ok:false with friendly error when product not found", async () => {

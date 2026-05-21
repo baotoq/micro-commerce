@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import type { FilterKey } from "@/components/seller/listings/filter-chips";
 import { ListingsBrowser } from "@/components/seller/listings/listings-browser";

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 import type { Listing, ListingStatus } from "@/lib/seller/listings/types";
 import { createProduct, deleteProduct, updateProduct } from "./api";
 
@@ -42,7 +42,7 @@ export async function createProductAction(
     status: parseStatus(formData.get("status")),
   };
   const created = await createProduct(input);
-  revalidatePath("/seller/listings");
+  updateTag("listings");
   return created;
 }
 
@@ -59,15 +59,13 @@ export async function updateProductAction(
     status: parseStatus(formData.get("status")),
   };
   const updated = await updateProduct(sku, input);
-  revalidatePath("/seller/listings");
-  revalidatePath(`/seller/listings/${sku}/edit`);
-  revalidatePath(`/seller/listings/${sku}/preview`);
+  updateTag("listings");
   return updated;
 }
 
 export async function deleteProductAction(sku: string): Promise<boolean> {
   // TODO(auth): requireSeller() — see audit/auth-followup.md
   const deleted = await deleteProduct(sku);
-  revalidatePath("/seller/listings");
+  updateTag("listings");
   return deleted;
 }

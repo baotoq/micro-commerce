@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 import { createProduct, deleteProduct, updateProduct } from "@/lib/catalog/api";
 import { productInputSchema } from "./schema";
 
@@ -49,7 +49,7 @@ export async function createListingAction(
 
   try {
     const listing = await createProduct(parsed.data);
-    revalidatePath("/seller/listings");
+    updateTag("listings");
     return { ok: true, sku: listing.sku };
   } catch (err) {
     const message =
@@ -90,8 +90,7 @@ export async function updateListingAction(
     if (listing === null) {
       return { ok: false, error: "Listing not found." };
     }
-    revalidatePath("/seller/listings");
-    revalidatePath(`/seller/listings/${sku}/edit`);
+    updateTag("listings");
     return { ok: true, sku: listing.sku };
   } catch (err) {
     const message =
@@ -107,8 +106,7 @@ export async function deleteListingAction(sku: string): Promise<ActionResult> {
     if (!deleted) {
       return { ok: false, error: "Listing not found." };
     }
-    revalidatePath("/seller/listings");
-    revalidatePath(`/seller/listings/${sku}/edit`);
+    updateTag("listings");
     return { ok: true, sku };
   } catch (err) {
     const message =
