@@ -27,7 +27,11 @@ export default defineConfig({
   expect: { timeout: 5_000 },
   use: {
     baseURL,
-    trace: "on-first-retry",
+    // `on-first-retry` would skip local runs (retries=0 ⇒ no first retry).
+    // `retain-on-failure` keeps a trace on the original run, while CI keeps
+    // its proven-stable behaviour of tracing only on the retry.
+    trace: process.env.CI ? "on-first-retry" : "retain-on-failure",
+    screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
   projects: [
