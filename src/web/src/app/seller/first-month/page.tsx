@@ -105,6 +105,7 @@ export default function FirstMonthPage() {
               <div className="mt-2 h-8">
                 <Sparkline
                   points={kpi.spark}
+                  label={`${kpi.label} trend`}
                   className="h-8 w-full text-muted-foreground"
                 />
               </div>

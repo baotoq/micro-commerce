@@ -15,10 +15,7 @@ export default function FirstOrderPage() {
 
       <div className="flex-1 overflow-auto px-7 py-6">
         {/* Celebration banner */}
-        <div
-          className="relative mb-5 overflow-hidden rounded-xl border-none p-[22px]"
-          style={{ background: "#0066cc", color: "white" }}
-        >
+        <div className="relative mb-5 overflow-hidden rounded-xl border-none bg-primary p-[22px] text-primary-foreground">
           <div
             className="absolute rounded-full"
             style={{
@@ -71,8 +68,7 @@ export default function FirstOrderPage() {
               </button>
               <Link
                 href="/seller/orders/1001/pack"
-                className="rounded-lg px-4 py-2 text-sm font-medium"
-                style={{ background: "white", color: "#c2410c" }}
+                className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-terra"
               >
                 Open order →
               </Link>
@@ -99,10 +95,7 @@ export default function FirstOrderPage() {
                 </span>
               </div>
               <div className="mt-2.5 h-8">
-                <Sparkline
-                  points={s.spark}
-                  className="h-8 w-full text-[#0066cc]"
-                />
+                <Sparkline points={s.spark} label={`${s.label} trend`} />
               </div>
             </div>
           ))}
@@ -131,13 +124,10 @@ export default function FirstOrderPage() {
               </tr>
             </thead>
             <tbody>
-              <tr style={{ background: "rgba(194,65,12,0.05)" }}>
+              <tr className="bg-terra/[0.05]">
                 <td className="px-5 py-3.5">
                   <span className="flex items-center gap-2">
-                    <span
-                      className="inline-block h-2 w-2 rounded-full"
-                      style={{ background: "#c2410c" }}
-                    />
+                    <span className="inline-block size-2 rounded-full bg-terra" />
                     <span className="font-mono font-semibold text-foreground">
                       #1001
                     </span>
@@ -145,7 +135,7 @@ export default function FirstOrderPage() {
                 </td>
                 <td className="px-5 py-3.5">
                   <span className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066cc]/10 text-xs font-semibold text-[#0066cc]">
+                    <span className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
                       S
                     </span>
                     <span>Sasha L.</span>
