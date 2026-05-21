@@ -287,7 +287,12 @@ export function NewListingForm() {
                         className="w-full rounded-md border border-border bg-white px-3 text-sm"
                         style={{ height: 38 }}
                       >
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder="Select status">
+                          {(value) =>
+                            STATUS_OPTIONS.find((o) => o.value === value)
+                              ?.label ?? "Select status"
+                          }
+                        </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

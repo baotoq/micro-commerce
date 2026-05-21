@@ -47,6 +47,17 @@ describe("NewListingForm", () => {
     expect(screen.getByLabelText(/^status$/i)).toBeInTheDocument();
   });
 
+  it("renders the human-readable label in the Status trigger, not the raw enum value", () => {
+    renderWithSubmit();
+
+    // Default status is "draft" — the trigger must show "Draft", not "draft".
+    // Base UI's Select.Value displays the raw value unless you opt into a label
+    // render-function child.
+    const trigger = screen.getByLabelText(/^status$/i);
+    expect(trigger).toHaveTextContent("Draft");
+    expect(trigger).not.toHaveTextContent(/^draft$/);
+  });
+
   it("does not flag a field on bare focus+blur (touched but never dirtied)", async () => {
     renderWithSubmit();
 
