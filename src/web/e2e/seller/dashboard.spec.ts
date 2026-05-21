@@ -1,6 +1,10 @@
 // web/e2e/seller.spec.ts
 import { expect, test } from "../fixtures/test";
 
+// KPIs, recent-order IDs (#1042…#1038), and chart series here all come from
+// static design-fixture files (`src/lib/seller/analytics/data.ts`,
+// `src/lib/seller/orders/data.ts`) — NOT the Catalog DB — so this suite is
+// NOT `@seed-dependent`.
 test.describe("Seller overview", { tag: ["@smoke", "@dashboard"] }, () => {
   test("renders sidebar, greeting, KPIs, today panel, and recent orders", async ({
     page,

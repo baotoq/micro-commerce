@@ -1,5 +1,9 @@
 import { expect, test } from "../fixtures/test";
 
+// Counts and copy in this suite ("184 buyers · 96% deliverable", template
+// chip labels, etc.) come from a static design-fixture file in
+// `src/lib/seller/marketing/data.ts`, not the Catalog DB — so the assertions
+// remain stable regardless of seed state and are NOT `@seed-dependent`.
 test.describe(
   "seller marketing page",
   { tag: ["@regression", "@marketing"] },

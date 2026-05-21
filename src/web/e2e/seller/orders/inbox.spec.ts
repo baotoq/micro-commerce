@@ -1,5 +1,8 @@
 import { expect, test } from "../../fixtures/test";
 
+// Counts ("47 lifetime", "Showing 1 – 10 of 47", 10 tbody rows) come from
+// `src/lib/seller/orders/data.ts` — a static design-fixture, not the
+// Catalog DB — so this suite is NOT `@seed-dependent`.
 test.describe("seller orders inbox", { tag: ["@smoke", "@orders"] }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/seller/orders");

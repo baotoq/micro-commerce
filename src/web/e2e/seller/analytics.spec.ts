@@ -1,6 +1,10 @@
 // web/e2e/seller-analytics.spec.ts
 import { expect, test } from "../fixtures/test";
 
+// KPI values ("$12,480.00", "3.4%"), sources, top products, and funnel stages
+// here come from `src/lib/seller/analytics/data.ts` — a static
+// design-fixture, not the Catalog DB — so this suite is NOT
+// `@seed-dependent`.
 test.describe(
   "Seller analytics",
   { tag: ["@regression", "@analytics"] },

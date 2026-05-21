@@ -1,6 +1,10 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "../fixtures/test";
 
+// All counts and codes asserted here (the 5 promos, "281 redemptions",
+// "$2,740", etc.) come from `src/lib/seller/promos/data.ts` — a static
+// design-fixture, not the Catalog DB — so this suite is NOT `@seed-dependent`.
+
 // The drawer carries an <h2>New promotion</h2> at the top, with a Close button
 // inside the same panel. We scope drawer-only assertions by walking up from a
 // known anchor (the code-input testid is unique to the drawer).
