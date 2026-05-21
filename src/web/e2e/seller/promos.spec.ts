@@ -49,12 +49,10 @@ test.describe("seller promos page", { tag: ["@regression", "@promos"] }, () => {
     // "Driven revenue" and "Redemptions" intentionally repeat: once as a
     // stat-card label and once as a table column header. Asserting count=2
     // catches regressions where either side disappears.
-    await expect(
-      page.getByText("Driven revenue", { exact: true }),
-    ).toHaveCount(2);
-    await expect(
-      page.getByText("Redemptions", { exact: true }),
-    ).toHaveCount(2);
+    await expect(page.getByText("Driven revenue", { exact: true })).toHaveCount(
+      2,
+    );
+    await expect(page.getByText("Redemptions", { exact: true })).toHaveCount(2);
     await expect(page.getByText("Avg. discount")).toBeVisible();
     await expect(page.getByText("New buyers")).toBeVisible();
   });

@@ -33,7 +33,9 @@ test.describe(
       const productSubtitle = page.getByText("Glazed terra · qty 1");
       await expect(productSubtitle).toBeVisible();
       await expect(
-        productSubtitle.locator("..").getByText("Persimmon vase", { exact: true }),
+        productSubtitle
+          .locator("..")
+          .getByText("Persimmon vase", { exact: true }),
       ).toBeVisible();
 
       // Order financials
