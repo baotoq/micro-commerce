@@ -5,10 +5,11 @@ import {
   fetchProductCounts,
   fetchProducts,
 } from "@/lib/catalog/api";
-import type {
-  Listing,
-  ListingCounts,
-  ListingStatus,
+import {
+  LISTINGS_PAGE_SIZE,
+  type Listing,
+  type ListingCounts,
+  type ListingStatus,
 } from "@/lib/seller/listings/types";
 
 export async function getListings(
@@ -16,7 +17,7 @@ export async function getListings(
 ) {
   return fetchProducts({
     page: query.page ?? 1,
-    limit: query.limit ?? 9,
+    limit: query.limit ?? LISTINGS_PAGE_SIZE,
     status: query.status,
   });
 }

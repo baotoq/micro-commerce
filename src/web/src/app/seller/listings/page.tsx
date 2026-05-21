@@ -7,7 +7,10 @@ import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getListingCounts, getListings } from "@/lib/seller/listings/data";
-import type { ListingStatus } from "@/lib/seller/listings/types";
+import {
+  LISTINGS_PAGE_SIZE,
+  type ListingStatus,
+} from "@/lib/seller/listings/types";
 import { cn } from "@/lib/utils";
 
 const FILTER_KEYS: readonly FilterKey[] = [
@@ -56,8 +59,6 @@ function Ico({
   );
 }
 
-const PAGE_SIZE = 9;
-
 export default async function ListingsPage({
   searchParams,
 }: {
@@ -70,7 +71,7 @@ export default async function ListingsPage({
     filter === "all" ? undefined : filter;
   const [counts, listings] = await Promise.all([
     getListingCounts(),
-    getListings({ page, limit: PAGE_SIZE, status }),
+    getListings({ page, limit: LISTINGS_PAGE_SIZE, status }),
   ]);
   return (
     <section>

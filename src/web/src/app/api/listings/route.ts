@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { fetchProducts, type ProductQuery } from "@/lib/catalog/api";
-import type { ListingStatus } from "@/lib/seller/listings/types";
+import {
+  LISTINGS_PAGE_SIZE,
+  type ListingStatus,
+} from "@/lib/seller/listings/types";
 
-const DEFAULT_LIMIT = 9;
 const STATUS_VALUES: readonly ListingStatus[] = [
   "active",
   "low",
@@ -23,7 +25,10 @@ function parseStatus(raw: string | null): ListingStatus | undefined {
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const page = toPositiveInt(url.searchParams.get("page"), 1);
-  const limit = toPositiveInt(url.searchParams.get("limit"), DEFAULT_LIMIT);
+  const limit = toPositiveInt(
+    url.searchParams.get("limit"),
+    LISTINGS_PAGE_SIZE,
+  );
   const status = parseStatus(url.searchParams.get("status"));
   const query: ProductQuery = { page, limit };
   if (status) query.status = status;
