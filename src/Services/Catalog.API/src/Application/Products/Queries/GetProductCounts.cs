@@ -1,7 +1,7 @@
 using MediatR;
+using MicroCommerce.Catalog.Application.Persistence;
 using MicroCommerce.Catalog.Application.Products.Dtos;
 using MicroCommerce.Catalog.Domain.Products;
-using MicroCommerce.Catalog.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.Application.Products.Queries;
@@ -12,20 +12,20 @@ public class GetProductCountsHandler(AppDbContext db) : IRequestHandler<GetProdu
 {
     public async Task<ProductCountsDto> Handle(GetProductCountsQuery request, CancellationToken ct)
     {
-        var counts = await db.Products
+        // Single round trip. Replaces GroupBy(_ => 1).FirstOrDefaultAsync (which returns null
+        // for an empty table) with conditional-sum aggregates that naturally return 0.
+        var products = db.Products.AsNoTracking();
+
+        var counts = await products
             .GroupBy(_ => 1)
-            .Select(g => new
-            {
-                Total = g.Count(),
-                Active = g.Count(p => p.Status == ProductStatus.Active),
-                Low = g.Count(p => p.Status == ProductStatus.Low),
-                Out = g.Count(p => p.Status == ProductStatus.Out),
-                Draft = g.Count(p => p.Status == ProductStatus.Draft),
-            })
+            .Select(g => new ProductCountsDto(
+                g.Count(),
+                g.Count(p => p.Status == ProductStatus.Active),
+                g.Count(p => p.Status == ProductStatus.Low),
+                g.Count(p => p.Status == ProductStatus.Out),
+                g.Count(p => p.Status == ProductStatus.Draft)))
             .FirstOrDefaultAsync(ct);
 
-        return counts is null
-            ? new ProductCountsDto(0, 0, 0, 0, 0)
-            : new ProductCountsDto(counts.Total, counts.Active, counts.Low, counts.Out, counts.Draft);
+        return counts ?? new ProductCountsDto(0, 0, 0, 0, 0);
     }
 }
