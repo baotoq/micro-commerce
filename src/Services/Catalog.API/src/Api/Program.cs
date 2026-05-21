@@ -2,6 +2,7 @@ using MicroCommerce.Catalog.Application;
 using MicroCommerce.Catalog.Infrastructure;
 using MicroCommerce.Catalog.Application.Persistence;
 using MicroCommerce.Catalog.Api.Endpoints;
+using MicroCommerce.Catalog.Api.ExceptionHandlers;
 using MicroCommerce.Catalog.Api.SeedData;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ builder.AddInfrastructure();
 builder.Services.AddApplication();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddDaprClient();
+builder.Services.AddExceptionHandler<InvalidInputExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 
