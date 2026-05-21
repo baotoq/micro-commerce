@@ -50,7 +50,7 @@ function Checkbox({ checked }: { checked: boolean }) {
 
 function Avatar({ name }: { name: string }) {
   return (
-    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#e8e3da] text-[10px] font-semibold text-foreground">
+    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-surface-avatar-warm text-[10px] font-semibold text-foreground">
       {name.charAt(0)}
     </span>
   );

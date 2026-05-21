@@ -45,14 +45,14 @@ export function OrdersInboxPagination({
 }) {
   return (
     <div className="flex items-center justify-between border-t border-black/[0.06] px-7 py-3">
-      <span className="text-[11px] text-[#1d1d1f]/50">
+      <span className="text-[11px] text-foreground/50">
         Showing {showing} of {total}
       </span>
       <div className="flex items-center gap-1">
         <button
           type="button"
           aria-label="Previous page"
-          className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-[#1d1d1f]/50 hover:bg-black/[0.03]"
+          className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-foreground/50 hover:bg-black/[0.03]"
         >
           <ChevronLeft />
         </button>
@@ -64,8 +64,8 @@ export function OrdersInboxPagination({
             aria-label={`Page ${n}`}
             className={`inline-flex min-w-[26px] items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
               i === 0
-                ? "bg-[#1d1d1f] text-white"
-                : "border border-black/[0.08] text-[#1d1d1f]/60 hover:bg-black/[0.03]"
+                ? "bg-foreground text-white"
+                : "border border-black/[0.08] text-foreground/60 hover:bg-black/[0.03]"
             }`}
           >
             {n}
@@ -74,7 +74,7 @@ export function OrdersInboxPagination({
         <button
           type="button"
           aria-label="Next page"
-          className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-[#1d1d1f]/50 hover:bg-black/[0.03]"
+          className="inline-flex size-7 items-center justify-center rounded-md border border-black/[0.08] text-foreground/50 hover:bg-black/[0.03]"
         >
           <ChevronRight />
         </button>

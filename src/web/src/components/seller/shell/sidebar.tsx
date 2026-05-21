@@ -15,16 +15,16 @@ const NAV = [
 export function SellerSidebar() {
   const initial = BRAND.name.charAt(0);
   return (
-    <aside className="flex h-screen w-60 flex-col border-r border-black/[0.06] bg-[#f5f5f7]">
+    <aside className="flex h-screen w-60 flex-col border-r border-black/[0.06] bg-canvas-parchment">
       <div className="flex items-center gap-3 px-5 py-5">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-[#1d1d1f] text-base font-semibold leading-none text-white">
+        <div className="flex size-8 items-center justify-center rounded-lg bg-foreground text-base font-semibold leading-none text-white">
           {initial}
         </div>
         <div className="min-w-0">
           <div className="truncate text-[13px] font-semibold tracking-tight">
             {BRAND.name}
           </div>
-          <div className="text-[11px] text-[#1d1d1f]/60">Plan · Maker</div>
+          <div className="text-[11px] text-foreground/60">Plan · Maker</div>
         </div>
       </div>
       <SidebarNav items={NAV} />
@@ -33,9 +33,9 @@ export function SellerSidebar() {
           Setup · 4 of 6
         </div>
         <div className="my-2 h-1 overflow-hidden rounded-full bg-black/[0.08]">
-          <div className="h-full w-2/3 rounded-full bg-[#1d1d1f]" />
+          <div className="h-full w-2/3 rounded-full bg-foreground" />
         </div>
-        <div className="text-[11px] text-[#1d1d1f]/60">
+        <div className="text-[11px] text-foreground/60">
           Add payouts &amp; ship rates
         </div>
       </div>

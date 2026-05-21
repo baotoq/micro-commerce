@@ -33,14 +33,14 @@ export default function OrdersPage() {
           <>
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-black/[0.12] px-3 py-1.5 text-[12px] font-medium text-[#1d1d1f] hover:bg-black/[0.03]"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-black/[0.12] px-3 py-1.5 text-[12px] font-medium text-foreground hover:bg-black/[0.03]"
             >
               <Upload size={11} aria-hidden />
               Export CSV
             </button>
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#1d1d1f] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1d1d1f]/90"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-foreground px-3 py-1.5 text-[12px] font-medium text-white hover:bg-foreground/90"
             >
               <Plus size={12} aria-hidden />
               Manual order

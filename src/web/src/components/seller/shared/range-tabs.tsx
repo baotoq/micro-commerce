@@ -22,7 +22,7 @@ export function RangeTabs({
           aria-pressed={active === opt}
           className={cn(
             "rounded-full px-3 py-1 text-xs",
-            active === opt ? "bg-[#1d1d1f] text-white" : "text-[#1d1d1f]/70",
+            active === opt ? "bg-foreground text-white" : "text-foreground/70",
           )}
         >
           {opt}

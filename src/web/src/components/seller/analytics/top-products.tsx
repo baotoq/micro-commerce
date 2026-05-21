@@ -15,13 +15,13 @@ export function TopProducts({ products }: { products: TopProduct[] }) {
             <li key={p.sku}>
               <div className="flex items-baseline justify-between text-sm">
                 <span>{p.name}</span>
-                <span className="tabular-nums text-[#1d1d1f]/70">
+                <span className="tabular-nums text-foreground/70">
                   {p.units} · {money(p.revenue)}
                 </span>
               </div>
               <div className="mt-1 h-1.5 w-full rounded-full bg-black/[0.05]">
                 <div
-                  className="h-1.5 rounded-full bg-[#1d1d1f]"
+                  className="h-1.5 rounded-full bg-foreground"
                   style={{ width: `${pct}%` }}
                   aria-hidden
                 />

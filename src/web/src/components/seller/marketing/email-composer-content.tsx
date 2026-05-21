@@ -3,19 +3,19 @@ import type { MarketingDraft } from "@/lib/seller/marketing/types";
 export function EmailComposerContent({ draft }: { draft: MarketingDraft }) {
   return (
     <>
-      <p className="mb-2 mt-6 text-[10px] font-semibold uppercase tracking-widest text-[#1d1d1f]/50">
+      <p className="mb-2 mt-6 text-[10px] font-semibold uppercase tracking-widest text-foreground/50">
         Step 2 of 3 · Content
       </p>
       <div className="rounded-xl border border-black/[0.06] bg-white p-[18px]">
-        <div className="text-[11px] text-[#1d1d1f]/50">Template</div>
+        <div className="text-[11px] text-foreground/50">Template</div>
         <div className="mt-2 flex flex-wrap gap-2">
           {draft.templates.map((t) => (
             <span
               key={t.label}
               className="rounded-full px-3 py-1 text-[11.5px] font-medium"
               style={{
-                background: t.on ? "#1d1d1f" : "rgba(0,0,0,0.05)",
-                color: t.on ? "white" : "#1d1d1f",
+                background: t.on ? "var(--foreground)" : "rgba(0,0,0,0.05)",
+                color: t.on ? "white" : "var(--foreground)",
               }}
             >
               {t.label}
@@ -23,17 +23,17 @@ export function EmailComposerContent({ draft }: { draft: MarketingDraft }) {
           ))}
         </div>
 
-        <div className="mt-[18px] mb-1.5 text-[11px] text-[#1d1d1f]/50">
+        <div className="mt-[18px] mb-1.5 text-[11px] text-foreground/50">
           Subject
         </div>
         <div
           className="flex items-center rounded-[10px] px-3.5"
           style={{
             height: 44,
-            border: "1.5px solid #1d1d1f",
+            border: "1.5px solid var(--foreground)",
           }}
         >
-          <span className="text-[14px] font-semibold text-[#1d1d1f]">
+          <span className="text-[14px] font-semibold text-foreground">
             {draft.subject}
           </span>
           <span
@@ -41,14 +41,14 @@ export function EmailComposerContent({ draft }: { draft: MarketingDraft }) {
             style={{
               width: 1.5,
               height: 18,
-              background: "#1d1d1f",
+              background: "var(--foreground)",
               animation: "blink 1s steps(1) infinite",
             }}
           />
         </div>
-        <div className="mt-1.5 flex justify-between text-[11px] text-[#1d1d1f]/50">
+        <div className="mt-1.5 flex justify-between text-[11px] text-foreground/50">
           <span>
-            Open-rate forecast: <b className="text-[#1d1d1f]/80">32%</b> (above
+            Open-rate forecast: <b className="text-foreground/80">32%</b> (above
             your avg)
           </span>
           <span>
@@ -56,7 +56,7 @@ export function EmailComposerContent({ draft }: { draft: MarketingDraft }) {
           </span>
         </div>
 
-        <div className="mt-[18px] mb-1.5 text-[11px] text-[#1d1d1f]/50">
+        <div className="mt-[18px] mb-1.5 text-[11px] text-foreground/50">
           Preview text
         </div>
         <div
@@ -66,12 +66,12 @@ export function EmailComposerContent({ draft }: { draft: MarketingDraft }) {
             border: "1px solid rgba(0,0,0,0.1)",
           }}
         >
-          <span className="text-[13px] text-[#1d1d1f]">
+          <span className="text-[13px] text-foreground">
             {draft.previewText}
           </span>
         </div>
 
-        <div className="mt-[18px] mb-2 text-[11px] text-[#1d1d1f]/50">
+        <div className="mt-[18px] mb-2 text-[11px] text-foreground/50">
           Featured product
         </div>
         <div
@@ -88,16 +88,16 @@ export function EmailComposerContent({ draft }: { draft: MarketingDraft }) {
             }}
           />
           <div className="flex-1 min-w-0">
-            <div className="text-[13px] font-semibold text-[#1d1d1f]">
+            <div className="text-[13px] font-semibold text-foreground">
               {draft.productName}
             </div>
-            <div className="text-[11px] text-[#1d1d1f]/50">
+            <div className="text-[11px] text-foreground/50">
               {draft.productInventoryLabel}
             </div>
           </div>
           <button
             type="button"
-            className="rounded-lg px-3 py-1.5 text-[12px] font-medium text-[#1d1d1f] hover:bg-black/[0.04]"
+            className="rounded-lg px-3 py-1.5 text-[12px] font-medium text-foreground hover:bg-black/[0.04]"
           >
             Change
           </button>

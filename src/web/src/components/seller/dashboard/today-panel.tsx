@@ -8,7 +8,7 @@ export function TodayPanel({ items }: { items: TodayItem[] }) {
       <ul className="mt-4 space-y-2 text-sm">
         {items.map((it) => (
           <li key={it.label} className="flex items-start gap-2">
-            <span className="mt-1.5 inline-block h-1.5 w-1.5 rounded-full bg-[#0066cc]" />
+            <span className="mt-1.5 inline-block size-1.5 rounded-full bg-primary" />
             <span>{it.label}</span>
           </li>
         ))}
