@@ -136,6 +136,60 @@
 
   --tracking-hero: -0.28px;
   --tracking-display: -0.374px;
+
+  /* Typography ladder — DESIGN.md §Typography hierarchy.
+     The size/line-height pairs are emitted as `text-*` utilities; pair them
+     with `font-display` (SF Pro Display) for headlines or `font-text`
+     (SF Pro Text) for body to apply the full type style. */
+  --text-hero-display: 56px;
+  --text-hero-display--line-height: 1.07;
+  --text-hero-display--letter-spacing: -0.28px;
+  --text-hero-display--font-weight: 600;
+
+  --text-display-lg: 40px;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -0.32px;
+  --text-display-lg--font-weight: 600;
+
+  --text-display-md: 32px;
+  --text-display-md--line-height: 1.15;
+  --text-display-md--letter-spacing: -0.32px;
+  --text-display-md--font-weight: 600;
+
+  --text-lead: 24px;
+  --text-lead--line-height: 1.25;
+  --text-lead--letter-spacing: -0.196px;
+  --text-lead--font-weight: 400;
+
+  --text-tagline: 20px;
+  --text-tagline--line-height: 1.2;
+  --text-tagline--letter-spacing: -0.231px;
+  --text-tagline--font-weight: 600;
+
+  --text-body-strong: 17px;
+  --text-body-strong--line-height: 1.47;
+  --text-body-strong--letter-spacing: -0.374px;
+  --text-body-strong--font-weight: 600;
+
+  --text-body: 17px;
+  --text-body--line-height: 1.47;
+  --text-body--letter-spacing: -0.374px;
+  --text-body--font-weight: 400;
+
+  --text-caption: 14px;
+  --text-caption--line-height: 1.43;
+  --text-caption--letter-spacing: -0.224px;
+  --text-caption--font-weight: 400;
+
+  --text-caption-strong: 14px;
+  --text-caption-strong--line-height: 1.29;
+  --text-caption-strong--letter-spacing: -0.224px;
+  --text-caption-strong--font-weight: 600;
+
+  --text-fine-print: 12px;
+  --text-fine-print--line-height: 1;
+  --text-fine-print--letter-spacing: -0.12px;
+  --text-fine-print--font-weight: 400;
 }
 
 .dark {
