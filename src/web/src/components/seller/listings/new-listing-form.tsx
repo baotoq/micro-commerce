@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { createListingAction } from "@/lib/seller/listings/actions";
 import { productInputSchema } from "@/lib/seller/listings/schema";
 
@@ -395,9 +396,7 @@ export function NewListingForm() {
               )}
             />
             <div className="flex items-center gap-2">
-              <div className="w-8 h-4 rounded-full bg-good flex items-center justify-end pr-0.5">
-                <div className="w-3 h-3 rounded-full bg-white shadow-sm" />
-              </div>
+              <Switch defaultChecked size="sm" aria-label="Allow pre-orders" />
               <span className="text-sm text-foreground">Allow pre-orders</span>
             </div>
           </div>

@@ -1,26 +1,5 @@
+import { Switch } from "@/components/ui/switch";
 import type { MarketingDraft } from "@/lib/seller/marketing/types";
-
-function Switch({ on }: { on: boolean }) {
-  return (
-    <span
-      className="relative inline-flex shrink-0 items-center rounded-full transition-colors"
-      style={{
-        width: 28,
-        height: 16,
-        background: on ? "#1d1d1f" : "rgba(0,0,0,0.1)",
-      }}
-    >
-      <span
-        className="inline-block rounded-full bg-white shadow transition-transform"
-        style={{
-          width: 12,
-          height: 12,
-          transform: on ? "translateX(14px)" : "translateX(2px)",
-        }}
-      />
-    </span>
-  );
-}
 
 export function EmailComposerSchedule({ draft }: { draft: MarketingDraft }) {
   return (
@@ -82,7 +61,11 @@ export function EmailComposerSchedule({ draft }: { draft: MarketingDraft }) {
                   className="flex items-center gap-2 rounded-lg p-2.5"
                   style={{ border: "1px solid rgba(0,0,0,0.1)" }}
                 >
-                  <Switch on={f.on} />
+                  <Switch
+                    defaultChecked={f.on}
+                    size="sm"
+                    aria-label={f.label}
+                  />
                   <span className="flex-1 text-[12px] text-foreground">
                     {f.label}
                   </span>

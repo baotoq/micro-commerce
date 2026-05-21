@@ -1,3 +1,4 @@
+import { Switch } from "@/components/ui/switch";
 import type { MarketingDraft } from "@/lib/seller/marketing/types";
 
 export function EmailComposerAudience({ draft }: { draft: MarketingDraft }) {
@@ -27,7 +28,11 @@ export function EmailComposerAudience({ draft }: { draft: MarketingDraft }) {
                   : "white",
               }}
             >
-              <Switch on={audience.on} />
+              <Switch
+                defaultChecked={audience.on}
+                size="sm"
+                aria-label={audience.label}
+              />
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-semibold text-foreground">
                   {audience.label}
@@ -44,27 +49,5 @@ export function EmailComposerAudience({ draft }: { draft: MarketingDraft }) {
         </div>
       </div>
     </>
-  );
-}
-
-function Switch({ on }: { on: boolean }) {
-  return (
-    <span
-      className="relative inline-flex shrink-0 items-center rounded-full transition-colors"
-      style={{
-        width: 28,
-        height: 16,
-        background: on ? "#1d1d1f" : "rgba(0,0,0,0.1)",
-      }}
-    >
-      <span
-        className="inline-block rounded-full bg-white shadow transition-transform"
-        style={{
-          width: 12,
-          height: 12,
-          transform: on ? "translateX(14px)" : "translateX(2px)",
-        }}
-      />
-    </span>
   );
 }
