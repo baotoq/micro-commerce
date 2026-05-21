@@ -62,14 +62,15 @@ test.describe("seller orders inbox", { tag: ["@smoke", "@orders"] }, () => {
   });
 
   test("Mira is not visible anywhere", async ({ page }) => {
-    const content = await page.content();
-    expect(content).not.toContain("Mira");
+    // Auto-waiting check (vs page.content() snapshot which can false-negative
+    // on a half-loaded page).
+    await expect(page.getByText("Mira")).toHaveCount(0);
   });
 
   test("annotation strings are not visible", async ({ page }) => {
-    const content = await page.content();
-    expect(content).not.toContain("\u{1F4DD}");
-    expect(content).not.toContain("drawer · new promo");
-    expect(content).not.toContain("opens #1042");
+    // Note: \u{1F4DD} is the memo emoji used in design-canvas annotations.
+    await expect(page.getByText("\u{1F4DD}")).toHaveCount(0);
+    await expect(page.getByText("drawer · new promo")).toHaveCount(0);
+    await expect(page.getByText("opens #1042")).toHaveCount(0);
   });
 });

@@ -10,7 +10,10 @@ test.describe(
 
     test("GET /seller/marketing returns 200", async ({ page }) => {
       expect(page.url()).toContain("/seller/marketing");
-      await expect(page.locator("h1")).toBeVisible();
+      // Assert the actual page heading rather than "some h1 exists".
+      await expect(
+        page.getByRole("heading", { level: 1, name: "Email recent buyers" }),
+      ).toBeVisible();
     });
 
     test('heading "Email recent buyers" visible', async ({ page }) => {
@@ -132,7 +135,8 @@ test.describe(
     });
 
     test('"Mira" NOT visible', async ({ page }) => {
-      await expect(page.getByText("Mira")).not.toBeVisible();
+      // toHaveCount(0) auto-waits and never false-negatives on partial loads.
+      await expect(page.getByText("Mira")).toHaveCount(0);
     });
 
     test('"marketing · email composer" annotation NOT visible', async ({

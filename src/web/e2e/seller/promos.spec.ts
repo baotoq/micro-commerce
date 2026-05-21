@@ -7,7 +7,10 @@ test.describe("seller promos page", { tag: ["@regression", "@promos"] }, () => {
 
   test("GET /seller/promos returns 200", async ({ page }) => {
     expect(page.url()).toContain("/seller/promos");
-    await expect(page.locator("h1")).toBeVisible();
+    // Assert the actual page heading rather than "some h1 exists".
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Discounts & promotions" }),
+    ).toBeVisible();
   });
 
   test('heading "Discounts & promotions" visible', async ({ page }) => {
@@ -119,10 +122,11 @@ test.describe("seller promos page", { tag: ["@regression", "@promos"] }, () => {
   });
 
   test('"Mira" NOT visible', async ({ page }) => {
-    await expect(page.getByText("Mira")).not.toBeVisible();
+    // toHaveCount(0) auto-waits and never false-negatives on partial loads.
+    await expect(page.getByText("Mira")).toHaveCount(0);
   });
 
   test('"drawer · new promo" annotation NOT visible', async ({ page }) => {
-    await expect(page.getByText("drawer · new promo")).not.toBeVisible();
+    await expect(page.getByText("drawer · new promo")).toHaveCount(0);
   });
 });
