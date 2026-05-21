@@ -1,11 +1,17 @@
 "use client";
 
-// `useFormField` reads `formState` off `useFormContext()` — the one pattern
-// that still breaks under React Compiler GA (see RHF discussion #12524).
-// Required errors never render in FormMessage because the compiled child
-// doesn't re-subscribe to the proxy. Long-term: rewrite useFormField on top of
-// `useFormState({ control })` so we can drop this directive.
-"use no memo";
+// Historically this file (and `new-listing-form.tsx`) carried a
+// `"use no memo"` opt-out because `useFormField` read `formState` off
+// `useFormContext()` — a proxy that the React Compiler memoized, leaving
+// FormMessage subscribed to a stale slice so required-field errors never
+// rendered.
+//
+// `useFormState({ control, name })` is the React-Hook-Form-sanctioned hook
+// for subscribing to a field-level slice of formState. It uses a stable
+// subscription registered through useSyncExternalStore, so the React
+// Compiler memoization no longer sits between the proxy and the consumer.
+// That lets us drop the `"use no memo"` directives on both this file and
+// the seller forms that consumed it.
 
 import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
@@ -16,6 +22,7 @@ import {
   type FieldValues,
   FormProvider,
   useFormContext,
+  useFormState,
 } from "react-hook-form";
 
 import { Label } from "@/components/ui/label";
@@ -51,7 +58,7 @@ const FormField = <
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);
-  const { getFieldState, formState } = useFormContext();
+  const { control, getFieldState } = useFormContext();
 
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>");
@@ -61,6 +68,9 @@ const useFormField = () => {
     throw new Error("useFormField should be used within <FormItem>");
   }
 
+  // Subscribe to this specific field's slice of formState via the
+  // sanctioned hook — see header comment for the React Compiler rationale.
+  const formState = useFormState({ control, name: fieldContext.name });
   const fieldState = getFieldState(fieldContext.name, formState);
 
   const { id } = itemContext;
@@ -88,7 +98,7 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
     <FormItemContext.Provider value={{ id }}>
       <div
         data-slot="form-item"
-        className={cn("space-y-2", className)}
+        className={cn("flex flex-col gap-2", className)}
         {...props}
       />
     </FormItemContext.Provider>

@@ -1,11 +1,5 @@
 "use client";
 
-// React Compiler memoizes react-hook-form's proxy-backed `formState`, which
-// stops field-level error subscriptions from firing — required errors never
-// rendered until this file was opted out. See components/ui/form.tsx for the
-// matching opt-out on the FormMessage side.
-"use no memo";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
