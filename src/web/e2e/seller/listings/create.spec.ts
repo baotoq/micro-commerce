@@ -1,11 +1,5 @@
 import { selectShadcnOption, sellerRoutes } from "../../fixtures/seller";
-import {
-  expect,
-  getProduct,
-  productEndpoint,
-  test,
-  uniqueSku,
-} from "../../fixtures/test";
+import { expect, getProduct, test, uniqueSku } from "../../fixtures/test";
 
 test.describe(
   "Seller listings — create",
@@ -14,8 +8,12 @@ test.describe(
     test("fills new listing form, submits, and redirects to listings", async ({
       page,
       request,
+      productFactory,
     }, testInfo) => {
       const sku = uniqueSku(testInfo, "TEST-CREATE");
+      // Register the SKU with the factory BEFORE the UI submit so teardown
+      // cleans up the orphan even when an assertion below throws.
+      productFactory.track(sku);
 
       await page.goto(sellerRoutes.listingsNew);
 
@@ -44,10 +42,7 @@ test.describe(
       const body = await created.json();
       expect(body.name).toBe("Test Vase");
       expect(body.price).toBe(49.99);
-
-      // The form submit creates the product directly via UI; the factory fixture
-      // doesn't know about it. Clean up explicitly against the Catalog API.
-      await request.delete(productEndpoint(sku));
+      // Teardown deletes the SKU via the factory; no manual DELETE here.
     });
 
     test("shows field errors when required fields are empty", async ({
