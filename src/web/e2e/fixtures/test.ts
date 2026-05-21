@@ -28,7 +28,9 @@ export const test = base.extend<Fixtures>({
         const { skuPrefix, ...rest } = overrides;
         const sku = rest.sku ?? uniqueSku(testInfo, skuPrefix);
         const product = await createProduct(request, { ...rest, sku });
-        created.push(sku);
+        // Track the persisted SKU (canonicalized by the API) so cleanup is
+        // robust to any SKU normalization the backend applies.
+        created.push(product.sku);
         return product;
       },
     };

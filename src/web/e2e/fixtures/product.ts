@@ -35,7 +35,11 @@ export const createProduct = async (
       `createProduct failed: ${res.status()} ${await res.text()}`,
     );
   }
-  return body;
+  // The API canonicalizes SKUs (uppercased + trimmed; see TC-S24-05). Return
+  // the SKU as persisted so cleanup hits the right key, even if a caller
+  // passes lowercase or whitespace-padded input.
+  const persisted = (await res.json()) as Partial<ProductPayload>;
+  return { ...body, ...persisted };
 };
 
 export const deleteProduct = async (
