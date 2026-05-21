@@ -32,6 +32,7 @@ function parseNumber(
 export async function createProductAction(
   formData: FormData,
 ): Promise<Listing> {
+  // TODO(auth): requireSeller() — see audit/auth-followup.md
   const input = {
     sku: parseRequired(formData.get("sku"), "SKU"),
     name: parseRequired(formData.get("name"), "Name"),
@@ -49,6 +50,7 @@ export async function updateProductAction(
   sku: string,
   formData: FormData,
 ): Promise<Listing | null> {
+  // TODO(auth): requireSeller() — see audit/auth-followup.md
   const input = {
     name: parseRequired(formData.get("name"), "Name"),
     category: parseRequired(formData.get("category"), "Category"),
@@ -64,6 +66,7 @@ export async function updateProductAction(
 }
 
 export async function deleteProductAction(sku: string): Promise<boolean> {
+  // TODO(auth): requireSeller() — see audit/auth-followup.md
   const deleted = await deleteProduct(sku);
   revalidatePath("/seller/listings");
   return deleted;

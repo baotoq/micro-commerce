@@ -28,6 +28,7 @@ function rawFormValues(formData: FormData): Record<string, string> {
 export async function createListingAction(
   formData: FormData,
 ): Promise<ActionResult> {
+  // TODO(auth): requireSeller() — see audit/auth-followup.md
   const parsed = productInputSchema.safeParse(
     Object.fromEntries(formData.entries()),
   );
@@ -64,6 +65,7 @@ export async function updateListingAction(
   sku: string,
   formData: FormData,
 ): Promise<ActionResult> {
+  // TODO(auth): requireSeller() — see audit/auth-followup.md
   const parsed = productInputSchema.safeParse(
     Object.fromEntries(formData.entries()),
   );
@@ -99,6 +101,7 @@ export async function updateListingAction(
 }
 
 export async function deleteListingAction(sku: string): Promise<ActionResult> {
+  // TODO(auth): requireSeller() — see audit/auth-followup.md
   try {
     const deleted = await deleteProduct(sku);
     if (!deleted) {
