@@ -66,20 +66,19 @@ test.describe(
       await expect(page.getByText("Plain text", { exact: true })).toBeVisible();
     });
 
-    test("subject line visible at least once", async ({ page }) => {
+    test("subject line visible in composer and preview", async ({ page }) => {
+      // The subject line is rendered both in the composer input (left) and
+      // the email preview header (right). Assert count=2 so a regression that
+      // drops one side is caught instead of masked by `.first()`.
       await expect(
-        page
-          .getByText("The persimmon vase is back · just 8 this batch")
-          .first(),
-      ).toBeVisible();
+        page.getByText("The persimmon vase is back · just 8 this batch"),
+      ).toHaveCount(2);
     });
 
-    test("preview text visible", async ({ page }) => {
+    test("preview text visible in composer and preview", async ({ page }) => {
       await expect(
-        page
-          .getByText("A small restock — three glaze variations this round.")
-          .first(),
-      ).toBeVisible();
+        page.getByText("A small restock — three glaze variations this round."),
+      ).toHaveCount(2);
     });
 
     test('"Best time · Thu 6 PM" visible', async ({ page }) => {
@@ -108,8 +107,11 @@ test.describe(
       await expect(page.getByText("— Alex")).toBeVisible();
     });
 
-    test('"Micro Commerce" appears in preview', async ({ page }) => {
-      await expect(page.getByText("Micro Commerce").first()).toBeVisible();
+    test('"Micro Commerce" appears in sidebar brand mark', async ({ page }) => {
+      // Scope to the sidebar where the brand logotype lives.
+      await expect(
+        page.getByRole("complementary").getByText("Micro Commerce"),
+      ).toBeVisible();
     });
 
     test('"Shop the restock →" CTA visible', async ({ page }) => {

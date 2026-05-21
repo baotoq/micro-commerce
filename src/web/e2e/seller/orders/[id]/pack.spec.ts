@@ -27,21 +27,25 @@ test.describe(
         page.getByRole("heading", { name: /Sasha Leblanc · Persimmon vase/ }),
       ).toBeVisible();
 
-      // Product card
+      // Product card — find the card by its unique subtitle text, then assert
+      // the product name renders alongside. "Persimmon vase" is also in the
+      // order heading; scoping to the card body keeps the assertion specific.
+      const productSubtitle = page.getByText("Glazed terra · qty 1");
+      await expect(productSubtitle).toBeVisible();
       await expect(
-        page.getByText("Persimmon vase", { exact: true }).first(),
+        productSubtitle.locator("..").getByText("Persimmon vase", { exact: true }),
       ).toBeVisible();
-      await expect(page.getByText("Glazed terra · qty 1")).toBeVisible();
 
       // Order financials
       await expect(page.getByText("Customer paid")).toBeVisible();
       await expect(page.getByText("Micro fee · 4%")).toBeVisible();
       await expect(page.getByText("You'll receive")).toBeVisible();
 
-      // Ship-to card
-      await expect(page.getByText("Ship to")).toBeVisible();
+      // Ship-to card — scope by the "Ship to" label's parent card so we
+      // assert the customer name in the ship-to row, not the order heading.
+      const shipToCard = page.getByText("Ship to").locator("..");
       await expect(
-        page.getByText("Sasha Leblanc", { exact: true }).first(),
+        shipToCard.getByText("Sasha Leblanc", { exact: true }),
       ).toBeVisible();
       await expect(page.getByText(/820 Sutter St/)).toBeVisible();
 

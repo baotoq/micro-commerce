@@ -24,14 +24,15 @@ test.describe(
       }
       await expect(page.getByRole("button", { name: /Export/ })).toBeVisible();
 
-      // KPI labels (use .last() so sidebar's "Orders" doesn't match)
+      // KPI labels — scope to <main> so the sidebar's "Orders" nav link
+      // doesn't collide with the "Orders" KPI label.
+      const main = page.getByRole("main");
       for (const label of ["Revenue", "Orders", "Conversion", "Avg. order"]) {
-        await expect(
-          page.getByText(label, { exact: true }).last(),
-        ).toBeVisible();
+        await expect(main.getByText(label, { exact: true })).toBeVisible();
       }
-      await expect(page.getByText("$12,480.00").first()).toBeVisible();
-      await expect(page.getByText(/3\.4%/).first()).toBeVisible();
+      // Both metrics render exactly once in the main content; assert that.
+      await expect(main.getByText("$12,480.00")).toBeVisible();
+      await expect(main.getByText(/3\.4%/)).toBeVisible();
 
       // Sources card
       await expect(

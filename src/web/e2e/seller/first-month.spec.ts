@@ -20,17 +20,19 @@ test.describe(
       ).toBeVisible();
       await expect(page.getByRole("button", { name: /Export/ })).toBeVisible();
 
+      // Scope to <main> so the sidebar's "Orders" nav link doesn't collide
+      // with the "Orders" KPI label.
+      const main = page.getByRole("main");
       for (const label of [
         "Revenue",
         "Orders",
         "Conversion",
         "Repeat buyers",
       ]) {
-        await expect(
-          page.getByText(label, { exact: true }).first(),
-        ).toBeVisible();
+        await expect(main.getByText(label, { exact: true })).toBeVisible();
       }
-      await expect(page.getByText("$2,148.00").first()).toBeVisible();
+      // $2,148.00 renders once on the page (the daily-revenue header).
+      await expect(main.getByText("$2,148.00")).toBeVisible();
 
       await expect(
         page.getByText("Daily revenue", { exact: true }),

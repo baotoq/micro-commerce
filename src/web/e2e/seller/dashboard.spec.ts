@@ -7,8 +7,11 @@ test.describe("Seller overview", { tag: ["@smoke", "@dashboard"] }, () => {
   }) => {
     await page.goto("/seller");
 
-    // Brand + sidebar nav
-    await expect(page.getByText("Micro Commerce").first()).toBeVisible();
+    // Brand + sidebar nav — scope to the sidebar so we assert the brand mark,
+    // not any other "Micro Commerce" mention elsewhere on the page.
+    await expect(
+      page.getByRole("complementary").getByText("Micro Commerce"),
+    ).toBeVisible();
     for (const item of [
       "Overview",
       "Orders",
