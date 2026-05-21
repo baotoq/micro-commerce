@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   chipHref,
   FilterChips,
@@ -63,10 +63,10 @@ export function ListingsBrowser({
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  const handleSelect = useCallback((next: FilterKey) => {
+  function handleSelect(next: FilterKey) {
     setStatus(next);
     window.history.replaceState(null, "", chipHref(next));
-  }, []);
+  }
 
   return (
     <>
