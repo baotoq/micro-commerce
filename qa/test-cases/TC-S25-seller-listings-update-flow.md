@@ -78,3 +78,8 @@
 | S25-05 | Header has Delete + Cancel only (no Save draft / Publish)  | [x]    |
 
 **TC-S25 result: 5 pass, 0 fail, 0 blocked**
+
+> **Status: Superseded by e2e suite.** Functional update coverage is now in
+> `src/web/e2e/seller/listings/[sku]/update.spec.ts`. Keep this test case for
+> design/a11y screenshot evidence and console-error sweeps only — do not
+> re-run the functional cases on every release.

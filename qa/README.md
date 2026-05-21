@@ -41,6 +41,22 @@ qa/
 | TC-S10 | /seller/first-month         | C        | worker-3 |
 | TC-S11 | /seller/payouts             | C        | worker-3 |
 
+## Scope vs. Playwright e2e suite
+
+Functional CRUD coverage for `/seller/listings` lives in
+`src/web/e2e/seller/listings/` (create, update, delete, pagination, spinner,
+cache-refresh) — that is the oracle for whether the listings flow behaves
+correctly. The corresponding manual test cases
+(`TC-S24`, `TC-S25`, `TC-S26`, `TC-S27`) are marked **superseded**: keep
+them for design/a11y screenshot evidence and console-error sweeps, but do
+not re-run the functional assertions on every release.
+
+Future manual passes should focus on what e2e can't cheaply verify:
+
+- Visual regressions against the hi-fi design references in `design/`.
+- A11y audits (axe, keyboard nav, screen-reader labels).
+- Console-noise sweeps and unexpected network errors.
+
 ## Result legend
 
 | Mark    | Meaning                                              |
