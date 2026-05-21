@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { Sparkline } from "@/components/seller/shared/sparkline";
 import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { getFirstOrderStats } from "@/lib/seller/onboarding/data";
 
 export default function FirstOrderPage() {
@@ -112,57 +120,57 @@ export default function FirstOrderPage() {
               All orders →
             </a>
           </div>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-black/[0.06] text-left text-xs font-medium text-muted-foreground">
-                <th className="px-5 py-3">Order</th>
-                <th className="px-5 py-3">Customer</th>
-                <th className="px-5 py-3">Items</th>
-                <th className="px-5 py-3">Total</th>
-                <th className="px-5 py-3">Status</th>
-                <th className="px-5 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="bg-terra/[0.05]">
-                <td className="px-5 py-3.5">
+          <Table>
+            <TableHeader>
+              <TableRow className="text-xs font-medium text-muted-foreground">
+                <TableHead className="px-5">Order</TableHead>
+                <TableHead className="px-5">Customer</TableHead>
+                <TableHead className="px-5">Items</TableHead>
+                <TableHead className="px-5">Total</TableHead>
+                <TableHead className="px-5">Status</TableHead>
+                <TableHead className="px-5" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow className="bg-terra/[0.05]">
+                <TableCell className="px-5 py-3.5">
                   <span className="flex items-center gap-2">
                     <span className="inline-block size-2 rounded-full bg-terra" />
                     <span className="font-mono font-semibold text-foreground">
                       #1001
                     </span>
                   </span>
-                </td>
-                <td className="px-5 py-3.5">
+                </TableCell>
+                <TableCell className="px-5 py-3.5">
                   <span className="flex items-center gap-2">
                     <span className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
                       S
                     </span>
                     <span>Sasha L.</span>
                   </span>
-                </td>
-                <td className="px-5 py-3.5 text-muted-foreground">
+                </TableCell>
+                <TableCell className="px-5 py-3.5 text-muted-foreground">
                   Persimmon vase
-                </td>
-                <td className="px-5 py-3.5 font-semibold tabular-nums text-foreground">
+                </TableCell>
+                <TableCell className="px-5 py-3.5 font-semibold tabular-nums text-foreground">
                   $86.00
-                </td>
-                <td className="px-5 py-3.5">
+                </TableCell>
+                <TableCell className="px-5 py-3.5">
                   <span className="rounded-full bg-warn/15 px-2.5 py-1 text-[11px] font-semibold text-warn">
                     New · pack today
                   </span>
-                </td>
-                <td className="px-5 py-3.5 text-muted-foreground">
+                </TableCell>
+                <TableCell className="px-5 py-3.5 text-muted-foreground">
                   <Link
                     href="/seller/orders/1001/pack"
                     aria-label="View order #1001"
                   >
                     ›
                   </Link>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
           <div className="flex items-center gap-2 border-t border-black/[0.06] px-5 py-3.5 text-xs text-muted-foreground">
             <span>ℹ</span>
             <span>

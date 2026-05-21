@@ -1,5 +1,13 @@
 import { Star } from "lucide-react";
 import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { money } from "@/lib/money";
 import type { OrderInboxRow, StatusTone } from "@/lib/seller/orders/types";
 
@@ -78,124 +86,108 @@ export function OrdersInboxTable({
   selectedCount: number;
 }) {
   return (
-    <div className="overflow-auto">
-      <table className="w-full min-w-[900px]">
-        <thead>
-          <tr className="border-b border-black/[0.06]">
-            <th className="w-9 py-2.5 pl-7 pr-2" aria-label="Select">
-              <span
-                className="inline-flex size-3.5 items-center justify-center rounded-[3px] border-[1.5px] border-black/25"
-                aria-hidden="true"
-              />
-            </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
-              Order
-            </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
-              Customer
-            </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
-              Items
-            </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
-              Ship
-            </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
-              Total
-            </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
-              Status
-            </th>
-            <th className="py-2.5 pr-4 text-left text-[11px] font-medium text-muted-foreground">
-              Age
-            </th>
-            <th className="w-8 py-2.5 pr-7" aria-label="Open" />
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => {
-            const selected = i < selectedCount;
-            const href = `/seller/orders/${row.id.replace("#", "")}`;
-            return (
-              <tr
-                key={row.id}
-                data-selected={selected ? "true" : undefined}
-                className={`border-b border-black/[0.04] last:border-0${selected ? " bg-primary/[0.04]" : ""}`}
-              >
-                <td className="py-3 pl-7 pr-2">
-                  <Checkbox checked={selected} />
-                </td>
-                <td className="py-3 pr-4">
-                  <div className="flex items-center gap-2">
-                    {row.starred && (
-                      <Star
-                        size={11}
-                        className="shrink-0 text-foreground"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      />
-                    )}
-                    <div>
-                      <div className="font-mono text-[13px] font-semibold text-foreground">
-                        {row.id}
-                      </div>
-                      <div className="text-[11px] text-muted-foreground">
-                        {row.placedLabel}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="py-3 pr-4">
-                  <div className="flex items-center gap-2">
-                    <Avatar name={row.customer} />
-                    <div>
-                      <div className="text-[12.5px] font-semibold text-foreground">
-                        {row.customer}
-                      </div>
-                      <div className="text-[11px] text-muted-foreground">
-                        {row.city}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="max-w-[220px] py-3 pr-4">
-                  <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[12px] text-muted-foreground">
-                    {row.items}
-                  </div>
-                  <div className="text-[11px] text-muted-foreground">
-                    {row.qty} item{row.qty > 1 ? "s" : ""}
-                  </div>
-                </td>
-                <td className="py-3 pr-4 text-[11px] text-muted-foreground">
-                  {row.ship}
-                </td>
-                <td className="py-3 pr-4 tabular-nums text-[13px] font-semibold text-foreground">
-                  {money(row.total)}
-                </td>
-                <td className="py-3 pr-4">
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${CHIP_STYLES[row.tone]}`}
-                  >
-                    <span
-                      className={`size-1.5 rounded-full ${DOT_STYLES[row.tone]}`}
+    <Table className="min-w-[900px]">
+      <TableHeader>
+        <TableRow className="text-[11px] font-medium text-muted-foreground">
+          <TableHead className="w-9 pl-7 pr-2" aria-label="Select">
+            <span
+              className="inline-flex size-3.5 items-center justify-center rounded-[3px] border-[1.5px] border-black/25"
+              aria-hidden="true"
+            />
+          </TableHead>
+          <TableHead className="pr-4">Order</TableHead>
+          <TableHead className="pr-4">Customer</TableHead>
+          <TableHead className="pr-4">Items</TableHead>
+          <TableHead className="pr-4">Ship</TableHead>
+          <TableHead className="pr-4">Total</TableHead>
+          <TableHead className="pr-4">Status</TableHead>
+          <TableHead className="pr-4">Age</TableHead>
+          <TableHead className="w-8 pr-7" aria-label="Open" />
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row, i) => {
+          const selected = i < selectedCount;
+          const href = `/seller/orders/${row.id.replace("#", "")}`;
+          return (
+            <TableRow
+              key={row.id}
+              data-selected={selected ? "true" : undefined}
+              className={selected ? "bg-primary/[0.04]" : undefined}
+            >
+              <TableCell className="py-3 pl-7 pr-2">
+                <Checkbox checked={selected} />
+              </TableCell>
+              <TableCell className="py-3 pr-4">
+                <div className="flex items-center gap-2">
+                  {row.starred && (
+                    <Star
+                      size={11}
+                      className="shrink-0 text-foreground"
+                      fill="currentColor"
                       aria-hidden="true"
                     />
-                    {row.status}
-                  </span>
-                </td>
-                <td className="py-3 pr-4 tabular-nums text-[11px] text-muted-foreground">
-                  {row.age}
-                </td>
-                <td className="py-3 pr-7 text-muted-foreground">
-                  <Link href={href} aria-label={`Open order ${row.id}`}>
-                    <ChevronRight />
-                  </Link>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+                  )}
+                  <div>
+                    <div className="font-mono text-[13px] font-semibold text-foreground">
+                      {row.id}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      {row.placedLabel}
+                    </div>
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell className="py-3 pr-4">
+                <div className="flex items-center gap-2">
+                  <Avatar name={row.customer} />
+                  <div>
+                    <div className="text-[12.5px] font-semibold text-foreground">
+                      {row.customer}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      {row.city}
+                    </div>
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell className="max-w-[220px] py-3 pr-4">
+                <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[12px] text-muted-foreground">
+                  {row.items}
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  {row.qty} item{row.qty > 1 ? "s" : ""}
+                </div>
+              </TableCell>
+              <TableCell className="py-3 pr-4 text-[11px] text-muted-foreground">
+                {row.ship}
+              </TableCell>
+              <TableCell className="py-3 pr-4 tabular-nums text-[13px] font-semibold text-foreground">
+                {money(row.total)}
+              </TableCell>
+              <TableCell className="py-3 pr-4">
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${CHIP_STYLES[row.tone]}`}
+                >
+                  <span
+                    className={`size-1.5 rounded-full ${DOT_STYLES[row.tone]}`}
+                    aria-hidden="true"
+                  />
+                  {row.status}
+                </span>
+              </TableCell>
+              <TableCell className="py-3 pr-4 tabular-nums text-[11px] text-muted-foreground">
+                {row.age}
+              </TableCell>
+              <TableCell className="py-3 pr-7 text-muted-foreground">
+                <Link href={href} aria-label={`Open order ${row.id}`}>
+                  <ChevronRight />
+                </Link>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
   );
 }
