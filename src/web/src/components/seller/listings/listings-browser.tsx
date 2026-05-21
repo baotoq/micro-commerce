@@ -36,7 +36,6 @@ export function ListingsBrowser({
   initialPage,
   pageSize,
   initialTotal,
-  chipsSlot: _chipsSlot,
   rightSlot,
   tableWrapperClassName,
   filterRowClassName,
@@ -47,7 +46,6 @@ export function ListingsBrowser({
   initialPage: number;
   pageSize: number;
   initialTotal: number;
-  chipsSlot?: never;
   rightSlot: React.ReactNode;
   tableWrapperClassName: string;
   filterRowClassName: string;
