@@ -11,7 +11,7 @@ internal static class ProductSeeder
 
     public static async Task SeedAsync(AppDbContext db, string contentRoot, CancellationToken ct = default)
     {
-        if (await db.Products.AnyAsync(ct)) return;
+        if (await db.Products.AsNoTracking().AnyAsync(ct)) return;
 
         var path = Path.Combine(contentRoot, "SeedData", "products.json");
         if (!File.Exists(path)) return;
