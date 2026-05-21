@@ -28,7 +28,7 @@ function FulfillmentBox({ f }: { f: OrderFulfillment }) {
     <div>
       {/* Header */}
       <div
-        className={`flex items-center justify-between px-[18px] py-3.5 ${shipped ? "bg-canvas-parchment" : "bg-orange-900/5"}`}
+        className={`flex items-center justify-between px-[18px] py-3.5 ${shipped ? "bg-canvas-parchment" : "bg-terra/5"}`}
         style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}
       >
         <div className="flex items-center gap-2">
@@ -81,7 +81,7 @@ function FulfillmentBox({ f }: { f: OrderFulfillment }) {
               {f.productSubtitle}
             </span>
             {f.restockNote && (
-              <span className="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-semibold text-orange-700">
+              <span className="inline-flex items-center rounded-full bg-good-soft px-2 py-0.5 text-[10px] font-semibold text-terra">
                 {f.restockNote}
               </span>
             )}

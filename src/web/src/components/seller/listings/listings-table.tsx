@@ -28,9 +28,9 @@ import { cn } from "@/lib/utils";
 
 const STATUS_STYLES: Record<Listing["status"], string> = {
   active: "bg-good/15 text-good",
-  low: "bg-amber-50 text-amber-800",
-  out: "bg-rose-50 text-rose-700",
-  draft: "bg-zinc-100 text-zinc-700",
+  low: "bg-warn/15 text-warn",
+  out: "bg-bad/15 text-bad",
+  draft: "bg-muted text-muted-foreground",
 };
 
 const TONE_BY_CATEGORY: Record<string, string> = {
@@ -176,9 +176,9 @@ export function ListingsTable({
             const sales = Math.max(0, Math.round(l.views7d / 28));
             const stockTone =
               l.inventory === 0
-                ? "font-medium text-rose-700"
+                ? "font-medium text-bad"
                 : l.inventory < 5
-                  ? "font-medium text-amber-700"
+                  ? "font-medium text-warn"
                   : "text-foreground";
             return (
               <TableRow key={l.sku}>
@@ -193,7 +193,8 @@ export function ListingsTable({
                     <span
                       className={cn(
                         "block size-9 shrink-0 rounded-md",
-                        TONE_BY_CATEGORY[l.category] ?? "bg-stone-200",
+                        TONE_BY_CATEGORY[l.category] ??
+                          "bg-surface-avatar-warm",
                       )}
                       aria-hidden
                     />

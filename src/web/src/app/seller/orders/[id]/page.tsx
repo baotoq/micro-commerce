@@ -60,7 +60,7 @@ export default async function OrderDetailPage({
           </button>
           <button
             type="button"
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-bad hover:bg-bad/10"
           >
             <X size={11} />
             Cancel order

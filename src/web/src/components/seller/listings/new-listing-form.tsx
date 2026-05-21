@@ -125,10 +125,7 @@ export function NewListingForm() {
         aria-busy={isSubmitting}
       >
         {submitError && (
-          <p
-            className="col-span-2 -mb-2 px-1 text-sm text-rose-600"
-            role="alert"
-          >
+          <p className="col-span-2 -mb-2 px-1 text-sm text-bad" role="alert">
             {submitError}
           </p>
         )}

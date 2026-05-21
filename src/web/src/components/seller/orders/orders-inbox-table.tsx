@@ -60,14 +60,14 @@ const CHIP_STYLES: Record<StatusTone, string> = {
   warn: "bg-warn/15 text-warn",
   mute: "bg-black/[0.04] text-muted-foreground",
   good: "bg-good/15 text-good",
-  bad: "bg-red-50 text-red-700",
+  bad: "bg-bad/15 text-bad",
 };
 
 const DOT_STYLES: Record<StatusTone, string> = {
   warn: "bg-warn",
   mute: "bg-foreground/30",
   good: "bg-good",
-  bad: "bg-red-500",
+  bad: "bg-bad",
 };
 
 export function OrdersInboxTable({
