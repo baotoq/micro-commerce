@@ -18,6 +18,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Application\MicroCommerce.Catalog.Application.csproj" />
-    <ProjectReference Include="..\..\src\Infrastructure\MicroCommerce.Catalog.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

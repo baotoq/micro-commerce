@@ -7,9 +7,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\MicroCommerce.Catalog.Domain.csproj" />
-    <ProjectReference Include="..\Infrastructure\MicroCommerce.Catalog.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

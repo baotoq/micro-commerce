@@ -1,7 +1,7 @@
 using MediatR;
 using MicroCommerce.Catalog.Application.Products.Events;
 using MicroCommerce.Catalog.Domain.Products;
-using MicroCommerce.Catalog.Infrastructure.Persistence;
+using MicroCommerce.Catalog.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.Application.Products.Commands;

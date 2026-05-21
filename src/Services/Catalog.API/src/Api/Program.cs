@@ -1,6 +1,6 @@
 using MicroCommerce.Catalog.Application;
 using MicroCommerce.Catalog.Infrastructure;
-using MicroCommerce.Catalog.Infrastructure.Persistence;
+using MicroCommerce.Catalog.Application.Persistence;
 using MicroCommerce.Catalog.Api.Endpoints;
 using MicroCommerce.Catalog.Api.SeedData;
 
