@@ -1,4 +1,3 @@
-// web/src/components/seller/listings-browser.tsx
 "use client";
 
 import { useCallback, useEffect, useState } from "react";

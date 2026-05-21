@@ -1,5 +1,3 @@
-// web/src/app/seller/listings/page.tsx
-
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";

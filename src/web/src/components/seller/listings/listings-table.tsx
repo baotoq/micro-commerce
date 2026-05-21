@@ -1,4 +1,3 @@
-// web/src/components/seller/listings-table.tsx
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
