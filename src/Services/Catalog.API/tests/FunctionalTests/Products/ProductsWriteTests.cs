@@ -8,6 +8,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Products;
 public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly SpyOutputCacheStore _cache = (SpyOutputCacheStore)factory.Services.GetService(typeof(SpyOutputCacheStore))!;
 
     private static string NewSku() => $"FN-{Guid.NewGuid():N}"[..16].ToUpperInvariant();
 
@@ -159,5 +160,20 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType!.MediaType);
+    }
+
+    [Fact]
+    public async Task CreateProduct_Successful_EvictsProductsOutputCacheTag()
+    {
+        // audit#8: write handlers must invalidate the "products" output-cache tag.
+        var beforeCount = _cache.EvictedTags.Count(t => t == "products");
+        var sku = NewSku();
+        var ct = TestContext.Current.CancellationToken;
+
+        await _client.PostAsJsonAsync("/api/products",
+            new CreateProductCommand(sku, "Cache Test", "Vessels", 1m, 1, "active"), ct);
+
+        Assert.True(_cache.EvictedTags.Count(t => t == "products") > beforeCount,
+            "Expected EvictByTagAsync(\"products\", ...) to be called after a successful create.");
     }
 }
