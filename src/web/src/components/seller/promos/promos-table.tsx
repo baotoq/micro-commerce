@@ -106,7 +106,7 @@ export function PromosTable({ promos }: { promos: PromoCode[] }) {
                 </span>
                 <button
                   type="button"
-                  className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-black/[0.04] hover:text-foreground"
+                  className="flex size-6 items-center justify-center rounded text-muted-foreground hover:bg-black/[0.04] hover:text-foreground"
                   aria-label={`Share ${promo.code}`}
                 >
                   <ShareIcon />

@@ -137,7 +137,7 @@ export function NewListingForm() {
               control={form.control}
               name="sku"
               render={({ field }) => (
-                <FormItem className="mb-2.5 space-y-1">
+                <FormItem className="mb-2.5 gap-1">
                   <FormLabel className={FIELD_LABEL_CLASS}>SKU</FormLabel>
                   <FormControl>
                     <Input
@@ -158,7 +158,7 @@ export function NewListingForm() {
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem className="mb-2.5 space-y-1">
+                <FormItem className="mb-2.5 gap-1">
                   <FormLabel className={FIELD_LABEL_CLASS}>Name</FormLabel>
                   <FormControl>
                     <Input
@@ -267,7 +267,7 @@ export function NewListingForm() {
               control={form.control}
               name="status"
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className={SECTION_LABEL_CLASS}>Status</FormLabel>
                   <Select
                     value={field.value}
@@ -309,7 +309,7 @@ export function NewListingForm() {
                 control={form.control}
                 name="price"
                 render={({ field }) => (
-                  <FormItem className="space-y-1">
+                  <FormItem className="gap-1">
                     <FormLabel className={FIELD_LABEL_CLASS}>Price</FormLabel>
                     <div
                       className="flex items-center gap-1.5 rounded-md border border-border px-3"
@@ -335,7 +335,7 @@ export function NewListingForm() {
                 )}
               />
 
-              <div className="space-y-1">
+              <div className="gap-1">
                 <Label className={FIELD_LABEL_CLASS}>Compare-at</Label>
                 <div
                   className="flex items-center gap-1.5 rounded-md border border-border px-3"
@@ -351,7 +351,7 @@ export function NewListingForm() {
               </div>
             </div>
             <div className="flex items-center gap-2 mt-3.5 px-2.5 py-2 bg-canvas-parchment rounded-md">
-              <span className="w-2 h-2 rounded-full bg-good shrink-0" />
+              <span className="size-2 rounded-full bg-good shrink-0" />
               <span className="text-sm text-foreground">
                 Suggested: $78–$94 based on 6 similar shops
               </span>
@@ -365,7 +365,7 @@ export function NewListingForm() {
               control={form.control}
               name="inventory"
               render={({ field }) => (
-                <FormItem className="mb-3 space-y-1">
+                <FormItem className="mb-3 gap-1">
                   <FormLabel className={FIELD_LABEL_CLASS}>
                     Total in stock
                   </FormLabel>
@@ -423,7 +423,7 @@ export function NewListingForm() {
               control={form.control}
               name="category"
               render={({ field }) => (
-                <FormItem className="space-y-1">
+                <FormItem className="gap-1">
                   <FormLabel className={FIELD_LABEL_CLASS}>Category</FormLabel>
                   <FormControl>
                     <Input

@@ -156,7 +156,7 @@ export default async function PackShipPage(props: {
             </div>
             <button
               type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-black/[0.06]"
+              className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-black/[0.06]"
               aria-label="Close"
             >
               <X size={14} />

@@ -221,7 +221,7 @@ export default function FirstMonthPage() {
                 {topSellers.map((seller) => (
                   <div key={seller.sku} className="flex items-center gap-2">
                     <div
-                      className="h-9 w-9 shrink-0 rounded-md"
+                      className="size-9 shrink-0 rounded-md"
                       style={{
                         background: TONE_COLORS[seller.tone] ?? "#e0e0e0",
                         opacity: 0.7,

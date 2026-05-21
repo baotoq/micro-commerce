@@ -94,7 +94,7 @@ export default function SellerWelcomePage() {
               className="bg-canvas-parchment rounded-xl flex flex-col items-center justify-center text-center p-6"
               style={{ minHeight: 240 }}
             >
-              <div className="w-14 h-14 rounded-full bg-white border border-black/[0.08] flex items-center justify-center mb-3.5 text-foreground/40">
+              <div className="size-14 rounded-full bg-white border border-black/[0.08] flex items-center justify-center mb-3.5 text-foreground/40">
                 <svg
                   aria-hidden="true"
                   width="22"

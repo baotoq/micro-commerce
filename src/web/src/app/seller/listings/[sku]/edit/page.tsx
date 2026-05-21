@@ -101,7 +101,7 @@ export default async function ListingEditPage({
           <Link
             href="/seller/listings"
             aria-label="Back"
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-canvas-parchment"
+            className="flex size-8 items-center justify-center rounded-md hover:bg-canvas-parchment"
           >
             ‹
           </Link>

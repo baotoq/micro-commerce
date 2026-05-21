@@ -41,7 +41,7 @@ export default function EmptyOrdersPage() {
       <div className="flex flex-1 overflow-hidden">
         {/* Left pane — inbox list (empty) */}
         <div className="flex w-[340px] shrink-0 flex-col items-center border-r border-black/[0.06] px-6 py-10 text-center text-muted-foreground">
-          <Inbox className="h-8 w-8" aria-hidden />
+          <Inbox className="size-8" aria-hidden />
           <h4 className="mt-3.5 text-sm font-semibold text-foreground">
             No orders yet
           </h4>
@@ -54,8 +54,8 @@ export default function EmptyOrdersPage() {
         <div className="flex flex-1 items-center justify-center overflow-auto p-10">
           <div className="max-w-[460px] text-center">
             {/* Icon circle */}
-            <div className="mx-auto mb-[18px] flex h-[84px] w-[84px] items-center justify-center rounded-full bg-canvas-parchment text-muted-foreground">
-              <Inbox className="h-9 w-9" aria-hidden />
+            <div className="mx-auto mb-[18px] flex size-[84px] items-center justify-center rounded-full bg-canvas-parchment text-muted-foreground">
+              <Inbox className="size-9" aria-hidden />
             </div>
 
             <h2 className="mb-2 text-[32px] font-semibold leading-none tracking-tight">

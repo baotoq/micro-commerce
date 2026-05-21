@@ -42,7 +42,7 @@ export default async function ListingPreviewPage({
           <Link
             href={`/seller/listings/${sku}/edit`}
             aria-label="Back"
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-canvas-parchment"
+            className="flex size-8 items-center justify-center rounded-md hover:bg-canvas-parchment"
           >
             ‹
           </Link>
@@ -158,11 +158,11 @@ export default async function ListingPreviewPage({
                 </p>
                 <div className="flex gap-2">
                   <span
-                    className="h-6 w-6 rounded-full ring-2 ring-foreground"
+                    className="size-6 rounded-full ring-2 ring-foreground"
                     style={{ background: "#c2410c" }}
                   />
                   <span
-                    className="h-6 w-6 rounded-full border border-black/[0.1]"
+                    className="size-6 rounded-full border border-black/[0.1]"
                     style={{ background: "#F0E8D7" }}
                   />
                 </div>
