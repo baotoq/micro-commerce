@@ -226,4 +226,37 @@ describe("ListingsTable client pagination", () => {
     fireEvent.click(screen.getByRole("button", { name: /go to next page/i }));
     expect(fetchSpy).not.toHaveBeenCalled();
   });
+
+  // audit#6 — the `enabled` gate must suppress the fetch on the seed
+  // render even when the QueryClient is configured to always refetch on
+  // mount. Without the gate, the client immediately duplicates the data
+  // the Server Component already passed in.
+  it("does not refetch the seed page even with refetchOnMount: always", async () => {
+    function renderWithAlwaysRefetch(ui: ReactNode) {
+      const client = new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: false,
+            staleTime: 0,
+            refetchOnMount: "always",
+          },
+        },
+      });
+      return render(
+        <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
+      );
+    }
+    renderWithAlwaysRefetch(
+      <ListingsTable
+        listings={make(9)}
+        total={42}
+        pageSize={9}
+        currentPage={1}
+      />,
+    );
+    // Wait a tick to let any queued fetch fire — we want to assert
+    // it stays at zero, not that it just hasn't happened *yet*.
+    await new Promise((r) => setTimeout(r, 20));
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
 });

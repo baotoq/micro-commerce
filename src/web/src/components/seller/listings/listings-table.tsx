@@ -116,6 +116,11 @@ export function ListingsTable({
     initialDataUpdatedAt: isSeedKey ? initialDataUpdatedAt : undefined,
     placeholderData: keepPreviousData,
     staleTime: 30_000,
+    // audit#6: for the seed query key (same page+status the Server
+    // Component already fetched) suppress the network round-trip entirely
+    // — TanStack would otherwise duplicate the server fetch on mount when
+    // any refetch trigger (focus, mount, stale window) fires.
+    enabled: !isSeedKey,
   });
 
   const view = paginate(page, data?.total ?? 0, pageSize);
