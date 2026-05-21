@@ -1,11 +1,21 @@
 export const dynamic = "force-dynamic";
 
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DeleteListingButton } from "@/components/seller/listings/delete-listing-button";
 import { EditListingForm } from "@/components/seller/listings/edit-listing-form";
 import { buttonVariants } from "@/components/ui/button";
 import { getListingBySku } from "@/lib/seller/listings/data";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ sku: string }>;
+}): Promise<Metadata> {
+  const { sku } = await params;
+  return { title: `Edit ${sku} · Micro Commerce` };
+}
 
 type Variant = {
   label: string;
