@@ -1,11 +1,17 @@
-// web/src/app/seller/listings/[sku]/preview/page.tsx
-
-export const dynamic = "force-dynamic";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { getListingBySku } from "@/lib/seller/listings/data";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ sku: string }>;
+}): Promise<Metadata> {
+  const { sku } = await params;
+  return { title: `Preview ${sku} · Micro Commerce` };
+}
 
 type Check = { label: string; sub: string; tone: "good" | "warn" };
 

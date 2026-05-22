@@ -1,4 +1,5 @@
 import { ChevronLeft, MessageSquare, X } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { OrderDetailCustomer } from "@/components/seller/orders/order-detail-customer";
@@ -8,6 +9,15 @@ import { OrderDetailRefund } from "@/components/seller/orders/order-detail-refun
 import { OrderDetailSummary } from "@/components/seller/orders/order-detail-summary";
 import { OrderDetailTimeline } from "@/components/seller/orders/order-detail-timeline";
 import { getOrderDetailFull } from "@/lib/seller/orders/data";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  return { title: `Order ${id} · Micro Commerce` };
+}
 
 export default async function OrderDetailPage({
   params,

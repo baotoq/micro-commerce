@@ -1,4 +1,3 @@
-// web/src/components/seller/listings-table.tsx
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -23,7 +22,11 @@ import {
 } from "@/components/ui/table";
 import { money } from "@/lib/money";
 import { paginate } from "@/lib/pagination";
-import type { Listing, ListingStatus } from "@/lib/seller/listings/types";
+import {
+  LISTINGS_PAGE_SIZE,
+  type Listing,
+  type ListingStatus,
+} from "@/lib/seller/listings/types";
 import { cn } from "@/lib/utils";
 
 const STATUS_STYLES: Record<Listing["status"], string> = {
@@ -75,7 +78,7 @@ function buildPageHref(
 export function ListingsTable({
   listings,
   currentPage = 1,
-  pageSize = 9,
+  pageSize = LISTINGS_PAGE_SIZE,
   total,
   status,
 }: {
@@ -113,6 +116,11 @@ export function ListingsTable({
     initialDataUpdatedAt: isSeedKey ? initialDataUpdatedAt : undefined,
     placeholderData: keepPreviousData,
     staleTime: 30_000,
+    // audit#6: for the seed query key (same page+status the Server
+    // Component already fetched) suppress the network round-trip entirely
+    // — TanStack would otherwise duplicate the server fetch on mount when
+    // any refetch trigger (focus, mount, stale window) fires.
+    enabled: !isSeedKey,
   });
 
   const view = paginate(page, data?.total ?? 0, pageSize);

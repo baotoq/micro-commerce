@@ -1,7 +1,6 @@
-// web/src/components/seller/listings-browser.tsx
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   chipHref,
   FilterChips,
@@ -37,7 +36,6 @@ export function ListingsBrowser({
   initialPage,
   pageSize,
   initialTotal,
-  chipsSlot: _chipsSlot,
   rightSlot,
   tableWrapperClassName,
   filterRowClassName,
@@ -48,7 +46,6 @@ export function ListingsBrowser({
   initialPage: number;
   pageSize: number;
   initialTotal: number;
-  chipsSlot?: never;
   rightSlot: React.ReactNode;
   tableWrapperClassName: string;
   filterRowClassName: string;
@@ -64,10 +61,10 @@ export function ListingsBrowser({
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  const handleSelect = useCallback((next: FilterKey) => {
+  function handleSelect(next: FilterKey) {
     setStatus(next);
     window.history.replaceState(null, "", chipHref(next));
-  }, []);
+  }
 
   return (
     <>

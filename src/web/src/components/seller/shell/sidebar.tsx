@@ -1,5 +1,6 @@
 // web/src/components/seller/sidebar.tsx
 
+import { Suspense } from "react";
 import { SidebarNav } from "@/components/seller/shell/sidebar-nav";
 import { BRAND } from "@/lib/seller/brand";
 
@@ -27,7 +28,28 @@ export function SellerSidebar() {
           <div className="text-[11px] text-foreground/60">Plan · Maker</div>
         </div>
       </div>
-      <SidebarNav items={NAV} />
+      {/* SidebarNav reads `usePathname()` for active-link highlighting,
+          which Cache Components treats as dynamic IO. Wrapping in
+          <Suspense> lets the rest of the static sidebar prerender. */}
+      <Suspense
+        fallback={
+          <nav
+            aria-hidden="true"
+            className="flex flex-1 flex-col gap-0.5 px-3 py-2"
+          >
+            {NAV.map((item) => (
+              <span
+                key={item.href}
+                className="flex h-9 items-center rounded-md px-3 text-sm text-[#1d1d1f]"
+              >
+                {item.label}
+              </span>
+            ))}
+          </nav>
+        }
+      >
+        <SidebarNav items={NAV} />
+      </Suspense>
       <div className="m-3 rounded-lg bg-white/80 p-3 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
         <div className="text-[13px] font-semibold tracking-tight">
           Setup · 4 of 6
