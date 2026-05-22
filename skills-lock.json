@@ -109,6 +109,12 @@
       "skillPath": "skills/playwright-automation-fill-in-form/SKILL.md",
       "computedHash": "05c39652cc1ef6a3066221d77d51e208f88f3ac8cbdd7ffe57a99de93776efe7"
     },
+    "playwright-best-practices": {
+      "source": "currents-dev/playwright-best-practices-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "320eaf861e3a0a923bfaad0726cb311a3fe30093378f8d26c89b9c5ae5c42b35"
+    },
     "playwright-explore-website": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
