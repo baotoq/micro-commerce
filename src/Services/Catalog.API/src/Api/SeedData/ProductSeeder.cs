@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.Api.SeedData;
 
-internal static class ProductSeeder
+public static class ProductSeeder
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
+    // Idempotent: inserts any seed records whose SKU is not already in the DB.
+    // Existing rows are left untouched so post-seed mutations (e.g. e2e deletes)
+    // self-heal on the next AppHost start.
     public static async Task SeedAsync(AppDbContext db, string contentRoot, CancellationToken ct = default)
     {
-        if (await db.Products.AsNoTracking().AnyAsync(ct)) return;
-
         var path = Path.Combine(contentRoot, "SeedData", "products.json");
         if (!File.Exists(path)) return;
 
@@ -20,8 +21,15 @@ internal static class ProductSeeder
         var records = await JsonSerializer.DeserializeAsync<List<SeedRecord>>(stream, JsonOptions, ct)
             ?? throw new InvalidOperationException($"Failed to deserialize seed data at {path}.");
 
+        var existingSkus = (await db.Products.ToListAsync(ct))
+            .Select(p => p.Sku.Value)
+            .ToHashSet();
+
+        var added = false;
         foreach (var r in records)
         {
+            if (existingSkus.Contains(r.Sku)) continue;
+
             db.Products.Add(new Product(
                 Sku.From(r.Sku),
                 r.Name,
@@ -30,9 +38,10 @@ internal static class ProductSeeder
                 r.Inventory,
                 ParseStatus(r.Status),
                 r.Views7d));
+            added = true;
         }
 
-        await db.SaveChangesAsync(ct);
+        if (added) await db.SaveChangesAsync(ct);
     }
 
     private static ProductStatus ParseStatus(string s) => s.ToLowerInvariant() switch

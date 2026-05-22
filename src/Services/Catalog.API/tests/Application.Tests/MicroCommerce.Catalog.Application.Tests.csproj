@@ -17,6 +17,7 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Api\MicroCommerce.Catalog.csproj" />
     <ProjectReference Include="..\..\src\Application\MicroCommerce.Catalog.Application.csproj" />
   </ItemGroup>
 </Project>
