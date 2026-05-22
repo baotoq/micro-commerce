@@ -1,8 +1,7 @@
 using MediatR;
-using MicroCommerce.Catalog.Application.Products.Commands;
+using MicroCommerce.Catalog.Application.Persistence;
 using MicroCommerce.Catalog.Application.Products.Dtos;
 using MicroCommerce.Catalog.Domain.Products;
-using MicroCommerce.Catalog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.Application.Products.Queries;
@@ -14,7 +13,20 @@ public class GetProductBySkuHandler(AppDbContext db) : IRequestHandler<GetProduc
     public async Task<ProductDto?> Handle(GetProductBySkuQuery request, CancellationToken ct)
     {
         var sku = Sku.From(request.Sku);
-        var product = await db.Products.FirstOrDefaultAsync(p => p.Sku == sku, ct);
-        return product is null ? null : CreateProductHandler.ToDto(product);
+        return await db.Products
+            .AsNoTracking()
+            .Where(p => p.Sku == sku)
+            .Select(p => new ProductDto(
+                p.Sku.Value,
+                p.Name,
+                p.Category,
+                p.Price,
+                p.Inventory,
+                p.Status == ProductStatus.Active ? "active"
+                    : p.Status == ProductStatus.Low ? "low"
+                    : p.Status == ProductStatus.Out ? "out"
+                    : "draft",
+                p.Views7d))
+            .FirstOrDefaultAsync(ct);
     }
 }

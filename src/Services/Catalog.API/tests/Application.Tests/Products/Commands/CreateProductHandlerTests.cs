@@ -14,7 +14,8 @@ public class CreateProductHandlerTests
 
         var result = await handler.Handle(new CreateProductCommand("MC-001", "Widget", "Electronics", 9.99m, 10, "active"), TestContext.Current.CancellationToken);
 
-        Assert.Equivalent(new ProductDto("MC-001", "Widget", "Electronics", 9.99m, 10, "active", 0), result);
+        Assert.True(result.IsSuccess);
+        Assert.Equivalent(new ProductDto("MC-001", "Widget", "Electronics", 9.99m, 10, "active", 0), result.Value);
         Assert.Single(db.Products);
     }
 
@@ -37,7 +38,7 @@ public class CreateProductHandlerTests
     }
 
     [Fact]
-    public async Task Handle_DuplicateSku_DoesNotPublishEvent()
+    public async Task Handle_DuplicateSku_ReturnsConflictAndDoesNotPublishEvent()
     {
         await using var db = DbContextFactory.Create();
         var publisher = new FakePublisher();
@@ -45,9 +46,11 @@ public class CreateProductHandlerTests
         await handler.Handle(new CreateProductCommand("MC-001", "Widget", "Electronics", 9.99m, 10, "active"), TestContext.Current.CancellationToken);
         publisher.Published.Clear();
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            handler.Handle(new CreateProductCommand("MC-001", "Other", "Electronics", 5m, 1, "active"), TestContext.Current.CancellationToken));
+        var result = await handler.Handle(new CreateProductCommand("MC-001", "Other", "Electronics", 5m, 1, "active"), TestContext.Current.CancellationToken);
 
+        Assert.True(result.IsFailure);
+        Assert.NotNull(result.Error);
+        Assert.Equal("PRODUCT_SKU_DUPLICATE", result.Error.Value.Code);
         Assert.Empty(publisher.Published);
     }
 
@@ -64,7 +67,8 @@ public class CreateProductHandlerTests
 
         var result = await handler.Handle(new CreateProductCommand("MC-001", "Widget", "Cat", 1m, 1, status), TestContext.Current.CancellationToken);
 
-        Assert.Equal(status.ToLowerInvariant(), result.Status);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(status.ToLowerInvariant(), result.Value!.Status);
     }
 
     [Fact]

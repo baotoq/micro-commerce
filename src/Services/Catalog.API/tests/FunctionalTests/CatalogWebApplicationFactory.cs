@@ -47,7 +47,8 @@ public class CatalogWebApplicationFactory : WebApplicationFactory<Program>, IAsy
         builder.ConfigureServices(services =>
         {
             services.RemoveAll<IOutputCacheStore>();
-            services.AddSingleton<IOutputCacheStore, NoOpOutputCacheStore>();
+            services.AddSingleton<SpyOutputCacheStore>();
+            services.AddSingleton<IOutputCacheStore>(sp => sp.GetRequiredService<SpyOutputCacheStore>());
 
             services.RemoveAll<DaprClient>();
             var grpcEndpoint = $"http://localhost:{_dapr.GetMappedPublicPort(50001)}";
@@ -69,9 +70,21 @@ public class CatalogWebApplicationFactory : WebApplicationFactory<Program>, IAsy
     }
 }
 
-internal sealed class NoOpOutputCacheStore : IOutputCacheStore
+internal sealed class SpyOutputCacheStore : IOutputCacheStore
 {
-    public ValueTask EvictByTagAsync(string tag, CancellationToken cancellationToken) => ValueTask.CompletedTask;
+    private readonly List<string> _evictedTags = [];
+
+    public IReadOnlyList<string> EvictedTags
+    {
+        get { lock (_evictedTags) return _evictedTags.ToArray(); }
+    }
+
+    public ValueTask EvictByTagAsync(string tag, CancellationToken cancellationToken)
+    {
+        lock (_evictedTags) _evictedTags.Add(tag);
+        return ValueTask.CompletedTask;
+    }
+
     public ValueTask<byte[]?> GetAsync(string key, CancellationToken cancellationToken) => ValueTask.FromResult<byte[]?>(null);
     public ValueTask SetAsync(string key, byte[] value, string[]? tags, TimeSpan validFor, CancellationToken cancellationToken) => ValueTask.CompletedTask;
 }

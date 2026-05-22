@@ -1,8 +1,7 @@
 using MediatR;
-using MicroCommerce.Catalog.Application.Products.Commands;
+using MicroCommerce.Catalog.Application.Persistence;
 using MicroCommerce.Catalog.Application.Products.Dtos;
 using MicroCommerce.Catalog.Domain.Products;
-using MicroCommerce.Catalog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.Application.Products.Queries;
@@ -13,7 +12,7 @@ public class GetProductsHandler(AppDbContext db) : IRequestHandler<GetProductsQu
 {
     public async Task<PagedResult<ProductDto>> Handle(GetProductsQuery request, CancellationToken ct)
     {
-        var query = db.Products.AsQueryable();
+        var query = db.Products.AsNoTracking();
 
         if (ParseStatus(request.Status) is { } status)
             query = query.Where(p => p.Status == status);
@@ -31,9 +30,20 @@ public class GetProductsHandler(AppDbContext db) : IRequestHandler<GetProductsQu
             .OrderByDescending(p => p.Views7d)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .Select(p => new ProductDto(
+                p.Sku.Value,
+                p.Name,
+                p.Category,
+                p.Price,
+                p.Inventory,
+                p.Status == ProductStatus.Active ? "active"
+                    : p.Status == ProductStatus.Low ? "low"
+                    : p.Status == ProductStatus.Out ? "out"
+                    : "draft",
+                p.Views7d))
             .ToListAsync(ct);
 
-        return new PagedResult<ProductDto>(items.Select(CreateProductHandler.ToDto).ToList(), total, request.Page, request.PageSize);
+        return new PagedResult<ProductDto>(items, total, request.Page, request.PageSize);
     }
 
     private static ProductStatus? ParseStatus(string? s) => s?.ToLowerInvariant() switch

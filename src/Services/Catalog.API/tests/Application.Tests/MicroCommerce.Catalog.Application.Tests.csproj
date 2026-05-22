@@ -19,6 +19,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Api\MicroCommerce.Catalog.csproj" />
     <ProjectReference Include="..\..\src\Application\MicroCommerce.Catalog.Application.csproj" />
-    <ProjectReference Include="..\..\src\Infrastructure\MicroCommerce.Catalog.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

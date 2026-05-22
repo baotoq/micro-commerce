@@ -11,15 +11,16 @@ public static class ProductWriteEndpoints
 
         group.MapPost("/", async (CreateProductCommand command, ISender mediator, CancellationToken ct) =>
         {
-            try
+            var result = await mediator.Send(command, ct);
+            if (result.IsFailure)
             {
-                var created = await mediator.Send(command, ct);
-                return Results.CreatedAtRoute("GetProductBySku", new { sku = created.Sku }, created);
+                return Results.Problem(
+                    title: result.Error!.Value.Code,
+                    detail: result.Error.Value.Message,
+                    statusCode: StatusCodes.Status409Conflict);
             }
-            catch (InvalidOperationException ex)
-            {
-                return Results.Conflict(ex.Message);
-            }
+            var created = result.Value!;
+            return Results.CreatedAtRoute("GetProductBySku", new { sku = created.Sku }, created);
         })
         .WithName("CreateProduct");
 

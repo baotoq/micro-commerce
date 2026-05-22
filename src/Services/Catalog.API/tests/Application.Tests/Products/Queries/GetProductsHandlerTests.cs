@@ -34,18 +34,23 @@ public class GetProductsHandlerTests
         Assert.Equal(2, result.Items.Count);
     }
 
+    public static TheoryData<string, ProductStatus, ProductStatus> StatusFilterCases() => new()
+    {
+        { "active", ProductStatus.Active, ProductStatus.Draft },
+        { "low",    ProductStatus.Low,    ProductStatus.Draft },
+        { "out",    ProductStatus.Out,    ProductStatus.Draft },
+        { "draft",  ProductStatus.Draft,  ProductStatus.Active },
+    };
+
     [Theory]
-    [InlineData("active", ProductStatus.Active)]
-    [InlineData("low", ProductStatus.Low)]
-    [InlineData("out", ProductStatus.Out)]
-    [InlineData("draft", ProductStatus.Draft)]
-    public async Task Handle_StatusFilter_ReturnsOnlyMatchingProducts(string statusFilter, ProductStatus matchingStatus)
+    [MemberData(nameof(StatusFilterCases))]
+    public async Task Handle_StatusFilter_ReturnsOnlyMatchingProducts(string statusFilter, ProductStatus matchingStatus, ProductStatus nonMatchingStatus)
     {
         await using var db = DbContextFactory.Create();
         db.Products.AddRange(
             new Product(Sku.From("MC-001"), "A", "Cat", 1m, 1, matchingStatus),
             new Product(Sku.From("MC-002"), "B", "Cat", 1m, 1, matchingStatus),
-            new Product(Sku.From("MC-003"), "C", "Cat", 1m, 1, ProductStatus.Draft == matchingStatus ? ProductStatus.Active : ProductStatus.Draft)
+            new Product(Sku.From("MC-003"), "C", "Cat", 1m, 1, nonMatchingStatus)
         );
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 

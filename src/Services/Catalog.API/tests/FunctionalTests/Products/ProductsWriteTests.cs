@@ -8,6 +8,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Products;
 public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly SpyOutputCacheStore _cache = (SpyOutputCacheStore)factory.Services.GetService(typeof(SpyOutputCacheStore))!;
 
     private static string NewSku() => $"FN-{Guid.NewGuid():N}"[..16].ToUpperInvariant();
 
@@ -94,5 +95,85 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         HttpResponseMessage response = await _client.DeleteAsync("/api/products/NOSUCH-SKU-888", ct);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CreateProduct_ConcurrentSameSku_ReturnsExactlyOneConflict()
+    {
+        // TOCTOU regression guard (audit#3). Pre-check + SaveChangesAsync without a transaction
+        // means two concurrent requests can both pass the AnyAsync check and one would otherwise
+        // bubble a PostgresException(23505) as 500. The handler must catch DbUpdateException and
+        // surface a Conflict result so exactly one request wins.
+        var sku = NewSku();
+        var ct = TestContext.Current.CancellationToken;
+        var command = new CreateProductCommand(sku, "Race", "Vessels", 1m, 1, "active");
+
+        var tasks = Enumerable.Range(0, 8)
+            .Select(_ => _client.PostAsJsonAsync("/api/products", command, ct))
+            .ToArray();
+        var responses = await Task.WhenAll(tasks);
+
+        var created = responses.Count(r => r.StatusCode == HttpStatusCode.Created);
+        var conflict = responses.Count(r => r.StatusCode == HttpStatusCode.Conflict);
+        Assert.Equal(1, created);
+        Assert.Equal(responses.Length - 1, conflict);
+    }
+
+    [Fact]
+    public async Task CreateProduct_NegativePrice_Returns400ProblemDetails()
+    {
+        // Global ProblemDetails mapper test (audit#7). Domain throws
+        // ArgumentOutOfRangeException for negative price and the mapper translates it
+        // into 400 application/problem+json instead of a 500.
+        var sku = NewSku();
+        var ct = TestContext.Current.CancellationToken;
+
+        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products",
+            new CreateProductCommand(sku, "Bad", "Vessels", -1m, 1, "active"), ct);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.NotNull(response.Content.Headers.ContentType);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType!.MediaType);
+    }
+
+    [Fact]
+    public async Task CreateProduct_EmptyName_Returns400ProblemDetails()
+    {
+        var sku = NewSku();
+        var ct = TestContext.Current.CancellationToken;
+
+        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products",
+            new CreateProductCommand(sku, "", "Vessels", 1m, 1, "active"), ct);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType!.MediaType);
+    }
+
+    [Fact]
+    public async Task CreateProduct_InvalidStatus_Returns400ProblemDetails()
+    {
+        var sku = NewSku();
+        var ct = TestContext.Current.CancellationToken;
+
+        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products",
+            new CreateProductCommand(sku, "X", "Vessels", 1m, 1, "bogus"), ct);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType!.MediaType);
+    }
+
+    [Fact]
+    public async Task CreateProduct_Successful_EvictsProductsOutputCacheTag()
+    {
+        // audit#8: write handlers must invalidate the "products" output-cache tag.
+        var beforeCount = _cache.EvictedTags.Count(t => t == "products");
+        var sku = NewSku();
+        var ct = TestContext.Current.CancellationToken;
+
+        await _client.PostAsJsonAsync("/api/products",
+            new CreateProductCommand(sku, "Cache Test", "Vessels", 1m, 1, "active"), ct);
+
+        Assert.True(_cache.EvictedTags.Count(t => t == "products") > beforeCount,
+            "Expected EvictByTagAsync(\"products\", ...) to be called after a successful create.");
     }
 }
