@@ -1,11 +1,5 @@
 "use client";
 
-// React Compiler memoizes react-hook-form's proxy-backed `formState`, which
-// stops field-level error subscriptions from firing — required errors never
-// rendered until this file was opted out. See components/ui/form.tsx for the
-// matching opt-out on the FormMessage side.
-"use no memo";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -28,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { createListingAction } from "@/lib/seller/listings/actions";
 import { productInputSchema } from "@/lib/seller/listings/schema";
 
@@ -125,10 +120,7 @@ export function NewListingForm() {
         aria-busy={isSubmitting}
       >
         {submitError && (
-          <p
-            className="col-span-2 -mb-2 px-1 text-sm text-rose-600"
-            role="alert"
-          >
+          <p className="col-span-2 -mb-2 px-1 text-sm text-bad" role="alert">
             {submitError}
           </p>
         )}
@@ -145,7 +137,7 @@ export function NewListingForm() {
               control={form.control}
               name="sku"
               render={({ field }) => (
-                <FormItem className="mb-2.5 space-y-1">
+                <FormItem className="mb-2.5 gap-1">
                   <FormLabel className={FIELD_LABEL_CLASS}>SKU</FormLabel>
                   <FormControl>
                     <Input
@@ -166,7 +158,7 @@ export function NewListingForm() {
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem className="mb-2.5 space-y-1">
+                <FormItem className="mb-2.5 gap-1">
                   <FormLabel className={FIELD_LABEL_CLASS}>Name</FormLabel>
                   <FormControl>
                     <Input
@@ -275,7 +267,7 @@ export function NewListingForm() {
               control={form.control}
               name="status"
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className={SECTION_LABEL_CLASS}>Status</FormLabel>
                   <Select
                     value={field.value}
@@ -317,7 +309,7 @@ export function NewListingForm() {
                 control={form.control}
                 name="price"
                 render={({ field }) => (
-                  <FormItem className="space-y-1">
+                  <FormItem className="gap-1">
                     <FormLabel className={FIELD_LABEL_CLASS}>Price</FormLabel>
                     <div
                       className="flex items-center gap-1.5 rounded-md border border-border px-3"
@@ -343,7 +335,7 @@ export function NewListingForm() {
                 )}
               />
 
-              <div className="space-y-1">
+              <div className="gap-1">
                 <Label className={FIELD_LABEL_CLASS}>Compare-at</Label>
                 <div
                   className="flex items-center gap-1.5 rounded-md border border-border px-3"
@@ -359,7 +351,7 @@ export function NewListingForm() {
               </div>
             </div>
             <div className="flex items-center gap-2 mt-3.5 px-2.5 py-2 bg-canvas-parchment rounded-md">
-              <span className="w-2 h-2 rounded-full bg-good shrink-0" />
+              <span className="size-2 rounded-full bg-good shrink-0" />
               <span className="text-sm text-foreground">
                 Suggested: $78–$94 based on 6 similar shops
               </span>
@@ -373,7 +365,7 @@ export function NewListingForm() {
               control={form.control}
               name="inventory"
               render={({ field }) => (
-                <FormItem className="mb-3 space-y-1">
+                <FormItem className="mb-3 gap-1">
                   <FormLabel className={FIELD_LABEL_CLASS}>
                     Total in stock
                   </FormLabel>
@@ -398,9 +390,7 @@ export function NewListingForm() {
               )}
             />
             <div className="flex items-center gap-2">
-              <div className="w-8 h-4 rounded-full bg-good flex items-center justify-end pr-0.5">
-                <div className="w-3 h-3 rounded-full bg-white shadow-sm" />
-              </div>
+              <Switch defaultChecked size="sm" aria-label="Allow pre-orders" />
               <span className="text-sm text-foreground">Allow pre-orders</span>
             </div>
           </div>
@@ -433,7 +423,7 @@ export function NewListingForm() {
               control={form.control}
               name="category"
               render={({ field }) => (
-                <FormItem className="space-y-1">
+                <FormItem className="gap-1">
                   <FormLabel className={FIELD_LABEL_CLASS}>Category</FormLabel>
                   <FormControl>
                     <Input

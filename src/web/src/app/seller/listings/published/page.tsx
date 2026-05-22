@@ -3,6 +3,14 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
 const KPIS = [
@@ -115,30 +123,34 @@ export default function ListingsPublishedPage() {
               Activity log →
             </Link>
           </div>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-[11px] uppercase tracking-wider text-foreground/50">
-                <th className="px-5 py-2.5 font-medium">When</th>
-                <th className="px-5 py-2.5 font-medium">Item</th>
-                <th className="px-5 py-2.5 font-medium">Change</th>
-                <th className="px-5 py-2.5 font-medium">By</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow className="text-[11px] uppercase tracking-wider text-foreground/50">
+                <TableHead className="px-5">When</TableHead>
+                <TableHead className="px-5">Item</TableHead>
+                <TableHead className="px-5">Change</TableHead>
+                <TableHead className="px-5">By</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {ACTIVITY.map((r) => (
-                <tr key={r.item} className="border-t border-black/[0.04]">
-                  <td className="px-5 py-3 text-[11px] text-foreground/60">
+                <TableRow key={r.item}>
+                  <TableCell className="px-5 py-3 text-[11px] text-foreground/60">
                     {r.when}
-                  </td>
-                  <td className="px-5 py-3 font-medium text-foreground">
+                  </TableCell>
+                  <TableCell className="px-5 py-3 font-medium text-foreground">
                     {r.item}
-                  </td>
-                  <td className="px-5 py-3 text-foreground/70">{r.change}</td>
-                  <td className="px-5 py-3 text-[13px]">{r.by}</td>
-                </tr>
+                  </TableCell>
+                  <TableCell className="px-5 py-3 text-foreground/70">
+                    {r.change}
+                  </TableCell>
+                  <TableCell className="px-5 py-3 text-[13px]">
+                    {r.by}
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

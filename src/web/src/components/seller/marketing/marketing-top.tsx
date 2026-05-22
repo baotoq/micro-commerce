@@ -43,7 +43,7 @@ export function MarketingTop({ active = "" }: { active?: string }) {
       </a>
       <button
         type="button"
-        className="rounded-full bg-[#0066cc] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#0055aa]"
+        className="rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         style={{ border: "none", cursor: "pointer" }}
       >
         Sell on Micro

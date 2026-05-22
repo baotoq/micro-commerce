@@ -28,7 +28,7 @@ function SearchIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className="shrink-0 text-[#1d1d1f]/40"
+      className="shrink-0 text-foreground/40"
     >
       <circle cx="9" cy="9" r="5.5" />
       <path d="M13.5 13.5L17 17" />
@@ -61,7 +61,7 @@ export function OrdersInboxFilterRow() {
     <div className="flex items-center gap-2.5 border-b border-black/[0.06] px-7 py-3.5">
       <div className="flex h-8 max-w-[360px] flex-1 items-center gap-2 rounded-full bg-black/[0.05] px-3">
         <SearchIcon />
-        <span className="text-[12px] text-[#1d1d1f]/40">
+        <span className="text-[12px] text-foreground/40">
           Search by order, customer, SKU…
         </span>
       </div>
@@ -69,7 +69,7 @@ export function OrdersInboxFilterRow() {
         <button
           key={label}
           type="button"
-          className="flex h-[30px] items-center gap-1 rounded-full border border-black/[0.10] px-3 text-[11.5px] font-medium text-[#1d1d1f]/70 hover:bg-black/[0.03]"
+          className="flex h-[30px] items-center gap-1 rounded-full border border-black/[0.10] px-3 text-[11.5px] font-medium text-foreground/70 hover:bg-black/[0.03]"
         >
           {label}
           <ChevronDown />
@@ -78,7 +78,7 @@ export function OrdersInboxFilterRow() {
       <span className="flex-1" />
       <button
         type="button"
-        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-medium text-[#1d1d1f]/60 hover:bg-black/[0.03]"
+        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-medium text-foreground/60 hover:bg-black/[0.03]"
       >
         <FilterIcon />
         More filters

@@ -83,7 +83,7 @@ export function NewPromoDrawer() {
         <button
           type="button"
           aria-label="Close"
-          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-black/[0.04]"
+          className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-black/[0.04]"
         >
           <CloseIcon />
         </button>
@@ -201,12 +201,12 @@ export function NewPromoDrawer() {
               }}
             >
               <span
-                className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
+                className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full"
                 style={{ border: "1.5px solid var(--foreground)" }}
               >
                 {opt.on && (
                   <span
-                    className="h-2 w-2 rounded-full"
+                    className="size-2 rounded-full"
                     style={{ background: "var(--foreground)" }}
                   />
                 )}
@@ -253,7 +253,7 @@ export function NewPromoDrawer() {
           style={{ background: "var(--canvas-parchment)" }}
         >
           <div className="mb-1 flex items-center gap-2">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-good" />
+            <span className="inline-block size-1.5 rounded-full bg-good" />
             <span className="text-[12.5px] font-semibold text-foreground">
               Forecast
             </span>

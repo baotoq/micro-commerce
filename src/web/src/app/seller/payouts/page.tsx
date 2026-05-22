@@ -1,5 +1,13 @@
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { money } from "@/lib/money";
 import { getLedgerEntries, getPayoutSummary } from "@/lib/seller/payouts/data";
 
@@ -125,22 +133,16 @@ export default function PayoutsPage() {
           </div>
 
           {/* Table */}
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-black/[0.04]">
-                <th className="text-left text-[11px] font-medium text-muted-foreground px-5 py-2.5">
-                  Date
-                </th>
-                <th className="text-left text-[11px] font-medium text-muted-foreground px-3 py-2.5">
-                  Description
-                </th>
-                <th className="text-left text-[11px] font-medium text-muted-foreground px-3 py-2.5" />
-                <th className="text-right text-[11px] font-medium text-muted-foreground px-5 py-2.5">
-                  Amount
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow className="text-[11px] font-medium text-muted-foreground">
+                <TableHead className="px-5">Date</TableHead>
+                <TableHead className="px-3">Description</TableHead>
+                <TableHead className="px-3" />
+                <TableHead className="px-5 text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {entries.map((row) => {
                 const isPayout = row.type === "payout";
                 const isFee = row.amount < 0;
@@ -156,22 +158,19 @@ export default function PayoutsPage() {
                     : `+${money(row.amount)}`;
 
                 return (
-                  <tr
-                    key={`${row.date}-${row.label}`}
-                    className="border-b border-black/[0.04] last:border-0"
-                  >
-                    <td className="px-5 py-3 font-mono text-[12px] text-muted-foreground whitespace-nowrap">
+                  <TableRow key={`${row.date}-${row.label}`}>
+                    <TableCell className="px-5 py-3 font-mono text-[12px] text-muted-foreground whitespace-nowrap">
                       {row.date}
-                    </td>
-                    <td className="px-3 py-3">
+                    </TableCell>
+                    <TableCell className="px-3 py-3">
                       <p className="text-[13px] font-semibold text-foreground">
                         {row.label}
                       </p>
                       <p className="text-[11px] text-muted-foreground">
                         {row.subject}
                       </p>
-                    </td>
-                    <td className="px-3 py-3">
+                    </TableCell>
+                    <TableCell className="px-3 py-3">
                       {isPayout && !isFee ? (
                         <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-good/15 text-good">
                           Payout
@@ -185,18 +184,18 @@ export default function PayoutsPage() {
                           Sale
                         </span>
                       )}
-                    </td>
-                    <td
+                    </TableCell>
+                    <TableCell
                       className={`px-5 py-3 text-right text-[13px] font-semibold tabular-nums whitespace-nowrap ${!isFee && !isPayout ? "text-good" : ""}`}
                       style={amountColor ? { color: amountColor } : undefined}
                     >
                       {amountLabel}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

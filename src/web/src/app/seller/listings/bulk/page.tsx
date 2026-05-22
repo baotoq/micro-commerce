@@ -2,6 +2,14 @@
 import Link from "next/link";
 import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
 const CHIPS = [
@@ -137,46 +145,43 @@ export default function ListingsBulkPage() {
       {/* Body: table + drawer */}
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="w-[32px] px-7 py-2.5"></th>
-                <th className="px-2 py-2.5 font-medium">Product</th>
-                <th className="px-2 py-2.5 font-medium">SKU</th>
-                <th className="px-2 py-2.5 font-medium">Status</th>
-                <th className="px-2 py-2.5 font-medium">Stock</th>
-                <th className="px-2 py-2.5 font-medium">Price</th>
-                <th className="px-7 py-2.5 font-medium">New price</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                <TableHead className="w-[32px] px-7" />
+                <TableHead>Product</TableHead>
+                <TableHead>SKU</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead className="px-7">New price</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {ROWS.map((r) => (
-                <tr
+                <TableRow
                   key={r.sku}
-                  className={cn(
-                    "border-b border-border",
-                    r.selected && "bg-terra/[0.04]",
-                  )}
+                  className={cn(r.selected && "bg-terra/[0.04]")}
                 >
-                  <td className="px-7 py-3">
+                  <TableCell className="px-7 py-3">
                     <span
                       aria-hidden="true"
                       className={
                         r.selected
-                          ? "flex h-[14px] w-[14px] items-center justify-center rounded-[3px] bg-foreground text-[9px] text-white"
-                          : "flex h-[14px] w-[14px] items-center justify-center rounded-[3px] border-[1.5px] border-foreground/40"
+                          ? "flex size-[14px] items-center justify-center rounded-[3px] bg-foreground text-[9px] text-white"
+                          : "flex size-[14px] items-center justify-center rounded-[3px] border-[1.5px] border-foreground/40"
                       }
                     >
                       {r.selected ? "✓" : ""}
                     </span>
-                  </td>
-                  <td className="px-2 py-3 font-medium text-foreground">
+                  </TableCell>
+                  <TableCell className="py-3 font-medium text-foreground">
                     {r.name}
-                  </td>
-                  <td className="px-2 py-3 font-mono text-[12px] text-muted-foreground">
+                  </TableCell>
+                  <TableCell className="py-3 font-mono text-[12px] text-muted-foreground">
                     {r.sku}
-                  </td>
-                  <td className="px-2 py-3">
+                  </TableCell>
+                  <TableCell className="py-3">
                     <span
                       className={
                         r.status === "Out"
@@ -186,35 +191,35 @@ export default function ListingsBulkPage() {
                     >
                       {r.status}
                     </span>
-                  </td>
-                  <td
+                  </TableCell>
+                  <TableCell
                     className={cn(
-                      "px-2 py-3 tabular-nums font-medium",
+                      "py-3 tabular-nums font-medium",
                       r.stock === 0 ? "text-bad" : "text-warn",
                     )}
                   >
                     {r.stock}
-                  </td>
-                  <td
-                    className="px-2 py-3 tabular-nums text-muted-foreground"
+                  </TableCell>
+                  <TableCell
+                    className="py-3 tabular-nums text-muted-foreground"
                     style={{
                       textDecoration: r.selected ? "line-through" : "none",
                     }}
                   >
                     {money(r.price)}
-                  </td>
-                  <td
+                  </TableCell>
+                  <TableCell
                     className={cn(
                       "px-7 py-3 tabular-nums font-semibold",
                       r.selected ? "text-good" : "text-muted-foreground/40",
                     )}
                   >
                     {r.newPrice !== null ? money(r.newPrice) : "—"}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         {/* Right drawer */}

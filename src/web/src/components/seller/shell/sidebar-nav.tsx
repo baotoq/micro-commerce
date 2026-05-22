@@ -41,16 +41,16 @@ export function SidebarNav({ items }: { items: readonly Item[] }) {
             className={cn(
               "relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
               active
-                ? "bg-[#1d1d1f] font-medium text-white"
-                : "text-[#1d1d1f] hover:bg-white/60",
+                ? "bg-foreground font-medium text-white"
+                : "text-foreground hover:bg-white/60",
             )}
           >
             {Icon && (
               <Icon
                 aria-hidden
                 className={cn(
-                  "h-4 w-4 shrink-0",
-                  active ? "text-white" : "text-[#1d1d1f]/60",
+                  "size-4 shrink-0",
+                  active ? "text-white" : "text-foreground/60",
                 )}
               />
             )}
@@ -60,7 +60,7 @@ export function SidebarNav({ items }: { items: readonly Item[] }) {
                 aria-hidden="true"
                 className={cn(
                   "inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums",
-                  active ? "bg-white/20 text-white" : "bg-[#cf5a2c] text-white",
+                  active ? "bg-white/20 text-white" : "bg-terra text-white",
                 )}
               >
                 {item.badge}

@@ -30,7 +30,7 @@ export function OrderDetailTimeline({
               <span
                 className={`flex items-center justify-center rounded-full ${
                   e.tone === "warn"
-                    ? "bg-canvas-parchment text-orange-700"
+                    ? "bg-canvas-parchment text-terra"
                     : e.on
                       ? "bg-foreground text-white"
                       : "bg-canvas-parchment text-foreground/50"

@@ -24,13 +24,13 @@ describe("SidebarNav", () => {
   it("marks overview as active when on /seller (exact match)", () => {
     render(<SidebarNav items={NAV} />);
     const link = screen.getByRole("link", { name: /Overview/ });
-    expect(link).toHaveClass("bg-[#1d1d1f]");
+    expect(link).toHaveClass("bg-foreground");
   });
 
   it("leaves non-active links unstyled with active class", () => {
     render(<SidebarNav items={NAV} />);
     const link = screen.getByRole("link", { name: /Listings/ });
-    expect(link).not.toHaveClass("bg-[#1d1d1f]");
+    expect(link).not.toHaveClass("bg-foreground");
   });
 
   it("renders badge count for orders", () => {

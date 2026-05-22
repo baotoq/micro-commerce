@@ -26,10 +26,10 @@ describe("PromoStatCard", () => {
     expect(screen.getByText("+12% vs last period")).toBeInTheDocument();
   });
 
-  it("renders the sparkline chart", () => {
+  it("renders the sparkline chart with a meaningful aria-label derived from the stat label", () => {
     render(<PromoStatCard stat={STAT} />);
     expect(
-      screen.getByRole("img", { name: "Sparkline chart" }),
+      screen.getByRole("img", { name: /Redemptions trend/i }),
     ).toBeInTheDocument();
   });
 

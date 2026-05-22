@@ -5,6 +5,7 @@ import { OrdersInboxPagination } from "@/components/seller/orders/orders-inbox-p
 import { OrdersInboxTable } from "@/components/seller/orders/orders-inbox-table";
 import { OrdersInboxTabs } from "@/components/seller/orders/orders-inbox-tabs";
 import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
+import { Button } from "@/components/ui/button";
 import {
   getOrderInbox,
   getOrderInboxSummary,
@@ -31,20 +32,14 @@ export default function OrdersPage() {
         subtitle={subtitle}
         actions={
           <>
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-black/[0.12] px-3 py-1.5 text-[12px] font-medium text-[#1d1d1f] hover:bg-black/[0.03]"
-            >
+            <Button variant="outline" size="sm">
               <Upload size={11} aria-hidden />
               Export CSV
-            </button>
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#1d1d1f] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1d1d1f]/90"
-            >
+            </Button>
+            <Button size="sm">
               <Plus size={12} aria-hidden />
               Manual order
-            </button>
+            </Button>
           </>
         }
       />

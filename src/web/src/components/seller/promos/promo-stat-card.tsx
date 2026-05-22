@@ -13,7 +13,11 @@ export function PromoStatCard({ stat }: { stat: PromoStat }) {
       </div>
       <div className="mt-1 text-xs text-muted-foreground">{stat.sub}</div>
       <div className="mt-2 h-6 text-primary">
-        <Sparkline points={stat.spark} className="h-6 w-full text-primary" />
+        <Sparkline
+          points={stat.spark}
+          label={`${stat.label} trend`}
+          className="h-6 w-full text-primary"
+        />
       </div>
     </div>
   );

@@ -5,10 +5,12 @@ import { KpiCard } from "@/components/seller/analytics/kpi-card";
 import { RevenueChart } from "@/components/seller/analytics/revenue-chart";
 import { TodayPanel } from "@/components/seller/dashboard/today-panel";
 import { RecentOrders } from "@/components/seller/orders/recent-orders";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { getOverviewKpis, getRevenueSeries } from "@/lib/seller/analytics/data";
 import { BRAND, DATE_LABEL } from "@/lib/seller/brand";
 import { getTodayItems } from "@/lib/seller/dashboard/data";
 import { getRecentOrders } from "@/lib/seller/orders/data";
+import { cn } from "@/lib/utils";
 
 export default function SellerOverview() {
   const kpis = getOverviewKpis();
@@ -24,15 +26,12 @@ export default function SellerOverview() {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="rounded-full border border-black/[0.12] px-4 py-2 text-sm font-medium text-foreground hover:bg-black/[0.04]"
-          >
+          <Button variant="outline" className="rounded-full">
             Export
-          </button>
+          </Button>
           <Link
             href="/seller/listings/new"
-            className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+            className={cn(buttonVariants(), "rounded-full")}
           >
             + New listing
           </Link>

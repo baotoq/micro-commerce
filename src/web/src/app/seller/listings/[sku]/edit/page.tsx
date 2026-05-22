@@ -7,6 +7,14 @@ import { notFound } from "next/navigation";
 import { DeleteListingButton } from "@/components/seller/listings/delete-listing-button";
 import { EditListingForm } from "@/components/seller/listings/edit-listing-form";
 import { buttonVariants } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { getListingBySku } from "@/lib/seller/listings/data";
 
 type Variant = {
@@ -93,7 +101,7 @@ export default async function ListingEditPage({
           <Link
             href="/seller/listings"
             aria-label="Back"
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-canvas-parchment"
+            className="flex size-8 items-center justify-center rounded-md hover:bg-canvas-parchment"
           >
             ‹
           </Link>
@@ -137,55 +145,50 @@ export default async function ListingEditPage({
               </div>
             </div>
 
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-black/[0.06] text-left text-[11px] uppercase tracking-wider text-foreground/50">
-                  <th className="py-2.5 pr-2 font-medium">Variant</th>
-                  <th className="px-2 py-2.5 font-medium">SKU</th>
-                  <th className="px-2 py-2.5 font-medium">Price</th>
-                  <th className="px-2 py-2.5 font-medium">Stock</th>
-                  <th className="px-2 py-2.5 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHeader>
+                <TableRow className="text-[11px] uppercase tracking-wider text-foreground/50">
+                  <TableHead className="pr-2">Variant</TableHead>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Stock</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {VARIANTS.map((v) => (
-                  <tr
+                  <TableRow
                     key={v.sku}
-                    className="border-b border-black/[0.04]"
-                    style={
-                      v.changed
-                        ? { background: "rgba(27,94,63,0.04)" }
-                        : undefined
-                    }
+                    className={v.changed ? "bg-good/[0.04]" : undefined}
                   >
-                    <td className="py-3 pr-2 font-medium text-foreground">
+                    <TableCell className="py-3 pr-2 font-medium text-foreground">
                       <span className="inline-flex items-center gap-2">
                         {v.changed && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-good" />
+                          <span className="size-1.5 rounded-full bg-good" />
                         )}
                         {v.label}
                       </span>
-                    </td>
-                    <td className="px-2 py-3 font-mono text-[12px] text-foreground/60">
+                    </TableCell>
+                    <TableCell className="py-3 font-mono text-[12px] text-foreground/60">
                       {v.sku}
-                    </td>
-                    <td
-                      className={`px-2 py-3 tabular-nums ${v.changed ? "font-semibold text-good" : "font-normal text-foreground"}`}
+                    </TableCell>
+                    <TableCell
+                      className={`py-3 tabular-nums ${v.changed ? "font-semibold text-good" : "font-normal text-foreground"}`}
                     >
                       {money(v.price)}
-                    </td>
-                    <td
-                      className={`px-2 py-3 tabular-nums ${v.stock === 0 ? "text-bad" : v.stock < 5 ? "text-warn" : "text-foreground"}`}
+                    </TableCell>
+                    <TableCell
+                      className={`py-3 tabular-nums ${v.stock === 0 ? "text-bad" : v.stock < 5 ? "text-warn" : "text-foreground"}`}
                     >
                       {v.stock}
-                    </td>
-                    <td className="px-2 py-3">
+                    </TableCell>
+                    <TableCell className="py-3">
                       <span className={STATUS_CHIP[v.status]}>{v.status}</span>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
             <p className="mt-3.5 text-[11px] text-foreground/60">
               ● 2 variants updated · prices +10%
             </p>

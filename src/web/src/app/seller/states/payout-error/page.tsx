@@ -157,6 +157,7 @@ export default function PayoutErrorPage() {
               <div style={{ height: 32, marginTop: 8 }}>
                 <Sparkline
                   points={SPARK_POINTS}
+                  label={`${kpi.label} trend`}
                   className="h-8 w-full text-muted-foreground"
                 />
               </div>

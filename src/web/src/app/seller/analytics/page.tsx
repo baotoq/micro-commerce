@@ -76,15 +76,15 @@ export default function AnalyticsPage() {
               </div>
               <div className="flex gap-3 text-[11px] text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-foreground" />
+                  <span className="inline-block size-2 rounded-full bg-foreground" />
                   Organic
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-terra" />
+                  <span className="inline-block size-2 rounded-full bg-terra" />
                   Social
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-foreground/30" />
+                  <span className="inline-block size-2 rounded-full bg-foreground/30" />
                   Direct
                 </span>
               </div>

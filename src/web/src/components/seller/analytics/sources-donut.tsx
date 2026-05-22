@@ -21,7 +21,7 @@ export function SourcesDonut({ sources }: { sources: SourceBreakdown[] }) {
       <div className="mt-4 flex items-center gap-6">
         <svg
           viewBox="-80 -80 160 160"
-          className="h-40 w-40"
+          className="size-40"
           role="img"
           aria-label="Traffic sources breakdown"
         >
@@ -46,12 +46,12 @@ export function SourcesDonut({ sources }: { sources: SourceBreakdown[] }) {
             );
           })}
         </svg>
-        <ul className="space-y-2 text-sm">
+        <ul className="flex flex-col gap-2 text-sm">
           {sources.map((s, i) => (
             <li key={s.name} className="flex items-center gap-3">
               <span
                 aria-hidden
-                className="inline-block h-2.5 w-2.5 rounded-full"
+                className="inline-block size-2.5 rounded-full"
                 style={{ background: PALETTE[i % PALETTE.length] }}
               />
               <span className="min-w-[8rem]">{s.name}</span>

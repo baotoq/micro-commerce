@@ -8,7 +8,7 @@ export function ConversionFunnel({ stages }: { stages: FunnelStage[] }) {
       <h2 className="text-base font-semibold tracking-tight">
         Conversion funnel
       </h2>
-      <ul className="mt-4 space-y-3">
+      <ul className="mt-4 flex flex-col gap-3">
         {stages.map((s) => {
           const pct = (s.count / top) * 100;
           return (
