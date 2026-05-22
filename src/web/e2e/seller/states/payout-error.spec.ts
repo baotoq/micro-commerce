@@ -46,8 +46,11 @@ test.describe(
       // Held payout card label
       await expect(page.getByText("● Payout held")).toBeVisible();
 
-      // Held payout amount
-      await expect(page.getByText("$1,284.62").first()).toBeVisible();
+      // Held payout amount — the same total appears in the banner heading
+      // (line 54 of the page component). Scope to the held-payout card by
+      // walking up from its unique "● Payout held" label.
+      const heldCard = page.getByText("● Payout held").locator("..");
+      await expect(heldCard.getByText("$1,284.62")).toBeVisible();
 
       // Held payout subtext
       await expect(
@@ -80,7 +83,7 @@ test.describe(
       await expect(page.getByText("error · payout failed")).not.toBeVisible();
 
       // "Mira" not in page content
-      await expect(page.getByText("Mira")).not.toBeVisible();
+      await expect(page.getByText("Mira")).toHaveCount(0);
     });
   },
 );

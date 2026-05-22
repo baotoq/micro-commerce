@@ -30,8 +30,12 @@ test.describe("Seller payouts", { tag: ["@regression", "@payouts"] }, () => {
     for (const c of ["All", "Payouts", "Sales", "Fees"]) {
       await expect(page.getByText(c, { exact: true })).toBeVisible();
     }
-    // a couple of ledger rows
-    await expect(page.getByText("Payout · weekly").first()).toBeVisible();
+    // a couple of ledger rows — scope to the Activity table so we don't match
+    // any heading or sub-label that might repeat the string. The seed has two
+    // weekly-payout rows; asserting count makes regressions (missing row)
+    // visible instead of being masked by `.first()`.
+    const activityTable = page.getByRole("table");
+    await expect(activityTable.getByText("Payout · weekly")).toHaveCount(2);
     await expect(page.getByText(/Order #1042 · Sasha L./)).toBeVisible();
   });
 });

@@ -67,9 +67,14 @@ test.describe(
       page,
     }) => {
       await page.goto(sellerRoutes.listings);
-      await page.evaluate(() => {
-        (window as unknown as { __noReloadMark?: string }).__noReloadMark =
-          "seed";
+
+      // Count full document loads. `page.on("load")` fires once for the
+      // initial navigation (which has happened by now) and again on any real
+      // reload — but NOT on Next.js client-side history.pushState transitions.
+      // After the pagination click, the count must not increase.
+      let loadCount = 0;
+      page.on("load", () => {
+        loadCount++;
       });
 
       const next = page.getByRole("button", { name: /go to next page/i });
@@ -84,10 +89,9 @@ test.describe(
 
       await expect(page).toHaveURL(/\?page=2$/);
 
-      const marker = await page.evaluate(
-        () => (window as unknown as { __noReloadMark?: string }).__noReloadMark,
-      );
-      expect(marker).toBe("seed");
+      // Zero full-page loads since the listener was attached — proves the
+      // navigation was client-side only.
+      expect(loadCount).toBe(0);
     });
 
     test("page 5 (last): next is disabled and trailing 6 SKUs are visible", async ({

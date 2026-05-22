@@ -77,3 +77,9 @@
 | S26-05 | Focus stays trapped inside the dialog                | [x]    |
 
 **TC-S26 result: 5 pass, 0 fail, 0 blocked** — one P2 a11y defect (no focus trap) found and fixed during this run.
+
+> **Status: Superseded by e2e suite.** Functional delete coverage (confirm,
+> Cancel, Escape, focus trap) is now in
+> `src/web/e2e/seller/listings/[sku]/delete.spec.ts`. Keep this test case for
+> design/a11y screenshot evidence and console-error sweeps only — do not
+> re-run the functional cases on every release.

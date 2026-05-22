@@ -6,9 +6,15 @@ test.describe(
   { tag: ["@seed-dependent", "@listings"] },
   () => {
     test("pagination shows loading feedback during fetch", async ({ page }) => {
-      // Slow down the /api/listings response so the spinner is observable.
+      // Block the /api/listings response on a manual gate instead of racing a
+      // fixed timeout against the assertions. The gate resolves *after* the
+      // spinner assertions run, so they cannot false-pass even on a slow CI.
+      let release: () => void = () => {};
+      const gate = new Promise<void>((resolve) => {
+        release = resolve;
+      });
       await page.route("**/api/listings*", async (route) => {
-        await new Promise((r) => setTimeout(r, 800));
+        await gate;
         await route.continue();
       });
 
@@ -29,6 +35,9 @@ test.describe(
       await expect(
         page.getByRole("cell", { name: "MC-VS-001", exact: true }),
       ).toBeVisible();
+
+      // Release the gate now that the in-flight assertions have run.
+      release();
 
       // After the fetch resolves, indicators disappear and rows are page 2.
       await expect(

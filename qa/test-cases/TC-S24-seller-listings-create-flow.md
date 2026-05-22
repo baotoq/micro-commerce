@@ -78,3 +78,8 @@
 | S24-05 | SKU is uppercased + trimmed                              | [x]    |
 
 **TC-S24 result: 5 pass, 0 fail, 0 blocked**
+
+> **Status: Superseded by e2e suite.** Functional CRUD coverage is now in
+> `src/web/e2e/seller/listings/create.spec.ts`. Keep this test case for
+> design/a11y screenshot evidence and console-error sweeps only — do not
+> re-run the functional cases on every release.

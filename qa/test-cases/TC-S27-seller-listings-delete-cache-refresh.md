@@ -96,3 +96,10 @@ The fix invalidates the `["listings"]` cache from `DeleteListingButton.handleCon
 | S27-03 | Cold-cache delete still works (no regression)                        | [ ]    |
 
 **TC-S27 status: pending execution against running Aspire stack.**
+
+> **Status: Superseded by e2e suite.** The warm-cache regression is now
+> covered by the `@seed-dependent` test in
+> `src/web/e2e/seller/listings/[sku]/delete.spec.ts` ("listings table
+> refreshes when user visited the index before deleting"). Keep this test
+> case for design/a11y screenshot evidence and console-error sweeps only —
+> do not re-run the functional cases on every release.

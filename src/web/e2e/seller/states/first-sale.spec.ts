@@ -12,7 +12,8 @@ test.describe(
 
       // Topbar: must greet BRAND.owner (Alex), never "Mira"
       await expect(page.getByText("Welcome, Alex")).toBeVisible();
-      await expect(page.locator("h1").first()).not.toContainText("Mira");
+      // Auto-waiting negative assertion replaces brittle h1 locator probe.
+      await expect(page.getByText("Mira")).toHaveCount(0);
 
       // Modal dialog present with correct a11y attributes
       const dialog = page.getByRole("dialog");
