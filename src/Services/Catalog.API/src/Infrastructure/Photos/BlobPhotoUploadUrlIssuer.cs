@@ -1,4 +1,5 @@
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using MicroCommerce.Catalog.Application.Products.Photos;
 
@@ -17,12 +18,16 @@ internal sealed class BlobPhotoUploadUrlIssuer(BlobServiceClient serviceClient) 
     public async Task<PhotoUploadUrlResponse> IssueAsync(string contentType, CancellationToken ct)
     {
         var container = serviceClient.GetBlobContainerClient(ContainerName);
-        await container.CreateIfNotExistsAsync(cancellationToken: ct);
+        await container.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: ct);
 
         var blobName = $"products/{Guid.NewGuid():N}{ExtensionFor(contentType)}";
         var blobClient = container.GetBlobClient(blobName);
 
         var expiresAt = DateTimeOffset.UtcNow.Add(SasTtl);
+        // TODO(security): SAS token does not enforce ContentLength on the actual PUT;
+        // callers can upload arbitrary-sized payloads. Mitigations to consider:
+        // (a) lifecycle policy to delete blobs over 8 MB, (b) server-side validation
+        // post-upload, (c) shorter SAS TTL combined with metric-based alerting.
         var sas = new BlobSasBuilder
         {
             BlobContainerName = ContainerName,

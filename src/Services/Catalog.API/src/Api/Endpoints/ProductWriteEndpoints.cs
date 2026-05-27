@@ -39,6 +39,10 @@ public static class ProductWriteEndpoints
         })
         .WithName("DeleteProduct");
 
+        // TODO(auth): requireSeller() — endpoint currently unauthenticated; gate behind seller auth before going live.
+        // TODO(security): rate-limit POST /api/products/photo-upload-url to prevent
+        // SAS-token enumeration / abuse. Aspire has no rate-limit primitive yet; consider
+        // AspNetCoreRateLimit or a Dapr middleware.
         group.MapPost("/photo-upload-url", async (PhotoUploadUrlCommand command, ISender mediator, CancellationToken ct) =>
         {
             var response = await mediator.Send(command, ct);
