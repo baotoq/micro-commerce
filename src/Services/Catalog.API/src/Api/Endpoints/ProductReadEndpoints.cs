@@ -17,6 +17,13 @@ public static class ProductReadEndpoints
             .CacheOutput(CacheProducts)
             .WithName("GetProductCounts");
 
+        group.MapGet("/by-sku/{sku}/exists", async (string sku, ISender mediator, CancellationToken ct) =>
+        {
+            var exists = await mediator.Send(new ProductExistsBySkuQuery(sku), ct);
+            return exists ? Results.NoContent() : Results.NotFound();
+        })
+        .WithName("ProductExistsBySku");
+
         group.MapGet("/{sku}", async (string sku, ISender mediator, CancellationToken ct) =>
         {
             var product = await mediator.Send(new GetProductBySkuQuery(sku), ct);

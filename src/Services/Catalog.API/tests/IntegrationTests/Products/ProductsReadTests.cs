@@ -49,7 +49,7 @@ public class ProductsReadTests(ApiFixture fixture)
         var ct = TestContext.Current.CancellationToken;
         var sku = $"INT-{Guid.NewGuid():N}"[..16];
         await _client.PostAsJsonAsync("/api/products",
-            new CreateProductCommand(sku, "Filter Test", "Drinkware", 10m, 5, "active"), ct);
+            new CreateProductCommand(sku, "Filter Test", "Drinkware", 10m, 5, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         var response = await _client.GetAsync("/api/products?status=active&limit=100", ct);
         var result = await response.Content.ReadFromJsonAsync<PagedResult<ProductDto>>(ct);

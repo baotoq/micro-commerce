@@ -1,5 +1,6 @@
 using MediatR;
 using MicroCommerce.Catalog.Application.Products.Commands;
+using MicroCommerce.Catalog.Application.Products.Photos;
 
 namespace MicroCommerce.Catalog.Api.Endpoints;
 
@@ -37,6 +38,13 @@ public static class ProductWriteEndpoints
             return deleted ? Results.NoContent() : Results.NotFound();
         })
         .WithName("DeleteProduct");
+
+        group.MapPost("/photo-upload-url", async (PhotoUploadUrlCommand command, ISender mediator, CancellationToken ct) =>
+        {
+            var response = await mediator.Send(command, ct);
+            return Results.Ok(response);
+        })
+        .WithName("RequestProductPhotoUploadUrl");
 
         return app;
     }

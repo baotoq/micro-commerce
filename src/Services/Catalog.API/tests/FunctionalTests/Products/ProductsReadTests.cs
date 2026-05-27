@@ -69,7 +69,7 @@ public class ProductsReadTests(CatalogWebApplicationFactory factory) : IClassFix
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
         await _client.PostAsJsonAsync("/api/products",
-            new CreateProductCommand(sku, "Filter Test", "Drinkware", 10m, 5, "active"), ct);
+            new CreateProductCommand(sku, "Filter Test", "Drinkware", 10m, 5, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         HttpResponseMessage response = await _client.GetAsync("/api/products?status=active&limit=100", ct);
 
@@ -86,7 +86,7 @@ public class ProductsReadTests(CatalogWebApplicationFactory factory) : IClassFix
         string uniqueName = $"SearchableWidget-{Guid.NewGuid():N}"[..30];
         var ct = TestContext.Current.CancellationToken;
         await _client.PostAsJsonAsync("/api/products",
-            new CreateProductCommand(sku, uniqueName, "Electronics", 9.99m, 5, "active"), ct);
+            new CreateProductCommand(sku, uniqueName, "Electronics", 9.99m, 5, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         HttpResponseMessage response = await _client.GetAsync($"/api/products?search={uniqueName[..10]}", ct);
 

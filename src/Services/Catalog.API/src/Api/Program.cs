@@ -12,6 +12,7 @@ builder.AddServiceDefaults();
 builder.AddRedisClientBuilder("cache")
     .WithOutputCache();
 builder.AddInfrastructure();
+builder.AddAzureBlobServiceClient("photos");
 
 builder.Services.AddApplication();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));

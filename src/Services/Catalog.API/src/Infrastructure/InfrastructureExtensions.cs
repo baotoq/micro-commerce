@@ -1,6 +1,9 @@
 using MicroCommerce.Catalog.Application.Persistence;
+using MicroCommerce.Catalog.Application.Products.Photos;
 using MicroCommerce.Catalog.Infrastructure.Persistence;
+using MicroCommerce.Catalog.Infrastructure.Photos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace MicroCommerce.Catalog.Infrastructure;
@@ -22,6 +25,8 @@ public static class InfrastructureExtensions
                 // Migrations live alongside the EF mappings in the Infrastructure assembly.
                 o.UseNpgsql(npg => npg.MigrationsAssembly(typeof(ProductConfiguration).Assembly.FullName));
             });
+
+        builder.Services.AddSingleton<IPhotoUploadUrlIssuer, BlobPhotoUploadUrlIssuer>();
         return builder;
     }
 }

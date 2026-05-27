@@ -9,13 +9,19 @@ var postgres = builder.AddPostgres("postgres", password: pgPassword)
     .WithDataVolume().WithLifetime(ContainerLifetime.Persistent)
     .AddDatabase("catalogdb");
 
+var storage = builder.AddAzureStorage("storage").RunAsEmulator(emu =>
+    emu.WithDataVolume().WithLifetime(ContainerLifetime.Persistent));
+var photos = storage.AddBlobs("photos");
+
 var pubSub = builder.AddDaprPubSub("pubsub");
 
 var catalog = builder.AddProject<Projects.MicroCommerce_Catalog>("catalog-api")
     .WithReference(cache)
     .WithReference(postgres)
+    .WithReference(photos)
     .WaitFor(cache)
     .WaitFor(postgres)
+    .WaitFor(photos)
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints()
     .WithDaprSidecar(sidecar => sidecar.WithReference(pubSub));

@@ -19,7 +19,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         var ct = TestContext.Current.CancellationToken;
 
         HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products",
-            new CreateProductCommand(sku, "Functional Test Vase", "Vessels", 49.99m, 10, "active"), ct);
+            new CreateProductCommand(sku, "Functional Test Vase", "Vessels", 49.99m, 10, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
@@ -34,7 +34,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
     {
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
-        var command = new CreateProductCommand(sku, "Original", "Vessels", 49.99m, 10, "active");
+        var command = new CreateProductCommand(sku, "Original", "Vessels", 49.99m, 10, "active", PhotoUrls: ["https://example.com/p.jpg"]);
         await _client.PostAsJsonAsync("/api/products", command, ct);
 
         HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products", command with { Name = "Duplicate" }, ct);
@@ -51,7 +51,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
             new CreateProductCommand(sku, "Before Update", "Drinkware", 20m, 5, "draft"), ct);
 
         HttpResponseMessage response = await _client.PutAsJsonAsync($"/api/products/{sku}",
-            new UpdateProductCommand(sku, "After Update", "Tableware", 35m, 8, "active"), ct);
+            new UpdateProductCommand(sku, "After Update", "Tableware", 35m, 8, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         ProductDto? updated = await response.Content.ReadFromJsonAsync<ProductDto>(ct);
@@ -106,7 +106,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         // surface a Conflict result so exactly one request wins.
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
-        var command = new CreateProductCommand(sku, "Race", "Vessels", 1m, 1, "active");
+        var command = new CreateProductCommand(sku, "Race", "Vessels", 1m, 1, "active", PhotoUrls: ["https://example.com/p.jpg"]);
 
         var tasks = Enumerable.Range(0, 8)
             .Select(_ => _client.PostAsJsonAsync("/api/products", command, ct))
@@ -171,7 +171,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         var ct = TestContext.Current.CancellationToken;
 
         await _client.PostAsJsonAsync("/api/products",
-            new CreateProductCommand(sku, "Cache Test", "Vessels", 1m, 1, "active"), ct);
+            new CreateProductCommand(sku, "Cache Test", "Vessels", 1m, 1, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         Assert.True(_cache.EvictedTags.Count(t => t == "products") > beforeCount,
             "Expected EvictByTagAsync(\"products\", ...) to be called after a successful create.");

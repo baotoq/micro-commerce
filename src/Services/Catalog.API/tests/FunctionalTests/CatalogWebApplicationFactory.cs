@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Testcontainers.Azurite;
 using Testcontainers.PostgreSql;
 
 namespace MicroCommerce.Catalog.FunctionalTests;
@@ -27,6 +28,10 @@ public class CatalogWebApplicationFactory : WebApplicationFactory<Program>, IAsy
         .WithImage("postgres:17-alpine")
         .Build();
 
+    private readonly AzuriteContainer _azurite = new AzuriteBuilder()
+        .WithImage("mcr.microsoft.com/azure-storage/azurite:latest")
+        .Build();
+
     private readonly IContainer _dapr = new ContainerBuilder()
         .WithImage("daprio/daprd:1.15.0")
         .WithResourceMapping(Encoding.UTF8.GetBytes(PubSubYaml), "/components/pubsub.yaml")
@@ -44,6 +49,7 @@ public class CatalogWebApplicationFactory : WebApplicationFactory<Program>, IAsy
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:catalogdb", _postgres.GetConnectionString());
         builder.UseSetting("ConnectionStrings:cache", "localhost:6379");
+        builder.UseSetting("ConnectionStrings:photos", _azurite.GetConnectionString());
         builder.ConfigureServices(services =>
         {
             services.RemoveAll<IOutputCacheStore>();
@@ -58,13 +64,14 @@ public class CatalogWebApplicationFactory : WebApplicationFactory<Program>, IAsy
 
     public async ValueTask InitializeAsync()
     {
-        await Task.WhenAll(_postgres.StartAsync(), _dapr.StartAsync());
+        await Task.WhenAll(_postgres.StartAsync(), _dapr.StartAsync(), _azurite.StartAsync());
     }
 
     public new async ValueTask DisposeAsync()
     {
         await _dapr.DisposeAsync();
         await _postgres.DisposeAsync();
+        await _azurite.DisposeAsync();
         await base.DisposeAsync();
         GC.SuppressFinalize(this);
     }

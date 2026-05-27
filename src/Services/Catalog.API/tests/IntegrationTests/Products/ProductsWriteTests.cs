@@ -18,7 +18,7 @@ public class ProductsWriteTests(ApiFixture fixture)
     {
         var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
-        var command = new CreateProductCommand(sku, "Integration Test Vase", "Vessels", 49.99m, 10, "active");
+        var command = new CreateProductCommand(sku, "Integration Test Vase", "Vessels", 49.99m, 10, "active", PhotoUrls: ["https://example.com/p.jpg"]);
 
         var response = await _client.PostAsJsonAsync("/api/products", command, ct);
 
@@ -37,7 +37,7 @@ public class ProductsWriteTests(ApiFixture fixture)
     {
         var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
-        var command = new CreateProductCommand(sku, "Original", "Vessels", 49.99m, 10, "active");
+        var command = new CreateProductCommand(sku, "Original", "Vessels", 49.99m, 10, "active", PhotoUrls: ["https://example.com/p.jpg"]);
         await _client.PostAsJsonAsync("/api/products", command, ct);
 
         var response = await _client.PostAsJsonAsync("/api/products",
@@ -70,7 +70,7 @@ public class ProductsWriteTests(ApiFixture fixture)
         await _client.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Before Update", "Drinkware", 20m, 5, "draft"), ct);
 
-        var update = new UpdateProductCommand(sku, "After Update", "Tableware", 35m, 8, "active");
+        var update = new UpdateProductCommand(sku, "After Update", "Tableware", 35m, 8, "active", PhotoUrls: ["https://example.com/p.jpg"]);
         var response = await _client.PutAsJsonAsync($"/api/products/{sku}", update, ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
