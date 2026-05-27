@@ -1,60 +1,95 @@
+import path from "node:path";
 import { selectShadcnOption, sellerRoutes } from "../../fixtures/seller";
 import { expect, getProduct, test, uniqueSku } from "../../fixtures/test";
+
+const PHOTO_FIXTURE = path.join("e2e", "fixtures", "photo-small.jpg");
 
 test.describe(
   "Seller listings — create",
   { tag: ["@smoke", "@listings"] },
   () => {
-    test("fills new listing form, submits, and redirects to listings", async ({
-      page,
-      request,
-      productFactory,
-    }, testInfo) => {
-      const sku = uniqueSku(testInfo, "TEST-CREATE");
-      // Register the SKU with the factory BEFORE the UI submit so teardown
-      // cleans up the orphan even when an assertion below throws.
-      productFactory.track(sku);
+    // Note: this test walks the full 3-step wizard. Photo upload and the final
+    // submit require Aspire + Azurite to be running (active status needs ≥1 photo).
+    // For smoke-only runs without the stack use the @seed-dependent tag below.
+    test(
+      "fills new listing wizard, submits, and redirects to listings",
+      { tag: ["@seed-dependent"] },
+      async ({ page, request, productFactory }, testInfo) => {
+        const sku = uniqueSku(testInfo, "TEST-CREATE");
+        // Register the SKU before the UI submit so teardown cleans up even when
+        // an assertion below throws.
+        productFactory.track(sku);
 
-      await page.goto(sellerRoutes.listingsNew);
+        await page.goto(sellerRoutes.listingsNew);
 
-      await expect(
-        page.getByRole("heading", { name: "New listing", exact: true }),
-      ).toBeVisible();
+        await expect(
+          page.getByRole("heading", { name: "New listing", exact: true }),
+        ).toBeVisible();
 
-      await page.getByLabel("SKU").fill(sku);
-      await page.getByLabel("Name").fill("Test Vase");
-      await page.getByLabel("Category").fill("Ceramics");
-      await page.getByLabel("Price").fill("49.99");
-      await page.getByLabel("Total in stock").fill("10");
-      await selectShadcnOption(page, "Status", "Active");
+        // ── Step 1: Basics ──────────────────────────────────────────────────
+        await page.getByLabel("SKU").fill(sku);
+        await page.getByLabel("Name").fill("Test Vase");
+        await page.getByLabel("Category").fill("Ceramics");
 
-      await page.getByRole("button", { name: "Publish" }).click();
+        await page.getByRole("button", { name: "Next" }).click();
 
-      // Server Action round-trip on a cold dev server can exceed the global
-      // 5s expect timeout; this navigation needs a wider window.
-      await expect(page).toHaveURL(sellerRoutes.listings, { timeout: 10_000 });
+        // ── Step 2: Pricing & Inventory ─────────────────────────────────────
+        await page.getByLabel("Price").fill("49.99");
+        await page.getByLabel("Total in stock").fill("10");
+        await selectShadcnOption(page, "Status", "Active");
+        await page.getByLabel("Weight (kg)").fill("0.75");
+        await page.getByLabel("Origin").fill("Portland, OR");
 
-      // Verify via API — the new SKU may not appear on listings page 1
-      // (default pagination); the action's success is confirmed by the redirect
-      // and the backend record.
-      const created = await getProduct(request, sku);
-      expect(created.ok()).toBeTruthy();
-      const body = await created.json();
-      expect(body.name).toBe("Test Vase");
-      expect(body.price).toBe(49.99);
-      // Teardown deletes the SKU via the factory; no manual DELETE here.
-    });
+        await page.getByRole("button", { name: "Next" }).click();
 
-    test("shows field errors when required fields are empty", async ({
+        // ── Step 3: Media & Discovery ───────────────────────────────────────
+        // Active status requires ≥1 photo (AC-12). Upload the fixture.
+        const fileInput = page.locator('input[type="file"]');
+        await fileInput.setInputFiles(PHOTO_FIXTURE);
+
+        const preview = page.getByAltText(/photo 1/i);
+        await expect(preview).toBeVisible({ timeout: 20_000 });
+
+        await page.getByRole("button", { name: "Publish" }).click();
+
+        // Server Action round-trip — allow extra time.
+        await expect(page).toHaveURL(sellerRoutes.listings, {
+          timeout: 15_000,
+        });
+
+        // Verify via API — the new SKU may not appear on listings page 1
+        // (default pagination); the action's success is confirmed by the redirect
+        // and the backend record.
+        const created = await getProduct(request, sku);
+        expect(created.ok()).toBeTruthy();
+        const body = await created.json();
+        expect(body.name).toBe("Test Vase");
+        expect(body.price).toBe(49.99);
+        expect(body.weight).toBe(0.75);
+        expect(body.origin).toBe("Portland, OR");
+      },
+    );
+
+    test("shows field errors when required step-1 fields are empty", async ({
       page,
     }) => {
       await page.goto(sellerRoutes.listingsNew);
 
-      await page.getByRole("button", { name: "Publish" }).click();
+      // Next is disabled on an empty step — cannot advance without filling fields.
+      const nextBtn = page.getByRole("button", { name: "Next" });
+      await expect(nextBtn).toBeDisabled();
 
-      await expect(page.getByText("SKU is required")).toBeVisible();
-      await expect(page.getByText("Name is required")).toBeVisible();
-      await expect(page.getByText("Category is required")).toBeVisible();
+      // Fill SKU only; Name and Category still missing.
+      await page.getByLabel("SKU").fill("MC-ERR-001");
+      await expect(nextBtn).toBeDisabled();
+
+      // Fill Name but not Category.
+      await page.getByLabel("Name").fill("Error Vase");
+      await expect(nextBtn).toBeDisabled();
+
+      // Fill Category — step 1 now valid, Next enables.
+      await page.getByLabel("Category").fill("Ceramics");
+      await expect(nextBtn).toBeEnabled();
     });
 
     test("shows error on duplicate SKU without navigating", async ({
@@ -69,13 +104,13 @@ test.describe(
       await page.getByLabel("SKU").fill(sku);
       await page.getByLabel("Name").fill("Duplicate Vase");
       await page.getByLabel("Category").fill("Ceramics");
-      await page.getByLabel("Price").fill("50");
-      await page.getByLabel("Total in stock").fill("5");
-      await selectShadcnOption(page, "Status", "Draft");
 
-      await page.getByRole("button", { name: "Publish" }).click();
+      // SKU uniqueness debounce triggers after 350 ms — wait for the error.
+      await expect(page.getByText(/That SKU is taken/i)).toBeVisible({
+        timeout: 3_000,
+      });
 
-      await expect(page.getByText(/already exists/i)).toBeVisible();
+      // Next should still be blocked because the SKU field has an error.
       await expect(page).toHaveURL(sellerRoutes.listingsNew);
     });
   },
