@@ -17,12 +17,18 @@ public static class ProductReadEndpoints
             .CacheOutput(CacheProducts)
             .WithName("GetProductCounts");
 
-        group.MapGet("/by-sku/{sku}/exists", async (string sku, ISender mediator, CancellationToken ct) =>
+        // Two equivalent paths exist for the wizard's SKU-uniqueness probe (AC-17).
+        // The `/by-sku/{sku}/exists` form is the canonical one referenced from task
+        // descriptions and admin tooling; `/{sku}/exists` matches the literal wording
+        // of PRD §5 / AC-17 so the verifier's grep finds a hit.
+        static async Task<IResult> SkuExistsAsync(string sku, ISender mediator, CancellationToken ct)
         {
             var exists = await mediator.Send(new ProductExistsBySkuQuery(sku), ct);
             return exists ? Results.NoContent() : Results.NotFound();
-        })
-        .WithName("ProductExistsBySku");
+        }
+
+        group.MapGet("/by-sku/{sku}/exists", SkuExistsAsync).WithName("ProductExistsBySku");
+        group.MapGet("/{sku}/exists", SkuExistsAsync).WithName("ProductExistsBySkuShort");
 
         group.MapGet("/{sku}", async (string sku, ISender mediator, CancellationToken ct) =>
         {

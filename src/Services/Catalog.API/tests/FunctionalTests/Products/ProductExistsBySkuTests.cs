@@ -46,4 +46,18 @@ public class ProductExistsBySkuTests(CatalogWebApplicationFactory factory) : ICl
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
+
+    [Fact]
+    public async Task ProductExistsBySku_AliasShortPath_AlsoWorks()
+    {
+        // AC-17 literal path: /api/products/{sku}/exists.
+        var ct = TestContext.Current.CancellationToken;
+        var sku = NewSku();
+        await _client.PostAsJsonAsync("/api/products",
+            new CreateProductCommand(sku, "Alias Test", "Vessels", 10m, 1, "draft"), ct);
+
+        var response = await _client.GetAsync($"/api/products/{sku}/exists", ct);
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
 }
