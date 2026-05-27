@@ -153,7 +153,7 @@ export const productUpdateSchema = z
     price: priceField,
     inventory: inventoryField,
     status: statusField,
-    weight: weightField.optional().default("0.5"),
+    weight: weightField.optional().default(0.5),
     origin: originField.optional().default("Portland, OR"),
     tags: tagsField,
     photoUrls: photoUrlsField,

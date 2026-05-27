@@ -129,7 +129,7 @@ export function NewListingForm() {
           }
         }
         const firstField = Object.keys(result.fieldErrors)[0];
-        const targetStep = stepForField(firstField);
+        const targetStep = firstField ? stepForField(firstField) : null;
         if (targetStep && targetStep !== step) goToStep(targetStep);
         return;
       }

@@ -8,7 +8,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import type { ProductFormInput } from "@/lib/seller/listings/schema";
+import type {
+  ProductFormInput,
+  ProductFormOutput,
+} from "@/lib/seller/listings/schema";
 import { PhotoUploader } from "./photo-uploader";
 import { TagsInput } from "./tags-input";
 
@@ -16,7 +19,7 @@ const SECTION_LABEL_CLASS =
   "text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
 
 type Props = {
-  control: Control<ProductFormInput>;
+  control: Control<ProductFormInput, unknown, ProductFormOutput>;
 };
 
 export function StepMedia({ control }: Props) {

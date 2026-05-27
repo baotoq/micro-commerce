@@ -74,8 +74,11 @@ export type ProductInput = {
   status: ListingStatus;
   description?: string;
   tags?: string[];
-  weight: number;
-  origin: string;
+  // weight/origin are optional on the wire because the backend
+  // CreateProductCommand carries safe defaults (see exec-backend.md §"Notable
+  // deviations from PRD"). The wizard always sends them; legacy callers don't.
+  weight?: number;
+  origin?: string;
   photoUrls?: string[];
 };
 

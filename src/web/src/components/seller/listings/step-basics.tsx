@@ -10,7 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import type { ProductFormInput } from "@/lib/seller/listings/schema";
+import type {
+  ProductFormInput,
+  ProductFormOutput,
+} from "@/lib/seller/listings/schema";
 import { cn } from "@/lib/utils";
 
 const TEXT_INPUT_STYLE = {
@@ -28,8 +31,11 @@ const DESCRIPTION_WARN_AT = 1800;
 const SKU_FETCH_DEBOUNCE_MS = 350;
 const SKU_REGEX = /^[A-Z0-9-]{1,64}$/;
 
+// The wizard's useForm uses the 3-generic form (TInput, TContext, TOutput) so
+// price/inventory/weight type as strings on input but numbers after resolver
+// transform. Steps mirror those generics so Control accepts the parent's form.
 type Props = {
-  control: Control<ProductFormInput>;
+  control: Control<ProductFormInput, unknown, ProductFormOutput>;
   setError: UseFormSetError<ProductFormInput>;
   apiBase: string;
 };
