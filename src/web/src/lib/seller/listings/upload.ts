@@ -60,7 +60,10 @@ export async function getUploadUrl(
   return (await response.json()) as SasResponse;
 }
 
-export async function putFileToSas(file: File, uploadUrl: string): Promise<void> {
+export async function putFileToSas(
+  file: File,
+  uploadUrl: string,
+): Promise<void> {
   let response: Response;
   try {
     response = await fetch(uploadUrl, {
@@ -78,10 +81,7 @@ export async function putFileToSas(file: File, uploadUrl: string): Promise<void>
     );
   }
   if (!response.ok) {
-    throw new UploadError(
-      `Blob PUT failed (${response.status})`,
-      "put-failed",
-    );
+    throw new UploadError(`Blob PUT failed (${response.status})`, "put-failed");
   }
 }
 
@@ -89,7 +89,9 @@ export type ValidationResult =
   | { ok: true }
   | { ok: false; reason: "mime" | "size" | "dimensions" };
 
-export async function validateClientSide(file: File): Promise<ValidationResult> {
+export async function validateClientSide(
+  file: File,
+): Promise<ValidationResult> {
   if (!ALLOWED_MIME.has(file.type)) return { ok: false, reason: "mime" };
   if (file.size > MAX_BYTES) return { ok: false, reason: "size" };
   try {

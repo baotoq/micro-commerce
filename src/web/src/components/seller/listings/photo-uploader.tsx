@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import { useId, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 import {
   getUploadUrl,
   putFileToSas,
   UploadError,
   validateClientSide,
 } from "@/lib/seller/listings/upload";
+import { cn } from "@/lib/utils";
 
 export type PhotoUploaderProps = {
   value: string[];
@@ -18,16 +18,16 @@ export type PhotoUploaderProps = {
 
 const ACCEPT = "image/jpeg,image/png,image/webp,image/heic";
 
-function validationMessage(
-  reason: "mime" | "size" | "dimensions",
-): string {
-  if (reason === "mime") return "Unsupported file type. Use JPG, PNG, WEBP, or HEIC.";
+function validationMessage(reason: "mime" | "size" | "dimensions"): string {
+  if (reason === "mime")
+    return "Unsupported file type. Use JPG, PNG, WEBP, or HEIC.";
   if (reason === "size") return "File too large. Max 8 MB.";
   return "Image dimensions too large. Max 6000 × 6000.";
 }
 
 function uploadErrorMessage(err: UploadError): string {
-  if (err.code === "sas-rejected") return "Server rejected the upload. Try again.";
+  if (err.code === "sas-rejected")
+    return "Server rejected the upload. Try again.";
   if (err.code === "put-failed") return "Upload failed. Try again.";
   if (err.code === "network") return "Network error. Check your connection.";
   return "Upload failed.";
@@ -121,11 +121,7 @@ export function PhotoUploader({
         aria-label="Choose a photo to upload"
       />
       {error && (
-        <p
-          className="text-[11px]"
-          style={{ color: "var(--bad)" }}
-          role="alert"
-        >
+        <p className="text-[11px]" style={{ color: "var(--bad)" }} role="alert">
           {error}{" "}
           <button
             type="button"

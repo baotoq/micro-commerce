@@ -139,7 +139,9 @@ describe("NewListingForm (wizard)", () => {
     fillStep2();
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
     await waitFor(() => {
-      expect(screen.getByTestId("photo-uploader-stub")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /photos/i }),
+      ).toBeInTheDocument();
     });
     expect(
       screen.getByRole("button", { name: /publish/i }),
@@ -159,7 +161,9 @@ describe("NewListingForm (wizard)", () => {
     fillStep2();
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
     await waitFor(() => {
-      expect(screen.getByTestId("photo-uploader-stub")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /photos/i }),
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole("button", { name: /publish/i }));
@@ -249,7 +253,9 @@ describe("NewListingForm (wizard)", () => {
     fillStep2();
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
     await waitFor(() => {
-      expect(screen.getByTestId("photo-uploader-stub")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /photos/i }),
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole("button", { name: /publish/i }));
