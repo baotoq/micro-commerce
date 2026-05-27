@@ -25,13 +25,29 @@ function rawFormValues(formData: FormData): Record<string, string> {
   return values;
 }
 
+// FormData stores multiple values per key for arrays (tags, photoUrls). We
+// reshape into a plain object the Zod schema can parse: scalars stay scalar,
+// known array keys come back as arrays.
+const ARRAY_KEYS = new Set(["tags", "photoUrls"]);
+
+function formDataToInput(formData: FormData): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const key of new Set(Array.from(formData.keys()))) {
+    const values = formData.getAll(key).filter((v) => typeof v === "string");
+    if (ARRAY_KEYS.has(key)) {
+      out[key] = values as string[];
+    } else if (values.length > 0) {
+      out[key] = values[0];
+    }
+  }
+  return out;
+}
+
 export async function createListingAction(
   formData: FormData,
 ): Promise<ActionResult> {
   // TODO(auth): requireSeller() — see audit/auth-followup.md
-  const parsed = productInputSchema.safeParse(
-    Object.fromEntries(formData.entries()),
-  );
+  const parsed = productInputSchema.safeParse(formDataToInput(formData));
   if (!parsed.success) {
     const fieldErrors: Record<string, string[]> = {};
     for (const [field, issues] of Object.entries(
@@ -66,9 +82,7 @@ export async function updateListingAction(
   formData: FormData,
 ): Promise<ActionResult> {
   // TODO(auth): requireSeller() — see audit/auth-followup.md
-  const parsed = productInputSchema.safeParse(
-    Object.fromEntries(formData.entries()),
-  );
+  const parsed = productInputSchema.safeParse(formDataToInput(formData));
   if (!parsed.success) {
     const fieldErrors: Record<string, string[]> = {};
     for (const [field, issues] of Object.entries(

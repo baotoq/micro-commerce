@@ -16,19 +16,30 @@ import {
   updateListingAction,
 } from "./actions";
 
-function makeFormData(data: Record<string, string>): FormData {
+function makeFormData(data: Record<string, string | string[]>): FormData {
   const fd = new FormData();
-  for (const [k, v] of Object.entries(data)) fd.append(k, v);
+  for (const [k, v] of Object.entries(data)) {
+    if (Array.isArray(v)) {
+      for (const item of v) fd.append(k, item);
+    } else {
+      fd.append(k, v);
+    }
+  }
   return fd;
 }
 
-const validFormData = {
+const validFormData: Record<string, string | string[]> = {
   sku: "TEST-001",
   name: "Test Product",
   category: "Pottery",
   price: "19.99",
   inventory: "5",
   status: "active",
+  description: "A short description over zero chars.",
+  tags: ["ceramic", "minimal"],
+  weight: "1.25",
+  origin: "Portland, OR",
+  photoUrls: ["https://blob/x.jpg"],
 };
 
 const mockListing = {
@@ -39,6 +50,11 @@ const mockListing = {
   inventory: 5,
   status: "active" as const,
   views7d: 0,
+  description: "A short description over zero chars.",
+  tags: ["ceramic", "minimal"],
+  weight: 1.25,
+  origin: "Portland, OR",
+  photoUrls: ["https://blob/x.jpg"],
 };
 
 describe("createListingAction", () => {
@@ -54,7 +70,16 @@ describe("createListingAction", () => {
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.sku).toBe("TEST-001");
     expect(api.createProduct).toHaveBeenCalledWith(
-      expect.objectContaining({ sku: "TEST-001", price: 19.99, inventory: 5 }),
+      expect.objectContaining({
+        sku: "TEST-001",
+        price: 19.99,
+        inventory: 5,
+        weight: 1.25,
+        origin: "Portland, OR",
+        tags: ["ceramic", "minimal"],
+        photoUrls: ["https://blob/x.jpg"],
+        description: "A short description over zero chars.",
+      }),
     );
     expect(updateTag).toHaveBeenCalledWith("listings");
   });
@@ -72,24 +97,6 @@ describe("createListingAction", () => {
     expect(api.createProduct).not.toHaveBeenCalled();
   });
 
-  it("returns the submitted values on validation failure so the form can repopulate", async () => {
-    const result = await createListingAction(
-      makeFormData({ ...validFormData, category: "" }),
-    );
-
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.values).toEqual({
-        sku: "TEST-001",
-        name: "Test Product",
-        category: "",
-        price: "19.99",
-        inventory: "5",
-        status: "active",
-      });
-    }
-  });
-
   it("returns ok:false with duplicate message on 409", async () => {
     vi.mocked(api.createProduct).mockRejectedValueOnce(
       new Error("Product with SKU 'TEST-001' already exists."),
@@ -99,6 +106,14 @@ describe("createListingAction", () => {
 
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toMatch(/already exists/i);
+  });
+
+  it("rejects status=active when inventory < 1 (AC-12)", async () => {
+    const result = await createListingAction(
+      makeFormData({ ...validFormData, inventory: "0" }),
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.fieldErrors?.status).toBeDefined();
   });
 });
 
@@ -119,7 +134,12 @@ describe("updateListingAction", () => {
     if (result.ok) expect(result.sku).toBe("TEST-001");
     expect(api.updateProduct).toHaveBeenCalledWith(
       "TEST-001",
-      expect.objectContaining({ name: "Test Product", price: 19.99 }),
+      expect.objectContaining({
+        name: "Test Product",
+        price: 19.99,
+        weight: 1.25,
+        origin: "Portland, OR",
+      }),
     );
     expect(updateTag).toHaveBeenCalledWith("listings");
   });

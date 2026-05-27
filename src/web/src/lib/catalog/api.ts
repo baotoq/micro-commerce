@@ -72,6 +72,11 @@ export type ProductInput = {
   price: number;
   inventory: number;
   status: ListingStatus;
+  description?: string;
+  tags?: string[];
+  weight: number;
+  origin: string;
+  photoUrls?: string[];
 };
 
 export async function createProduct(input: ProductInput): Promise<Listing> {
