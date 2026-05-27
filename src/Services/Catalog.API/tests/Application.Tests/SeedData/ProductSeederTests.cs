@@ -33,7 +33,7 @@ public class ProductSeederTests
         var ct = TestContext.Current.CancellationToken;
 
         db.Products.Add(new Product(
-            Sku.From("MC-VS-001"), "Existing user copy", "Vessels", 50m, 5, ProductStatus.Active, 100));
+            Sku.From("MC-VS-001"), "Existing user copy", "Vessels", 50m, 5, ProductStatus.Draft, views7d: 100));
         await db.SaveChangesAsync(ct);
 
         var contentRoot = WriteSeedFile("""

@@ -22,8 +22,8 @@ public class GetProductsHandlerTests
     {
         await using var db = DbContextFactory.Create();
         db.Products.AddRange(
-            new Product(Sku.From("MC-001"), "A", "Cat", 1m, 1, ProductStatus.Active),
-            new Product(Sku.From("MC-002"), "B", "Cat", 1m, 1, ProductStatus.Draft)
+            TestProducts.Create("MC-001", "A", status: ProductStatus.Active),
+            TestProducts.Create("MC-002", "B", status: ProductStatus.Draft)
         );
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -39,7 +39,7 @@ public class GetProductsHandlerTests
         { "active", ProductStatus.Active, ProductStatus.Draft },
         { "low",    ProductStatus.Low,    ProductStatus.Draft },
         { "out",    ProductStatus.Out,    ProductStatus.Draft },
-        { "draft",  ProductStatus.Draft,  ProductStatus.Active },
+        { "draft",  ProductStatus.Draft,  ProductStatus.Low },
     };
 
     [Theory]
@@ -48,9 +48,9 @@ public class GetProductsHandlerTests
     {
         await using var db = DbContextFactory.Create();
         db.Products.AddRange(
-            new Product(Sku.From("MC-001"), "A", "Cat", 1m, 1, matchingStatus),
-            new Product(Sku.From("MC-002"), "B", "Cat", 1m, 1, matchingStatus),
-            new Product(Sku.From("MC-003"), "C", "Cat", 1m, 1, nonMatchingStatus)
+            TestProducts.Create("MC-001", "A", status: matchingStatus),
+            TestProducts.Create("MC-002", "B", status: matchingStatus),
+            TestProducts.Create("MC-003", "C", status: nonMatchingStatus)
         );
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -66,7 +66,7 @@ public class GetProductsHandlerTests
     {
         await using var db = DbContextFactory.Create();
         db.Products.AddRange(Enumerable.Range(1, 5).Select(i =>
-            new Product(Sku.From($"MC-{i:D3}"), $"Product {i}", "Cat", 1m, 1, ProductStatus.Active)));
+            TestProducts.Create($"MC-{i:D3}", $"Product {i}", status: ProductStatus.Active)));
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new GetProductsHandler(db);
@@ -82,7 +82,7 @@ public class GetProductsHandlerTests
     public async Task Handle_UnknownStatusFilter_ReturnsAllProducts()
     {
         await using var db = DbContextFactory.Create();
-        db.Products.Add(new Product(Sku.From("MC-001"), "A", "Cat", 1m, 1, ProductStatus.Active));
+        db.Products.Add(TestProducts.Create("MC-001", "A", status: ProductStatus.Active));
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new GetProductsHandler(db);

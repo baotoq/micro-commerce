@@ -11,20 +11,26 @@ public class UpdateProductHandlerTests
     public async Task Handle_ExistingProduct_UpdatesAndReturnsDto()
     {
         await using var db = DbContextFactory.Create();
-        db.Products.Add(new Product(Sku.From("MC-001"), "Widget", "Electronics", 9.99m, 10, ProductStatus.Active));
+        db.Products.Add(new Product(Sku.From("MC-001"), "Widget", "Electronics", 9.99m, 10, ProductStatus.Draft));
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new UpdateProductHandler(db, new FakePublisher());
         var result = await handler.Handle(new UpdateProductCommand("MC-001", "Updated", "Gadgets", 19.99m, 5, "low"), TestContext.Current.CancellationToken);
 
-        Assert.Equivalent(new ProductDto("MC-001", "Updated", "Gadgets", 19.99m, 5, "low", 0), result);
+        Assert.NotNull(result);
+        Assert.Equal("MC-001", result.Sku);
+        Assert.Equal("Updated", result.Name);
+        Assert.Equal("Gadgets", result.Category);
+        Assert.Equal(19.99m, result.Price);
+        Assert.Equal(5, result.Inventory);
+        Assert.Equal("low", result.Status);
     }
 
     [Fact]
     public async Task Handle_ExistingProduct_PublishesProductUpdatedEvent()
     {
         await using var db = DbContextFactory.Create();
-        db.Products.Add(new Product(Sku.From("MC-001"), "Widget", "Electronics", 9.99m, 10, ProductStatus.Active));
+        db.Products.Add(new Product(Sku.From("MC-001"), "Widget", "Electronics", 9.99m, 10, ProductStatus.Draft));
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var publisher = new FakePublisher();

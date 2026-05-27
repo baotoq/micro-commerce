@@ -40,7 +40,12 @@ public class GetProductsHandler(AppDbContext db) : IRequestHandler<GetProductsQu
                     : p.Status == ProductStatus.Low ? "low"
                     : p.Status == ProductStatus.Out ? "out"
                     : "draft",
-                p.Views7d))
+                p.Views7d,
+                p.Description,
+                p.Tags,
+                p.Weight,
+                p.Origin,
+                p.PhotoUrls))
             .ToListAsync(ct);
 
         return new PagedResult<ProductDto>(items, total, request.Page, request.PageSize);

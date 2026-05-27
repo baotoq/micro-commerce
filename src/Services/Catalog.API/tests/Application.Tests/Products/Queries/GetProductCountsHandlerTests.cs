@@ -21,11 +21,11 @@ public class GetProductCountsHandlerTests
     {
         await using var db = DbContextFactory.Create();
         db.Products.AddRange(
-            new Product(Sku.From("MC-001"), "A", "Cat", 1m, 1, ProductStatus.Active),
-            new Product(Sku.From("MC-002"), "B", "Cat", 1m, 1, ProductStatus.Active),
-            new Product(Sku.From("MC-003"), "C", "Cat", 1m, 1, ProductStatus.Low),
-            new Product(Sku.From("MC-004"), "D", "Cat", 1m, 1, ProductStatus.Out),
-            new Product(Sku.From("MC-005"), "E", "Cat", 1m, 1, ProductStatus.Draft)
+            TestProducts.Create("MC-001", "A", status: ProductStatus.Active),
+            TestProducts.Create("MC-002", "B", status: ProductStatus.Active),
+            TestProducts.Create("MC-003", "C", status: ProductStatus.Low),
+            TestProducts.Create("MC-004", "D", status: ProductStatus.Out),
+            TestProducts.Create("MC-005", "E", status: ProductStatus.Draft)
         );
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 

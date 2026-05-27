@@ -7,7 +7,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.Application.Products.Commands;
 
-public record UpdateProductCommand(string Sku, string Name, string Category, decimal Price, int Inventory, string Status) : IRequest<ProductDto?>;
+public record UpdateProductCommand(
+    string Sku,
+    string Name,
+    string Category,
+    decimal Price,
+    int Inventory,
+    string Status,
+    string? Description = null,
+    IReadOnlyList<string>? Tags = null,
+    decimal Weight = 0.01m,
+    string Origin = "Unknown, NA",
+    IReadOnlyList<string>? PhotoUrls = null) : IRequest<ProductDto?>;
 
 public class UpdateProductHandler(AppDbContext db, IPublisher publisher) : IRequestHandler<UpdateProductCommand, ProductDto?>
 {
@@ -17,7 +28,17 @@ public class UpdateProductHandler(AppDbContext db, IPublisher publisher) : IRequ
         var product = await db.Products.FirstOrDefaultAsync(p => p.Sku == sku, ct);
         if (product is null) return null;
 
-        product.Update(request.Name, request.Category, request.Price, request.Inventory, CreateProductHandler.ParseStatus(request.Status));
+        product.Update(
+            request.Name,
+            request.Category,
+            request.Price,
+            request.Inventory,
+            CreateProductHandler.ParseStatus(request.Status),
+            description: request.Description,
+            tags: request.Tags ?? [],
+            weight: request.Weight,
+            origin: request.Origin,
+            photoUrls: request.PhotoUrls ?? []);
         await db.SaveChangesAsync(ct);
 
         var dto = CreateProductHandler.ToDto(product);

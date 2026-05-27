@@ -10,7 +10,7 @@ public class DeleteProductHandlerTests
     public async Task Handle_ExistingProduct_RemovesAndReturnsTrue()
     {
         await using var db = DbContextFactory.Create();
-        db.Products.Add(new Product(Sku.From("MC-001"), "Widget", "Electronics", 9.99m, 10, ProductStatus.Active));
+        db.Products.Add(TestProducts.Create("MC-001", "Widget", category: "Electronics", price: 9.99m, inventory: 10, status: ProductStatus.Active));
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new DeleteProductHandler(db, new FakePublisher());
@@ -24,7 +24,7 @@ public class DeleteProductHandlerTests
     public async Task Handle_ExistingProduct_PublishesProductDeletedEvent()
     {
         await using var db = DbContextFactory.Create();
-        db.Products.Add(new Product(Sku.From("MC-001"), "Widget", "Electronics", 9.99m, 10, ProductStatus.Active));
+        db.Products.Add(TestProducts.Create("MC-001", "Widget", category: "Electronics", price: 9.99m, inventory: 10, status: ProductStatus.Active));
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var publisher = new FakePublisher();

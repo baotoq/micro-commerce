@@ -26,7 +26,23 @@ public class GetProductBySkuHandler(AppDbContext db) : IRequestHandler<GetProduc
                     : p.Status == ProductStatus.Low ? "low"
                     : p.Status == ProductStatus.Out ? "out"
                     : "draft",
-                p.Views7d))
+                p.Views7d,
+                p.Description,
+                p.Tags,
+                p.Weight,
+                p.Origin,
+                p.PhotoUrls))
             .FirstOrDefaultAsync(ct);
+    }
+}
+
+public record ProductExistsBySkuQuery(string Sku) : IRequest<bool>;
+
+public class ProductExistsBySkuHandler(AppDbContext db) : IRequestHandler<ProductExistsBySkuQuery, bool>
+{
+    public async Task<bool> Handle(ProductExistsBySkuQuery request, CancellationToken ct)
+    {
+        var sku = Sku.From(request.Sku);
+        return await db.Products.AsNoTracking().AnyAsync(p => p.Sku == sku, ct);
     }
 }

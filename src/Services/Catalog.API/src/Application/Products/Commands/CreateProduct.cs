@@ -9,7 +9,18 @@ using Npgsql;
 
 namespace MicroCommerce.Catalog.Application.Products.Commands;
 
-public record CreateProductCommand(string Sku, string Name, string Category, decimal Price, int Inventory, string Status) : IRequest<Result<ProductDto>>;
+public record CreateProductCommand(
+    string Sku,
+    string Name,
+    string Category,
+    decimal Price,
+    int Inventory,
+    string Status,
+    string? Description = null,
+    IReadOnlyList<string>? Tags = null,
+    decimal Weight = 0.01m,
+    string Origin = "Unknown, NA",
+    IReadOnlyList<string>? PhotoUrls = null) : IRequest<Result<ProductDto>>;
 
 public class CreateProductHandler(AppDbContext db, IPublisher publisher) : IRequestHandler<CreateProductCommand, Result<ProductDto>>
 {
@@ -24,7 +35,18 @@ public class CreateProductHandler(AppDbContext db, IPublisher publisher) : IRequ
         if (await db.Products.AsNoTracking().AnyAsync(p => p.Sku == sku, ct))
             return Result<ProductDto>.Conflict("PRODUCT_SKU_DUPLICATE", $"Product with SKU '{request.Sku}' already exists.");
 
-        var product = new Product(sku, request.Name, request.Category, request.Price, request.Inventory, ParseStatus(request.Status));
+        var product = new Product(
+            sku,
+            request.Name,
+            request.Category,
+            request.Price,
+            request.Inventory,
+            ParseStatus(request.Status),
+            description: request.Description,
+            tags: request.Tags ?? [],
+            weight: request.Weight,
+            origin: request.Origin,
+            photoUrls: request.PhotoUrls ?? []);
         db.Products.Add(product);
 
         try
@@ -42,7 +64,19 @@ public class CreateProductHandler(AppDbContext db, IPublisher publisher) : IRequ
     }
 
     internal static ProductDto ToDto(Product p) =>
-        new(p.Sku.Value, p.Name, p.Category, p.Price, p.Inventory, p.Status.ToString().ToLowerInvariant(), p.Views7d);
+        new(
+            p.Sku.Value,
+            p.Name,
+            p.Category,
+            p.Price,
+            p.Inventory,
+            p.Status.ToString().ToLowerInvariant(),
+            p.Views7d,
+            p.Description,
+            p.Tags,
+            p.Weight,
+            p.Origin,
+            p.PhotoUrls);
 
     internal static ProductStatus ParseStatus(string s) => s.ToLowerInvariant() switch
     {
