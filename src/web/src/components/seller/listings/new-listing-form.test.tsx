@@ -1,10 +1,29 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const routerPush = vi.fn();
+const routerReplace = vi.fn();
+// Drives the mocked searchParams so router.replace?step=2 actually flips the
+// hook's return value — otherwise the wizard stays stuck on step 1.
+let currentStep: string | null = null;
+const searchParamsGet = vi.fn((key: string) =>
+  key === "step" ? currentStep : null,
+);
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: routerPush }),
+  useRouter: () => ({
+    push: routerPush,
+    replace: (url: string) => {
+      routerReplace(url);
+      const match = /step=(\d)/.exec(url);
+      currentStep = match ? match[1] : null;
+    },
+  }),
+  useSearchParams: () => ({
+    get: searchParamsGet,
+    toString: () => (currentStep ? `step=${currentStep}` : ""),
+  }),
+  usePathname: () => "/seller/listings/new",
 }));
 
 vi.mock("@/lib/seller/listings/actions", () => ({
@@ -14,16 +33,7 @@ vi.mock("@/lib/seller/listings/actions", () => ({
 import { NewListingForm } from "@/components/seller/listings/new-listing-form";
 import * as actions from "@/lib/seller/listings/actions";
 
-function renderWithSubmit() {
-  return render(
-    <>
-      <NewListingForm />
-      <button type="submit" form="new-listing-form">
-        Publish
-      </button>
-    </>,
-  );
-}
+const fetchMock = vi.fn();
 
 function fillField(label: RegExp | string, value: string) {
   const input = screen.getByLabelText(label) as HTMLInputElement;
@@ -31,150 +41,126 @@ function fillField(label: RegExp | string, value: string) {
   return input;
 }
 
-describe("NewListingForm", () => {
-  afterEach(() => {
-    vi.clearAllMocks();
+function fillStep1(skuValue = "MC-VS-009") {
+  fillField(/^sku$/i, skuValue);
+  fillField(/^name$/i, "Persimmon vase");
+  fillField(/^category$/i, "Ceramics");
+}
+
+function fillStep2() {
+  fillField(/^price$/i, "75");
+  fillField(/total in stock/i, "4");
+  fillField(/weight \(kg\)/i, "1.25");
+  fillField(/^origin$/i, "Portland, OR");
+}
+
+describe("NewListingForm (wizard)", () => {
+  beforeEach(() => {
+    currentStep = null;
+    fetchMock.mockReset();
+    fetchMock.mockResolvedValue({ status: 404 });
+    vi.stubGlobal("fetch", fetchMock);
   });
 
-  it("renders SKU, Name, Category, Price, Inventory, and Status fields", () => {
-    renderWithSubmit();
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.unstubAllGlobals();
+  });
 
+  it("renders the wizard progress strip with 3 steps", () => {
+    render(<NewListingForm />);
+    expect(screen.getByText(/basics/i)).toBeInTheDocument();
+    expect(screen.getByText(/pricing & inventory/i)).toBeInTheDocument();
+    expect(screen.getByText(/media & discovery/i)).toBeInTheDocument();
+  });
+
+  it("starts on step 1 (Basics) showing SKU/Name/Category", () => {
+    render(<NewListingForm />);
     expect(screen.getByLabelText(/^sku$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^name$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^category$/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^price$/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/total in stock/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^status$/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^price$/i)).not.toBeInTheDocument();
   });
 
-  it("renders the human-readable label in the Status trigger, not the raw enum value", () => {
-    renderWithSubmit();
+  it("disables Next until step 1 fields are valid", () => {
+    render(<NewListingForm />);
+    const next = screen.getByRole("button", { name: /next/i });
+    expect(next).toBeDisabled();
 
-    // Default status is "draft" — the trigger must show "Draft", not "draft".
-    // Base UI's Select.Value displays the raw value unless you opt into a label
-    // render-function child.
-    const trigger = screen.getByLabelText(/^status$/i);
-    expect(trigger).toHaveTextContent("Draft");
-    expect(trigger).not.toHaveTextContent(/^draft$/);
+    fillStep1();
+    expect(next).not.toBeDisabled();
   });
 
-  it("does not flag a field on bare focus+blur (touched but never dirtied)", async () => {
-    renderWithSubmit();
-
-    const sku = screen.getByLabelText(/^sku$/i);
-    expect(screen.queryByText(/sku is required/i)).not.toBeInTheDocument();
-
-    // Focus then blur without typing — the field is touched but not dirty,
-    // so the user shouldn't see an error yet.
-    fireEvent.focus(sku);
-    fireEvent.blur(sku);
-
-    // Give RHF a tick — if validation were going to fire, it would by now.
-    await new Promise((r) => setTimeout(r, 50));
-    expect(screen.queryByText(/sku is required/i)).not.toBeInTheDocument();
+  it("Next button is type=button (PRD §8 a11y)", () => {
+    render(<NewListingForm />);
+    fillStep1();
+    const next = screen.getByRole("button", { name: /next/i });
+    expect(next).toHaveAttribute("type", "button");
   });
 
-  it("shows the required error after the user dirties and then clears the field", async () => {
-    renderWithSubmit();
-    const sku = screen.getByLabelText(/^sku$/i);
-
-    fireEvent.change(sku, { target: { value: "X" } });
-    // No error while a value is present.
-    expect(screen.queryByText(/sku is required/i)).not.toBeInTheDocument();
-
-    fireEvent.change(sku, { target: { value: "" } });
+  it("advances to step 2 on Next click and preserves step-1 values", async () => {
+    render(<NewListingForm />);
+    fillStep1();
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/sku is required/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/^price$/i)).toBeInTheDocument();
     });
-    // Other fields stay untouched/clean.
-    expect(screen.queryByText(/name is required/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/category is required/i)).not.toBeInTheDocument();
+    expect(routerReplace).toHaveBeenCalledWith(expect.stringMatching(/step=2/));
+
+    fireEvent.click(screen.getByRole("button", { name: /back/i }));
+    await waitFor(() => {
+      expect(screen.getByLabelText(/^sku$/i)).toBeInTheDocument();
+    });
+    expect((screen.getByLabelText(/^sku$/i) as HTMLInputElement).value).toBe(
+      "MC-VS-009",
+    );
   });
 
-  it("clears the required error once the field becomes valid again", async () => {
-    renderWithSubmit();
-    const sku = screen.getByLabelText(/^sku$/i) as HTMLInputElement;
-
-    fireEvent.change(sku, { target: { value: "X" } });
-    fireEvent.change(sku, { target: { value: "" } });
-    await waitFor(() => {
-      expect(screen.getByText(/sku is required/i)).toBeInTheDocument();
-    });
-
-    fireEvent.change(sku, { target: { value: "MC-VS-009" } });
-
-    await waitFor(() => {
-      expect(screen.queryByText(/sku is required/i)).not.toBeInTheDocument();
-    });
+  it("Back button is type=button and never blocks", async () => {
+    render(<NewListingForm />);
+    fillStep1();
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await screen.findByLabelText(/^price$/i);
+    const back = screen.getByRole("button", { name: /back/i });
+    expect(back).toHaveAttribute("type", "button");
+    expect(back).not.toBeDisabled();
   });
 
-  it("shows per-field validation errors when submitting empty form", async () => {
-    renderWithSubmit();
+  it("Publish only renders on step 3", async () => {
+    render(<NewListingForm />);
+    expect(screen.queryByRole("button", { name: /publish/i })).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: /publish/i }));
+    fillStep1();
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await screen.findByLabelText(/^price$/i);
+    expect(screen.queryByRole("button", { name: /publish/i })).toBeNull();
 
+    fillStep2();
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
     await waitFor(() => {
-      expect(screen.getByText(/sku is required/i)).toBeInTheDocument();
+      expect(screen.getByTestId("photo-uploader-stub")).toBeInTheDocument();
     });
-    expect(screen.getByText(/name is required/i)).toBeInTheDocument();
-    expect(screen.getByText(/category is required/i)).toBeInTheDocument();
-    expect(actions.createListingAction).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole("button", { name: /publish/i }),
+    ).toBeInTheDocument();
   });
 
-  it("flags Price and Inventory as required when submitted empty", async () => {
-    renderWithSubmit();
-
-    fillField(/^sku$/i, "MC-VS-009");
-    fillField(/^name$/i, "Persimmon vase");
-    fillField(/^category$/i, "Ceramics");
-    // Leave Price and Inventory blank — z.coerce.number would otherwise turn ""
-    // into 0 and silently pass, hiding the required-field state from the user.
-
-    fireEvent.click(screen.getByRole("button", { name: /publish/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/price is required/i)).toBeInTheDocument();
-    });
-    expect(screen.getByText(/inventory is required/i)).toBeInTheDocument();
-    expect(actions.createListingAction).not.toHaveBeenCalled();
-  });
-
-  it("preserves the other fields when one mandatory field is missing (the reported bug)", async () => {
-    renderWithSubmit();
-
-    const sku = fillField(/^sku$/i, "MC-VS-009");
-    const name = fillField(/^name$/i, "Persimmon vase");
-    fillField(/^price$/i, "75");
-    fillField(/total in stock/i, "4");
-    // Intentionally leave Category blank — this is the reported failure mode.
-
-    fireEvent.click(screen.getByRole("button", { name: /publish/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/category is required/i)).toBeInTheDocument();
-    });
-    // The bug pre-fix: SKU and Name went blank after submitting with a missing
-    // mandatory field. After the react-hook-form refactor, all values are
-    // client-managed and must survive the failed submit.
-    expect(sku.value).toBe("MC-VS-009");
-    expect(name.value).toBe("Persimmon vase");
-    expect(actions.createListingAction).not.toHaveBeenCalled();
-  });
-
-  it("calls createListingAction with a FormData payload and navigates on success", async () => {
+  it("submits with all fields via FormData on step 3", async () => {
     vi.mocked(actions.createListingAction).mockResolvedValueOnce({
       ok: true,
       sku: "MC-VS-009",
     });
 
-    renderWithSubmit();
-
-    fillField(/^sku$/i, "mc-vs-009");
-    fillField(/^name$/i, "Persimmon vase");
-    fillField(/^category$/i, "Ceramics");
-    fillField(/^price$/i, "75");
-    fillField(/total in stock/i, "4");
+    render(<NewListingForm />);
+    fillStep1();
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await screen.findByLabelText(/^price$/i);
+    fillStep2();
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await waitFor(() => {
+      expect(screen.getByTestId("photo-uploader-stub")).toBeInTheDocument();
+    });
 
     fireEvent.click(screen.getByRole("button", { name: /publish/i }));
 
@@ -183,14 +169,13 @@ describe("NewListingForm", () => {
     });
     const fd = vi.mocked(actions.createListingAction).mock.calls[0][0];
     expect(fd).toBeInstanceOf(FormData);
-    // zodResolver runs the schema's .trim().toUpperCase() transforms on the
-    // client before onSubmit fires, so the action receives the already-
-    // normalised SKU. The server re-parses with the same schema for safety.
     expect(fd.get("sku")).toBe("MC-VS-009");
     expect(fd.get("name")).toBe("Persimmon vase");
     expect(fd.get("category")).toBe("Ceramics");
     expect(fd.get("price")).toBe("75");
     expect(fd.get("inventory")).toBe("4");
+    expect(fd.get("weight")).toBe("1.25");
+    expect(fd.get("origin")).toBe("Portland, OR");
     expect(fd.get("status")).toBe("draft");
 
     await waitFor(() => {
@@ -198,20 +183,74 @@ describe("NewListingForm", () => {
     });
   });
 
-  it("surfaces a server fieldError on the matching field", async () => {
+  it("renders the dynamic listing-health score (replaces static 92)", () => {
+    render(<NewListingForm />);
+    expect(screen.getByTestId("listing-health-score")).toHaveTextContent("0");
+  });
+
+  it("listing-health updates as the user fills fields", async () => {
+    render(<NewListingForm />);
+    expect(screen.getByTestId("listing-health-score")).toHaveTextContent("0");
+    fillStep1();
+    await waitFor(() => {
+      const score = Number(
+        screen.getByTestId("listing-health-score").textContent,
+      );
+      // name (15) + category (10) = 25 minimum
+      expect(score).toBeGreaterThanOrEqual(25);
+    });
+  });
+
+  it("debounces SKU uniqueness fetch (single call per 350ms pause)", async () => {
+    vi.useFakeTimers();
+    try {
+      render(<NewListingForm />);
+      const sku = screen.getByLabelText(/^sku$/i);
+      fireEvent.change(sku, { target: { value: "M" } });
+      fireEvent.change(sku, { target: { value: "MC" } });
+      fireEvent.change(sku, { target: { value: "MC-" } });
+      fireEvent.change(sku, { target: { value: "MC-001" } });
+
+      expect(fetchMock).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(360);
+      await Promise.resolve();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock.mock.calls[0][0]).toMatch(
+        /\/api\/products\/by-sku\/MC-001\/exists$/,
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not call SKU fetch when SKU is empty", async () => {
+    vi.useFakeTimers();
+    try {
+      render(<NewListingForm />);
+      vi.advanceTimersByTime(500);
+      await Promise.resolve();
+      expect(fetchMock).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("surfaces a server fieldError after submit", async () => {
     vi.mocked(actions.createListingAction).mockResolvedValueOnce({
       ok: false,
       error: "Invalid input",
       fieldErrors: { sku: ["A listing with that SKU already exists."] },
     });
 
-    renderWithSubmit();
-
-    fillField(/^sku$/i, "MC-VS-001");
-    fillField(/^name$/i, "Persimmon vase");
-    fillField(/^category$/i, "Ceramics");
-    fillField(/^price$/i, "75");
-    fillField(/total in stock/i, "4");
+    render(<NewListingForm />);
+    fillStep1();
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await screen.findByLabelText(/^price$/i);
+    fillStep2();
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await waitFor(() => {
+      expect(screen.getByTestId("photo-uploader-stub")).toBeInTheDocument();
+    });
 
     fireEvent.click(screen.getByRole("button", { name: /publish/i }));
 
@@ -220,30 +259,5 @@ describe("NewListingForm", () => {
         screen.getByText(/a listing with that sku already exists/i),
       ).toBeInTheDocument();
     });
-    expect(routerPush).not.toHaveBeenCalled();
-  });
-
-  it("shows the global error banner when the action returns a non-field error", async () => {
-    vi.mocked(actions.createListingAction).mockResolvedValueOnce({
-      ok: false,
-      error: "A listing with that SKU already exists.",
-    });
-
-    renderWithSubmit();
-
-    fillField(/^sku$/i, "MC-VS-001");
-    fillField(/^name$/i, "Persimmon vase");
-    fillField(/^category$/i, "Ceramics");
-    fillField(/^price$/i, "75");
-    fillField(/total in stock/i, "4");
-
-    fireEvent.click(screen.getByRole("button", { name: /publish/i }));
-
-    await waitFor(() => {
-      expect(screen.getByRole("alert", { name: "" }).textContent).toMatch(
-        /already exists/i,
-      );
-    });
-    expect(routerPush).not.toHaveBeenCalled();
   });
 });

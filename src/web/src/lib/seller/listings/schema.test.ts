@@ -256,9 +256,9 @@ describe("weight field", () => {
   });
 
   it("rejects zero or negative", () => {
-    expect(productInputSchema.safeParse({ ...valid, weight: "0" }).success).toBe(
-      false,
-    );
+    expect(
+      productInputSchema.safeParse({ ...valid, weight: "0" }).success,
+    ).toBe(false);
     expect(
       productInputSchema.safeParse({ ...valid, weight: "-1" }).success,
     ).toBe(false);

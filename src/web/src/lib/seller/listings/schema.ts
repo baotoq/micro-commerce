@@ -62,7 +62,9 @@ const originField = z
   .regex(ORIGIN_REGEX, "Origin must be 'City, ST' (e.g. Portland, OR)");
 
 const tagsField = z
-  .array(z.string().regex(TAG_REGEX, "Tags must be lowercase kebab, 2–24 chars"))
+  .array(
+    z.string().regex(TAG_REGEX, "Tags must be lowercase kebab, 2–24 chars"),
+  )
   .max(8, "Up to 8 tags")
   // Dedupe in transform — UX-friendlier than rejecting a duplicate. The order
   // of first occurrence is preserved so the user's intent stays intact.

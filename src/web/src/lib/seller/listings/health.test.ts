@@ -70,9 +70,7 @@ describe("computeListingHealth", () => {
   });
 
   it("awards 5 points per photo up to 3 (capped at 20 for 3+)", () => {
-    expect(
-      computeListingHealth({ ...empty, photoUrls: ["a"] }).score,
-    ).toBe(5);
+    expect(computeListingHealth({ ...empty, photoUrls: ["a"] }).score).toBe(5);
     expect(
       computeListingHealth({ ...empty, photoUrls: ["a", "b"] }).score,
     ).toBe(10);
@@ -88,9 +86,7 @@ describe("computeListingHealth", () => {
   });
 
   it("awards 10 for tags length >= 3", () => {
-    expect(
-      computeListingHealth({ ...empty, tags: ["a", "b"] }).score,
-    ).toBe(0);
+    expect(computeListingHealth({ ...empty, tags: ["a", "b"] }).score).toBe(0);
     expect(
       computeListingHealth({ ...empty, tags: ["a", "b", "c"] }).score,
     ).toBe(10);
@@ -119,9 +115,9 @@ describe("computeListingHealth", () => {
   });
 
   it("awards 5 for origin matching City, ST format", () => {
-    expect(
-      computeListingHealth({ ...empty, origin: "Portland" }).score,
-    ).toBe(0);
+    expect(computeListingHealth({ ...empty, origin: "Portland" }).score).toBe(
+      0,
+    );
     expect(
       computeListingHealth({ ...empty, origin: "Portland, OR" }).score,
     ).toBe(5);
