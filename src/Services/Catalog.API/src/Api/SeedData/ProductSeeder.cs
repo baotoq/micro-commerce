@@ -37,7 +37,12 @@ public static class ProductSeeder
                 r.Price,
                 r.Inventory,
                 ParseStatus(r.Status),
-                r.Views7d));
+                description: r.Description,
+                tags: r.Tags ?? [],
+                weight: r.Weight ?? 0.5m,
+                origin: r.Origin ?? "Portland, OR",
+                photoUrls: r.PhotoUrls ?? (ParseStatus(r.Status) == ProductStatus.Active ? ["https://placehold.co/600x600?text=" + r.Sku] : []),
+                views7d: r.Views7d));
             added = true;
         }
 
@@ -60,5 +65,10 @@ public static class ProductSeeder
         decimal Price,
         int Inventory,
         string Status,
-        int Views7d);
+        int Views7d,
+        string? Description = null,
+        IReadOnlyList<string>? Tags = null,
+        decimal? Weight = null,
+        string? Origin = null,
+        IReadOnlyList<string>? PhotoUrls = null);
 }
