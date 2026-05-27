@@ -10,11 +10,12 @@
 // scripts/e2e:smoke filter excludes it from runs without the stack.
 
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { expect, test } from "./fixtures/test";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PHOTO_FIXTURE = path.join(__dirname, "fixtures", "photo-small.jpg");
+// Playwright resolves relative paths against the CWD; npm scripts run from
+// src/web/, so the fixture path is stable regardless of how the spec is
+// invoked.
+const PHOTO_FIXTURE = path.join("e2e", "fixtures", "photo-small.jpg");
 
 test.describe(
   "New listing photo upload",
