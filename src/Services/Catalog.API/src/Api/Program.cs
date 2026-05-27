@@ -4,6 +4,7 @@ using MicroCommerce.Catalog.Application.Persistence;
 using MicroCommerce.Catalog.Api.Endpoints;
 using MicroCommerce.Catalog.Api.ExceptionHandlers;
 using MicroCommerce.Catalog.Api.SeedData;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +25,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.EnsureCreatedAsync();
+    await db.Database.MigrateAsync();
     if (app.Configuration.GetValue<bool>("SEED_PRODUCTS"))
     {
         await ProductSeeder.SeedAsync(db, app.Environment.ContentRootPath);

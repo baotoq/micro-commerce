@@ -16,7 +16,12 @@ public static class InfrastructureExtensions
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductConfiguration).Assembly);
 
         builder.AddNpgsqlDbContext<AppDbContext>("catalogdb",
-            configureDbContextOptions: o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+            configureDbContextOptions: o =>
+            {
+                o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                // Migrations live alongside the EF mappings in the Infrastructure assembly.
+                o.UseNpgsql(npg => npg.MigrationsAssembly(typeof(ProductConfiguration).Assembly.FullName));
+            });
         return builder;
     }
 }
