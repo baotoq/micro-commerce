@@ -51,6 +51,8 @@ dotnet test src/Services/Catalog.API/tests/IntegrationTests   # needs Docker (fu
 dotnet test src/Services/Catalog.API/tests/Domain.Tests --filter "FullyQualifiedName~TestMethodName"
 ```
 
+If you have a pre-existing `catalogdb` volume from before the `AddProductRichFields` migration, run `docker volume rm <catalogdb-volume>` once before starting the AppHost (one-time only — migrations handle future schema changes).
+
 ## Architecture
 
 ### Distributed system
