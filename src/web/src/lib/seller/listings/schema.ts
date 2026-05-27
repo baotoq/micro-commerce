@@ -99,9 +99,30 @@ export const step3Schema = z.object({
   tags: tagsField,
 });
 
-// Whole-form schema. The cross-field gate from PRD §2 / AC-12 is enforced via
-// superRefine so the error targets the `status` path (the wizard surfaces it
-// on step 2 next to the status select).
+// Cross-field active-status gate (AC-12). The wizard surfaces the error on
+// the status path so step 2 can render it next to the status select.
+function activeStatusGate(
+  values: { status: string; inventory: number; photoUrls: readonly string[] },
+  ctx: z.RefinementCtx,
+) {
+  if (values.status !== "active") return;
+  if (values.inventory < 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["status"],
+      message: "Active listings need at least 1 in inventory",
+    });
+  }
+  if (values.photoUrls.length < 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["status"],
+      message: "Active listings need at least 1 photo",
+    });
+  }
+}
+
+// Whole-form schema used by createListingAction + wizard submit.
 export const productInputSchema = z
   .object({
     sku: skuField,
@@ -116,43 +137,68 @@ export const productInputSchema = z
     tags: tagsField,
     photoUrls: photoUrlsField,
   })
-  .superRefine((values, ctx) => {
-    if (values.status === "active") {
-      if (values.inventory < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["status"],
-          message: "Active listings need at least 1 in inventory",
-        });
-      }
-      if (values.photoUrls.length < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["status"],
-          message: "Active listings need at least 1 photo",
-        });
-      }
-    }
-  });
+  .superRefine(activeStatusGate);
+
+// Update schema. The legacy edit form does not surface weight/origin — keep
+// them optional with safe backend-aligned defaults so existing edits don't
+// fail on a missing-required-field error.
+export const productUpdateSchema = z
+  .object({
+    sku: skuField,
+    name: nameField,
+    category: categoryField,
+    description: descriptionField,
+    price: priceField,
+    inventory: inventoryField,
+    status: statusField,
+    weight: weightField.optional().default("0.5"),
+    origin: originField.optional().default("Portland, OR"),
+    tags: tagsField,
+    photoUrls: photoUrlsField,
+  })
+  .superRefine(activeStatusGate);
 
 export type ProductFormInput = z.input<typeof productInputSchema>;
 export type ProductFormOutput = z.output<typeof productInputSchema>;
 
 export type WizardStep = 1 | 2 | 3;
 
-// Per-step validator the wizard "Next" button consults. Returning `ok` plus
-// the keyed step schema's parse result keeps the call site terse and lets the
-// caller surface field-level errors on the active step if it wants.
+// Per-step validator the wizard "Next" button consults. For step 2 we also
+// run the whole-form active-status gate (AC-12) so the user can't advance to
+// step 3 with status=active + inventory 0. For step 3 we run the entire
+// schema so the final submit gate matches the server.
 export function validateStep(
   step: WizardStep,
   values: Record<string, unknown>,
 ): { ok: boolean } {
-  const schema =
-    step === 1 ? step1Schema : step === 2 ? step2Schema : step3Schema;
-  // pick the fields this step owns out of the form values so unrelated fields
-  // (e.g. step 3 stuff while gating step 1) don't trigger false negatives.
-  const keys = Object.keys(schema.shape);
-  const subset: Record<string, unknown> = {};
-  for (const k of keys) subset[k] = values[k];
-  return { ok: schema.safeParse(subset).success };
+  if (step === 1) {
+    return { ok: step1Schema.safeParse(pickKeys(step1Schema, values)).success };
+  }
+  if (step === 2) {
+    const subset = pickKeys(step2Schema, values);
+    const stepOk = step2Schema.safeParse(subset).success;
+    if (!stepOk) return { ok: false };
+    // AC-12 gate runs even on step 2 (status lives here) so the user is
+    // forced to resolve the conflict before advancing.
+    if ((values.status as string) === "active") {
+      const inv = Number(values.inventory);
+      const photos = (values.photoUrls as unknown[] | undefined) ?? [];
+      if (!Number.isFinite(inv) || inv < 1) return { ok: false };
+      if (photos.length < 1) return { ok: false };
+    }
+    return { ok: true };
+  }
+  // step 3 — full schema
+  return { ok: productInputSchema.safeParse(values).success };
+}
+
+// Extract the keys a given z.object schema declares so the per-step validator
+// doesn't trip over unrelated fields in the form snapshot.
+function pickKeys<T extends z.ZodRawShape>(
+  schema: z.ZodObject<T>,
+  values: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const k of Object.keys(schema.shape)) out[k] = values[k];
+  return out;
 }

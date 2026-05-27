@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   productInputSchema,
+  productUpdateSchema,
   step1Schema,
   step2Schema,
   step3Schema,
@@ -442,8 +443,67 @@ describe("validateStep helper", () => {
     expect(r.ok).toBe(false);
   });
 
-  it("step 3 ignores step 1/2 errors", () => {
+  it("step 3 runs the whole-form schema so submit-gate matches the server", () => {
+    // Step 3 is the final submit step — its gate must mirror the full schema
+    // so the user can't reach the publish button with step-1 invalid fields.
     const r = validateStep(3, { ...valid, name: "" });
+    expect(r.ok).toBe(false);
+    expect(validateStep(3, valid).ok).toBe(true);
+  });
+
+  it("step 2 blocks Next when status=active + inventory < 1 (AC-12)", () => {
+    const r = validateStep(2, {
+      ...valid,
+      status: "active",
+      inventory: "0",
+      photoUrls: ["https://blob/x.jpg"],
+    });
+    expect(r.ok).toBe(false);
+  });
+
+  it("step 2 blocks Next when status=active + photoUrls empty (AC-12)", () => {
+    const r = validateStep(2, {
+      ...valid,
+      status: "active",
+      inventory: "5",
+      photoUrls: [],
+    });
+    expect(r.ok).toBe(false);
+  });
+
+  it("step 2 allows Next for non-active status regardless of inventory/photos", () => {
+    const r = validateStep(2, {
+      ...valid,
+      status: "draft",
+      inventory: "0",
+      photoUrls: [],
+    });
     expect(r.ok).toBe(true);
+  });
+});
+
+describe("productUpdateSchema", () => {
+  it("accepts payloads without weight/origin (legacy edit form)", () => {
+    const result = productUpdateSchema.safeParse({
+      sku: "TEST-001",
+      name: "Test",
+      category: "Cat",
+      price: "10",
+      inventory: "1",
+      status: "draft",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("still enforces AC-12 on update", () => {
+    const result = productUpdateSchema.safeParse({
+      sku: "TEST-001",
+      name: "Test",
+      category: "Cat",
+      price: "10",
+      inventory: "0",
+      status: "active",
+    });
+    expect(result.success).toBe(false);
   });
 });
