@@ -132,13 +132,13 @@ describe("updateListingAction", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.sku).toBe("TEST-001");
+    // updateListingAction strips rich fields by design — see the data-loss
+    // regression test below for the rationale.
     expect(api.updateProduct).toHaveBeenCalledWith(
       "TEST-001",
       expect.objectContaining({
         name: "Test Product",
         price: 19.99,
-        weight: 1.25,
-        origin: "Portland, OR",
       }),
     );
     expect(updateTag).toHaveBeenCalledWith("listings");
@@ -165,6 +165,39 @@ describe("updateListingAction", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.fieldErrors?.inventory).toBeDefined();
     expect(api.updateProduct).not.toHaveBeenCalled();
+  });
+
+  // Regression guard for the data-loss path the advisor flagged. The legacy
+  // EditListingForm only submits the original 6 fields (sku, name, category,
+  // price, inventory, status). Earlier the update schema filled in defaults
+  // for weight/origin/description/tags/photoUrls — those defaults shipped to
+  // the API and silently overwrote real stored values.
+  it("does not forward rich fields the legacy edit form didn't submit", async () => {
+    vi.mocked(api.updateProduct).mockResolvedValueOnce(mockListing);
+
+    const legacyFormData = makeFormData({
+      sku: "TEST-001",
+      name: "Updated Name",
+      category: "Updated Cat",
+      price: "20",
+      inventory: "5",
+      status: "draft",
+    });
+    await updateListingAction("TEST-001", legacyFormData);
+
+    const payload = vi.mocked(api.updateProduct).mock.calls[0][1];
+    expect(payload).not.toHaveProperty("weight");
+    expect(payload).not.toHaveProperty("origin");
+    expect(payload).not.toHaveProperty("description");
+    expect(payload).not.toHaveProperty("tags");
+    expect(payload).not.toHaveProperty("photoUrls");
+    // and still forwards the fields it DOES carry
+    expect(payload).toMatchObject({
+      name: "Updated Name",
+      price: 20,
+      inventory: 5,
+      status: "draft",
+    });
   });
 });
 

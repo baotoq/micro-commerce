@@ -141,24 +141,30 @@ export const productInputSchema = z
   })
   .superRefine(activeStatusGate);
 
-// Update schema. The legacy edit form does not surface weight/origin — keep
-// them optional with safe backend-aligned defaults so existing edits don't
-// fail on a missing-required-field error.
+// Update schema. The legacy EditListingForm only submits the original six
+// fields. We intentionally DO NOT declare description/tags/weight/origin/
+// photoUrls here — if we did, Zod's .default() would fill them and the
+// payload would silently overwrite real stored values when the server
+// action forwards parsed.data. The server still enforces the active-status
+// photo invariant; client-side we only gate the inventory side of AC-12.
 export const productUpdateSchema = z
   .object({
     sku: skuField,
     name: nameField,
     category: categoryField,
-    description: descriptionField,
     price: priceField,
     inventory: inventoryField,
     status: statusField,
-    weight: weightField.optional().default(0.5),
-    origin: originField.optional().default("Portland, OR"),
-    tags: tagsField,
-    photoUrls: photoUrlsField,
   })
-  .superRefine(activeStatusGate);
+  .superRefine((values, ctx) => {
+    if (values.status === "active" && values.inventory < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["status"],
+        message: "Active listings need at least 1 in inventory",
+      });
+    }
+  });
 
 export type ProductFormInput = z.input<typeof productInputSchema>;
 export type ProductFormOutput = z.output<typeof productInputSchema>;
