@@ -31,11 +31,20 @@ if (builder.Environment.EnvironmentName != "Testing")
     catalog.WithEnvironment("SEED_PRODUCTS", "true");
 
     var web = builder.AddNextJsApp("web", "../web")
+        .WithHttpEndpoint(port: 3000, env: "PORT")
         .WithEnvironment("API_URL", catalog.GetEndpoint("http"))
         .WithExternalHttpEndpoints();
 
     builder.AddJavaScriptApp("playwright", "../web", "e2e")
         .WithReference(web)
+        .WithReference(catalog)
+        // The Aspire-driven suite shares one Catalog DB across all workers,
+        // so parallel mutation specs inflate counts read by the count-tied
+        // listings/pagination specs. Serial execution costs ~30s but kills
+        // the flake. (Local `npm run e2e` runs still use Playwright's
+        // default worker count.)
+        .WithEnvironment("CI", "1")
+        .WithEnvironment("PLAYWRIGHT_WORKERS", "1")
         .WaitFor(web)
         .WithExplicitStart()
         .ExcludeFromManifest();
