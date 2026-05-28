@@ -40,6 +40,7 @@ qa/
 | TC-S09 | /seller/pack-ship           | C        | worker-3 |
 | TC-S10 | /seller/first-month         | C        | worker-3 |
 | TC-S11 | /seller/payouts             | C        | worker-3 |
+| TC-S28 | /seller/listings/new        | F        | qa-manual |
 
 ## Scope vs. Playwright e2e suite
 
@@ -50,6 +51,9 @@ correctly. The corresponding manual test cases
 (`TC-S24`, `TC-S25`, `TC-S26`, `TC-S27`) are marked **superseded**: keep
 them for design/a11y screenshot evidence and console-error sweeps, but do
 not re-run the functional assertions on every release.
+
+`TC-S28` (the 3-step wizard + SAS photo upload) supersedes `TC-S07` and
+`TC-S24` for the wired wizard flow.
 
 Future manual passes should focus on what e2e can't cheaply verify:
 
