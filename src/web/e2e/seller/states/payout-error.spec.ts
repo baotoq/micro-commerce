@@ -74,10 +74,15 @@ test.describe(
         page.getByText("R03 · No account / unable to locate"),
       ).toBeVisible();
 
-      // Dimmed KPI row labels
-      await expect(page.getByText("Revenue · 7 days")).toBeVisible();
-      await expect(page.getByText("Orders · 7 days")).toBeVisible();
-      await expect(page.getByText("Avg. order")).toBeVisible();
+      // Dimmed KPI row labels — sparkline SVG <title> echoes the prefix, so
+      // pin to the exact label text to avoid strict-mode collisions.
+      await expect(
+        page.getByText("Revenue · 7 days", { exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByText("Orders · 7 days", { exact: true }),
+      ).toBeVisible();
+      await expect(page.getByText("Avg. order", { exact: true })).toBeVisible();
 
       // Design annotation NOT rendered
       await expect(page.getByText("error · payout failed")).not.toBeVisible();

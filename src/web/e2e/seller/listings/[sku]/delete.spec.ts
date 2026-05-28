@@ -67,8 +67,10 @@ test.describe(
     });
 
     // Cache test depends on the new SKU appearing on listings page 1. The
-    // Catalog API sorts by Views7d desc; a factory-created product (Views7d=0)
-    // only lands on page 1 when the seed has zero-view products there too.
+    // Catalog API sorts by Views7d desc; factory-created products (Views7d=0)
+    // get pushed to the tail. Creating as draft + filtering the listings page
+    // by status=draft keeps the new SKU on page 1 of the filtered view (the
+    // seed has only 4 drafts), so the cache-refresh assertion remains robust.
     test(
       "listings table refreshes when user visited the index before deleting",
       { tag: ["@seed-dependent"] },
@@ -76,13 +78,14 @@ test.describe(
         const { sku } = await productFactory.create({
           skuPrefix: "TEST-DELETE-CACHE",
           name: "Cache Stale Repro",
+          status: "draft",
         });
 
         // Prime the TanStack Query cache by landing on the listings page first.
         // The bug only reproduces when ["listings"] already has an entry; if the
         // user arrives at the edit page cold, the cache is empty and the fresh
         // server `initialData` is used regardless.
-        await page.goto(sellerRoutes.listings);
+        await page.goto(`${sellerRoutes.listings}?status=draft`);
         await expect(
           page.getByRole("cell", { name: sku, exact: true }),
         ).toBeVisible({ timeout: 8000 });

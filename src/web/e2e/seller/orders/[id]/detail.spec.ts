@@ -9,9 +9,14 @@ test.describe(
       expect(response.status()).toBe(200);
     });
 
-    test("GET /seller/orders/9999 returns 404", async ({ request }) => {
-      const response = await request.get("/seller/orders/9999");
-      expect(response.status()).toBe(404);
+    test("GET /seller/orders/9999 renders not-found UI", async ({ page }) => {
+      // With Next 16 cacheComponents the static shell streams a 200 before the
+      // dynamic body can call notFound(), so we assert on the rendered UI
+      // instead of the HTTP status.
+      await page.goto("/seller/orders/9999");
+      await expect(
+        page.getByText("This page could not be found"),
+      ).toBeVisible();
     });
 
     test.beforeEach(async ({ page }) => {
@@ -50,11 +55,14 @@ test.describe(
     });
 
     test("Persimmon vase product row visible", async ({ page }) => {
-      // The fulfillment row has a unique subtitle string — scope to its
-      // parent so we assert the product name in the fulfillment box, not the
-      // timeline entries that also contain "Persimmon vase".
+      // The fulfillment row has a unique subtitle string — walk up to the
+      // flex-1 column so we assert the product name in the fulfillment box,
+      // not the timeline entries that also contain "Persimmon vase". The
+      // subtitle <span> is two levels below that column (span → sub-line div
+      // → column).
       const persimmonRow = page
         .getByText("SKU PV-08 · qty 1 · $86.00")
+        .locator("..")
         .locator("..");
       await expect(persimmonRow).toBeVisible();
       await expect(
@@ -65,9 +73,13 @@ test.describe(
     test("Ash budstem product row with back in stock Tue visible", async ({
       page,
     }) => {
-      // "Ash budstem" appears in the fulfillment box and the timeline. Scope
-      // to the row that carries the restock chip so we test the fulfillment.
-      const ashRow = page.getByText("back in stock Tue").locator("..");
+      // "Ash budstem" appears in the fulfillment box and the timeline. Walk
+      // up to the flex-1 column so we test the fulfillment row — the restock
+      // chip is two levels below that column.
+      const ashRow = page
+        .getByText("back in stock Tue")
+        .locator("..")
+        .locator("..");
       await expect(ashRow).toBeVisible();
       await expect(
         ashRow.getByText("Ash budstem", { exact: true }),

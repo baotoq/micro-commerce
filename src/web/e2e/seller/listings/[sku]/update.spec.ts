@@ -42,11 +42,14 @@ test.describe(
       expect(data.price).toBe(55);
     });
 
-    test("returns 404 for unknown SKU", async ({ page }) => {
-      const response = await page.goto(
-        sellerRoutes.listingEdit("MC-NOPE-404-EDIT"),
-      );
-      expect(response?.status()).toBe(404);
+    test("renders not-found UI for unknown SKU", async ({ page }) => {
+      // With Next 16 cacheComponents the static shell streams a 200 before the
+      // dynamic body can call notFound(), so we assert on the scoped
+      // not-found.tsx body instead of the HTTP status.
+      await page.goto(sellerRoutes.listingEdit("MC-NOPE-404-EDIT"));
+      await expect(
+        page.getByRole("heading", { name: "Listing not found" }),
+      ).toBeVisible();
     });
   },
 );

@@ -41,7 +41,7 @@ test.describe(
       );
 
       // "Next" is disabled until required step-1 fields pass.
-      const nextBtn = page.getByRole("button", { name: "Next" });
+      const nextBtn = page.getByRole("button", { name: "Next", exact: true });
       await expect(nextBtn).toBeDisabled();
 
       // Fill SKU and Name — health score should start low then rise.
@@ -196,7 +196,7 @@ test.describe(
       await expect(backBtn).toHaveAttribute("type", "button");
 
       // On step 1, Next is the forward button — also type="button".
-      const nextBtn = page.getByRole("button", { name: "Next" });
+      const nextBtn = page.getByRole("button", { name: "Next", exact: true });
       await expect(nextBtn).toHaveAttribute("type", "button");
     });
   },

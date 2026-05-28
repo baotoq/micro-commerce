@@ -59,7 +59,7 @@ test.describe(
     }) => {
       await page.goto("/seller/listings/new");
 
-      const nextBtn = page.getByRole("button", { name: "Next" });
+      const nextBtn = page.getByRole("button", { name: "Next", exact: true });
       await expect(nextBtn).toBeDisabled();
 
       await page.getByLabel("SKU").fill("MC-WZ-SMOKE");

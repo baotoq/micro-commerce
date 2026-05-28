@@ -57,8 +57,10 @@ test.describe("seller promos page", { tag: ["@regression", "@promos"] }, () => {
       2,
     );
     await expect(page.getByText("Redemptions", { exact: true })).toHaveCount(2);
-    await expect(page.getByText("Avg. discount")).toBeVisible();
-    await expect(page.getByText("New buyers")).toBeVisible();
+    await expect(
+      page.getByText("Avg. discount", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText("New buyers", { exact: true })).toBeVisible();
   });
 
   test("stat values visible", async ({ page }) => {

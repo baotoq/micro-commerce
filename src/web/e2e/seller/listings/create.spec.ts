@@ -31,7 +31,7 @@ test.describe(
         await page.getByLabel("Name").fill("Test Vase");
         await page.getByLabel("Category").fill("Ceramics");
 
-        await page.getByRole("button", { name: "Next" }).click();
+        await page.getByRole("button", { name: "Next", exact: true }).click();
 
         // ── Step 2: Pricing & Inventory ─────────────────────────────────────
         await page.getByLabel("Price").fill("49.99");
@@ -40,7 +40,7 @@ test.describe(
         await page.getByLabel("Weight (kg)").fill("0.75");
         await page.getByLabel("Origin").fill("Portland, OR");
 
-        await page.getByRole("button", { name: "Next" }).click();
+        await page.getByRole("button", { name: "Next", exact: true }).click();
 
         // ── Step 3: Media & Discovery ───────────────────────────────────────
         // Active status requires ≥1 photo (AC-12). Upload the fixture.
@@ -76,7 +76,7 @@ test.describe(
       await page.goto(sellerRoutes.listingsNew);
 
       // Next is disabled on an empty step — cannot advance without filling fields.
-      const nextBtn = page.getByRole("button", { name: "Next" });
+      const nextBtn = page.getByRole("button", { name: "Next", exact: true });
       await expect(nextBtn).toBeDisabled();
 
       // Fill SKU only; Name and Category still missing.

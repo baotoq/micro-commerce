@@ -69,11 +69,14 @@ test.describe(
       }
     });
 
-    test("returns 404 for unknown SKU", async ({ page }) => {
-      const response = await page.goto(
-        sellerRoutes.listingPreview("MC-NOPE-404"),
-      );
-      expect(response?.status()).toBe(404);
+    test("renders not-found UI for unknown SKU", async ({ page }) => {
+      // With Next 16 cacheComponents the static shell streams a 200 before the
+      // dynamic body can call notFound(), so we assert on the rendered
+      // global not-found body instead of the HTTP status.
+      await page.goto(sellerRoutes.listingPreview("MC-NOPE-404"));
+      await expect(
+        page.getByText("This page could not be found"),
+      ).toBeVisible();
     });
   },
 );
