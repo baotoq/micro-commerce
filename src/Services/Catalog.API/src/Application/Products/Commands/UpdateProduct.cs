@@ -25,20 +25,29 @@ public class UpdateProductHandler(AppDbContext db, IPublisher publisher) : IRequ
     public async Task<ProductDto?> Handle(UpdateProductCommand request, CancellationToken ct)
     {
         var sku = Sku.From(request.Sku);
-        var product = await db.Products.FirstOrDefaultAsync(p => p.Sku == sku, ct);
+        // The DbContext default is QueryTrackingBehavior.NoTracking (set in
+        // InfrastructureExtensions), which keeps reads cheap but means
+        // mutations on the returned entity wouldn't persist. Opt-in tracking
+        // here so product.Update() flows through to SaveChangesAsync.
+        var product = await db.Products
+            .AsTracking()
+            .FirstOrDefaultAsync(p => p.Sku == sku, ct);
         if (product is null) return null;
 
+        // PATCH-style: nullable wire fields preserve the stored value when the
+        // caller omits them (legacy EditListingForm only submits six fields).
+        // Sending an explicit empty list still wipes the stored value.
         product.Update(
             request.Name,
             request.Category,
             request.Price,
             request.Inventory,
             CreateProductHandler.ParseStatus(request.Status),
-            description: request.Description,
-            tags: request.Tags ?? [],
+            description: request.Description ?? product.Description,
+            tags: request.Tags ?? product.Tags,
             weight: request.Weight,
             origin: request.Origin,
-            photoUrls: request.PhotoUrls ?? []);
+            photoUrls: request.PhotoUrls ?? product.PhotoUrls);
         await db.SaveChangesAsync(ct);
 
         var dto = CreateProductHandler.ToDto(product);

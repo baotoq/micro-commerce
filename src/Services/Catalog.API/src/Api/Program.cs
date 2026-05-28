@@ -1,3 +1,5 @@
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using MicroCommerce.Catalog.Application;
 using MicroCommerce.Catalog.Infrastructure;
 using MicroCommerce.Catalog.Application.Persistence;
@@ -30,6 +32,27 @@ using (var scope = app.Services.CreateScope())
     if (app.Configuration.GetValue<bool>("SEED_PRODUCTS"))
     {
         await ProductSeeder.SeedAsync(db, app.Environment.ContentRootPath);
+    }
+
+    // SAS uploads PUT directly from the browser to the blob endpoint. In dev
+    // that endpoint is Azurite, which has no CORS rules out of the box, so
+    // browsers block the preflight. Configure permissive CORS for the
+    // Aspire-served origins on startup; in production this should be set by
+    // the storage account's own CORS policy.
+    if (app.Environment.IsDevelopment())
+    {
+        var blobClient = scope.ServiceProvider.GetRequiredService<BlobServiceClient>();
+        var props = await blobClient.GetPropertiesAsync();
+        props.Value.Cors.Clear();
+        props.Value.Cors.Add(new BlobCorsRule
+        {
+            AllowedOrigins = "*",
+            AllowedMethods = "PUT,GET,OPTIONS,HEAD",
+            AllowedHeaders = "*",
+            ExposedHeaders = "*",
+            MaxAgeInSeconds = 3600,
+        });
+        await blobClient.SetPropertiesAsync(props.Value);
     }
 }
 
