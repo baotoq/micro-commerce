@@ -461,14 +461,27 @@ describe("validateStep helper", () => {
     expect(r.ok).toBe(false);
   });
 
-  it("step 2 blocks Next when status=active + photoUrls empty (AC-12)", () => {
+  it("step 2 allows Next when status=active + photoUrls empty (AC-12 photo gate deferred to step 3)", () => {
+    // Photos are uploaded on step 3, so blocking the step-2 → step-3
+    // transition for missing photos would create a catch-22. The photo
+    // side of AC-12 still runs on step 3 (full-schema gate) and on the
+    // server when the user clicks Publish.
     const r = validateStep(2, {
       ...valid,
       status: "active",
       inventory: "5",
       photoUrls: [],
     });
-    expect(r.ok).toBe(false);
+    expect(r.ok).toBe(true);
+    // ...and step 3 still rejects the same payload.
+    expect(
+      validateStep(3, {
+        ...valid,
+        status: "active",
+        inventory: "5",
+        photoUrls: [],
+      }).ok,
+    ).toBe(false);
   });
 
   it("step 2 allows Next for non-active status regardless of inventory/photos", () => {

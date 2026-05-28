@@ -186,13 +186,14 @@ export function validateStep(
     const subset = pickKeys(step2Schema, values);
     const stepOk = step2Schema.safeParse(subset).success;
     if (!stepOk) return { ok: false };
-    // AC-12 gate runs even on step 2 (status lives here) so the user is
-    // forced to resolve the conflict before advancing.
+    // AC-12 inventory side runs on step 2 (status + inventory both live
+    // here, so the user can resolve the conflict before advancing). The
+    // photo side is deferred to step 3's full-schema gate because photos
+    // are only uploadable on step 3 — blocking the transition here would
+    // create a catch-22 for the active-status happy path.
     if ((values.status as string) === "active") {
       const inv = Number(values.inventory);
-      const photos = (values.photoUrls as unknown[] | undefined) ?? [];
       if (!Number.isFinite(inv) || inv < 1) return { ok: false };
-      if (photos.length < 1) return { ok: false };
     }
     return { ok: true };
   }
