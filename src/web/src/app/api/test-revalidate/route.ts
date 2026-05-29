@@ -29,6 +29,6 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  revalidateTag(tag);
+  revalidateTag(tag, {});
   return new NextResponse(null, { status: 204 });
 }

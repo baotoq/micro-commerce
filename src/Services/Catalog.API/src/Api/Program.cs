@@ -32,6 +32,7 @@ using (var scope = app.Services.CreateScope())
     if (app.Configuration.GetValue<bool>("SEED_PRODUCTS"))
     {
         await ProductSeeder.SeedAsync(db, app.Environment.ContentRootPath);
+        await PromotionSeeder.SeedAsync(db);
     }
 
     // SAS uploads PUT directly from the browser to the blob endpoint. In dev
@@ -68,6 +69,8 @@ app.UseOutputCache();
 app.MapDefaultEndpoints();
 app.MapProductReadEndpoints();
 app.MapProductWriteEndpoints();
+app.MapPromotionReadEndpoints();
+app.MapPromotionWriteEndpoints();
 
 app.UseFileServer();
 

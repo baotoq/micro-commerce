@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { NewPromoDrawer } from "@/components/seller/promos/new-promo-drawer";
 import { PromoStatCard } from "@/components/seller/promos/promo-stat-card";
 import { PromosTable } from "@/components/seller/promos/promos-table";
@@ -9,16 +10,19 @@ import {
   getPromoTabs,
 } from "@/lib/seller/promos/data";
 
-export default function PromosPage() {
-  const stats = getPromoStats();
-  const tabs = getPromoTabs();
-  const promos = getPromos();
+export default async function PromosPage() {
+  await connection();
+  const [stats, tabs, promos] = await Promise.all([
+    getPromoStats(),
+    getPromoTabs(),
+    getPromos(),
+  ]);
 
   return (
     <div className="relative flex h-screen min-w-0 flex-col overflow-hidden">
       <SellerTopbar
         title="Discounts & promotions"
-        subtitle="3 active · $2,740 driven · 281 redemptions"
+        subtitle={`${stats.find((s) => s.label === "Active")?.value ?? 0} active · ${stats.find((s) => s.label === "Draft")?.value ?? 0} draft · ${stats.find((s) => s.label === "Ended")?.value ?? 0} ended`}
         actions={
           <button
             type="button"

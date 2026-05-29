@@ -1,7 +1,13 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { PromosTable } from "@/components/seller/promos/promos-table";
 import type { PromoCode } from "@/lib/seller/promos/types";
+
+vi.mock("@/lib/seller/promos/actions", () => ({
+  activatePromoAction: vi.fn(),
+  endPromoAction: vi.fn(),
+  deletePromoAction: vi.fn(),
+}));
 
 const FIXTURE: PromoCode[] = [
   {
@@ -66,5 +72,60 @@ describe("PromosTable", () => {
       .find((row) => row.getAttribute("data-highlight") === "true");
     expect(studioRow).toBeDefined();
     expect(studioRow).toHaveTextContent("STUDIO15");
+  });
+
+  it("Activate button visible only for Draft rows", () => {
+    render(<PromosTable promos={FIXTURE} />);
+    const activateBtns = screen.queryAllByRole("button", { name: /Activate/i });
+    expect(activateBtns).toHaveLength(1);
+    expect(activateBtns[0]).toHaveAccessibleName("Activate FRIENDS");
+  });
+
+  it("End button visible only for Active rows", () => {
+    render(<PromosTable promos={FIXTURE} />);
+    const endBtns = screen.queryAllByRole("button", { name: /^End /i });
+    // 3 active rows: SPRING20, WELCOME10, STUDIO15
+    expect(endBtns).toHaveLength(3);
+  });
+
+  it("Delete button visible for every row", () => {
+    render(<PromosTable promos={FIXTURE} />);
+    const deleteBtns = screen.queryAllByRole("button", { name: /^Delete /i });
+    expect(deleteBtns).toHaveLength(5);
+  });
+
+  it("Activate form for FRIENDS has correct action bound to activatePromoAction", () => {
+    render(<PromosTable promos={FIXTURE} />);
+    const activateBtn = screen.getByRole("button", {
+      name: "Activate FRIENDS",
+    });
+    const form = activateBtn.closest("form");
+    expect(form).not.toBeNull();
+    // form.action is bound via .bind — it's a function, not a URL string
+    expect(typeof form?.getAttribute("action")).toBe("string");
+  });
+
+  it("End button is absent for Ended and Draft rows", () => {
+    render(<PromosTable promos={FIXTURE} />);
+    const allRows = screen.getAllByRole("row").slice(1); // skip header
+    const bloomRow = allRows.find((r) => r.textContent?.includes("BLOOM"));
+    const friendsRow = allRows.find((r) => r.textContent?.includes("FRIENDS"));
+    expect(bloomRow?.querySelector('button[aria-label^="End"]')).toBeNull();
+    expect(friendsRow?.querySelector('button[aria-label^="End"]')).toBeNull();
+  });
+
+  it("Activate button is absent for Active and Ended rows", () => {
+    render(<PromosTable promos={FIXTURE} />);
+    const allRows = screen.getAllByRole("row").slice(1); // skip header
+    const spring20Row = allRows.find((r) =>
+      r.textContent?.includes("SPRING20"),
+    );
+    const bloomRow = allRows.find((r) => r.textContent?.includes("BLOOM"));
+    expect(
+      spring20Row?.querySelector('button[aria-label^="Activate"]'),
+    ).toBeNull();
+    expect(
+      bloomRow?.querySelector('button[aria-label^="Activate"]'),
+    ).toBeNull();
   });
 });

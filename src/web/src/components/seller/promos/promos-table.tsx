@@ -1,3 +1,8 @@
+import {
+  activatePromoAction,
+  deletePromoAction,
+  endPromoAction,
+} from "@/lib/seller/promos/actions";
 import type { PromoCode } from "@/lib/seller/promos/types";
 
 function ShareIcon() {
@@ -151,7 +156,50 @@ export function PromosTable({ promos }: { promos: PromoCode[] }) {
               )}
             </td>
             <td className="px-4 py-3">
-              <div className="flex gap-1">
+              <div className="flex items-center gap-1">
+                {promo.status === "Draft" && (
+                  <form
+                    action={async () => {
+                      await activatePromoAction(promo.code);
+                    }}
+                  >
+                    <button
+                      type="submit"
+                      className="rounded px-2 py-1 text-[11px] font-semibold text-primary hover:bg-primary/10"
+                      aria-label={`Activate ${promo.code}`}
+                    >
+                      Activate
+                    </button>
+                  </form>
+                )}
+                {promo.status === "Active" && (
+                  <form
+                    action={async () => {
+                      await endPromoAction(promo.code);
+                    }}
+                  >
+                    <button
+                      type="submit"
+                      className="rounded px-2 py-1 text-[11px] font-semibold text-muted-foreground hover:bg-black/[0.04]"
+                      aria-label={`End ${promo.code}`}
+                    >
+                      End
+                    </button>
+                  </form>
+                )}
+                <form
+                  action={async () => {
+                    await deletePromoAction(promo.code);
+                  }}
+                >
+                  <button
+                    type="submit"
+                    className="rounded px-2 py-1 text-[11px] font-semibold text-destructive/70 hover:bg-destructive/10"
+                    aria-label={`Delete ${promo.code}`}
+                  >
+                    Delete
+                  </button>
+                </form>
                 <button
                   type="button"
                   className="flex h-[26px] w-[26px] items-center justify-center rounded text-muted-foreground hover:bg-black/[0.04] hover:text-foreground"
