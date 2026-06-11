@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { BRAND } from "@/lib/seller/brand";
-import { getMarketingDraft } from "@/lib/seller/marketing/data";
+import { MARKETING_DRAFT_FIXTURE } from "@/lib/seller/marketing/fixture";
 import { EmailPreview } from "./email-preview";
 
 describe("EmailPreview", () => {
-  const draft = getMarketingDraft();
+  const draft = MARKETING_DRAFT_FIXTURE;
 
   it("renders draft.subject", () => {
     render(<EmailPreview draft={draft} />);

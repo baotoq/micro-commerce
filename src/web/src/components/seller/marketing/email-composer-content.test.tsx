@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { getMarketingDraft } from "@/lib/seller/marketing/data";
+import { MARKETING_DRAFT_FIXTURE } from "@/lib/seller/marketing/fixture";
 import { EmailComposerContent } from "./email-composer-content";
 
 describe("EmailComposerContent", () => {
-  const draft = getMarketingDraft();
+  const draft = MARKETING_DRAFT_FIXTURE;
 
   it("renders step label", () => {
     render(<EmailComposerContent draft={draft} />);

@@ -1,64 +1,72 @@
-// web/src/lib/seller/payouts/data.ts
+import { cacheTag } from "next/cache";
+import {
+  fetchLedger,
+  fetchPayoutSummary,
+  fetchPayouts,
+  type LedgerEntryDto,
+} from "@/lib/catalog/payouts";
 import type { LedgerEntry, PayoutSummary } from "@/lib/seller/payouts/types";
 
-const LEDGER_ENTRIES: LedgerEntry[] = [
-  {
-    date: "Apr 8",
-    label: "Payout · weekly",
-    subject: "Sent · ending 4421",
-    amount: 1284.62,
-    type: "payout",
-  },
-  {
-    date: "Apr 7",
-    label: "Order #1042 · Sasha L.",
-    subject: "Net of $3.44 fee",
-    amount: 82.56,
-    type: "sale",
-  },
-  {
-    date: "Apr 7",
-    label: "Order #1041 · Devon T.",
-    subject: "Net of $2.56 fee",
-    amount: 61.44,
-    type: "sale",
-  },
-  {
-    date: "Apr 6",
-    label: "Shipping label · USPS",
-    subject: "#1041 · 1lb 4oz",
-    amount: -6.52,
-    type: "fee",
-  },
-  {
-    date: "Apr 5",
-    label: "Order #1040 · Ari K.",
-    subject: "Net of $1.92 fee",
-    amount: 46.08,
-    type: "sale",
-  },
-  {
-    date: "Apr 1",
-    label: "Payout · weekly",
-    subject: "Sent · ending 4421",
-    amount: 624.18,
-    type: "payout",
-  },
-];
-export function getLedgerEntries(): LedgerEntry[] {
-  return LEDGER_ENTRIES;
+const TZ = "America/Los_Angeles";
+
+// "Wed, Apr 15" — weekday + month + day in Pacific time so the label renders
+// identically regardless of the host machine's local zone.
+const SENDS_ON_FMT = new Intl.DateTimeFormat("en-US", {
+  timeZone: TZ,
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+});
+
+// "Apr 8" — month + day for ledger row dates, in Pacific time.
+const LEDGER_DATE_FMT = new Intl.DateTimeFormat("en-US", {
+  timeZone: TZ,
+  month: "short",
+  day: "numeric",
+});
+
+// Display-only count of orders feeding the next payout. Not modeled on the
+// summary DTO; fixed at 3 (the New-order count) per the demo drift policy.
+const AVAILABLE_FROM_ORDERS = 3;
+
+function ledgerTypeFromKind(kind: LedgerEntryDto["kind"]): LedgerEntry["type"] {
+  if (kind === "payout") return "payout";
+  if (kind === "sale") return "sale";
+  // "fee" and "label" both render as a negative mute "Fee" row.
+  return "fee";
 }
 
-const PAYOUT_SUMMARY: PayoutSummary = {
-  lastPayout: 1284.62,
-  lastPayoutSentLabel: "Sent · arriving Wed",
-  available: 184.08,
-  availableSendsOn: "Tue, Apr 15",
-  availableFromOrders: 3,
-  lifetime: 2148.36,
-  lifetimeOrders: 23,
-  lifetimeRange: "Mar 12 → Apr 11",
-};
-export function getPayoutSummary(): PayoutSummary {
-  return PAYOUT_SUMMARY;
+export async function getPayoutSummary(): Promise<PayoutSummary> {
+  "use cache";
+  cacheTag("payouts");
+  const [summary, payouts] = await Promise.all([
+    fetchPayoutSummary(),
+    fetchPayouts({ limit: 1 }),
+  ]);
+
+  const latest = payouts.items[0];
+
+  return {
+    lastPayout: latest?.amount ?? 0,
+    lastPayoutSentLabel: latest ? "Sent · arriving Wed" : "No payouts yet",
+    available: summary.available,
+    availableSendsOn: SENDS_ON_FMT.format(new Date(summary.availableSendsOn)),
+    availableFromOrders: AVAILABLE_FROM_ORDERS,
+    lifetime: summary.lifetime,
+    lifetimeOrders: summary.lifetimeOrders,
+    lifetimeRange: summary.lifetimeRange,
+  };
+}
+
+export async function getLedgerEntries(): Promise<LedgerEntry[]> {
+  "use cache";
+  cacheTag("payouts");
+  const page = await fetchLedger();
+  return page.items.map((dto) => ({
+    date: LEDGER_DATE_FMT.format(new Date(dto.occurredAt)),
+    label: dto.label,
+    subject: dto.subject ?? "",
+    amount: dto.amount,
+    type: ledgerTypeFromKind(dto.kind),
+  }));
 }

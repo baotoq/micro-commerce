@@ -1,4 +1,5 @@
 import { Eye } from "lucide-react";
+import { connection } from "next/server";
 import { EmailComposerAudience } from "@/components/seller/marketing/email-composer-audience";
 import { EmailComposerContent } from "@/components/seller/marketing/email-composer-content";
 import { EmailComposerSchedule } from "@/components/seller/marketing/email-composer-schedule";
@@ -6,8 +7,9 @@ import { EmailPreview } from "@/components/seller/marketing/email-preview";
 import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 import { getMarketingDraft } from "@/lib/seller/marketing/data";
 
-export default function MarketingPage() {
-  const draft = getMarketingDraft();
+export default async function MarketingPage() {
+  await connection();
+  const draft = await getMarketingDraft();
   return (
     <div className="flex h-screen min-w-0 flex-col overflow-hidden">
       <SellerTopbar

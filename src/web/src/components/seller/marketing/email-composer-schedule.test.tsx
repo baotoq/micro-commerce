@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { getMarketingDraft } from "@/lib/seller/marketing/data";
+import { MARKETING_DRAFT_FIXTURE } from "@/lib/seller/marketing/fixture";
 import { EmailComposerSchedule } from "./email-composer-schedule";
 
 describe("EmailComposerSchedule", () => {
-  const draft = getMarketingDraft();
+  const draft = MARKETING_DRAFT_FIXTURE;
 
   it("renders step label", () => {
     render(<EmailComposerSchedule draft={draft} />);

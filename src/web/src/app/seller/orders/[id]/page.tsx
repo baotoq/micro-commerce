@@ -25,7 +25,7 @@ export default async function OrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const order = getOrderDetailFull(id);
+  const order = await getOrderDetailFull(id);
   if (!order) notFound();
 
   return (

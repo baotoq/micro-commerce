@@ -1,4 +1,5 @@
 import { Plus, Upload } from "lucide-react";
+import { connection } from "next/server";
 import { OrdersInboxBulkBar } from "@/components/seller/orders/orders-inbox-bulk-bar";
 import { OrdersInboxFilterRow } from "@/components/seller/orders/orders-inbox-filter-row";
 import { OrdersInboxPagination } from "@/components/seller/orders/orders-inbox-pagination";
@@ -14,10 +15,13 @@ import {
 
 const SELECTED_COUNT = 3;
 
-export default function OrdersPage() {
-  const rows = getOrderInbox();
-  const tabs = getOrderInboxTabs();
-  const summary = getOrderInboxSummary();
+export default async function OrdersPage() {
+  await connection();
+  const [rows, tabs, summary] = await Promise.all([
+    getOrderInbox(),
+    getOrderInboxTabs(),
+    getOrderInboxSummary(),
+  ]);
 
   const selectedTotal = rows
     .slice(0, SELECTED_COUNT)

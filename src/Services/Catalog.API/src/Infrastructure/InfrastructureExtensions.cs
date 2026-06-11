@@ -1,5 +1,6 @@
 using MicroCommerce.Catalog.Application.Persistence;
 using MicroCommerce.Catalog.Application.Products.Photos;
+using MicroCommerce.Catalog.Domain.Common;
 using MicroCommerce.Catalog.Infrastructure.Persistence;
 using MicroCommerce.Catalog.Infrastructure.Photos;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ public static class InfrastructureExtensions
             });
 
         builder.Services.AddSingleton<IPhotoUploadUrlIssuer, BlobPhotoUploadUrlIssuer>();
+        builder.Services.AddSingleton<IClock, DemoClock>();
         return builder;
     }
 }

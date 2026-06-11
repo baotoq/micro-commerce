@@ -33,6 +33,13 @@ using (var scope = app.Services.CreateScope())
     {
         await ProductSeeder.SeedAsync(db, app.Environment.ContentRootPath);
         await PromotionSeeder.SeedAsync(db);
+        // Seller domains. OrderSeeder must run before PayoutSeeder (ledger entries
+        // reference order numbers); the rest are order-independent (see plan R11).
+        await OrderSeeder.SeedAsync(db);
+        await CustomerSeeder.SeedAsync(db);
+        await PayoutSeeder.SeedAsync(db);
+        await MarketingSeeder.SeedAsync(db);
+        await AnalyticsSeeder.SeedAsync(db);
     }
 
     // SAS uploads PUT directly from the browser to the blob endpoint. In dev
@@ -71,6 +78,14 @@ app.MapProductReadEndpoints();
 app.MapProductWriteEndpoints();
 app.MapPromotionReadEndpoints();
 app.MapPromotionWriteEndpoints();
+app.MapOrderReadEndpoints();
+app.MapOrderWriteEndpoints();
+app.MapCustomerReadEndpoints();
+app.MapCustomerWriteEndpoints();
+app.MapPayoutReadEndpoints();
+app.MapMarketingReadEndpoints();
+app.MapMarketingWriteEndpoints();
+app.MapAnalyticsReadEndpoints();
 
 app.UseFileServer();
 

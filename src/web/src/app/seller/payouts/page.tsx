@@ -1,4 +1,5 @@
 import { Download } from "lucide-react";
+import { connection } from "next/server";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -11,9 +12,12 @@ import {
 import { money } from "@/lib/money";
 import { getLedgerEntries, getPayoutSummary } from "@/lib/seller/payouts/data";
 
-export default function PayoutsPage() {
-  const summary = getPayoutSummary();
-  const entries = getLedgerEntries();
+export default async function PayoutsPage() {
+  await connection();
+  const [summary, entries] = await Promise.all([
+    getPayoutSummary(),
+    getLedgerEntries(),
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen">

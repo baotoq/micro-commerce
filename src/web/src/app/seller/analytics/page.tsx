@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { AnalyticsKpiRow } from "@/components/seller/analytics/analytics-kpi-row";
 import { ConversionFunnel } from "@/components/seller/analytics/conversion-funnel";
 import { SourcesDonut } from "@/components/seller/analytics/sources-donut";
@@ -12,8 +13,15 @@ import {
   getTopProducts,
 } from "@/lib/seller/analytics/data";
 
-export default function AnalyticsPage() {
+export default async function AnalyticsPage() {
+  await connection();
   const rangeOptions = getRangeOptions();
+  const [kpis, sources, topProducts, funnel] = await Promise.all([
+    getAnalyticsKpis(),
+    getSources(),
+    getTopProducts(),
+    getFunnel(),
+  ]);
   return (
     <div className="flex flex-col min-h-screen">
       <SellerTopbar
@@ -56,7 +64,7 @@ export default function AnalyticsPage() {
 
       <div className="flex-1 overflow-auto p-7">
         {/* KPI row */}
-        <AnalyticsKpiRow kpis={getAnalyticsKpis()} />
+        <AnalyticsKpiRow kpis={kpis} />
 
         {/* Revenue chart + Sources (2fr 1fr) */}
         <div
@@ -105,13 +113,13 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          <SourcesDonut sources={getSources()} />
+          <SourcesDonut sources={sources} />
         </div>
 
         {/* Top products + Conversion funnel (1fr 1fr) */}
         <div className="mt-5 grid grid-cols-2 gap-4">
-          <TopProducts products={getTopProducts()} />
-          <ConversionFunnel stages={getFunnel()} />
+          <TopProducts products={topProducts} />
+          <ConversionFunnel stages={funnel} />
         </div>
       </div>
     </div>

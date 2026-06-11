@@ -22,6 +22,375 @@ namespace MicroCommerce.Catalog.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MicroCommerce.Catalog.Domain.Analytics.AnalyticsFunnelStage", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("integer")
+                        .HasColumnName("count");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("label");
+
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(5, 4)
+                        .HasColumnType("numeric(5,4)")
+                        .HasColumnName("rate");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("analytics_funnel", (string)null);
+                });
+
+            modelBuilder.Entity("MicroCommerce.Catalog.Domain.Analytics.AnalyticsSource", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Pct")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("pct");
+
+                    b.Property<decimal>("Revenue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("revenue");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("source");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("analytics_sources", (string)null);
+                });
+
+            modelBuilder.Entity("MicroCommerce.Catalog.Domain.Customers.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("city");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
+
+                    b.PrimitiveCollection<string[]>("Tags")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text[]")
+                        .HasColumnName("tags")
+                        .HasDefaultValueSql("'{}'::text[]");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("customers", (string)null);
+                });
+
+            modelBuilder.Entity("MicroCommerce.Catalog.Domain.Marketing.Campaign", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AudienceKey")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("audience_key");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("FeaturedProductSku")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("featured_product_sku");
+
+                    b.Property<bool>("FollowupEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("followup_enabled");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("PreviewText")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("preview_text");
+
+                    b.Property<DateTimeOffset?>("ScheduledAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("scheduled_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("subject");
+
+                    b.Property<string>("TemplateKey")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("template_key");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("campaigns", (string)null);
+                });
+
+            modelBuilder.Entity("MicroCommerce.Catalog.Domain.Orders.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<bool>("BillSameAsShip")
+                        .HasColumnType("boolean")
+                        .HasColumnName("bill_same_as_ship");
+
+                    b.Property<string>("CityState")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("city_state");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("customer_email");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("customer_name");
+
+                    b.Property<decimal>("FeePct")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("fee_pct");
+
+                    b.Property<string>("InternalNote")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("internal_note");
+
+                    b.Property<string>("ItemsSummary")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("items_summary");
+
+                    b.Property<string>("LabelCarrier")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("label_carrier");
+
+                    b.Property<decimal>("LabelCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("label_cost");
+
+                    b.Property<string>("LabelWeightLabel")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("label_weight_label");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer")
+                        .HasColumnName("number");
+
+                    b.Property<string>("PaymentBrand")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("payment_brand");
+
+                    b.Property<string>("PaymentLastFour")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("payment_last_four");
+
+                    b.Property<DateTimeOffset>("PlacedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("placed_at");
+
+                    b.Property<string>("ShipLine1")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("ship_line1");
+
+                    b.Property<string>("ShipLine2")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("ship_line2");
+
+                    b.Property<string>("ShippingMethod")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("shipping_method");
+
+                    b.Property<decimal>("ShippingPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("shipping_paid");
+
+                    b.Property<bool>("Starred")
+                        .HasColumnType("boolean")
+                        .HasColumnName("starred");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<decimal>("Tax")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("tax");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Number")
+                        .IsUnique();
+
+                    b.ToTable("orders", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_orders_money_non_negative", "shipping_paid >= 0 AND tax >= 0 AND label_cost >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("MicroCommerce.Catalog.Domain.Payouts.LedgerEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("amount");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("kind");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("label");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_at");
+
+                    b.Property<int?>("OrderNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("order_number");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("subject");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OccurredAt");
+
+                    b.ToTable("ledger_entries", (string)null);
+                });
+
+            modelBuilder.Entity("MicroCommerce.Catalog.Domain.Payouts.Payout", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("amount");
+
+                    b.Property<string>("Destination")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("destination");
+
+                    b.Property<bool>("IsPending")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_pending");
+
+                    b.Property<string>("Period")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("period");
+
+                    b.Property<DateTimeOffset>("SentAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("sent_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SentAt");
+
+                    b.ToTable("payouts", (string)null);
+                });
+
             modelBuilder.Entity("MicroCommerce.Catalog.Domain.Products.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -157,6 +526,252 @@ namespace MicroCommerce.Catalog.Infrastructure.Persistence.Migrations
                         {
                             t.HasCheckConstraint("ck_promotions_kind_value_exclusive", "(kind = 'Percentage' AND percent_value IS NOT NULL AND fixed_amount IS NULL) OR (kind = 'FixedAmount' AND fixed_amount IS NOT NULL AND percent_value IS NULL)");
                         });
+                });
+
+            modelBuilder.Entity("MicroCommerce.Catalog.Domain.Marketing.Campaign", b =>
+                {
+                    b.OwnsOne("MicroCommerce.Catalog.Domain.Marketing.CampaignFollowup", "Followup", b1 =>
+                        {
+                            b1.Property<Guid>("CampaignId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("DelayDays")
+                                .HasColumnType("integer")
+                                .HasColumnName("delay_days");
+
+                            b1.Property<bool>("Enabled")
+                                .HasColumnType("boolean")
+                                .HasColumnName("enabled");
+
+                            b1.Property<string>("Kind")
+                                .IsRequired()
+                                .HasMaxLength(30)
+                                .HasColumnType("character varying(30)")
+                                .HasColumnName("kind");
+
+                            b1.Property<string>("Preview")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("preview");
+
+                            b1.Property<string>("Subject")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("subject");
+
+                            b1.HasKey("CampaignId");
+
+                            b1.ToTable("campaign_followups", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("CampaignId");
+                        });
+
+                    b.Navigation("Followup");
+                });
+
+            modelBuilder.Entity("MicroCommerce.Catalog.Domain.Orders.Order", b =>
+                {
+                    b.OwnsMany("MicroCommerce.Catalog.Domain.Orders.OrderLine", "Lines", b1 =>
+                        {
+                            b1.Property<Guid>("order_id")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("ordinal")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("ordinal"));
+
+                            b1.Property<string>("FulfillmentStatus")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("fulfillment_status");
+
+                            b1.Property<string>("ProductName")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("product_name");
+
+                            b1.Property<int>("Qty")
+                                .HasColumnType("integer")
+                                .HasColumnName("qty");
+
+                            b1.Property<string>("RestockNote")
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("restock_note");
+
+                            b1.Property<string>("Sku")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)")
+                                .HasColumnName("sku");
+
+                            b1.Property<string>("Tone")
+                                .IsRequired()
+                                .HasMaxLength(40)
+                                .HasColumnType("character varying(40)")
+                                .HasColumnName("tone");
+
+                            b1.Property<string>("Tracking")
+                                .HasMaxLength(120)
+                                .HasColumnType("character varying(120)")
+                                .HasColumnName("tracking");
+
+                            b1.Property<decimal>("UnitPrice")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("numeric(18,2)")
+                                .HasColumnName("unit_price");
+
+                            b1.HasKey("order_id", "ordinal");
+
+                            b1.ToTable("order_lines", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("order_id");
+                        });
+
+                    b.OwnsMany("MicroCommerce.Catalog.Domain.Orders.OrderTimelineEntry", "Timeline", b1 =>
+                        {
+                            b1.Property<Guid>("order_id")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("ordinal")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("ordinal"));
+
+                            b1.Property<bool>("Highlight")
+                                .HasColumnType("boolean")
+                                .HasColumnName("highlight");
+
+                            b1.Property<string>("Icon")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("icon");
+
+                            b1.Property<DateTimeOffset>("OccurredAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("occurred_at");
+
+                            b1.Property<string>("Sub")
+                                .IsRequired()
+                                .HasMaxLength(400)
+                                .HasColumnType("character varying(400)")
+                                .HasColumnName("sub");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("title");
+
+                            b1.Property<string>("Tone")
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("tone");
+
+                            b1.HasKey("order_id", "ordinal");
+
+                            b1.ToTable("order_timeline_events", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("order_id");
+                        });
+
+                    b.OwnsOne("MicroCommerce.Catalog.Domain.Orders.RefundDraft", "Refund", b1 =>
+                        {
+                            b1.Property<Guid>("order_id")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Reason")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("reason");
+
+                            b1.Property<string>("RestockChoice")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("restock_choice");
+
+                            b1.Property<decimal>("Total")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("numeric(18,2)")
+                                .HasColumnName("total");
+
+                            b1.Property<int>("id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("id"));
+
+                            b1.HasKey("order_id");
+
+                            b1.ToTable("order_refunds", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("order_id");
+
+                            b1.OwnsMany("MicroCommerce.Catalog.Domain.Orders.RefundDraftItem", "Items", b2 =>
+                                {
+                                    b2.Property<Guid>("order_id")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int>("ordinal")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("integer");
+
+                                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b2.Property<int>("ordinal"));
+
+                                    b2.Property<decimal>("Amount")
+                                        .HasPrecision(18, 2)
+                                        .HasColumnType("numeric(18,2)")
+                                        .HasColumnName("amount");
+
+                                    b2.Property<decimal?>("PartialAmount")
+                                        .HasPrecision(18, 2)
+                                        .HasColumnType("numeric(18,2)")
+                                        .HasColumnName("partial_amount");
+
+                                    b2.Property<int>("Qty")
+                                        .HasColumnType("integer")
+                                        .HasColumnName("qty");
+
+                                    b2.Property<bool>("Selected")
+                                        .HasColumnType("boolean")
+                                        .HasColumnName("selected");
+
+                                    b2.Property<string>("Sku")
+                                        .IsRequired()
+                                        .HasMaxLength(50)
+                                        .HasColumnType("character varying(50)")
+                                        .HasColumnName("sku");
+
+                                    b2.HasKey("order_id", "ordinal");
+
+                                    b2.ToTable("order_refund_items", (string)null);
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("order_id");
+                                });
+
+                            b1.Navigation("Items");
+                        });
+
+                    b.Navigation("Lines");
+
+                    b.Navigation("Refund");
+
+                    b.Navigation("Timeline");
                 });
 #pragma warning restore 612, 618
         }

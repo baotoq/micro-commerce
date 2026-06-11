@@ -1,4 +1,22 @@
 // web/src/lib/seller/orders/data.ts
+import { cacheTag } from "next/cache";
+import {
+  fetchOrderByNumber,
+  fetchOrderCounts,
+  fetchOrders,
+  type OrderCountsDto,
+  type OrderDetailDto,
+  type OrderInboxRowDto,
+} from "@/lib/catalog/orders";
+import { DEMO_NOW } from "@/lib/seller/demo-clock";
+import {
+  formatAge,
+  formatPlacedLabel,
+  formatRelative,
+  shortName,
+  shortNamePanel,
+  statusToDisplay,
+} from "@/lib/seller/orders/format";
 import type {
   Order,
   OrderDetail,
@@ -6,54 +24,225 @@ import type {
   OrderInboxRow,
   OrderInboxSummary,
   OrderInboxTab,
+  OrderStatus,
   ShippingOption,
 } from "@/lib/seller/orders/types";
 
-const RECENT_ORDERS: Order[] = [
-  {
-    id: "#1042",
-    customer: "Mia Chen",
-    items: 2,
-    total: 172,
-    status: "paid",
-    placedAt: "2026-04-08",
-  },
-  {
-    id: "#1041",
-    customer: "Theo Park",
-    items: 1,
-    total: 86,
-    status: "fulfilled",
-    placedAt: "2026-04-07",
-  },
-  {
-    id: "#1040",
-    customer: "Sara Novak",
-    items: 3,
-    total: 248,
-    status: "fulfilled",
-    placedAt: "2026-04-07",
-  },
-  {
-    id: "#1039",
-    customer: "Lucas Ferreira",
-    items: 1,
-    total: 110,
-    status: "paid",
-    placedAt: "2026-04-06",
-  },
-  {
-    id: "#1038",
-    customer: "Aiko Tanaka",
-    items: 2,
-    total: 124,
-    status: "refunded",
-    placedAt: "2026-04-06",
-  },
-];
-export function getRecentOrders(): Order[] {
-  return RECENT_ORDERS;
+const RESTOCK_OPTIONS = ["Yes", "No", "Damage"];
+
+// Universe of customer tags shown in the internal-note panel. The active subset
+// (which tags this customer actually carries) comes from the Customers domain.
+const CUSTOMER_TAGS = ["VIP", "Repeat buyer", "Gift"];
+
+/** 1 → "1st", 2 → "2nd", 3 → "3rd", 4 → "4th" … */
+function ordinal(n: number): string {
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1:
+      return `${n}st`;
+    case 2:
+      return `${n}nd`;
+    case 3:
+      return `${n}rd`;
+    default:
+      return `${n}th`;
+  }
 }
+
+function rowToInbox(dto: OrderInboxRowDto): OrderInboxRow {
+  const placedAt = new Date(dto.placedAt);
+  const { label, tone } = statusToDisplay(dto.status);
+  return {
+    id: `#${dto.number}`,
+    placedLabel: formatPlacedLabel(placedAt, DEMO_NOW),
+    customer: shortName(dto.customerName),
+    city: dto.cityState,
+    items: dto.itemsSummary,
+    qty: dto.qty,
+    total: dto.total,
+    ship: dto.shippingMethod,
+    status: label,
+    tone,
+    age: formatAge(placedAt, DEMO_NOW),
+    starred: dto.starred,
+  };
+}
+
+export async function getOrderInbox(): Promise<OrderInboxRow[]> {
+  "use cache";
+  cacheTag("orders");
+  const page = await fetchOrders({ tab: "all" });
+  return page.items.map(rowToInbox);
+}
+
+export async function getOrderInboxTabs(): Promise<OrderInboxTab[]> {
+  "use cache";
+  cacheTag("orders");
+  const counts = await fetchOrderCounts();
+  return [
+    { label: "All", count: counts.all },
+    { label: "Needs action", count: counts.needsAction, on: true },
+    { label: "Packed", count: counts.packed },
+    { label: "Shipped", count: counts.shipped },
+    { label: "Delivered", count: counts.delivered },
+    { label: "Refund / cancel", count: counts.refundOrCancel },
+  ];
+}
+
+export async function getOrderInboxSummary(): Promise<OrderInboxSummary> {
+  "use cache";
+  cacheTag("orders");
+  const counts: OrderCountsDto = await fetchOrderCounts();
+  return {
+    totalLifetime: counts.all,
+    needAction: counts.needsAction,
+  };
+}
+
+const RECENT_STATUS: Record<string, OrderStatus> = {
+  new: "paid",
+  packed: "paid",
+  shipped: "fulfilled",
+  delivered: "fulfilled",
+  "refund-requested": "refunded",
+  cancelled: "refunded",
+};
+
+export async function getRecentOrders(): Promise<Order[]> {
+  "use cache";
+  cacheTag("orders");
+  const page = await fetchOrders({ tab: "all", limit: 5 });
+  return page.items.slice(0, 5).map((dto) => ({
+    id: `#${dto.number}`,
+    customer: dto.customerName,
+    items: dto.qty,
+    total: dto.total,
+    status: RECENT_STATUS[dto.status] ?? "pending",
+    placedAt: dto.placedAt,
+  }));
+}
+
+/** Header status + tone. Mixed line fulfillment reads as "Partially fulfilled". */
+function detailStatus(dto: OrderDetailDto): {
+  status: string;
+  statusTone: OrderDetailFull["statusTone"];
+} {
+  const hasShipped = dto.lines.some((l) => l.status === "shipped");
+  const hasAwaiting = dto.lines.some((l) => l.status === "awaiting");
+  if (hasShipped && hasAwaiting) {
+    return { status: "Partially fulfilled", statusTone: "warn" };
+  }
+  const { label, tone } = statusToDisplay(dto.status);
+  return { status: label, statusTone: tone };
+}
+
+function detailToFull(dto: OrderDetailDto): OrderDetailFull {
+  const placedAt = new Date(dto.placedAt);
+  const { status, statusTone } = detailStatus(dto);
+
+  const fulfillments = dto.lines.map((l) => ({
+    idx: l.idx,
+    of: l.of,
+    status: l.status as "shipped" | "awaiting",
+    productName: l.productName,
+    productSubtitle: `SKU ${l.sku} · qty ${l.qty} · $${l.unitPrice.toFixed(2)}`,
+    productTone: l.tone,
+    qty: l.qty,
+    price: l.unitPrice,
+    ...(l.tracking ? { tracking: l.tracking } : {}),
+    ...(l.restockNote ? { restockNote: l.restockNote } : {}),
+  }));
+
+  const skuToName = new Map(dto.lines.map((l) => [l.sku, l.productName]));
+
+  const refund: OrderDetailFull["refund"] = dto.refund
+    ? {
+        refundable: dto.refund.refundable,
+        itemsCount: dto.refund.itemsCount,
+        items: dto.refund.items.map((it) => ({
+          name: skuToName.get(it.sku) ?? it.sku,
+          qty: it.qty,
+          price: it.amount,
+          selected: it.selected,
+          ...(it.partialAmount != null ? { partial: it.partialAmount } : {}),
+        })),
+        reason: dto.refund.reason,
+        restockOptions: RESTOCK_OPTIONS,
+        restockSelected: dto.refund.restockChoice,
+        total: dto.refund.total,
+        lastFour: dto.refund.lastFour,
+      }
+    : {
+        refundable: 0,
+        itemsCount: 0,
+        items: [],
+        reason: "",
+        restockOptions: RESTOCK_OPTIONS,
+        restockSelected: "Yes",
+        total: 0,
+        lastFour: "",
+      };
+
+  const c = dto.customer;
+  const lifetimeOrdersLabel = `${ordinal(c.lifetimeOrderCount)} order · $${c.lifetimeSpend} lifetime`;
+
+  return {
+    id: `#${dto.number}`,
+    status,
+    statusTone,
+    customerShort: shortName(c.name),
+    age: formatRelative(placedAt, DEMO_NOW),
+    fulfillments,
+    refund,
+    customer: {
+      name: c.name,
+      shortName: shortNamePanel(c.name),
+      lifetimeOrdersLabel,
+      ship: { line1: c.shipLine1, line2: c.shipLine2 },
+      billSameAsShip: c.billSameAsShip,
+      email: c.email,
+    },
+    summary: {
+      subtotal: dto.summary.subtotal,
+      itemsCount: dto.summary.itemsCount,
+      shipping: dto.summary.shipping,
+      tax: dto.summary.tax,
+      paid: dto.summary.paid,
+      feePct: dto.summary.feePct,
+      fee: dto.summary.fee,
+      labelCarrier: dto.summary.labelCarrier ?? "",
+      labelCost: dto.summary.labelCost,
+      net: dto.summary.net,
+    },
+    internalNote: dto.internalNote,
+    customerTags: CUSTOMER_TAGS,
+    customerTagsActive: c.tags,
+    timeline: dto.timeline.map((t) => ({
+      icon: t.icon,
+      title: t.title,
+      sub: t.sub,
+      when: formatRelative(new Date(t.occurredAt), placedAt),
+      ...(t.highlight ? { on: true } : {}),
+      ...(t.tone === "warn" ? { tone: "warn" as const } : {}),
+    })),
+    outstandingProductName: dto.outstandingProductName ?? "",
+  };
+}
+
+export async function getOrderDetailFull(
+  id: string,
+): Promise<OrderDetailFull | null> {
+  "use cache";
+  cacheTag("orders");
+  const number = Number(id);
+  if (!Number.isInteger(number)) return null;
+  const dto = await fetchOrderByNumber(number);
+  if (!dto) return null;
+  return detailToFull(dto);
+}
+
+// ── Static mocks — the pack page stays a fixed visual ──
 
 const ORDER_DETAIL_1001: OrderDetail = {
   id: "#1001",
@@ -103,287 +292,4 @@ const SHIPPING_OPTIONS: ShippingOption[] = [
 ];
 export function getShippingOptions(): ShippingOption[] {
   return SHIPPING_OPTIONS;
-}
-
-// ── Seller management: orders inbox ──
-
-const ORDER_INBOX: OrderInboxRow[] = [
-  {
-    id: "#1042",
-    placedLabel: "Today · 2:14 PM",
-    customer: "Sasha L.",
-    city: "San Francisco, CA",
-    items: "Persimmon vase, Ash budstem",
-    qty: 2,
-    total: 152,
-    ship: "USPS Priority",
-    status: "New",
-    tone: "warn",
-    age: "2h",
-    starred: true,
-  },
-  {
-    id: "#1041",
-    placedLabel: "Today · 11:08 AM",
-    customer: "Devon T.",
-    city: "Brooklyn, NY",
-    items: "Forest bowl, lg.",
-    qty: 1,
-    total: 64,
-    ship: "USPS Ground",
-    status: "New",
-    tone: "warn",
-    age: "5h",
-  },
-  {
-    id: "#1040",
-    placedLabel: "Today · 9:41 AM",
-    customer: "Ari K.",
-    city: "Portland, OR",
-    items: "Cream tumbler set",
-    qty: 1,
-    total: 48,
-    ship: "USPS Ground",
-    status: "New",
-    tone: "warn",
-    age: "7h",
-  },
-  {
-    id: "#1039",
-    placedLabel: "Yesterday",
-    customer: "June P.",
-    city: "Seattle, WA",
-    items: "Indigo carafe",
-    qty: 1,
-    total: 110,
-    ship: "UPS Ground",
-    status: "Packed",
-    tone: "mute",
-    age: "1d",
-  },
-  {
-    id: "#1038",
-    placedLabel: "2 days ago",
-    customer: "Theo R.",
-    city: "Austin, TX",
-    items: "Soft hand vessel +2",
-    qty: 3,
-    total: 218,
-    ship: "USPS Priority",
-    status: "Shipped",
-    tone: "mute",
-    age: "2d",
-  },
-  {
-    id: "#1037",
-    placedLabel: "3 days ago",
-    customer: "Liu W.",
-    city: "Vancouver, BC",
-    items: "Ceremony bowl",
-    qty: 1,
-    total: 142,
-    ship: "USPS Intl",
-    status: "Shipped",
-    tone: "mute",
-    age: "3d",
-  },
-  {
-    id: "#1036",
-    placedLabel: "4 days ago",
-    customer: "Marisol G.",
-    city: "Mexico City, MX",
-    items: "Field cup × 4",
-    qty: 4,
-    total: 88,
-    ship: "USPS Intl",
-    status: "Refund req.",
-    tone: "bad",
-    age: "4d",
-  },
-  {
-    id: "#1035",
-    placedLabel: "5 days ago",
-    customer: "Sam D.",
-    city: "Chicago, IL",
-    items: "Storm bowl",
-    qty: 1,
-    total: 58,
-    ship: "USPS Ground",
-    status: "Delivered",
-    tone: "good",
-    age: "5d",
-  },
-  {
-    id: "#1034",
-    placedLabel: "6 days ago",
-    customer: "Hana R.",
-    city: "Oakland, CA",
-    items: "Earth tumbler ×2",
-    qty: 2,
-    total: 56,
-    ship: "Local pickup",
-    status: "Delivered",
-    tone: "good",
-    age: "6d",
-  },
-  {
-    id: "#1033",
-    placedLabel: "1 week ago",
-    customer: "Paul N.",
-    city: "Los Angeles, CA",
-    items: "Linen vase wrap",
-    qty: 1,
-    total: 18,
-    ship: "USPS First",
-    status: "Cancelled",
-    tone: "mute",
-    age: "7d",
-  },
-];
-export function getOrderInbox(): OrderInboxRow[] {
-  return ORDER_INBOX;
-}
-
-const ORDER_INBOX_TABS: OrderInboxTab[] = [
-  { label: "All", count: 47 },
-  { label: "Needs action", count: 4, on: true },
-  { label: "Packed", count: 2 },
-  { label: "Shipped", count: 18 },
-  { label: "Delivered", count: 21 },
-  { label: "Refund / cancel", count: 2 },
-];
-export function getOrderInboxTabs(): OrderInboxTab[] {
-  return ORDER_INBOX_TABS;
-}
-
-const ORDER_INBOX_SUMMARY: OrderInboxSummary = {
-  totalLifetime: 47,
-  needAction: 4,
-};
-export function getOrderInboxSummary(): OrderInboxSummary {
-  return ORDER_INBOX_SUMMARY;
-}
-
-// ── Seller management: order detail #1042 ──
-
-const ORDER_DETAIL_1042: OrderDetailFull = {
-  id: "#1042",
-  status: "Partially fulfilled",
-  statusTone: "warn",
-  customerShort: "Sasha L.",
-  age: "2 hours ago",
-  outstandingProductName: "Ash budstem",
-  fulfillments: [
-    {
-      idx: 1,
-      of: 2,
-      status: "shipped",
-      productName: "Persimmon vase",
-      productSubtitle: "SKU PV-08 · qty 1 · $86.00",
-      productTone: "clay",
-      qty: 1,
-      price: 86,
-      tracking: "USPS · 9405 5036 9930 0124 2317",
-    },
-    {
-      idx: 2,
-      of: 2,
-      status: "awaiting",
-      productName: "Ash budstem",
-      productSubtitle: "SKU AB-02 · qty 1 · $66.00",
-      productTone: "rust",
-      qty: 1,
-      price: 66,
-      restockNote: "back in stock Tue",
-    },
-  ],
-  refund: {
-    refundable: 152,
-    itemsCount: 2,
-    items: [
-      {
-        name: "Persimmon vase",
-        qty: 1,
-        price: 86,
-        selected: false,
-      },
-      {
-        name: "Ash budstem",
-        qty: 1,
-        price: 66,
-        selected: true,
-        partial: 30,
-      },
-    ],
-    reason: "Item arrived chipped",
-    restockOptions: ["Yes", "No", "Damage"],
-    restockSelected: "Damage",
-    total: 30,
-    lastFour: "4421",
-  },
-  customer: {
-    name: "Sasha Leblanc",
-    shortName: "Sasha L",
-    lifetimeOrdersLabel: "3rd order · $284 lifetime",
-    ship: {
-      line1: "820 Sutter St · #4B",
-      line2: "San Francisco, CA 94109",
-    },
-    billSameAsShip: true,
-    email: "sasha.l@gmail.com",
-  },
-  summary: {
-    subtotal: 152,
-    itemsCount: 2,
-    shipping: 0,
-    tax: 0,
-    paid: 152,
-    feePct: 4,
-    fee: 6.08,
-    labelCarrier: "USPS",
-    labelCost: 9.84,
-    net: 136.08,
-  },
-  internalNote: "Held until budstem restocks Tue. Sasha OK with split.",
-  customerTags: ["VIP", "Repeat buyer", "Gift"],
-  customerTagsActive: ["VIP", "Repeat buyer"],
-  timeline: [
-    {
-      icon: "check",
-      title: "Order placed",
-      sub: "2 items · $152.00 paid via Visa · 4421",
-      when: "2h ago",
-      on: true,
-    },
-    {
-      icon: "box",
-      title: "Persimmon vase packed",
-      sub: "Box S · 1lb 4oz",
-      when: "1h ago",
-    },
-    {
-      icon: "truck",
-      title: "Persimmon vase shipped",
-      sub: "USPS Priority · 1–3 days",
-      when: "52m ago",
-    },
-    {
-      icon: "chat",
-      title: "Note from Sasha",
-      sub: "“No rush on the budstem — ship together if it’s faster!”",
-      when: "14m ago",
-    },
-    {
-      icon: "info",
-      title: "Ash budstem oversold",
-      sub: "Restock arrives Tue · auto-fulfill on",
-      when: "8m ago",
-      tone: "warn",
-    },
-  ],
-};
-
-export function getOrderDetailFull(id: string): OrderDetailFull | null {
-  if (id === "1042") return ORDER_DETAIL_1042;
-  return null;
 }
