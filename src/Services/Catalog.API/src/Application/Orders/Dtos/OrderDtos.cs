@@ -70,7 +70,9 @@ public record OrderSummaryDto(
     decimal Fee,
     string? LabelCarrier,
     decimal LabelCost,
-    decimal Net);
+    decimal Net,
+    string? DiscountCode = null,
+    decimal DiscountAmount = 0m);
 
 public record OrderTimelineDto(
     string Icon,

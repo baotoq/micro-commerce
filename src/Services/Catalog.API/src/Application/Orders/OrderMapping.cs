@@ -118,7 +118,9 @@ internal static class OrderMapping
             o.Fee,
             o.LabelCarrier,
             o.LabelCost,
-            o.Net);
+            o.Net,
+            o.DiscountCode,
+            o.DiscountAmount);
 
         var timeline = o.Timeline
             .Select(t => new OrderTimelineDto(t.Icon, t.Title, t.Sub, t.OccurredAt, t.Tone, t.Highlight))

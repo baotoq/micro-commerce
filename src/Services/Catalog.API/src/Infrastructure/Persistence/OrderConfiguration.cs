@@ -52,6 +52,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.LabelCarrier).HasColumnName("label_carrier").HasMaxLength(40);
         builder.Property(o => o.LabelCost).HasColumnName("label_cost").HasPrecision(18, 2);
         builder.Property(o => o.LabelWeightLabel).HasColumnName("label_weight_label").HasMaxLength(40);
+        builder.Property(o => o.DiscountCode).HasColumnName("discount_code").HasMaxLength(40);
+        builder.Property(o => o.DiscountAmount).HasColumnName("discount_amount").HasPrecision(18, 2);
 
         builder.Property(o => o.InternalNote).HasColumnName("internal_note").HasColumnType("text");
 
