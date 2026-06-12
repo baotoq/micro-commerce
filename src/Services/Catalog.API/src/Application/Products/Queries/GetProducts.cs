@@ -6,7 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.Catalog.Application.Products.Queries;
 
-public record GetProductsQuery(int Page, int PageSize, string? Status, string? Search) : IRequest<PagedResult<ProductDto>>;
+public record GetProductsQuery(
+    int Page,
+    int PageSize,
+    string? Status,
+    string? Search,
+    bool Buyable = false,
+    string? Category = null,
+    string? Sort = null) : IRequest<PagedResult<ProductDto>>;
 
 public class GetProductsHandler(AppDbContext db) : IRequestHandler<GetProductsQuery, PagedResult<ProductDto>>
 {
@@ -17,6 +24,12 @@ public class GetProductsHandler(AppDbContext db) : IRequestHandler<GetProductsQu
         if (ParseStatus(request.Status) is { } status)
             query = query.Where(p => p.Status == status);
 
+        if (request.Buyable)
+            query = query.Where(p => p.Status == ProductStatus.Active || p.Status == ProductStatus.Low);
+
+        if (!string.IsNullOrWhiteSpace(request.Category))
+            query = query.Where(p => p.Category == request.Category);
+
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
             var search = request.Search;
@@ -26,8 +39,13 @@ public class GetProductsHandler(AppDbContext db) : IRequestHandler<GetProductsQu
         }
 
         var total = await query.CountAsync(ct);
+        query = request.Sort switch
+        {
+            "price-asc" => query.OrderBy(p => p.Price),
+            "price-desc" => query.OrderByDescending(p => p.Price),
+            _ => query.OrderByDescending(p => p.Views7d),
+        };
         var items = await query
-            .OrderByDescending(p => p.Views7d)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(p => new ProductDto(

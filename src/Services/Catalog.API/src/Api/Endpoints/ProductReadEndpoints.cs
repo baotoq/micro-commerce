@@ -17,6 +17,11 @@ public static class ProductReadEndpoints
             .CacheOutput(CacheProducts)
             .WithName("GetProductCounts");
 
+        group.MapGet("/categories", async (ISender mediator, CancellationToken ct) =>
+            Results.Ok(await mediator.Send(new GetProductCategoriesQuery(), ct)))
+            .CacheOutput(CacheProducts)
+            .WithName("GetProductCategories");
+
         // Two equivalent paths exist for the wizard's SKU-uniqueness probe (AC-17).
         // The `/by-sku/{sku}/exists` form is the canonical one referenced from task
         // descriptions and admin tooling; `/{sku}/exists` matches the literal wording
@@ -40,8 +45,10 @@ public static class ProductReadEndpoints
 
         group.MapGet("/", async (ISender mediator,
             int page = 1, int limit = 9, string? status = null, string? search = null,
+            bool buyable = false, string? category = null, string? sort = null,
             CancellationToken ct = default) =>
-            Results.Ok(await mediator.Send(new GetProductsQuery(page, limit, status, search), ct)))
+            Results.Ok(await mediator.Send(
+                new GetProductsQuery(page, limit, status, search, buyable, category, sort), ct)))
             .CacheOutput(CacheProducts)
             .WithName("GetProducts");
 
