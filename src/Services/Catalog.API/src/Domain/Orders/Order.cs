@@ -35,6 +35,10 @@ public class Order
 
     public string InternalNote { get; private set; } = string.Empty;
 
+    // Storefront promo discount (applies to item subtotal only; see spec §7)
+    public string? DiscountCode { get; private set; }
+    public decimal DiscountAmount { get; private set; }
+
     // Owned collections
     public IReadOnlyList<OrderLine> Lines => _lines;
     public IReadOnlyList<OrderTimelineEntry> Timeline => _timeline;
@@ -42,7 +46,7 @@ public class Order
 
     // Computed (not stored)
     public decimal Subtotal => _lines.Sum(l => l.UnitPrice * l.Qty);
-    public decimal Paid => Subtotal + ShippingPaid + Tax;
+    public decimal Paid => Subtotal - DiscountAmount + ShippingPaid + Tax;
     public decimal Fee => Math.Round(Paid * FeePct / 100m, 2, MidpointRounding.AwayFromZero);
     public decimal Net => Paid - Fee - LabelCost;
 
@@ -153,6 +157,19 @@ public class Order
     public void ToggleStar()
     {
         Starred = !Starred;
+    }
+
+    public void ApplyDiscount(string code, decimal amount)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+            throw new ArgumentException("Discount code required.", nameof(code));
+        if (amount < 0)
+            throw new ArgumentOutOfRangeException(nameof(amount), "Discount cannot be negative.");
+        if (amount > Subtotal)
+            throw new ArgumentOutOfRangeException(nameof(amount), "Discount cannot exceed the item subtotal.");
+
+        DiscountCode = code;
+        DiscountAmount = amount;
     }
 
     public void AppendTimeline(OrderTimelineEntry entry)

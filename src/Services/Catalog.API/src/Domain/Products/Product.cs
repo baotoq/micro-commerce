@@ -97,6 +97,16 @@ public class Product
         PhotoUrls = photos;
     }
 
+    public void DecrementInventory(int qty)
+    {
+        if (qty < 1)
+            throw new ArgumentOutOfRangeException(nameof(qty), "Quantity must be at least 1.");
+        if (qty > Inventory)
+            throw new InvalidOperationException(
+                $"Cannot decrement inventory by {qty}; only {Inventory} in stock.");
+        Inventory -= qty;
+    }
+
     private static string[] DedupePreserveOrder(IEnumerable<string>? tags)
     {
         if (tags is null) return [];
