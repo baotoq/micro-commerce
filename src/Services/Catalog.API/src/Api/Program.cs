@@ -85,6 +85,7 @@ app.MapPromotionReadEndpoints();
 app.MapPromotionWriteEndpoints();
 app.MapOrderReadEndpoints();
 app.MapOrderWriteEndpoints();
+app.MapStorefrontOrderEndpoints();
 app.MapCustomerReadEndpoints();
 app.MapCustomerWriteEndpoints();
 app.MapPayoutReadEndpoints();

@@ -14,6 +14,9 @@ public static class AuthenticationExtensions
     /// <summary>Authorization policy name protecting every Catalog write endpoint group.</summary>
     public const string SellerPolicy = "seller";
 
+    /// <summary>Any authenticated user — a buyer needs no realm role (spec §3/§6).</summary>
+    public const string BuyerPolicy = "buyer";
+
     public static TBuilder AddCatalogAuthentication<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
@@ -42,8 +45,12 @@ public static class AuthenticationExtensions
             });
 
         builder.Services.AddAuthorization(options =>
+        {
             options.AddPolicy(SellerPolicy, policy =>
-                policy.RequireAuthenticatedUser().RequireRole("seller")));
+                policy.RequireAuthenticatedUser().RequireRole("seller"));
+            options.AddPolicy(BuyerPolicy, policy =>
+                policy.RequireAuthenticatedUser());
+        });
 
         return builder;
     }
