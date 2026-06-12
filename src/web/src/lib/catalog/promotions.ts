@@ -1,4 +1,5 @@
 import "server-only";
+import { getAccessToken } from "@/lib/auth/token";
 import type {
   PromotionDto,
   PromotionInput,
@@ -67,7 +68,10 @@ export async function createPromotion(
   const res = await fetch(`${apiBase()}/api/promotions`, {
     cache: "no-store",
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getAccessToken()}`,
+    },
     body: JSON.stringify(input),
   });
   if (res.status === 409) {
@@ -86,7 +90,10 @@ export async function updatePromotion(
     {
       cache: "no-store",
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${await getAccessToken()}`,
+      },
       body: JSON.stringify(input),
     },
   );
@@ -102,6 +109,7 @@ export async function deletePromotion(code: string): Promise<boolean> {
     {
       cache: "no-store",
       method: "DELETE",
+      headers: { Authorization: `Bearer ${await getAccessToken()}` },
     },
   );
   if (res.status === 404) return false;
@@ -118,6 +126,7 @@ export async function activatePromotion(
     {
       cache: "no-store",
       method: "POST",
+      headers: { Authorization: `Bearer ${await getAccessToken()}` },
     },
   );
   if (res.status === 404) return null;
@@ -137,6 +146,7 @@ export async function endPromotion(code: string): Promise<PromotionDto | null> {
     {
       cache: "no-store",
       method: "POST",
+      headers: { Authorization: `Bearer ${await getAccessToken()}` },
     },
   );
   if (res.status === 404) return null;

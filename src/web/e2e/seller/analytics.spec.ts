@@ -1,10 +1,10 @@
 // web/e2e/seller-analytics.spec.ts
 import { expect, test } from "../fixtures/test";
 
-// KPI values ("$12,480.00", "3.4%"), sources, top products, and funnel stages
-// here come from `src/lib/seller/analytics/data.ts` — a static
-// design-fixture, not the Catalog DB — so this suite is NOT
-// `@seed-dependent`.
+// KPI values, sources, top products, and funnel stages here are derived from
+// the Catalog API (`/api/analytics/overview`) via
+// `src/lib/seller/analytics/data.ts`, so the assertions reflect the seeded
+// values.
 test.describe(
   "Seller analytics",
   { tag: ["@regression", "@analytics"] },
@@ -29,21 +29,37 @@ test.describe(
       await expect(page.getByRole("button", { name: /Export/ })).toBeVisible();
 
       // KPI labels — scope to <main> so the sidebar's "Orders" nav link
-      // doesn't collide with the "Orders" KPI label.
+      // doesn't collide with the "Orders" KPI label. Labels come straight from
+      // the analytics-overview cards.
       const main = page.getByRole("main");
-      for (const label of ["Revenue", "Orders", "Conversion", "Avg. order"]) {
+      for (const label of [
+        "Last 30 days",
+        "Orders",
+        "Avg. order value",
+        "New customers",
+      ]) {
         await expect(main.getByText(label, { exact: true })).toBeVisible();
       }
-      // Both metrics render exactly once in the main content; assert that.
-      await expect(main.getByText("$12,480.00")).toBeVisible();
-      await expect(main.getByText(/3\.4%/)).toBeVisible();
+      // Revenue and Orders KPI values from the seed. The "Last 30 days"
+      // revenue card has no currency keyword in its label, so the KPI formatter
+      // renders it as a plain localized number (3,540.48), not "$3,540.48".
+      await expect(main.getByText("3,540.48", { exact: true })).toBeVisible();
+      await expect(main.getByText("39", { exact: true })).toBeVisible();
 
-      // Sources card
+      // Sources card. "Direct" also appears in the revenue-chart legend, so
+      // scope the source-name lookup to the Sources card (walk up from its
+      // heading) to keep the assertion unambiguous. The revenue figure 2,184
+      // is unique to the Direct row.
       await expect(
         page.getByRole("heading", { name: "Sources" }),
       ).toBeVisible();
-      await expect(page.getByText("Organic search")).toBeVisible();
-      await expect(page.getByText("2,304")).toBeVisible();
+      const sourcesCard = page
+        .getByRole("heading", { name: "Sources" })
+        .locator("..");
+      await expect(
+        sourcesCard.getByText("Direct", { exact: true }),
+      ).toBeVisible();
+      await expect(sourcesCard.getByText("2,184")).toBeVisible();
 
       // Top products
       await expect(
@@ -56,9 +72,9 @@ test.describe(
         page.getByRole("heading", { name: "Conversion funnel" }),
       ).toBeVisible();
       for (const stage of [
-        "Storefront views",
+        "Store visits",
         "Product views",
-        "Added to cart",
+        "Add to cart",
         "Checkout started",
         "Purchased",
       ]) {

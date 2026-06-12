@@ -10,7 +10,7 @@
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
-const ALLOWED_TAGS = new Set(["listings"]);
+const ALLOWED_TAGS = new Set(["listings", "promotions"]);
 
 export async function POST(req: Request) {
   if (process.env.NODE_ENV === "production") {
@@ -29,6 +29,12 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  revalidateTag(tag, {});
+  // `{ expire: 0 }` expires the tag entry immediately so the NEXT request is a
+  // blocking cache miss that fetches fresh data. The empty-object form (`{}`)
+  // behaves like `profile="max"` (stale-while-revalidate), which would let the
+  // e2e see stale rows right after a direct catalog write (e.g. a just-created
+  // promo). `updateTag` (read-your-own-writes) is not usable here — it only
+  // works in Server Actions, and this is a Route Handler.
+  revalidateTag(tag, { expire: 0 });
   return new NextResponse(null, { status: 204 });
 }

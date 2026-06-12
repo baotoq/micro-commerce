@@ -8,6 +8,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Orders;
 public class OrderEndpointsTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _seller = factory.CreateSellerClient();
     private readonly SpyOutputCacheStore _cache = (SpyOutputCacheStore)factory.Services.GetService(typeof(SpyOutputCacheStore))!;
 
     // Unique high order numbers per test so a shared (possibly seeded) DB never collides.
@@ -46,7 +47,7 @@ public class OrderEndpointsTests(CatalogWebApplicationFactory factory) : IClassF
         var ct = TestContext.Current.CancellationToken;
         var number = NextNumber();
 
-        var response = await _client.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
+        var response = await _seller.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
@@ -61,9 +62,9 @@ public class OrderEndpointsTests(CatalogWebApplicationFactory factory) : IClassF
     {
         var ct = TestContext.Current.CancellationToken;
         var number = NextNumber();
-        await _client.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
+        await _seller.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
 
-        var response = await _client.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
+        var response = await _seller.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
@@ -73,7 +74,7 @@ public class OrderEndpointsTests(CatalogWebApplicationFactory factory) : IClassF
     {
         var ct = TestContext.Current.CancellationToken;
         var number = NextNumber();
-        await _client.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
+        await _seller.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
 
         var response = await _client.GetAsync("/api/orders?page=1&limit=200&tab=needs-action", ct);
 
@@ -95,8 +96,8 @@ public class OrderEndpointsTests(CatalogWebApplicationFactory factory) : IClassF
             .Content.ReadFromJsonAsync<OrderCountsDto>(ct);
         Assert.NotNull(before);
 
-        await _client.PostAsJsonAsync("/api/orders", NewOrderCommand(NextNumber()), ct);
-        await _client.PostAsJsonAsync("/api/orders", NewOrderCommand(NextNumber()), ct);
+        await _seller.PostAsJsonAsync("/api/orders", NewOrderCommand(NextNumber()), ct);
+        await _seller.PostAsJsonAsync("/api/orders", NewOrderCommand(NextNumber()), ct);
 
         var after = await (await _client.GetAsync("/api/orders/counts", ct))
             .Content.ReadFromJsonAsync<OrderCountsDto>(ct);
@@ -122,11 +123,11 @@ public class OrderEndpointsTests(CatalogWebApplicationFactory factory) : IClassF
     {
         var ct = TestContext.Current.CancellationToken;
         var number = NextNumber();
-        await _client.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
+        await _seller.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
 
         var beforeCount = _cache.EvictedTags.Count(t => t == "orders");
 
-        var response = await _client.PostAsync($"/api/orders/{number}/pack", null, ct);
+        var response = await _seller.PostAsync($"/api/orders/{number}/pack", null, ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var dto = await response.Content.ReadFromJsonAsync<OrderDetailDto>(ct);
@@ -141,18 +142,18 @@ public class OrderEndpointsTests(CatalogWebApplicationFactory factory) : IClassF
     {
         var ct = TestContext.Current.CancellationToken;
         var number = NextNumber();
-        await _client.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
+        await _seller.PostAsJsonAsync("/api/orders", NewOrderCommand(number), ct);
 
-        var pack = await _client.PostAsync($"/api/orders/{number}/pack", null, ct);
+        var pack = await _seller.PostAsync($"/api/orders/{number}/pack", null, ct);
         Assert.Equal(HttpStatusCode.OK, pack.StatusCode);
 
-        var ship = await _client.PostAsJsonAsync($"/api/orders/{number}/ship",
+        var ship = await _seller.PostAsJsonAsync($"/api/orders/{number}/ship",
             new ShipOrderCommand(number, "USPS", "USPS · 9405 lifecycle"), ct);
         Assert.Equal(HttpStatusCode.OK, ship.StatusCode);
         var shipped = await ship.Content.ReadFromJsonAsync<OrderDetailDto>(ct);
         Assert.Equal("shipped", shipped!.Status);
 
-        var deliver = await _client.PostAsync($"/api/orders/{number}/deliver", null, ct);
+        var deliver = await _seller.PostAsync($"/api/orders/{number}/deliver", null, ct);
         Assert.Equal(HttpStatusCode.OK, deliver.StatusCode);
         var delivered = await deliver.Content.ReadFromJsonAsync<OrderDetailDto>(ct);
         Assert.Equal("delivered", delivered!.Status);

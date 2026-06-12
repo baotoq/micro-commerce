@@ -7,8 +7,8 @@ public static class OrderWriteEndpoints
 {
     public static IEndpointRouteBuilder MapOrderWriteEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/orders").WithTags("Orders");
-        // TODO(auth): requireSeller()
+        var group = app.MapGroup("/api/orders").WithTags("Orders")
+            .RequireAuthorization(AuthenticationExtensions.SellerPolicy);
 
         // TODO(buyer-checkout): in production orders originate from a buyer checkout flow, not a seller POST (OQ7).
         group.MapPost("/", async (CreateOrderCommand command, ISender mediator, CancellationToken ct) =>

@@ -45,6 +45,8 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+# Auth storageState written by e2e/auth.setup.ts (real Keycloak session)
+e2e/.auth/
 
 # OMC subagent state
 .omc/

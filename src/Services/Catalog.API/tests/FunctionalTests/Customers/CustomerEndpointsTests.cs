@@ -8,6 +8,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Customers;
 public class CustomerEndpointsTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _seller = factory.CreateSellerClient();
     private readonly SpyOutputCacheStore _cache = (SpyOutputCacheStore)factory.Services.GetService(typeof(SpyOutputCacheStore))!;
 
     private static string NewEmail() => $"fn-{Guid.NewGuid():N}@example.com";
@@ -35,7 +36,7 @@ public class CustomerEndpointsTests(CatalogWebApplicationFactory factory) : ICla
         var email = NewEmail();
         var ct = TestContext.Current.CancellationToken;
 
-        var response = await _client.PostAsJsonAsync("/api/customers", NewCustomerCommand(email), ct);
+        var response = await _seller.PostAsJsonAsync("/api/customers", NewCustomerCommand(email), ct);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
@@ -49,9 +50,9 @@ public class CustomerEndpointsTests(CatalogWebApplicationFactory factory) : ICla
     {
         var email = NewEmail();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/customers", NewCustomerCommand(email), ct);
+        await _seller.PostAsJsonAsync("/api/customers", NewCustomerCommand(email), ct);
 
-        var response = await _client.PostAsJsonAsync("/api/customers", NewCustomerCommand(email), ct);
+        var response = await _seller.PostAsJsonAsync("/api/customers", NewCustomerCommand(email), ct);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
@@ -71,7 +72,7 @@ public class CustomerEndpointsTests(CatalogWebApplicationFactory factory) : ICla
     {
         var ct = TestContext.Current.CancellationToken;
 
-        var response = await _client.PostAsJsonAsync($"/api/customers/{NewEmail()}/tags", new AddTagBody("VIP"), ct);
+        var response = await _seller.PostAsJsonAsync($"/api/customers/{NewEmail()}/tags", new AddTagBody("VIP"), ct);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -81,11 +82,11 @@ public class CustomerEndpointsTests(CatalogWebApplicationFactory factory) : ICla
     {
         var email = NewEmail();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/customers", NewCustomerCommand(email), ct);
+        await _seller.PostAsJsonAsync("/api/customers", NewCustomerCommand(email), ct);
 
         var beforeCount = _cache.EvictedTags.Count(t => t == "customers");
 
-        var response = await _client.PostAsJsonAsync($"/api/customers/{email}/tags", new AddTagBody("VIP"), ct);
+        var response = await _seller.PostAsJsonAsync($"/api/customers/{email}/tags", new AddTagBody("VIP"), ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var updated = await response.Content.ReadFromJsonAsync<CustomerDto>(ct);

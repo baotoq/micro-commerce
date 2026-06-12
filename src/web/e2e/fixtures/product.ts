@@ -1,5 +1,6 @@
 import type { APIRequestContext, TestInfo } from "@playwright/test";
 import { API_URL, productEndpoint } from "./api";
+import { getSellerToken } from "./keycloak-token";
 
 export type ProductPayload = {
   sku: string;
@@ -56,7 +57,13 @@ export const createProduct = async (
   payload: Partial<ProductPayload> & { sku: string },
 ): Promise<ProductPayload> => {
   const body: ProductPayload = { ...defaults, ...payload };
-  const res = await request.post(`${API_URL}/api/products`, { data: body });
+  // Catalog API gates writes behind the `seller` role; this direct-API call
+  // bypasses the browser storageState, so attach a Keycloak seller bearer token.
+  const token = await getSellerToken(request);
+  const res = await request.post(`${API_URL}/api/products`, {
+    data: body,
+    headers: { Authorization: `Bearer ${token}` },
+  });
   if (!res.ok()) {
     throw new Error(
       `createProduct failed: ${res.status()} ${await res.text()}`,
@@ -76,7 +83,11 @@ export const deleteProduct = async (
 ): Promise<void> => {
   // Cleanup is best-effort: a teardown failure shouldn't fail the test, but it
   // shouldn't be silently swallowed either — Playwright surfaces it in trace.
-  const res = await request.delete(productEndpoint(sku));
+  // DELETE is `seller`-gated like POST, so it needs a bearer token too.
+  const token = await getSellerToken(request);
+  const res = await request.delete(productEndpoint(sku), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   if (!res.ok() && res.status() !== 404) {
     throw new Error(
       `deleteProduct failed for ${sku}: ${res.status()} ${await res.text()}`,

@@ -1,9 +1,10 @@
 import { expect, test } from "../fixtures/test";
 
-// Counts and copy in this suite ("184 buyers · 96% deliverable", template
-// chip labels, etc.) come from a static design-fixture file in
-// `src/lib/seller/marketing/data.ts`, not the Catalog DB — so the assertions
-// remain stable regardless of seed state and are NOT `@seed-dependent`.
+// Recipient counts ("184 buyers · 96% deliverable"), template chips and
+// schedule copy are static defaults in `src/lib/seller/marketing/data.ts`,
+// while the campaign subject + preview text are driven by the Catalog API
+// (`/api/marketing/campaigns?status=draft` + draft detail) — those two
+// assertions reflect the seeded draft campaign.
 test.describe(
   "seller marketing page",
   { tag: ["@regression", "@marketing"] },
@@ -75,14 +76,12 @@ test.describe(
       // the email preview header (right). Assert count=2 so a regression that
       // drops one side is caught instead of masked by `.first()`.
       await expect(
-        page.getByText("The persimmon vase is back · just 8 this batch"),
+        page.getByText("New arrivals for spring, handmade just for you"),
       ).toHaveCount(2);
     });
 
     test("preview text visible in composer and preview", async ({ page }) => {
-      await expect(
-        page.getByText("A small restock — three glaze variations this round."),
-      ).toHaveCount(2);
+      await expect(page.getByText("Fresh from the studio.")).toHaveCount(2);
     });
 
     test('"Best time · Thu 6 PM" visible', async ({ page }) => {

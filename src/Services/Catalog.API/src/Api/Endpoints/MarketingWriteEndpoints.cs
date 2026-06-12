@@ -8,8 +8,8 @@ public static class MarketingWriteEndpoints
 {
     public static IEndpointRouteBuilder MapMarketingWriteEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/marketing").WithTags("Marketing");
-        // TODO(auth): requireSeller()
+        var group = app.MapGroup("/api/marketing").WithTags("Marketing")
+            .RequireAuthorization(AuthenticationExtensions.SellerPolicy);
 
         group.MapPost("/campaigns", async (CreateCampaignCommand command, IClock clock, ISender mediator, CancellationToken ct) =>
         {

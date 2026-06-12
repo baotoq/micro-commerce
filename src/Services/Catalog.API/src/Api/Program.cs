@@ -3,6 +3,7 @@ using Azure.Storage.Blobs.Models;
 using MicroCommerce.Catalog.Application;
 using MicroCommerce.Catalog.Infrastructure;
 using MicroCommerce.Catalog.Application.Persistence;
+using MicroCommerce.Catalog.Api;
 using MicroCommerce.Catalog.Api.Endpoints;
 using MicroCommerce.Catalog.Api.ExceptionHandlers;
 using MicroCommerce.Catalog.Api.SeedData;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddCatalogAuthentication();
 builder.AddRedisClientBuilder("cache")
     .WithOutputCache();
 builder.AddInfrastructure();
@@ -70,6 +72,9 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseOutputCache();
 

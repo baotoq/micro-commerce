@@ -8,7 +8,8 @@ public static class ProductWriteEndpoints
 {
     public static IEndpointRouteBuilder MapProductWriteEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/products").WithTags("Products");
+        var group = app.MapGroup("/api/products").WithTags("Products")
+            .RequireAuthorization(AuthenticationExtensions.SellerPolicy);
 
         group.MapPost("/", async (CreateProductCommand command, ISender mediator, CancellationToken ct) =>
         {
@@ -39,7 +40,6 @@ public static class ProductWriteEndpoints
         })
         .WithName("DeleteProduct");
 
-        // TODO(auth): requireSeller() — endpoint currently unauthenticated; gate behind seller auth before going live.
         // TODO(security): rate-limit POST /api/products/photo-upload-url to prevent
         // SAS-token enumeration / abuse. Aspire has no rate-limit primitive yet; consider
         // AspNetCoreRateLimit or a Dapr middleware.

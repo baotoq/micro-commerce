@@ -154,3 +154,19 @@ export async function deletePromoAction(code: string): Promise<ActionResult> {
     return { ok: false, error: message };
   }
 }
+
+// `<form action>` requires a void-returning server action. These thin wrappers
+// adapt the row actions (which return ActionResult) for direct form binding via
+// `.bind(null, code)`, so submitting gets proper server-action revalidation
+// (a plain client closure calling the action did not refresh the table).
+export async function activatePromoFormAction(code: string): Promise<void> {
+  await activatePromoAction(code);
+}
+
+export async function endPromoFormAction(code: string): Promise<void> {
+  await endPromoAction(code);
+}
+
+export async function deletePromoFormAction(code: string): Promise<void> {
+  await deletePromoAction(code);
+}

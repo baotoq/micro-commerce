@@ -1,12 +1,18 @@
+using System.Net.Http.Headers;
 using System.Text;
 using Dapr.Client;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
+using MicroCommerce.Catalog.FunctionalTests.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using Testcontainers.Azurite;
 using Testcontainers.PostgreSql;
 
@@ -59,7 +65,42 @@ public class CatalogWebApplicationFactory : WebApplicationFactory<Program>, IAsy
             services.RemoveAll<DaprClient>();
             var grpcEndpoint = $"http://localhost:{_dapr.GetMappedPublicPort(50001)}";
             services.AddSingleton(new DaprClientBuilder().UseGrpcEndpoint(grpcEndpoint).Build());
+
+            // Re-point the REAL JwtBearer handler at self-minted tokens (TestTokens) so the full
+            // authentication + seller-policy pipeline runs without a Keycloak container or any
+            // back-channel metadata fetch. Pre-seeding Configuration short-circuits the
+            // ConfigurationManager that AddKeycloakJwtBearer wires via service discovery.
+            services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.Authority = null;
+                options.MetadataAddress = null!;
+                options.Configuration = new OpenIdConnectConfiguration { Issuer = TestTokens.Issuer };
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = TestTokens.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = TestTokens.Audience,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = TestTokens.SigningKey,
+                    ValidateLifetime = true,
+                    RoleClaimType = TestTokens.RoleClaimType,
+                };
+            });
         });
+    }
+
+    /// <summary>
+    /// HttpClient whose default Authorization header carries a self-minted seller token, so calls
+    /// pass the real JwtBearer handler and the seller policy. Use for authenticated write requests.
+    /// </summary>
+    public HttpClient CreateSellerClient()
+    {
+        var client = CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", TestTokens.Mint(["seller"]));
+        return client;
     }
 
     public async ValueTask InitializeAsync()

@@ -7,9 +7,9 @@ public static class PromotionWriteEndpoints
 {
     public static IEndpointRouteBuilder MapPromotionWriteEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/promotions").WithTags("Promotions");
+        var group = app.MapGroup("/api/promotions").WithTags("Promotions")
+            .RequireAuthorization(AuthenticationExtensions.SellerPolicy);
 
-        // TODO(auth): requireSeller() — endpoint currently unauthenticated; gate behind seller auth before going live.
         group.MapPost("/", async (CreatePromotionCommand command, ISender mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(command, ct);

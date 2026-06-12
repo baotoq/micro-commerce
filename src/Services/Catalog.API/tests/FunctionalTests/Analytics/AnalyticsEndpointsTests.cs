@@ -8,6 +8,8 @@ namespace MicroCommerce.Catalog.FunctionalTests.Analytics;
 public class AnalyticsEndpointsTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    // Orders are seeded via the now-authenticated write endpoint; reads stay anonymous.
+    private readonly HttpClient _seller = factory.CreateSellerClient();
     private readonly SpyOutputCacheStore _cache = (SpyOutputCacheStore)factory.Services.GetService(typeof(SpyOutputCacheStore))!;
 
     // Unique order numbers per test keep the shared Testcontainers DB collision-free
@@ -45,7 +47,7 @@ public class AnalyticsEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     public async Task GetAnalyticsOverview_Returns200_WithTopProducts()
     {
         var ct = TestContext.Current.CancellationToken;
-        var create = await _client.PostAsJsonAsync("/api/orders",
+        var create = await _seller.PostAsJsonAsync("/api/orders",
             NewOrderCommand(NextNumber(), "MC-VS-001", "Persimmon vase", 86.00m), ct);
         Assert.Equal(HttpStatusCode.Created, create.StatusCode);
 
@@ -77,7 +79,7 @@ public class AnalyticsEndpointsTests(CatalogWebApplicationFactory factory) : ICl
         var ct = TestContext.Current.CancellationToken;
         var before = _cache.EvictedTags.Count(t => t == "analytics");
 
-        await _client.PostAsJsonAsync("/api/orders",
+        await _seller.PostAsJsonAsync("/api/orders",
             NewOrderCommand(NextNumber(), "MC-VS-001", "Persimmon vase", 86.00m), ct);
 
         Assert.True(_cache.EvictedTags.Count(t => t == "analytics") > before,

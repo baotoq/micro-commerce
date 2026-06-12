@@ -7,6 +7,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Products;
 public class ProductExistsBySkuTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _seller = factory.CreateSellerClient();
 
     private static string NewSku() => $"FN-EX-{Guid.NewGuid():N}"[..16].ToUpperInvariant();
 
@@ -15,7 +16,7 @@ public class ProductExistsBySkuTests(CatalogWebApplicationFactory factory) : ICl
     {
         var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
-        await _client.PostAsJsonAsync("/api/products",
+        await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Exists Test", "Vessels", 10m, 1, "draft"), ct);
 
         var response = await _client.GetAsync($"/api/products/by-sku/{sku}/exists", ct);
@@ -39,7 +40,7 @@ public class ProductExistsBySkuTests(CatalogWebApplicationFactory factory) : ICl
     {
         var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
-        await _client.PostAsJsonAsync("/api/products",
+        await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Case Test", "Vessels", 10m, 1, "draft"), ct);
 
         var response = await _client.GetAsync($"/api/products/by-sku/{sku.ToLowerInvariant()}/exists", ct);
@@ -53,7 +54,7 @@ public class ProductExistsBySkuTests(CatalogWebApplicationFactory factory) : ICl
         // AC-17 literal path: /api/products/{sku}/exists.
         var ct = TestContext.Current.CancellationToken;
         var sku = NewSku();
-        await _client.PostAsJsonAsync("/api/products",
+        await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Alias Test", "Vessels", 10m, 1, "draft"), ct);
 
         var response = await _client.GetAsync($"/api/products/{sku}/exists", ct);

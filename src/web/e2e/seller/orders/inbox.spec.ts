@@ -1,8 +1,9 @@
 import { expect, test } from "../../fixtures/test";
 
-// Counts ("47 lifetime", "Showing 1 – 10 of 47", 10 tbody rows) come from
-// `src/lib/seller/orders/data.ts` — a static design-fixture, not the
-// Catalog DB — so this suite is NOT `@seed-dependent`.
+// Counts ("46 lifetime", "Showing 1 – 10 of 46", row count) are derived from
+// the Catalog API (`/api/orders/counts` + `/api/orders?tab=all`) via
+// `src/lib/seller/orders/data.ts`, so the assertions reflect the seeded data.
+// The inbox loads the default page (pageSize 20), so the table renders 20 rows.
 test.describe("seller orders inbox", { tag: ["@smoke", "@orders"] }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/seller/orders");
@@ -15,7 +16,7 @@ test.describe("seller orders inbox", { tag: ["@smoke", "@orders"] }, () => {
   });
 
   test("shows subtitle with lifetime and action counts", async ({ page }) => {
-    await expect(page.getByText("47 lifetime · 4 need action")).toBeVisible();
+    await expect(page.getByText("46 lifetime · 4 need action")).toBeVisible();
   });
 
   test("shows all 6 tab labels", async ({ page }) => {
@@ -56,12 +57,13 @@ test.describe("seller orders inbox", { tag: ["@smoke", "@orders"] }, () => {
   });
 
   test("shows pagination text", async ({ page }) => {
-    await expect(page.getByText("Showing 1 – 10 of 47")).toBeVisible();
+    await expect(page.getByText("Showing 1 – 10 of 46")).toBeVisible();
   });
 
-  test("table has 10 rows", async ({ page }) => {
+  test("table has 20 rows", async ({ page }) => {
+    // The inbox loads the default page (pageSize 20) of the seeded 46 orders.
     const rows = page.locator("tbody tr");
-    await expect(rows).toHaveCount(10);
+    await expect(rows).toHaveCount(20);
   });
 
   test("Mira is not visible anywhere", async ({ page }) => {

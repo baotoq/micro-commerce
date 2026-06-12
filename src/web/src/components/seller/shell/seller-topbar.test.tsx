@@ -1,5 +1,12 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// SellerTopbar renders <SignOut />, which imports the `signOut` server action
+// from the auth config (eagerly calls NextAuth). Mock it for isolation.
+vi.mock("@/lib/auth/config", () => ({
+  signOut: vi.fn(),
+}));
+
 import { SellerTopbar } from "@/components/seller/shell/seller-topbar";
 
 describe("SellerTopbar", () => {
@@ -48,5 +55,26 @@ describe("SellerTopbar", () => {
       />,
     );
     expect(screen.getByRole("button", { name: "Export" })).toBeInTheDocument();
+  });
+
+  it("renders the sign-out control", () => {
+    render(<SellerTopbar title="Listings" />);
+    expect(
+      screen.getByRole("button", { name: "Sign out" }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the signed-in account email when provided", () => {
+    render(
+      <SellerTopbar title="Listings" accountEmail="seller@microcommerce.dev" />,
+    );
+    expect(screen.getByText("seller@microcommerce.dev")).toBeInTheDocument();
+  });
+
+  it("does not render the account email element when omitted", () => {
+    render(<SellerTopbar title="Listings" />);
+    expect(
+      screen.queryByText("seller@microcommerce.dev"),
+    ).not.toBeInTheDocument();
   });
 });

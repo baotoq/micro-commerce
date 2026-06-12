@@ -1,15 +1,19 @@
 import { Bell } from "lucide-react";
 import type React from "react";
+import { SignOut } from "@/components/seller/shell/sign-out";
 import { BRAND } from "@/lib/seller/brand";
 
 export function SellerTopbar({
   title,
   subtitle,
   actions,
+  accountEmail,
 }: {
   title: string;
   subtitle?: string;
   actions?: React.ReactNode;
+  /** Signed-in seller email surfaced next to the avatar, when available. */
+  accountEmail?: string;
 }) {
   const initial = BRAND.owner.charAt(0);
   return (
@@ -40,6 +44,12 @@ export function SellerTopbar({
         >
           {initial}
         </div>
+        {accountEmail && (
+          <span className="max-w-40 truncate text-xs text-foreground/60">
+            {accountEmail}
+          </span>
+        )}
+        <SignOut />
       </div>
     </div>
   );

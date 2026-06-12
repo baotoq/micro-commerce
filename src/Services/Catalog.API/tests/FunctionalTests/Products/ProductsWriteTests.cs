@@ -8,6 +8,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Products;
 public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _seller = factory.CreateSellerClient();
     private readonly SpyOutputCacheStore _cache = (SpyOutputCacheStore)factory.Services.GetService(typeof(SpyOutputCacheStore))!;
 
     private static string NewSku() => $"FN-{Guid.NewGuid():N}"[..16].ToUpperInvariant();
@@ -18,7 +19,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
 
-        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products",
+        HttpResponseMessage response = await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Functional Test Vase", "Vessels", 49.99m, 10, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -35,9 +36,9 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
         var command = new CreateProductCommand(sku, "Original", "Vessels", 49.99m, 10, "active", PhotoUrls: ["https://example.com/p.jpg"]);
-        await _client.PostAsJsonAsync("/api/products", command, ct);
+        await _seller.PostAsJsonAsync("/api/products", command, ct);
 
-        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products", command with { Name = "Duplicate" }, ct);
+        HttpResponseMessage response = await _seller.PostAsJsonAsync("/api/products", command with { Name = "Duplicate" }, ct);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
@@ -47,10 +48,10 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
     {
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/products",
+        await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Before Update", "Drinkware", 20m, 5, "draft"), ct);
 
-        HttpResponseMessage response = await _client.PutAsJsonAsync($"/api/products/{sku}",
+        HttpResponseMessage response = await _seller.PutAsJsonAsync($"/api/products/{sku}",
             new UpdateProductCommand(sku, "After Update", "Tableware", 35m, 8, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -66,7 +67,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
     {
         var ct = TestContext.Current.CancellationToken;
 
-        HttpResponseMessage response = await _client.PutAsJsonAsync("/api/products/NOSUCH-SKU-999",
+        HttpResponseMessage response = await _seller.PutAsJsonAsync("/api/products/NOSUCH-SKU-999",
             new UpdateProductCommand("NOSUCH-SKU-999", "X", "Y", 1m, 1, "draft"), ct);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -77,10 +78,10 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
     {
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/products",
+        await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "To Delete", "Vessels", 15m, 1, "draft"), ct);
 
-        HttpResponseMessage deleteResponse = await _client.DeleteAsync($"/api/products/{sku}", ct);
+        HttpResponseMessage deleteResponse = await _seller.DeleteAsync($"/api/products/{sku}", ct);
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
         HttpResponseMessage getResponse = await _client.GetAsync($"/api/products/{sku}", ct);
@@ -92,7 +93,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
     {
         var ct = TestContext.Current.CancellationToken;
 
-        HttpResponseMessage response = await _client.DeleteAsync("/api/products/NOSUCH-SKU-888", ct);
+        HttpResponseMessage response = await _seller.DeleteAsync("/api/products/NOSUCH-SKU-888", ct);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -109,7 +110,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         var command = new CreateProductCommand(sku, "Race", "Vessels", 1m, 1, "active", PhotoUrls: ["https://example.com/p.jpg"]);
 
         var tasks = Enumerable.Range(0, 8)
-            .Select(_ => _client.PostAsJsonAsync("/api/products", command, ct))
+            .Select(_ => _seller.PostAsJsonAsync("/api/products", command, ct))
             .ToArray();
         var responses = await Task.WhenAll(tasks);
 
@@ -128,7 +129,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
 
-        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products",
+        HttpResponseMessage response = await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Bad", "Vessels", -1m, 1, "active"), ct);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -142,7 +143,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
 
-        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products",
+        HttpResponseMessage response = await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "", "Vessels", 1m, 1, "active"), ct);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -155,7 +156,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
 
-        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/products",
+        HttpResponseMessage response = await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "X", "Vessels", 1m, 1, "bogus"), ct);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -170,7 +171,7 @@ public class ProductsWriteTests(CatalogWebApplicationFactory factory) : IClassFi
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
 
-        await _client.PostAsJsonAsync("/api/products",
+        await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Cache Test", "Vessels", 1m, 1, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         Assert.True(_cache.EvictedTags.Count(t => t == "products") > beforeCount,

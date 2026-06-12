@@ -1,7 +1,7 @@
 import {
-  activatePromoAction,
-  deletePromoAction,
-  endPromoAction,
+  activatePromoFormAction,
+  deletePromoFormAction,
+  endPromoFormAction,
 } from "@/lib/seller/promos/actions";
 import type { PromoCode } from "@/lib/seller/promos/types";
 
@@ -158,11 +158,7 @@ export function PromosTable({ promos }: { promos: PromoCode[] }) {
             <td className="px-4 py-3">
               <div className="flex items-center gap-1">
                 {promo.status === "Draft" && (
-                  <form
-                    action={async () => {
-                      await activatePromoAction(promo.code);
-                    }}
-                  >
+                  <form action={activatePromoFormAction.bind(null, promo.code)}>
                     <button
                       type="submit"
                       className="rounded px-2 py-1 text-[11px] font-semibold text-primary hover:bg-primary/10"
@@ -173,11 +169,7 @@ export function PromosTable({ promos }: { promos: PromoCode[] }) {
                   </form>
                 )}
                 {promo.status === "Active" && (
-                  <form
-                    action={async () => {
-                      await endPromoAction(promo.code);
-                    }}
-                  >
+                  <form action={endPromoFormAction.bind(null, promo.code)}>
                     <button
                       type="submit"
                       className="rounded px-2 py-1 text-[11px] font-semibold text-muted-foreground hover:bg-black/[0.04]"
@@ -187,11 +179,7 @@ export function PromosTable({ promos }: { promos: PromoCode[] }) {
                     </button>
                   </form>
                 )}
-                <form
-                  action={async () => {
-                    await deletePromoAction(promo.code);
-                  }}
-                >
+                <form action={deletePromoFormAction.bind(null, promo.code)}>
                   <button
                     type="submit"
                     className="rounded px-2 py-1 text-[11px] font-semibold text-destructive/70 hover:bg-destructive/10"

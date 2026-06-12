@@ -1,6 +1,7 @@
 "use server";
 
 import { updateTag } from "next/cache";
+import { requireSeller } from "@/lib/auth/token";
 import { createProduct, deleteProduct, updateProduct } from "@/lib/catalog/api";
 import { productInputSchema, productUpdateSchema } from "./schema";
 
@@ -46,7 +47,7 @@ function formDataToInput(formData: FormData): Record<string, unknown> {
 export async function createListingAction(
   formData: FormData,
 ): Promise<ActionResult> {
-  // TODO(auth): requireSeller() — see audit/auth-followup.md
+  await requireSeller();
   const parsed = productInputSchema.safeParse(formDataToInput(formData));
   if (!parsed.success) {
     const fieldErrors: Record<string, string[]> = {};
@@ -81,7 +82,7 @@ export async function updateListingAction(
   sku: string,
   formData: FormData,
 ): Promise<ActionResult> {
-  // TODO(auth): requireSeller() — see audit/auth-followup.md
+  await requireSeller();
   // The legacy edit form doesn't render weight/origin — productUpdateSchema
   // keeps those optional with backend-aligned defaults so existing edits don't
   // start failing now that the create wizard has expanded the field set.
@@ -117,7 +118,7 @@ export async function updateListingAction(
 }
 
 export async function deleteListingAction(sku: string): Promise<ActionResult> {
-  // TODO(auth): requireSeller() — see audit/auth-followup.md
+  await requireSeller();
   try {
     const deleted = await deleteProduct(sku);
     if (!deleted) {

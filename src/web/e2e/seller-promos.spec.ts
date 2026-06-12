@@ -9,13 +9,17 @@
 //   BASE_URL=<web-endpoint> npm run e2e -- seller-promos
 
 import type { APIRequestContext } from "@playwright/test";
+import { getSellerToken } from "./fixtures/keycloak-token";
 import { sellerRoutes } from "./fixtures/seller";
 import { expect, test } from "./fixtures/test";
 
+// The Catalog API base. Aspire injects the hyphenated env var; fall back to a
+// dev override then the local catalog-api port (5481) — NOT the web origin,
+// which would 404 every /api/promotions write.
 const API_URL =
   process.env["services__catalog-api__http__0"] ??
   process.env.API_URL ??
-  "http://localhost:3000";
+  "http://localhost:5481";
 
 const WEB_URL =
   process.env.services__web__http__0 ??
@@ -33,7 +37,10 @@ async function createPromo(
     activateImmediately: boolean;
   },
 ) {
+  // Writes are gated by the `seller` role — mint a real Keycloak token.
+  const token = await getSellerToken(request);
   const res = await request.post(`${API_URL}/api/promotions`, {
+    headers: { Authorization: `Bearer ${token}` },
     data: payload,
   });
   if (!res.ok()) {
@@ -46,8 +53,13 @@ async function deletePromo(
   request: APIRequestContext,
   code: string,
 ): Promise<void> {
+  // Best-effort cleanup, but still authenticated — an anonymous DELETE 401s
+  // and would leak the test promo into the shared catalog.
+  const token = await getSellerToken(request).catch(() => null);
   await request
-    .delete(`${API_URL}/api/promotions/${encodeURIComponent(code)}`)
+    .delete(`${API_URL}/api/promotions/${encodeURIComponent(code)}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
     .catch(() => {});
 }
 
@@ -78,8 +90,21 @@ test.describe(
       page,
     }) => {
       await page.goto(sellerRoutes.promos);
-      for (const label of ["Active", "Draft", "Ended", "Total"]) {
-        await expect(page.getByText(label, { exact: true })).toBeVisible();
+      // Each stat label (e.g. "Active") ALSO appears as a per-row status chip,
+      // so a bare exact getByText is a strict-mode violation once seeded promos
+      // render. Scope each label to its stat card via the card's unique
+      // sub-line (1:1 with the four cards).
+      const cards: Array<[label: string, sub: string]> = [
+        ["Active", "currently live"],
+        ["Draft", "not yet started"],
+        ["Ended", "past their window"],
+        ["Total", "all-time"],
+      ];
+      for (const [label, sub] of cards) {
+        const card = page
+          .getByText(sub, { exact: true })
+          .locator("xpath=ancestor::div[1]");
+        await expect(card.getByText(label, { exact: true })).toBeVisible();
       }
     });
 
@@ -125,16 +150,24 @@ test.describe(
         const endBtn = page.getByRole("button", { name: `End ${code}` });
         await expect(endBtn).toBeVisible({ timeout: 10_000 });
 
-        // The status chip in the row should show Active.
+        // The status chip in the row should show Active. Scope to the pill
+        // <span> (class `rounded-full`) — the Window cell can render the same
+        // status word (e.g. "Ended" for a promo with no date window), which
+        // would make a bare row.getByText a strict-mode violation.
         const codeCell = page.getByText(code, { exact: true });
         const row = codeCell.locator("xpath=ancestor::tr[1]");
-        await expect(row.getByText("Active", { exact: true })).toBeVisible();
+        const statusChip = row.locator("span.rounded-full");
+        await expect(
+          statusChip.getByText("Active", { exact: true }),
+        ).toBeVisible();
 
         // Click End.
         await endBtn.click();
 
         // Status chip should flip to Ended; no End button remains for this row.
-        await expect(row.getByText("Ended", { exact: true })).toBeVisible({
+        await expect(
+          statusChip.getByText("Ended", { exact: true }),
+        ).toBeVisible({
           timeout: 10_000,
         });
         await expect(

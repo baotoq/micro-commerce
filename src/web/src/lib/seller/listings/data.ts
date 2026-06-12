@@ -1,5 +1,11 @@
 // Listings are persisted by the Catalog API. Dev/e2e data is seeded by the
 // SeedData/products.json fixture in src/Services/Catalog.API/src/Api.
+//
+// AUTH RULE (Keycloak): these loaders are cached (`"use cache"`) and therefore
+// anonymous — calling auth()/getAccessToken() inside `"use cache"` is illegal.
+// A loader is either cached+anonymous or uncached+authenticated, never both.
+// The underlying read endpoints are public; authenticated writes live in the
+// uncached fetchers under lib/catalog/*.ts.
 import { cacheTag } from "next/cache";
 import {
   fetchProductBySku,

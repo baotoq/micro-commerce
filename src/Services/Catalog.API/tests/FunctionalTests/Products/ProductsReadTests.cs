@@ -8,6 +8,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Products;
 public class ProductsReadTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _seller = factory.CreateSellerClient();
 
     private static string NewSku() => $"FN-{Guid.NewGuid():N}"[..16].ToUpperInvariant();
 
@@ -29,7 +30,7 @@ public class ProductsReadTests(CatalogWebApplicationFactory factory) : IClassFix
     {
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/products",
+        await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Lookup Test", "Tableware", 25m, 3, "draft"), ct);
 
         HttpResponseMessage response = await _client.GetAsync($"/api/products/{sku}", ct);
@@ -68,7 +69,7 @@ public class ProductsReadTests(CatalogWebApplicationFactory factory) : IClassFix
     {
         var sku = NewSku();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/products",
+        await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Filter Test", "Drinkware", 10m, 5, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         HttpResponseMessage response = await _client.GetAsync("/api/products?status=active&limit=100", ct);
@@ -85,7 +86,7 @@ public class ProductsReadTests(CatalogWebApplicationFactory factory) : IClassFix
         var sku = NewSku();
         string uniqueName = $"SearchableWidget-{Guid.NewGuid():N}"[..30];
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/products",
+        await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, uniqueName, "Electronics", 9.99m, 5, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
 
         HttpResponseMessage response = await _client.GetAsync($"/api/products?search={uniqueName[..10]}", ct);

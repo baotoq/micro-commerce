@@ -1,10 +1,10 @@
 // web/e2e/seller.spec.ts
 import { expect, test } from "../fixtures/test";
 
-// KPIs, recent-order IDs (#1042…#1038), and chart series here all come from
-// static design-fixture files (`src/lib/seller/analytics/data.ts`,
-// `src/lib/seller/orders/data.ts`) — NOT the Catalog DB — so this suite is
-// NOT `@seed-dependent`.
+// KPIs, recent-order IDs, and chart series here are derived from the Catalog
+// API (`/api/analytics/overview` + `/api/analytics/dashboard`) via
+// `src/lib/seller/analytics/data.ts` and `src/lib/seller/dashboard/data.ts`,
+// so the asserted labels/IDs reflect the seeded values.
 test.describe("Seller overview", { tag: ["@smoke", "@dashboard"] }, () => {
   test("renders sidebar, greeting, KPIs, today panel, and recent orders", async ({
     page,
@@ -34,13 +34,11 @@ test.describe("Seller overview", { tag: ["@smoke", "@dashboard"] }, () => {
     ).toBeVisible();
     await expect(page.getByText("Tuesday · April 8")).toBeVisible();
 
-    // KPI labels
-    for (const label of [
-      "Revenue · 7 days",
-      "Orders · 7 days",
-      "Storefront views",
-    ]) {
-      await expect(page.getByText(label, { exact: true })).toBeVisible();
+    // KPI labels — first three analytics-overview cards drive the dashboard.
+    for (const label of ["Last 30 days", "Orders", "Avg. order value"]) {
+      await expect(
+        page.getByRole("main").getByText(label, { exact: true }),
+      ).toBeVisible();
     }
 
     // Chart heading
@@ -55,7 +53,7 @@ test.describe("Seller overview", { tag: ["@smoke", "@dashboard"] }, () => {
     await expect(
       page.getByRole("heading", { name: "Recent orders" }),
     ).toBeVisible();
-    for (const id of ["#1042", "#1041", "#1040", "#1039", "#1038"]) {
+    for (const id of ["#1042", "#1041", "#1040", "#1039", "#1032"]) {
       await expect(
         page.getByRole("cell", { name: id, exact: true }),
       ).toBeVisible();

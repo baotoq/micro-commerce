@@ -6,7 +6,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Products;
 
 public class PhotoUploadUrlTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = factory.CreateSellerClient();
 
     [Theory]
     [InlineData("image/jpeg")]

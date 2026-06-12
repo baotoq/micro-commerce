@@ -1,6 +1,7 @@
 "use server";
 
 import { updateTag } from "next/cache";
+import { requireSeller } from "@/lib/auth/token";
 import type { Listing, ListingStatus } from "@/lib/seller/listings/types";
 import { createProduct, deleteProduct, updateProduct } from "./api";
 
@@ -32,7 +33,7 @@ function parseNumber(
 export async function createProductAction(
   formData: FormData,
 ): Promise<Listing> {
-  // TODO(auth): requireSeller() — see audit/auth-followup.md
+  await requireSeller();
   const input = {
     sku: parseRequired(formData.get("sku"), "SKU"),
     name: parseRequired(formData.get("name"), "Name"),
@@ -50,7 +51,7 @@ export async function updateProductAction(
   sku: string,
   formData: FormData,
 ): Promise<Listing | null> {
-  // TODO(auth): requireSeller() — see audit/auth-followup.md
+  await requireSeller();
   const input = {
     name: parseRequired(formData.get("name"), "Name"),
     category: parseRequired(formData.get("category"), "Category"),
@@ -64,7 +65,7 @@ export async function updateProductAction(
 }
 
 export async function deleteProductAction(sku: string): Promise<boolean> {
-  // TODO(auth): requireSeller() — see audit/auth-followup.md
+  await requireSeller();
   const deleted = await deleteProduct(sku);
   updateTag("listings");
   return deleted;

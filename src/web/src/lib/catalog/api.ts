@@ -1,4 +1,5 @@
 import "server-only";
+import { getAccessToken } from "@/lib/auth/token";
 import type {
   Listing,
   ListingCounts,
@@ -9,6 +10,14 @@ import type {
 // into `"use cache"` + `cacheTag("listings")`, so we no longer pin every
 // request to `cache: "no-store"`. Mutating calls (POST/PUT/DELETE) still
 // pass `cache: "no-store"` inline since they should never hit the cache.
+//
+// AUTH RULE (Keycloak): cached loaders are anonymous; authenticated fetchers
+// are uncached. The READ fetchers below (fetchProducts/fetchProductCounts/
+// fetchProductBySku) stay header-free because they run inside `"use cache"`
+// scope (lib/seller/listings/data.ts), where calling auth()/getAccessToken()
+// is illegal. The WRITE fetchers (createProduct/updateProduct/deleteProduct)
+// are `cache: "no-store"` and attach `Authorization: Bearer <token>` so the
+// Catalog API's seller policy authorizes the mutation.
 
 function apiBase(): string {
   const url = process.env.API_URL;
@@ -86,7 +95,10 @@ export async function createProduct(input: ProductInput): Promise<Listing> {
   const res = await fetch(`${apiBase()}/api/products`, {
     cache: "no-store",
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getAccessToken()}`,
+    },
     body: JSON.stringify(input),
   });
   if (res.status === 409) {
@@ -105,7 +117,10 @@ export async function updateProduct(
     {
       cache: "no-store",
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${await getAccessToken()}`,
+      },
       body: JSON.stringify({ sku, ...input }),
     },
   );
@@ -121,6 +136,7 @@ export async function deleteProduct(sku: string): Promise<boolean> {
     {
       cache: "no-store",
       method: "DELETE",
+      headers: { Authorization: `Bearer ${await getAccessToken()}` },
     },
   );
   if (res.status === 404) return false;

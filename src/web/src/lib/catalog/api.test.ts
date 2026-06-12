@@ -2,6 +2,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
+vi.mock("@/lib/auth/token", () => ({
+  getAccessToken: vi.fn(async () => "tok-test"),
+}));
+
+import { getAccessToken } from "@/lib/auth/token";
 import {
   createProduct,
   deleteProduct,
@@ -10,6 +15,11 @@ import {
   fetchProducts,
   updateProduct,
 } from "./api";
+
+function authHeader(init: RequestInit): string | undefined {
+  const headers = new Headers(init.headers);
+  return headers.get("Authorization") ?? undefined;
+}
 
 const ORIGINAL_API_URL = process.env.API_URL;
 
@@ -118,6 +128,8 @@ describe("catalog api client", () => {
       sku: "S",
       status: "active",
     });
+    expect(getAccessToken).toHaveBeenCalledTimes(1);
+    expect(authHeader(init)).toBe("Bearer tok-test");
   });
 
   it("translates 409 conflict on create into a helpful error", async () => {
@@ -178,6 +190,7 @@ describe("catalog api client", () => {
       sku: "S",
       name: "n2",
     });
+    expect(authHeader(init)).toBe("Bearer tok-test");
   });
 
   it("deletes a product and returns false on 404", async () => {
@@ -192,5 +205,43 @@ describe("catalog api client", () => {
 
     const init = fetchMock.mock.calls[0][1] as RequestInit;
     expect(init.method).toBe("DELETE");
+    expect(authHeader(init)).toBe("Bearer tok-test");
+  });
+
+  describe('read fetchers stay header-free (public reads; run under "use cache")', () => {
+    it("does not attach Authorization or call getAccessToken on GET list", async () => {
+      const fetchMock = vi.fn(async () =>
+        mockResponse({ items: [], total: 0, page: 1, pageSize: 24 }),
+      );
+      vi.stubGlobal("fetch", fetchMock);
+
+      await fetchProducts();
+
+      expect(getAccessToken).not.toHaveBeenCalled();
+      // fetchProducts passes only a URL (no init), so there are no headers.
+      expect(fetchMock.mock.calls[0][1]).toBeUndefined();
+    });
+
+    it("does not attach Authorization or call getAccessToken on GET counts", async () => {
+      const fetchMock = vi.fn(async () =>
+        mockResponse({ total: 0, active: 0, low: 0, out: 0, draft: 0 }),
+      );
+      vi.stubGlobal("fetch", fetchMock);
+
+      await fetchProductCounts();
+
+      expect(getAccessToken).not.toHaveBeenCalled();
+      expect(fetchMock.mock.calls[0][1]).toBeUndefined();
+    });
+
+    it("does not attach Authorization or call getAccessToken on GET by-sku", async () => {
+      const fetchMock = vi.fn(async () => mockResponse(null, { status: 404 }));
+      vi.stubGlobal("fetch", fetchMock);
+
+      await fetchProductBySku("X");
+
+      expect(getAccessToken).not.toHaveBeenCalled();
+      expect(fetchMock.mock.calls[0][1]).toBeUndefined();
+    });
   });
 });

@@ -31,11 +31,13 @@ test.describe(
       await expect(page.getByText("#1042")).toBeVisible();
     });
 
-    test("breadcrumb metadata Sasha L. · 2 hours ago visible", async ({
-      page,
-    }) => {
-      await expect(page.getByText(/Sasha L\./)).toBeVisible();
-      await expect(page.getByText(/2 hours ago/)).toBeVisible();
+    test("breadcrumb metadata Sasha L. · 2h ago visible", async ({ page }) => {
+      // Age is rendered by formatRelative(placedAt, DEMO_NOW): order 1042 was
+      // placed 2h31m before the demo clock, so the breadcrumb reads "2h ago".
+      // "2h ago" also appears standalone elsewhere on the page, so assert the
+      // unique breadcrumb string ("· Sasha L. · 2h ago") rather than a bare
+      // /2h ago/ which is a strict-mode violation (2 matches).
+      await expect(page.getByText(/Sasha L\. · 2h ago/)).toBeVisible();
     });
 
     test("Fulfillment 1 of 2 · shipped visible", async ({ page }) => {
@@ -61,7 +63,7 @@ test.describe(
       // subtitle <span> is two levels below that column (span → sub-line div
       // → column).
       const persimmonRow = page
-        .getByText("SKU PV-08 · qty 1 · $86.00")
+        .getByText("SKU MC-VS-001 · qty 1 · $86.00")
         .locator("..")
         .locator("..");
       await expect(persimmonRow).toBeVisible();

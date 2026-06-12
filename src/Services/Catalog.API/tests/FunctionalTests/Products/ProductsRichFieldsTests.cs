@@ -8,6 +8,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Products;
 public class ProductsRichFieldsTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _seller = factory.CreateSellerClient();
 
     private static string NewSku() => $"FN-RF-{Guid.NewGuid():N}"[..16].ToUpperInvariant();
 
@@ -29,7 +30,7 @@ public class ProductsRichFieldsTests(CatalogWebApplicationFactory factory) : ICl
             Origin: "Portland, OR",
             PhotoUrls: ["https://example.com/p1.jpg", "https://example.com/p2.jpg"]);
 
-        var createResponse = await _client.PostAsJsonAsync("/api/products", command, ct);
+        var createResponse = await _seller.PostAsJsonAsync("/api/products", command, ct);
         Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
         var created = await createResponse.Content.ReadFromJsonAsync<ProductDto>(ct);
         Assert.NotNull(created);
@@ -64,7 +65,7 @@ public class ProductsRichFieldsTests(CatalogWebApplicationFactory factory) : ICl
             Status: "active",
             PhotoUrls: []);
 
-        var response = await _client.PostAsJsonAsync("/api/products", command, ct);
+        var response = await _seller.PostAsJsonAsync("/api/products", command, ct);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType!.MediaType);

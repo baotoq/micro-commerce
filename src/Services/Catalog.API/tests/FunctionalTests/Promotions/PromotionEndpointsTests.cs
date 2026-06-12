@@ -8,6 +8,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Promotions;
 public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _seller = factory.CreateSellerClient();
     private readonly SpyOutputCacheStore _cache = (SpyOutputCacheStore)factory.Services.GetService(typeof(SpyOutputCacheStore))!;
 
     private static string NewCode() => $"FN-{Guid.NewGuid():N}"[..16].ToUpperInvariant();
@@ -24,7 +25,7 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
 
-        var response = await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
+        var response = await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
@@ -42,7 +43,7 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
 
-        var response = await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code, activate: true), ct);
+        var response = await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code, activate: true), ct);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var created = await response.Content.ReadFromJsonAsync<PromotionDto>(ct);
@@ -54,9 +55,9 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
 
-        var response = await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
+        var response = await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
@@ -66,10 +67,10 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
 
         var update = new UpdatePromotionCommand(code, "followers only", "percentage", 30, null, null, null, null);
-        var response = await _client.PutAsJsonAsync($"/api/promotions/{code}", update, ct);
+        var response = await _seller.PutAsJsonAsync($"/api/promotions/{code}", update, ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var updated = await response.Content.ReadFromJsonAsync<PromotionDto>(ct);
@@ -82,7 +83,7 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var ct = TestContext.Current.CancellationToken;
 
-        var response = await _client.PutAsJsonAsync("/api/promotions/NOSUCH-999",
+        var response = await _seller.PutAsJsonAsync("/api/promotions/NOSUCH-999",
             new UpdatePromotionCommand("NOSUCH-999", "x", "percentage", 5, null, null, null, null), ct);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -93,9 +94,9 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
 
-        var response = await _client.PostAsync($"/api/promotions/{code}/activate", null, ct);
+        var response = await _seller.PostAsync($"/api/promotions/{code}/activate", null, ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var dto = await response.Content.ReadFromJsonAsync<PromotionDto>(ct);
@@ -107,7 +108,7 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var ct = TestContext.Current.CancellationToken;
 
-        var response = await _client.PostAsync("/api/promotions/NOSUCH-AAA/activate", null, ct);
+        var response = await _seller.PostAsync("/api/promotions/NOSUCH-AAA/activate", null, ct);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -117,9 +118,9 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code, activate: true), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code, activate: true), ct);
 
-        var response = await _client.PostAsync($"/api/promotions/{code}/activate", null, ct);
+        var response = await _seller.PostAsync($"/api/promotions/{code}/activate", null, ct);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
@@ -129,9 +130,9 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code, activate: true), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code, activate: true), ct);
 
-        var response = await _client.PostAsync($"/api/promotions/{code}/end", null, ct);
+        var response = await _seller.PostAsync($"/api/promotions/{code}/end", null, ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var dto = await response.Content.ReadFromJsonAsync<PromotionDto>(ct);
@@ -143,9 +144,9 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
 
-        var response = await _client.PostAsync($"/api/promotions/{code}/end", null, ct);
+        var response = await _seller.PostAsync($"/api/promotions/{code}/end", null, ct);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
@@ -155,9 +156,9 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/promotions", NewFixedCommand(code), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewFixedCommand(code), ct);
 
-        var deleteResponse = await _client.DeleteAsync($"/api/promotions/{code}", ct);
+        var deleteResponse = await _seller.DeleteAsync($"/api/promotions/{code}", ct);
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
         var getResponse = await _client.GetAsync($"/api/promotions/{code}", ct);
@@ -169,7 +170,7 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var ct = TestContext.Current.CancellationToken;
 
-        var response = await _client.DeleteAsync("/api/promotions/NOSUCH-BBB", ct);
+        var response = await _seller.DeleteAsync("/api/promotions/NOSUCH-BBB", ct);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -178,8 +179,8 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     public async Task GetPromotions_AfterCreates_ReturnsPagedList()
     {
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(NewCode()), ct);
-        await _client.PostAsJsonAsync("/api/promotions", NewFixedCommand(NewCode()), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(NewCode()), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewFixedCommand(NewCode()), ct);
 
         var response = await _client.GetAsync("/api/promotions?page=1&limit=100", ct);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -205,7 +206,7 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
-        await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
 
         var response = await _client.GetAsync($"/api/promotions/{code}/exists", ct);
 
@@ -229,7 +230,7 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
 
-        await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
+        await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
 
         Assert.True(_cache.EvictedTags.Count(t => t == "promotions") > beforeCount,
             "Expected EvictByTagAsync(\"promotions\", ...) after a successful create.");
@@ -241,16 +242,16 @@ public class PromotionEndpointsTests(CatalogWebApplicationFactory factory) : ICl
         var code = NewCode();
         var ct = TestContext.Current.CancellationToken;
 
-        var create = await _client.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
+        var create = await _seller.PostAsJsonAsync("/api/promotions", NewPercentageCommand(code), ct);
         Assert.Equal(HttpStatusCode.Created, create.StatusCode);
 
-        var activate = await _client.PostAsync($"/api/promotions/{code}/activate", null, ct);
+        var activate = await _seller.PostAsync($"/api/promotions/{code}/activate", null, ct);
         Assert.Equal(HttpStatusCode.OK, activate.StatusCode);
 
-        var end = await _client.PostAsync($"/api/promotions/{code}/end", null, ct);
+        var end = await _seller.PostAsync($"/api/promotions/{code}/end", null, ct);
         Assert.Equal(HttpStatusCode.OK, end.StatusCode);
 
-        var delete = await _client.DeleteAsync($"/api/promotions/{code}", ct);
+        var delete = await _seller.DeleteAsync($"/api/promotions/{code}", ct);
         Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
 
         var get = await _client.GetAsync($"/api/promotions/{code}", ct);

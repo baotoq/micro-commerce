@@ -6,6 +6,12 @@
 // previewText, featured product name + inventory label). The rich composer copy
 // the API does not carry (recipient breakdown, body paragraphs, schedule options,
 // follow-ups, greeting/signoff/footer) stays as static, branded defaults.
+//
+// AUTH RULE (Keycloak): these loaders are cached (`"use cache"`) and therefore
+// anonymous — calling auth()/getAccessToken() inside `"use cache"` is illegal.
+// A loader is either cached+anonymous or uncached+authenticated, never both.
+// The underlying read endpoints are public; authenticated writes live in the
+// uncached fetchers under lib/catalog/*.ts.
 import { cacheTag } from "next/cache";
 import { fetchCampaigns, fetchMarketingDraft } from "@/lib/catalog/marketing";
 import { BRAND } from "@/lib/seller/brand";

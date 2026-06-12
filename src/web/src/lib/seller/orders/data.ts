@@ -1,4 +1,10 @@
 // web/src/lib/seller/orders/data.ts
+//
+// AUTH RULE (Keycloak): these loaders are cached (`"use cache"`) and therefore
+// anonymous — calling auth()/getAccessToken() inside `"use cache"` is illegal.
+// A loader is either cached+anonymous or uncached+authenticated, never both.
+// The underlying read endpoints are public; authenticated writes live in the
+// uncached fetchers under lib/catalog/*.ts.
 import { cacheTag } from "next/cache";
 import {
   fetchOrderByNumber,

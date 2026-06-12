@@ -8,6 +8,7 @@ namespace MicroCommerce.Catalog.FunctionalTests.Marketing;
 public class MarketingEndpointsTests(CatalogWebApplicationFactory factory) : IClassFixture<CatalogWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _seller = factory.CreateSellerClient();
     private readonly SpyOutputCacheStore _cache = (SpyOutputCacheStore)factory.Services.GetService(typeof(SpyOutputCacheStore))!;
 
     // The CreateCampaignCommand carries an IClock field that the endpoint rebinds from DI, so
@@ -46,11 +47,11 @@ public class MarketingEndpointsTests(CatalogWebApplicationFactory factory) : ICl
         // Self-contained: the functional factory does not run seeders, so create the featured
         // product (for the inventory-label join) and a draft campaign referencing it.
         var sku = $"FN-{Guid.NewGuid():N}"[..16].ToUpperInvariant();
-        var productResp = await _client.PostAsJsonAsync("/api/products",
+        var productResp = await _seller.PostAsJsonAsync("/api/products",
             new CreateProductCommand(sku, "Persimmon vase", "Vessels", 86m, 24, "active", PhotoUrls: ["https://example.com/p.jpg"]), ct);
         Assert.Equal(HttpStatusCode.Created, productResp.StatusCode);
 
-        var createResp = await _client.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName(), sku), ct);
+        var createResp = await _seller.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName(), sku), ct);
         Assert.Equal(HttpStatusCode.Created, createResp.StatusCode);
         var created = await createResp.Content.ReadFromJsonAsync<CampaignDto>(ct);
         Assert.NotNull(created);
@@ -91,7 +92,7 @@ public class MarketingEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var ct = TestContext.Current.CancellationToken;
 
-        var response = await _client.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
+        var response = await _seller.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
@@ -107,7 +108,7 @@ public class MarketingEndpointsTests(CatalogWebApplicationFactory factory) : ICl
         var ct = TestContext.Current.CancellationToken;
         var beforeCount = _cache.EvictedTags.Count(t => t == "marketing");
 
-        await _client.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
+        await _seller.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
 
         Assert.True(_cache.EvictedTags.Count(t => t == "marketing") > beforeCount,
             "Expected EvictByTagAsync(\"marketing\", ...) after a successful create.");
@@ -118,7 +119,7 @@ public class MarketingEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var ct = TestContext.Current.CancellationToken;
 
-        var create = await _client.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
+        var create = await _seller.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
         Assert.Equal(HttpStatusCode.Created, create.StatusCode);
         var created = await create.Content.ReadFromJsonAsync<CampaignDto>(ct);
         Assert.NotNull(created);
@@ -126,7 +127,7 @@ public class MarketingEndpointsTests(CatalogWebApplicationFactory factory) : ICl
         var beforeCount = _cache.EvictedTags.Count(t => t == "marketing");
         // Schedule for an instant after the demo-clock CreatedAt so the transition is valid.
         var at = new DateTimeOffset(2026, 5, 1, 9, 0, 0, TimeSpan.FromHours(-7));
-        var response = await _client.PostAsJsonAsync(
+        var response = await _seller.PostAsJsonAsync(
             $"/api/marketing/campaigns/{created!.Id}/schedule",
             new { id = created.Id, at },
             ct);
@@ -146,7 +147,7 @@ public class MarketingEndpointsTests(CatalogWebApplicationFactory factory) : ICl
         var id = Guid.NewGuid();
         var at = new DateTimeOffset(2026, 5, 1, 9, 0, 0, TimeSpan.FromHours(-7));
 
-        var response = await _client.PostAsJsonAsync(
+        var response = await _seller.PostAsJsonAsync(
             $"/api/marketing/campaigns/{id}/schedule",
             new { id, at },
             ct);
@@ -159,11 +160,11 @@ public class MarketingEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var ct = TestContext.Current.CancellationToken;
 
-        var create = await _client.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
+        var create = await _seller.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
         var created = await create.Content.ReadFromJsonAsync<CampaignDto>(ct);
         Assert.NotNull(created);
 
-        var response = await _client.PostAsync($"/api/marketing/campaigns/{created!.Id}/send", null, ct);
+        var response = await _seller.PostAsync($"/api/marketing/campaigns/{created!.Id}/send", null, ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var sent = await response.Content.ReadFromJsonAsync<CampaignDto>(ct);
@@ -175,11 +176,11 @@ public class MarketingEndpointsTests(CatalogWebApplicationFactory factory) : ICl
     {
         var ct = TestContext.Current.CancellationToken;
 
-        var create = await _client.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
+        var create = await _seller.PostAsJsonAsync("/api/marketing/campaigns", NewCampaignBody(NewName()), ct);
         var created = await create.Content.ReadFromJsonAsync<CampaignDto>(ct);
         Assert.NotNull(created);
 
-        var response = await _client.PostAsync($"/api/marketing/campaigns/{created!.Id}/cancel", null, ct);
+        var response = await _seller.PostAsync($"/api/marketing/campaigns/{created!.Id}/cancel", null, ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var cancelled = await response.Content.ReadFromJsonAsync<CampaignDto>(ct);

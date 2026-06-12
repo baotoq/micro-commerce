@@ -7,8 +7,8 @@ public static class CustomerWriteEndpoints
 {
     public static IEndpointRouteBuilder MapCustomerWriteEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/customers").WithTags("Customers");
-        // TODO(auth): requireSeller()
+        var group = app.MapGroup("/api/customers").WithTags("Customers")
+            .RequireAuthorization(AuthenticationExtensions.SellerPolicy);
 
         group.MapPost("/", async (CreateCustomerCommand command, ISender mediator, CancellationToken ct) =>
         {

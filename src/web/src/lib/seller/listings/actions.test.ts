@@ -2,6 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 vi.mock("next/cache", () => ({ updateTag: vi.fn() }));
+vi.mock("@/lib/auth/token", () => ({
+  requireSeller: vi.fn(async () => ({ roles: ["seller"] })),
+}));
 vi.mock("@/lib/catalog/api", () => ({
   createProduct: vi.fn(),
   updateProduct: vi.fn(),
@@ -9,6 +12,7 @@ vi.mock("@/lib/catalog/api", () => ({
 }));
 
 import { updateTag } from "next/cache";
+import { requireSeller } from "@/lib/auth/token";
 import * as api from "@/lib/catalog/api";
 import {
   createListingAction,
@@ -224,5 +228,72 @@ describe("deleteListingAction", () => {
 
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toMatch(/not found/i);
+  });
+});
+
+describe("seller listing actions auth gate", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // The guard is the first statement of each action, so it must resolve before
+  // any write fetcher runs. Both are vi.fn()s → invocationCallOrder is comparable.
+  function assertGuardRanFirst(fetcher: ReturnType<typeof vi.fn>) {
+    expect(requireSeller).toHaveBeenCalledTimes(1);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    const guardOrder = vi.mocked(requireSeller).mock.invocationCallOrder[0];
+    const fetchOrder = fetcher.mock.invocationCallOrder[0];
+    expect(guardOrder).toBeLessThan(fetchOrder);
+  }
+
+  it("createListingAction calls requireSeller before createProduct", async () => {
+    vi.mocked(api.createProduct).mockResolvedValueOnce(mockListing);
+
+    await createListingAction(makeFormData(validFormData));
+
+    assertGuardRanFirst(vi.mocked(api.createProduct));
+  });
+
+  it("updateListingAction calls requireSeller before updateProduct", async () => {
+    vi.mocked(api.updateProduct).mockResolvedValueOnce(mockListing);
+
+    await updateListingAction("TEST-001", makeFormData(validFormData));
+
+    assertGuardRanFirst(vi.mocked(api.updateProduct));
+  });
+
+  it("deleteListingAction calls requireSeller before deleteProduct", async () => {
+    vi.mocked(api.deleteProduct).mockResolvedValueOnce(true);
+
+    await deleteListingAction("TEST-001");
+
+    assertGuardRanFirst(vi.mocked(api.deleteProduct));
+  });
+
+  it("does not reach createProduct when requireSeller throws", async () => {
+    vi.mocked(requireSeller).mockRejectedValueOnce(new Error("NEXT_FORBIDDEN"));
+
+    await expect(
+      createListingAction(makeFormData(validFormData)),
+    ).rejects.toThrow(/NEXT_FORBIDDEN/);
+    expect(api.createProduct).not.toHaveBeenCalled();
+  });
+
+  it("does not reach updateProduct when requireSeller throws", async () => {
+    vi.mocked(requireSeller).mockRejectedValueOnce(new Error("NEXT_FORBIDDEN"));
+
+    await expect(
+      updateListingAction("TEST-001", makeFormData(validFormData)),
+    ).rejects.toThrow(/NEXT_FORBIDDEN/);
+    expect(api.updateProduct).not.toHaveBeenCalled();
+  });
+
+  it("does not reach deleteProduct when requireSeller throws", async () => {
+    vi.mocked(requireSeller).mockRejectedValueOnce(new Error("NEXT_FORBIDDEN"));
+
+    await expect(deleteListingAction("TEST-001")).rejects.toThrow(
+      /NEXT_FORBIDDEN/,
+    );
+    expect(api.deleteProduct).not.toHaveBeenCalled();
   });
 });
