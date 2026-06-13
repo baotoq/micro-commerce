@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dapr
+  namespace: argocd
+  annotations: { argocd.argoproj.io/sync-wave: "-2" }
+  finalizers: [ resources-finalizer.argocd.argoproj.io ]
+spec:
+  project: default
+  source:
+    repoURL: https://dapr.github.io/helm-charts/
+    chart: dapr
+    targetRevision: 1.16.5   # TODO verify via: helm search repo dapr --versions
+    helm:
+      releaseName: dapr
+      valuesObject:
+        global: { ha: { enabled: false } }
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dapr-system
+  syncPolicy:
+    automated: { prune: true }
+    syncOptions: [ CreateNamespace=true, ServerSideApply=true ]
