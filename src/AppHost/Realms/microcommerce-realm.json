@@ -2,6 +2,8 @@
   "realm": "microcommerce",
   "enabled": true,
   "sslRequired": "none",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
   "accessTokenLifespan": 900,
   "ssoSessionIdleTimeout": 1800,
   "roles": {
@@ -64,6 +66,18 @@
         { "type": "password", "value": "Passw0rd!", "temporary": false }
       ],
       "realmRoles": ["seller"]
+    },
+    {
+      "username": "buyer@microcommerce.dev",
+      "email": "buyer@microcommerce.dev",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Bao",
+      "lastName": "Buyer",
+      "credentials": [
+        { "type": "password", "value": "Passw0rd!", "temporary": false }
+      ],
+      "realmRoles": []
     }
   ]
 }
