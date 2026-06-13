@@ -46,7 +46,9 @@
 - `src/Services/Catalog.API/src/Dockerfile`, `src/Services/Catalog.API/src/.dockerignore`
 - `src/web/Dockerfile`, `src/web/.dockerignore`
 
-**Infra manifests — `deploy/k8s/infra/`:** `kustomization.yaml`, `namespace.yaml`, `coredns-custom.yaml`, `postgres/{statefulset,service,secret}.yaml`, `redis/{deployment,service}.yaml`, `keycloak/{deployment,service,admin-secret}.yaml` + realm json, `azurite/{deployment,service,pvc}.yaml`
+**Infra manifests — `deploy/k8s/infra/`:** `kustomization.yaml`, `namespace.yaml`, `postgres/{statefulset,service,secret}.yaml`, `redis/{deployment,service}.yaml`, `keycloak/{deployment,service,admin-secret}.yaml` + realm json, `azurite/{deployment,service,pvc}.yaml`
+
+**CoreDNS — `deploy/k8s/coredns-custom.yaml`** (top-level; `kube-system`; applied imperatively by the bootstrap script, NOT by the namespaced infra kustomization — see Task 9)
 
 **Dapr components — `deploy/k8s/dapr-components/`:** `kustomization.yaml`, `pubsub.yaml`
 
@@ -297,7 +299,6 @@ resources:
   - azurite/pvc.yaml
   - azurite/deployment.yaml
   - azurite/service.yaml
-  - coredns-custom.yaml
 configMapGenerator:
   - name: keycloak-realm
     files:
@@ -611,12 +612,12 @@ git commit -m "feat(deploy): azurite (path-style, blobHost 0.0.0.0) + pvc + serv
 
 ---
 
-### Task 9: CoreDNS rewrite + full infra validation + apply
+### Task 9: CoreDNS rewrite (standalone, applied by bootstrap) + full infra validation
 
 **Files:**
-- Create: `deploy/k8s/infra/coredns-custom.yaml`
+- Create: `deploy/k8s/coredns-custom.yaml`  *(top-level — NOT under the namespaced infra kustomization)*
 
-- [ ] **Step 1: Write `coredns-custom.yaml`** (K3s-honored custom server block; maps external hosts → in-cluster Service FQDNs for pods)
+- [ ] **Step 1: Write `deploy/k8s/coredns-custom.yaml`** (K3s-honored custom server block; maps external hosts → in-cluster Service FQDNs for pods)
 
 ```yaml
 apiVersion: v1
@@ -642,21 +643,23 @@ data:
     }
 ```
 
-> Note: this ConfigMap is in `kube-system`, not `micro-commerce`. Because the infra kustomization sets `namespace: micro-commerce`, pin it back with the explicit `namespace: kube-system` in metadata AND exclude it from the namespace transformer — add it via a separate `resources` entry is fine since Kustomize honors an explicit `metadata.namespace` only if the transformer allows. To be safe, the app.yaml ArgoCD Application for infra sets the destination namespace to `micro-commerce`, but cluster-scoped/other-namespace resources keep their own `metadata.namespace`. Validate in Step 2; if Kustomize rewrites it, move `coredns-custom.yaml` into its own tiny kustomize dir referenced by the infra ArgoCD app via multiple sources, or apply it in the bootstrap script. (Decision recorded in README.)
+> **Why top-level and not in the infra kustomization:** Kustomize's `namespace: micro-commerce` transformer would force this namespaced ConfigMap into `micro-commerce`, but CoreDNS only reads `coredns-custom` from `kube-system`. So this file is deliberately kept OUT of `deploy/k8s/infra/kustomization.yaml` and is applied imperatively by the bootstrap script (Task 16) — cluster DNS plumbing is one-time, cluster-level, and not something ArgoCD should prune.
 
-- [ ] **Step 2: Validate the full infra build against schemas**
+- [ ] **Step 2: Validate the infra build + the standalone coredns manifest**
 
 Run:
 ```bash
 kustomize build deploy/k8s/infra | kubeconform -summary -ignore-missing-schemas -skip Secret
+kubeconform -summary -ignore-missing-schemas deploy/k8s/coredns-custom.yaml
 ```
-Expected: `Valid` for all resources, `0 errors`. Confirm the `coredns-custom` ConfigMap still has `namespace: kube-system` in the output (`kustomize build deploy/k8s/infra | grep -A2 coredns-custom`). If it was rewritten to `micro-commerce`, apply the fallback from Step 1's note.
+Expected: `Valid`, `0 errors` for both. (coredns-custom is validated on its own because it is not part of the infra kustomization.)
 
 - [ ] **Step 3: Apply infra to the live cluster**
 
 Run:
 ```bash
 kubectl apply -k deploy/k8s/infra
+kubectl apply -f deploy/k8s/coredns-custom.yaml
 kubectl -n kube-system rollout restart deployment coredns
 kubectl -n micro-commerce rollout status deploy/keycloak --timeout=180s
 kubectl -n micro-commerce rollout status deploy/azurite --timeout=120s
@@ -1172,6 +1175,10 @@ set -euo pipefail
 
 orb start k8s
 kubectl config use-context orbstack
+
+# Cluster DNS plumbing — single-URL resolution for pods (one-time, kube-system).
+kubectl apply -f "$(dirname "$0")/../k8s/coredns-custom.yaml"
+kubectl -n kube-system rollout restart deployment coredns
 
 helm repo add argo https://argoproj.github.io/argo-helm >/dev/null 2>&1 || true
 helm repo update >/dev/null
