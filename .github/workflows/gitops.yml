@@ -1,0 +1,81 @@
+name: GitOps
+on:
+  push:
+    branches: [master]
+    paths-ignore: ['deploy/k8s/app/overlays/local/**']
+  pull_request:
+    branches: [master]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository }}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: yokawasa/action-setup-kube-tools@v0.11.2
+        with: { kustomize: '5.4.3', kubeconform: '0.6.7' }
+      - name: Validate manifests
+        run: |
+          for d in deploy/k8s/infra deploy/k8s/dapr-components deploy/k8s/app/overlays/local; do
+            echo "== $d =="
+            kustomize build "$d" | kubeconform -summary -ignore-missing-schemas -skip Secret
+          done
+
+  build:
+    if: github.event_name == 'push'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions: { contents: read, packages: write }
+    strategy:
+      matrix:
+        include:
+          - name: catalog-api
+            context: src/Services/Catalog.API/src
+            file: src/Services/Catalog.API/src/Dockerfile
+          - name: web
+            context: src/web
+            file: src/web/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567   # v3.3.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81   # v5.5.1
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/${{ matrix.name }}
+          tags: type=sha,format=long
+      - uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcd730fa81162  # v6.9.0
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  bump-gitops:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    concurrency: { group: gitops-write-back, cancel-in-progress: false }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: yokawasa/action-setup-kube-tools@v0.11.2
+        with: { kustomize: '5.4.3' }
+      - name: Bump image tags in the local overlay
+        working-directory: deploy/k8s/app/overlays/local
+        run: |
+          TAG=sha-${{ github.sha }}
+          kustomize edit set image \
+            catalog-api=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/catalog-api:$TAG \
+            web=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web:$TAG
+      - uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842  # v5.0.1
+        with:
+          commit_message: "chore(gitops): bump images to sha-${{ github.sha }} [skip ci]"
+          file_pattern: deploy/k8s/app/overlays/local/kustomization.yaml
