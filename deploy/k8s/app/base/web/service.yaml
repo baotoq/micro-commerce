@@ -3,6 +3,5 @@ kind: Service
 metadata:
   name: web
 spec:
-  type: LoadBalancer
   selector: { app: web }
   ports: [ { port: 80, targetPort: 3000 } ]

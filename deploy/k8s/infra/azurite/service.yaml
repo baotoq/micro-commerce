@@ -3,6 +3,5 @@ kind: Service
 metadata:
   name: azurite
 spec:
-  type: LoadBalancer
   selector: { app: azurite }
   ports: [ { port: 80, targetPort: 10000 } ]

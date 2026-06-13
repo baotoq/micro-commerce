@@ -15,6 +15,7 @@ spec:
           env:
             - { name: KC_HOSTNAME, value: "http://keycloak.micro-commerce.k8s.orb.local" }
             - { name: KC_HTTP_ENABLED, value: "true" }
+            - { name: KC_PROXY_HEADERS, value: "xforwarded" }
             - { name: KC_BOOTSTRAP_ADMIN_USERNAME, value: "admin" }
             - name: KC_BOOTSTRAP_ADMIN_PASSWORD
               valueFrom: { secretKeyRef: { name: keycloak-admin, key: password } }

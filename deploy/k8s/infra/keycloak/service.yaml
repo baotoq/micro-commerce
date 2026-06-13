@@ -3,6 +3,5 @@ kind: Service
 metadata:
   name: keycloak
 spec:
-  type: LoadBalancer
   selector: { app: keycloak }
   ports: [ { port: 80, targetPort: 8080 } ]
