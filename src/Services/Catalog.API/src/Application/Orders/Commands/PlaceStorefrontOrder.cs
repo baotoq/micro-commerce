@@ -53,15 +53,25 @@ public class PlaceStorefrontOrderHandler(AppDbContext db, IPublisher publisher)
         var lines = request.Lines.Select(l => (Sku: Sku.From(l.Sku), l.Qty)).ToList();
 
         // Load + mutate inventory => tracking required (global default is NoTracking).
-        var skus = lines.Select(l => l.Sku).Distinct().ToList();
-        var products = await db.Products.AsTracking()
-            .Where(p => skus.Contains(p.Sku))
-            .ToDictionaryAsync(p => p.Sku, ct);
+        // Load each distinct product by a closure-captured scalar `==` on the value-converted Sku
+        // column. This is the only form that BOTH translates and round-trips the Vogen converter on
+        // Npgsql: a value-object `list.Contains(p.Sku)` and `.Sku.Value` member access inside
+        // Contains either match zero rows or fail to translate; a captured-variable equality applies
+        // the converter to the SQL parameter (mirrors GetProductBySku). The cart is small.
+        var products = new Dictionary<string, Product>();
+        foreach (var sku in lines.Select(l => l.Sku).Distinct())
+        {
+            var captured = sku;
+            var product = await db.Products.AsTracking()
+                .FirstOrDefaultAsync(p => p.Sku == captured, ct);
+            if (product is not null)
+                products[product.Sku.Value] = product;
+        }
 
         var orderLines = new List<OrderLine>();
         foreach (var (sku, qty) in lines)
         {
-            if (!products.TryGetValue(sku, out var product) || product.Status == ProductStatus.Draft)
+            if (!products.TryGetValue(sku.Value, out var product) || product.Status == ProductStatus.Draft)
                 return Result<OrderDetailDto>.Conflict("PRODUCT_NOT_FOUND", $"Product '{sku.Value}' is not available.");
             if (qty > product.Inventory)
                 return Result<OrderDetailDto>.Conflict(
@@ -86,7 +96,7 @@ public class PlaceStorefrontOrderHandler(AppDbContext db, IPublisher publisher)
         }
 
         foreach (var (sku, qty) in lines)
-            products[sku].DecrementInventory(qty);
+            products[sku.Value].DecrementInventory(qty);
 
         var itemsSummary = string.Join(", ", orderLines
             .Select(l => l.Qty > 1 ? $"{l.ProductName} ×{l.Qty}" : l.ProductName));

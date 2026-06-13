@@ -53,6 +53,11 @@ public class CatalogWebApplicationFactory : WebApplicationFactory<Program>, IAsy
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
+        // Storefront checkout tests price lines from seeded products (MC-VS-001 $86) and validate
+        // the seeded WELCOME10 promo, so the test API must run its startup seeders. The seeders are
+        // idempotent (insert-if-absent), so existing functional tests — which tolerate seed data —
+        // are unaffected.
+        builder.UseSetting("SEED_PRODUCTS", "true");
         builder.UseSetting("ConnectionStrings:catalogdb", _postgres.GetConnectionString());
         builder.UseSetting("ConnectionStrings:cache", "localhost:6379");
         builder.UseSetting("ConnectionStrings:photos", _azurite.GetConnectionString());
@@ -100,6 +105,15 @@ public class CatalogWebApplicationFactory : WebApplicationFactory<Program>, IAsy
         var client = CreateClient();
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", TestTokens.Mint(["seller"]));
+        return client;
+    }
+
+    /// <summary>HttpClient with a self-minted role-less buyer token (BuyerPolicy = authenticated).</summary>
+    public HttpClient CreateBuyerClient(string email = "buyer-tests@microcommerce.dev")
+    {
+        var client = CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", TestTokens.Mint([], email: email));
         return client;
     }
 

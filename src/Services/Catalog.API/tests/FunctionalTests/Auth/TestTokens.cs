@@ -32,13 +32,16 @@ public static class TestTokens
     public static readonly SymmetricSecurityKey SigningKey =
         new(Encoding.UTF8.GetBytes(SigningSecret));
 
-    public static string Mint(string[] roles, string audience = Audience)
+    public static string Mint(string[] roles, string audience = Audience, string? email = null)
     {
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, "test-seller"),
-            new(JwtRegisteredClaimNames.PreferredUsername, "seller@microcommerce.dev"),
+            new(JwtRegisteredClaimNames.PreferredUsername, email ?? "seller@microcommerce.dev"),
         };
+        // Buyer reads scope orders by the "email" claim; only emit it when supplied.
+        if (email is not null)
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, email));
         // Flattened multivalued "roles" claim, mirroring the oidc-usermodel-realm-role-mapper.
         claims.AddRange(roles.Select(r => new Claim(RoleClaimType, r)));
 
