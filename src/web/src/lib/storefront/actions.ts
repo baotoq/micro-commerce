@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { fetchProductBySku } from "@/lib/catalog/api";
 import {
@@ -169,7 +169,7 @@ export async function placeOrder(
     "payouts",
     "listings",
   ]) {
-    revalidateTag(tag);
+    updateTag(tag);
   }
   redirect(`/checkout/confirmation/${result.order.number}`);
   return { ok: false, error: "UNKNOWN" }; // unreachable; redirect throws

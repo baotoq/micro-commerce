@@ -17,6 +17,14 @@ export type Listing = {
   inventory: number;
   status: ListingStatus;
   views7d: number;
+  // Rich fields the Catalog API's ProductDto always serializes. Optional here
+  // so the narrow seller-table callers stay valid; the storefront PDP/card read
+  // them for photos, description, tags, and origin.
+  description?: string | null;
+  tags?: string[];
+  weight?: number;
+  origin?: string;
+  photoUrls?: string[];
 };
 
 export type ListingCounts = {

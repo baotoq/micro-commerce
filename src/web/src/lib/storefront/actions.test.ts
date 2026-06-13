@@ -24,9 +24,9 @@ vi.mock("@/lib/catalog/checkout", () => ({
   placeStorefrontOrder: (...a: unknown[]) => placeStorefrontOrder(...a),
 }));
 
-const revalidateTag = vi.fn();
+const updateTag = vi.fn();
 vi.mock("next/cache", () => ({
-  revalidateTag: (...a: unknown[]) => revalidateTag(...a),
+  updateTag: (...a: unknown[]) => updateTag(...a),
 }));
 
 const redirect = vi.fn((url: string) => {
@@ -174,8 +174,8 @@ describe("placeOrder", () => {
       }),
     );
     expect(clearCartCookie).toHaveBeenCalled();
-    expect(revalidateTag).toHaveBeenCalledWith("orders");
-    expect(revalidateTag).toHaveBeenCalledWith("listings");
+    expect(updateTag).toHaveBeenCalledWith("orders");
+    expect(updateTag).toHaveBeenCalledWith("listings");
   });
 
   it("returns the API error without clearing the cart", async () => {
