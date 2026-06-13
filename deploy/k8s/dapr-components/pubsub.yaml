@@ -1,0 +1,15 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub
+  namespace: micro-commerce
+spec:
+  type: pubsub.redis
+  version: v1
+  metadata:
+    - { name: redisHost, value: "redis.micro-commerce.svc.cluster.local:6379" }
+    - { name: redisPassword, value: "" }
+    - { name: redisDB, value: "1" }
+    - { name: redisType, value: "node" }
+    - { name: consumerID, value: "catalog-api" }
+    - { name: enableTLS, value: "false" }
