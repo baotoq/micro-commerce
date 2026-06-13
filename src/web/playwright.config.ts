@@ -50,13 +50,34 @@ export default defineConfig({
       name: "setup",
       testMatch: /auth\.setup\.ts/,
     },
+    // Runs buyer-auth.setup.ts only — logs in the seeded buyer and writes
+    // e2e/.auth/buyer.json, which the storefront project loads.
+    {
+      name: "setup-buyer",
+      testMatch: /buyer-auth\.setup\.ts/,
+    },
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"], storageState },
       // Wait for the login session before running any seller spec.
       dependencies: ["setup"],
-      // auth.setup.ts is a setup-only file; keep it out of the main run.
-      testIgnore: /auth\.setup\.ts/,
+      // Keep the setup files and the buyer-scoped storefront specs out of the
+      // seller run (they use a different storageState).
+      testIgnore: [
+        /auth\.setup\.ts/,
+        /buyer-auth\.setup\.ts/,
+        /storefront-.*\.spec\.ts/,
+      ],
+    },
+    {
+      name: "storefront",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: path.resolve(__dirname, "e2e/.auth/buyer.json"),
+      },
+      // "setup" too: the funnel spec opens a seller context from e2e/.auth/seller.json.
+      dependencies: ["setup", "setup-buyer"],
+      testMatch: /storefront-.*\.spec\.ts/,
     },
   ],
 });
