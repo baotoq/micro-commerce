@@ -79,6 +79,10 @@ export interface OrderSummaryDto {
   labelCarrier: string | null;
   labelCost: number;
   net: number;
+  // Storefront promo discount (camelCase mirror of the C# OrderSummaryDto;
+  // appended fields default to null/0 for orders placed without a promo).
+  discountCode: string | null;
+  discountAmount: number;
 }
 
 export interface OrderTimelineDto {
