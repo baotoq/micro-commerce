@@ -49,7 +49,7 @@ Waves order the child Applications; the next wave waits until the current wave i
 
 ## Image GitOps loop
 
-Push to `master` → `.github/workflows/gitops.yml`:
+Push to `gitops` (the branch ArgoCD tracks) → `.github/workflows/gitops.yml`:
 1. `validate` — `kustomize build | kubeconform` on every overlay.
 2. `build` — build + push `ghcr.io/<owner>/micro-commerce/{catalog-api,web}:sha-<sha>`.
 3. `bump-gitops` — `kustomize edit set image` in `deploy/k8s/app/overlays/local` + commit `[skip ci]`.
