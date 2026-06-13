@@ -41,6 +41,9 @@ export type ProductQuery = {
   limit?: number;
   status?: ListingStatus;
   search?: string;
+  buyable?: boolean;
+  category?: string;
+  sort?: "price-asc" | "price-desc";
 };
 
 export async function fetchProducts(
@@ -51,6 +54,9 @@ export async function fetchProducts(
   if (query.limit) url.searchParams.set("limit", String(query.limit));
   if (query.status) url.searchParams.set("status", query.status);
   if (query.search) url.searchParams.set("search", query.search);
+  if (query.buyable) url.searchParams.set("buyable", "true");
+  if (query.category) url.searchParams.set("category", query.category);
+  if (query.sort) url.searchParams.set("sort", query.sort);
 
   const res = await fetch(url);
   if (!res.ok) throw new Error(`GET /api/products failed: ${res.status}`);
@@ -72,6 +78,13 @@ export async function fetchProductBySku(sku: string): Promise<Listing | null> {
   if (!res.ok)
     throw new Error(`GET /api/products/${sku} failed: ${res.status}`);
   return (await res.json()) as Listing;
+}
+
+export async function fetchProductCategories(): Promise<string[]> {
+  const res = await fetch(`${apiBase()}/api/products/categories`);
+  if (!res.ok)
+    throw new Error(`GET /api/products/categories failed: ${res.status}`);
+  return (await res.json()) as string[];
 }
 
 export type ProductInput = {
