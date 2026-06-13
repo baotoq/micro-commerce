@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-api
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: catalog-api } }
+  template:
+    metadata:
+      labels: { app: catalog-api }
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "catalog-api"
+        dapr.io/app-port: "8080"
+        dapr.io/app-protocol: "http"
+    spec:
+      initContainers:
+        - name: wait-postgres
+          image: busybox:1.36
+          command: ["sh", "-c", "until nc -z postgres 5432; do echo waiting-postgres; sleep 2; done"]
+      containers:
+        - name: catalog-api
+          image: catalog-api
+          imagePullPolicy: IfNotPresent
+          ports: [ { containerPort: 8080 } ]
+          envFrom:
+            - configMapRef: { name: catalog-config }
+            - secretRef: { name: catalog-secrets }
+          readinessProbe:
+            httpGet: { path: /health, port: 8080 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /alive, port: 8080 }
+            initialDelaySeconds: 20
+            periodSeconds: 15

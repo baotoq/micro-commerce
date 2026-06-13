@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-config
+data:
+  API_URL: "http://catalog-api.micro-commerce.svc.cluster.local:8080"
+  AUTH_KEYCLOAK_ISSUER: "http://keycloak.micro-commerce.k8s.orb.local/realms/microcommerce"
+  AUTH_KEYCLOAK_ID: "microcommerce-web"
+  AUTH_URL: "http://web.micro-commerce.k8s.orb.local"

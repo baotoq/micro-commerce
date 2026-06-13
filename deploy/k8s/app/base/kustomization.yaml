@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: micro-commerce
+resources:
+  - catalog-api/secret.yaml
+  - catalog-api/config.yaml
+  - catalog-api/deployment.yaml
+  - catalog-api/service.yaml
+  - web/secret.yaml
+  - web/config.yaml
+  - web/deployment.yaml
+  - web/service.yaml
