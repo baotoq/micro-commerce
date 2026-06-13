@@ -1,0 +1,94 @@
+{
+  "realm": "microcommerce",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "verifyEmail": true,
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "requiredActions": [
+    {
+      "alias": "VERIFY_EMAIL",
+      "name": "Verify Email",
+      "providerId": "VERIFY_EMAIL",
+      "enabled": true,
+      "defaultAction": true,
+      "priority": 50
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "seller", "description": "Can manage the shop" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "microcommerce-web",
+      "name": "Micro Commerce Web",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-only-web-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:3000/*", "http://web.micro-commerce.k8s.orb.local/*"],
+      "webOrigins": ["http://localhost:3000", "http://web.micro-commerce.k8s.orb.local"],
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "catalog-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "catalog-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "realm-roles-flat",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "seller@microcommerce.dev",
+      "email": "seller@microcommerce.dev",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Alex",
+      "lastName": "Seller",
+      "credentials": [
+        { "type": "password", "value": "Passw0rd!", "temporary": false }
+      ],
+      "realmRoles": ["seller"]
+    },
+    {
+      "username": "buyer@microcommerce.dev",
+      "email": "buyer@microcommerce.dev",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Bao",
+      "lastName": "Buyer",
+      "credentials": [
+        { "type": "password", "value": "Passw0rd!", "temporary": false }
+      ],
+      "realmRoles": []
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  micro-commerce.server: |
+    keycloak.micro-commerce.k8s.orb.local:53 {
+      rewrite stop {
+        name exact keycloak.micro-commerce.k8s.orb.local keycloak.micro-commerce.svc.cluster.local
+        answer auto
+      }
+      forward . 127.0.0.1
+    }
+    azurite.micro-commerce.k8s.orb.local:53 {
+      rewrite stop {
+        name exact azurite.micro-commerce.k8s.orb.local azurite.micro-commerce.svc.cluster.local
+        answer auto
+      }
+      forward . 127.0.0.1
+    }
