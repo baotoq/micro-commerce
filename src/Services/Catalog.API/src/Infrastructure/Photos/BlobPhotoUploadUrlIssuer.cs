@@ -1,3 +1,4 @@
+using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
@@ -10,7 +11,7 @@ namespace MicroCommerce.Catalog.Infrastructure.Photos;
 /// SAS TTL is 15 minutes per PRD §4. Uses BlobSasBuilder against the user-delegated /
 /// shared-key BlobClient (Azurite emulator works with shared-key in dev).
 /// </summary>
-internal sealed class BlobPhotoUploadUrlIssuer(BlobServiceClient serviceClient) : IPhotoUploadUrlIssuer
+internal sealed class BlobPhotoUploadUrlIssuer(BlobServiceClient serviceClient, StorageSharedKeyCredential credential) : IPhotoUploadUrlIssuer
 {
     private const string ContainerName = "photos";
     private static readonly TimeSpan SasTtl = TimeSpan.FromMinutes(15);
@@ -38,11 +39,9 @@ internal sealed class BlobPhotoUploadUrlIssuer(BlobServiceClient serviceClient) 
         };
         sas.SetPermissions(BlobSasPermissions.Write | BlobSasPermissions.Create);
 
-        if (!blobClient.CanGenerateSasUri)
-        {
-            throw new InvalidOperationException("Blob client cannot generate SAS URIs. Verify the client was constructed with shared-key credentials.");
-        }
-        var uploadUri = blobClient.GenerateSasUri(sas);
+        // Sign with the shared key via PhotoUploadSas rather than blobClient.GenerateSasUri, whose
+        // container-name validation fails for custom-host path-style Azurite endpoints. See PhotoUploadSas.
+        var uploadUri = PhotoUploadSas.BuildUploadUri(blobClient.Uri, sas, credential);
 
         return new PhotoUploadUrlResponse(
             UploadUrl: uploadUri.ToString(),
