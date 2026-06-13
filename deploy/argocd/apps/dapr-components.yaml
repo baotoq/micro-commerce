@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/baotoq/micro-commerce.git
     path: deploy/k8s/dapr-components
-    targetRevision: master
+    targetRevision: gitops
   destination:
     server: https://kubernetes.default.svc
     namespace: micro-commerce

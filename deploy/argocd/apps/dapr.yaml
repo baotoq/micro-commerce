@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://dapr.github.io/helm-charts/
     chart: dapr
-    targetRevision: 1.16.5   # TODO verify via: helm search repo dapr --versions
+    targetRevision: 1.18.0   # matches the Dapr version installed on the cluster
     helm:
       releaseName: dapr
       valuesObject:

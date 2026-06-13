@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/baotoq/micro-commerce.git
     path: deploy/argocd/apps
-    targetRevision: master
+    targetRevision: gitops
     directory: { recurse: true }
   destination:
     server: https://kubernetes.default.svc

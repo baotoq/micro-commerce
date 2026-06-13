@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/baotoq/micro-commerce.git
     path: deploy/k8s/app/overlays/local
-    targetRevision: master
+    targetRevision: gitops
   destination:
     server: https://kubernetes.default.svc
     namespace: micro-commerce
