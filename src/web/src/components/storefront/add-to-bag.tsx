@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { money } from "@/lib/money";
 import { addToCart } from "@/lib/storefront/actions";
@@ -13,6 +14,7 @@ export function AddToBag({
   price: number;
   maxQty: number;
 }) {
+  const router = useRouter();
   const [qty, setQty] = useState(1);
   const [status, setStatus] = useState<"idle" | "added" | "error">("idle");
   const [pending, startTransition] = useTransition();
@@ -21,6 +23,9 @@ export function AddToBag({
     startTransition(async () => {
       const result = await addToCart(sku, qty);
       setStatus(result.ok ? "added" : "error");
+      // addToCart mutates the cart cookie via a transition (not a <form action>),
+      // so Next won't auto-revalidate — refresh so the topbar cart badge updates.
+      if (result.ok) router.refresh();
     });
 
   return (

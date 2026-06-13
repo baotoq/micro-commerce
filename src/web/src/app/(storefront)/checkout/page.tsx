@@ -83,8 +83,10 @@ export default async function CheckoutPage() {
                   <dd className="tabular-nums">−{money(totals.discount)}</dd>
                 </div>
               )}
+              {/* Starting estimate at Standard shipping; the form's Review step
+                  shows the live total for the chosen delivery method. */}
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">Shipping · Standard</dt>
+                <dt className="text-muted-foreground">Shipping · from</dt>
                 <dd className="tabular-nums">{money(totals.shipping)}</dd>
               </div>
               <div className="flex justify-between">
@@ -92,7 +94,7 @@ export default async function CheckoutPage() {
                 <dd className="tabular-nums">{money(totals.tax)}</dd>
               </div>
               <div className="flex justify-between border-t pt-2 font-semibold">
-                <dt>Total</dt>
+                <dt>Total · from</dt>
                 <dd className="tabular-nums text-lg">{money(totals.total)}</dd>
               </div>
             </dl>

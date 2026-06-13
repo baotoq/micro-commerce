@@ -41,6 +41,7 @@ import {
   applyPromoCode,
   placeOrder,
   removeCartLine,
+  removePromoCode,
   setCartQty,
 } from "@/lib/storefront/actions";
 
@@ -142,6 +143,40 @@ describe("applyPromoCode", () => {
       error: "PROMO_INVALID",
     });
   });
+
+  it("rejects a valid code when the cart subtotal is below its minimum", async () => {
+    // Single $86 vase is below WELCOME10's $120 minimum → PROMO_MIN_ORDER (spec §8).
+    readCart.mockResolvedValue({ lines: [{ sku: "MC-VS-001", qty: 1 }] });
+    fetchPromotionByCode.mockResolvedValue({
+      code: "WELCOME10",
+      status: "active",
+      kind: "fixed",
+      fixedAmount: 10,
+      percentValue: null,
+      minOrderAmount: 120,
+      startsAt: null,
+      endsAt: null,
+      description: "",
+    });
+    expect(await applyPromoCode("WELCOME10")).toEqual({
+      ok: false,
+      error: "PROMO_MIN_ORDER",
+    });
+    expect(writeCart).not.toHaveBeenCalled();
+  });
+});
+
+describe("removePromoCode", () => {
+  it("drops the promo code and keeps the lines", async () => {
+    readCart.mockResolvedValue({
+      lines: [{ sku: "MC-VS-001", qty: 1 }],
+      promoCode: "WELCOME10",
+    });
+    expect(await removePromoCode()).toEqual({ ok: true });
+    expect(writeCart).toHaveBeenCalledWith({
+      lines: [{ sku: "MC-VS-001", qty: 1 }],
+    });
+  });
 });
 
 describe("placeOrder", () => {
@@ -196,5 +231,18 @@ describe("placeOrder", () => {
       ok: false,
       error: "EMPTY_CART",
     });
+  });
+
+  it("refuses to post when a cart line resolves to a vanished product", async () => {
+    // A line whose product is gone/inactive must not reach the API (spec §8).
+    readCart.mockResolvedValue({ lines: [{ sku: "MC-GONE", qty: 1 }] });
+    fetchProductBySku.mockResolvedValue(null);
+
+    expect(await placeOrder(shippingInput)).toEqual({
+      ok: false,
+      error: "PRODUCT_NOT_FOUND",
+    });
+    expect(placeStorefrontOrder).not.toHaveBeenCalled();
+    expect(clearCartCookie).not.toHaveBeenCalled();
   });
 });

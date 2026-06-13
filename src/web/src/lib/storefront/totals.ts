@@ -45,12 +45,18 @@ function roundMoney(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-/** Discount applies to the item subtotal only; fixed promos cap at the subtotal (spec §7). */
+/**
+ * Discount applies to the item subtotal only; fixed promos cap at the subtotal
+ * (spec §7). A promo below its minimum order amount earns nothing — matching the
+ * API's PROMO_MIN_ORDER rejection (spec §8) so the displayed total never claims a
+ * discount the server will refuse.
+ */
 export function computeDiscount(
   subtotal: number,
   promo: PromotionDto | null,
 ): number {
   if (!promo) return 0;
+  if (subtotal < (promo.minOrderAmount ?? 0)) return 0;
   if (promo.kind === "percentage" && promo.percentValue) {
     return roundMoney((subtotal * promo.percentValue) / 100);
   }

@@ -6,6 +6,11 @@ vi.mock("@/lib/storefront/actions", () => ({
   addToCart: (...a: unknown[]) => addToCart(...a),
 }));
 
+const refresh = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh }),
+}));
+
 import { AddToBag } from "@/components/storefront/add-to-bag";
 
 describe("AddToBag", () => {
@@ -23,6 +28,13 @@ describe("AddToBag", () => {
     expect(await screen.findByText("Added to bag ✓")).toBeInTheDocument();
   });
 
+  it("refreshes the route after a successful add so the cart badge updates", async () => {
+    addToCart.mockResolvedValue({ ok: true, qty: 1 });
+    render(<AddToBag sku="MC-VS-001" price={86} maxQty={3} />);
+    fireEvent.click(screen.getByRole("button", { name: /Add to bag/ }));
+    await waitFor(() => expect(refresh).toHaveBeenCalled());
+  });
+
   it("shows the error state when the action rejects the add", async () => {
     addToCart.mockResolvedValue({ ok: false, error: "UNAVAILABLE" });
     render(<AddToBag sku="MC-VS-001" price={86} maxQty={1} />);
@@ -30,6 +42,7 @@ describe("AddToBag", () => {
     expect(
       await screen.findByText("This piece just sold out."),
     ).toBeInTheDocument();
+    expect(refresh).not.toHaveBeenCalled();
   });
 
   it("never steps above maxQty or below 1", () => {

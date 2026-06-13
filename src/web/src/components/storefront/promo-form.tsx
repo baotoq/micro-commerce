@@ -34,7 +34,13 @@ export function PromoForm({ appliedCode }: { appliedCode?: string }) {
         const code = String(new FormData(e.currentTarget).get("code") ?? "");
         startTransition(async () => {
           const result = await applyPromoCode(code);
-          setError(result.ok ? null : "That code isn’t valid right now.");
+          setError(
+            result.ok
+              ? null
+              : result.error === "PROMO_MIN_ORDER"
+                ? "Your bag doesn’t meet this code’s minimum yet."
+                : "That code isn’t valid right now.",
+          );
         });
       }}
     >

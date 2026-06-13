@@ -11,6 +11,18 @@ const nextConfig: NextConfig = {
   // Without these, Next 16 blocks HMR/dev resources as cross-origin and the dev runtime
   // never finishes initializing — client components stay unhydrated (e.g., dialog buttons no-op).
   allowedDevOrigins: ["127.0.0.1", "*.dev.localhost"],
+  // Product photoUrls flow through next/image (storefront ProductImage). Allow-list
+  // ONLY the known hosts — the seeded placeholder host plus the Azure Blob hosts the
+  // seller photo-uploader writes (Azurite locally, *.blob.core.windows.net in prod).
+  // Do NOT wildcard the host: an open remotePatterns turns the image optimizer into an
+  // SSRF/abuse proxy for any seller-supplied URL.
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "placehold.co" },
+      { protocol: "https", hostname: "**.blob.core.windows.net" },
+      { protocol: "http", hostname: "127.0.0.1", port: "10000" },
+    ],
+  },
 };
 
 export default nextConfig;

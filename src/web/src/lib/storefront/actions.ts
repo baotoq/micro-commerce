@@ -24,7 +24,7 @@ import {
 
 export type CartActionResult =
   | { ok: true; qty?: number }
-  | { ok: false; error: "UNAVAILABLE" | "PROMO_INVALID" };
+  | { ok: false; error: "UNAVAILABLE" | "PROMO_INVALID" | "PROMO_MIN_ORDER" };
 
 async function buyableProduct(sku: string) {
   const product = await fetchProductBySku(sku);
@@ -85,6 +85,21 @@ export async function applyPromoCode(code: string): Promise<CartActionResult> {
   }
 
   const cart = await readCart();
+
+  // Enforce the minimum order amount up front (spec §8) so the bag never shows a
+  // discount the API will reject at placement with PROMO_MIN_ORDER. Price the cart
+  // from current product data — a stale cookie price cannot satisfy the minimum.
+  if (promo.minOrderAmount && promo.minOrderAmount > 0) {
+    let subtotal = 0;
+    for (const line of cart.lines) {
+      const product = await buyableProduct(line.sku);
+      if (product) subtotal += product.price * line.qty;
+    }
+    if (subtotal < promo.minOrderAmount) {
+      return { ok: false, error: "PROMO_MIN_ORDER" };
+    }
+  }
+
   await writeCart({ ...cart, promoCode: normalized });
   return { ok: true };
 }

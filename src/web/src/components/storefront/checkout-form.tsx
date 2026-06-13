@@ -9,8 +9,24 @@ import { placeOrder } from "@/lib/storefront/actions";
 import {
   SHIPPING_OPTIONS,
   type ShippingId,
+  TAX_RATE,
   type Totals,
 } from "@/lib/storefront/totals";
+
+/**
+ * Re-derive shipping/tax/total for the chosen method from the shipping-independent
+ * base (subtotal − discount). The `totals` prop is the Standard-shipping baseline
+ * the page computed; the buyer can switch to Express/Pickup here, so the displayed
+ * total must track that selection (it's what the server will actually charge).
+ */
+function totalsForShipping(base: Totals, shippingId: ShippingId): Totals {
+  const shipping =
+    SHIPPING_OPTIONS.find((o) => o.id === shippingId)?.price ?? base.shipping;
+  const taxable = base.subtotal - base.discount;
+  const tax = Math.round(taxable * TAX_RATE * 100) / 100;
+  const total = Math.round((taxable + shipping + tax) * 100) / 100;
+  return { ...base, shipping, tax, total };
+}
 
 type FormValues = {
   customerName: string;
@@ -72,6 +88,7 @@ export function CheckoutForm({
   });
 
   const shippingId = watch("shippingId");
+  const displayTotals = totalsForShipping(totals, shippingId);
 
   const next = async (target: Step, fields: (keyof FormValues)[]) => {
     if (await trigger(fields)) setStep(target);
@@ -327,7 +344,7 @@ export function CheckoutForm({
               </div>
               <div className="mt-2 flex justify-between border-t pt-2 font-semibold">
                 <dt>Total</dt>
-                <dd className="tabular-nums">{money(totals.total)}</dd>
+                <dd className="tabular-nums">{money(displayTotals.total)}</dd>
               </div>
             </dl>
             {serverError && (
@@ -354,7 +371,7 @@ export function CheckoutForm({
               >
                 {pending
                   ? "Placing order…"
-                  : `Place order · ${money(totals.total)}`}
+                  : `Place order · ${money(displayTotals.total)}`}
               </button>
             </div>
           </section>

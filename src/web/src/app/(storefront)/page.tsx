@@ -4,13 +4,26 @@ import { getShopCategories, getShopProducts } from "@/lib/storefront/data";
 
 type Search = { category?: string; sort?: string; q?: string; page?: string };
 
-function chipHref(params: Search, category?: string) {
+/**
+ * Single source of truth for every shop link. Seeds from the active params and
+ * applies overrides, so sort/pagination/category links all preserve the rest of
+ * the filter state instead of silently dropping `q`, `sort`, or `page`.
+ * An override of `undefined` clears that param; `null` keeps the current value.
+ */
+function shopHref(params: Search, overrides: Partial<Search> = {}) {
+  const merged: Search = { ...params, ...overrides };
   const next = new URLSearchParams();
-  if (category) next.set("category", category);
-  if (params.sort) next.set("sort", params.sort);
-  if (params.q) next.set("q", params.q);
+  if (merged.category) next.set("category", merged.category);
+  if (merged.sort) next.set("sort", merged.sort);
+  if (merged.q) next.set("q", merged.q);
+  if (merged.page && merged.page !== "1") next.set("page", merged.page);
   const qs = next.toString();
   return qs ? `/?${qs}` : "/";
+}
+
+/** Category chip: switch the category and reset to page 1, keeping sort + q. */
+function chipHref(params: Search, category?: string) {
+  return shopHref(params, { category, page: undefined });
 }
 
 export default async function ShopHome({
@@ -79,7 +92,7 @@ export default async function ShopHome({
             <span>{page.total} pieces</span>
             <span className="flex gap-2">
               <Link
-                href={`/?${new URLSearchParams({ ...(params.category ? { category: params.category } : {}), sort: "price-asc" })}`}
+                href={shopHref(params, { sort: "price-asc", page: undefined })}
                 className={
                   params.sort === "price-asc"
                     ? "font-semibold text-foreground"
@@ -89,7 +102,7 @@ export default async function ShopHome({
                 Price ↑
               </Link>
               <Link
-                href={`/?${new URLSearchParams({ ...(params.category ? { category: params.category } : {}), sort: "price-desc" })}`}
+                href={shopHref(params, { sort: "price-desc", page: undefined })}
                 className={
                   params.sort === "price-desc"
                     ? "font-semibold text-foreground"
@@ -120,7 +133,7 @@ export default async function ShopHome({
           <div className="mt-8 flex justify-center gap-3 text-xs">
             {page.page > 1 && (
               <Link
-                href={`/?${new URLSearchParams({ ...(params.category ? { category: params.category } : {}), page: String(page.page - 1) })}`}
+                href={shopHref(params, { page: String(page.page - 1) })}
                 className="rounded-full border px-4 py-2"
               >
                 ← Previous
@@ -128,7 +141,7 @@ export default async function ShopHome({
             )}
             {page.page * page.pageSize < page.total && (
               <Link
-                href={`/?${new URLSearchParams({ ...(params.category ? { category: params.category } : {}), page: String(page.page + 1) })}`}
+                href={shopHref(params, { page: String(page.page + 1) })}
                 className="rounded-full border px-4 py-2"
               >
                 Next →
