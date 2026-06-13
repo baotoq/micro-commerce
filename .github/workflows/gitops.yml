@@ -1,7 +1,7 @@
 name: GitOps
 on:
   push:
-    branches: [master]
+    branches: [gitops]
     paths-ignore: ['deploy/k8s/app/overlays/local/**']
   pull_request:
     branches: [master]
