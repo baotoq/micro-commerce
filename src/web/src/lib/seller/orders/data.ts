@@ -220,6 +220,8 @@ function detailToFull(dto: OrderDetailDto): OrderDetailFull {
       labelCarrier: dto.summary.labelCarrier ?? "",
       labelCost: dto.summary.labelCost,
       net: dto.summary.net,
+      discountCode: dto.summary.discountCode,
+      discountAmount: dto.summary.discountAmount,
     },
     internalNote: dto.internalNote,
     customerTags: CUSTOMER_TAGS,

@@ -13,6 +13,8 @@ const SUMMARY = {
   labelCarrier: "USPS",
   labelCost: 9.84,
   net: 136.08,
+  discountCode: null,
+  discountAmount: 0,
 };
 
 describe("OrderDetailSummary", () => {
@@ -54,5 +56,24 @@ describe("OrderDetailSummary", () => {
     render(<OrderDetailSummary summary={SUMMARY} />);
     expect(screen.getByText("You'll receive")).toBeInTheDocument();
     expect(screen.getByText("$136.08")).toBeInTheDocument();
+  });
+
+  it("renders the promo line when the order carried a discount", () => {
+    render(
+      <OrderDetailSummary
+        summary={{ ...SUMMARY, discountCode: "WELCOME10", discountAmount: 10 }}
+      />,
+    );
+    expect(screen.getByText("Promo · WELCOME10")).toBeInTheDocument();
+    expect(screen.getByText("−$10.00")).toBeInTheDocument();
+  });
+
+  it("omits the promo line when there is no discount", () => {
+    render(
+      <OrderDetailSummary
+        summary={{ ...SUMMARY, discountCode: null, discountAmount: 0 }}
+      />,
+    );
+    expect(screen.queryByText(/Promo ·/)).not.toBeInTheDocument();
   });
 });

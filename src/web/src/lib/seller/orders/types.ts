@@ -127,6 +127,8 @@ export type OrderSummary = {
   labelCarrier: string;
   labelCost: number;
   net: number;
+  discountCode: string | null;
+  discountAmount: number;
 };
 
 export type OrderTimelineEvent = {

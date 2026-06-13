@@ -14,6 +14,16 @@ export function OrderDetailSummary({ summary }: { summary: OrderSummary }) {
           </span>
           <span className="tabular-nums">{money(summary.subtotal)}</span>
         </div>
+        {summary.discountCode && summary.discountAmount > 0 && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">
+              Promo · {summary.discountCode}
+            </span>
+            <span className="tabular-nums">
+              −{money(summary.discountAmount)}
+            </span>
+          </div>
+        )}
         <div className="flex justify-between">
           <span className="text-muted-foreground">Shipping</span>
           <span className="tabular-nums">{money(summary.shipping)}</span>
