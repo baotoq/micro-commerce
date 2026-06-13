@@ -15,7 +15,9 @@ test("buyer browses, applies WELCOME10, checks out, and the seller sees the orde
   // Browse home (Persimmon vase is seeded at $86 — comfortably over the $40 promo min).
   await page.goto("/");
   await expect(page.getByText(/\d+ pieces/)).toBeVisible();
-  await page.getByRole("link", { name: "Vessels" }).click();
+  // The Vessels *category chip* — exact, so it doesn't also match product cards
+  // whose accessible name ends in the category ("… Vessels").
+  await page.getByRole("link", { name: "Vessels", exact: true }).click();
   await page
     .getByRole("link", { name: /Persimmon vase/ })
     .first()
@@ -49,11 +51,19 @@ test("buyer browses, applies WELCOME10, checks out, and the seller sees the orde
 
   // Confirmation.
   await page.waitForURL(/\/checkout\/confirmation\/\d+/, { timeout: 30_000 });
-  const orderNumber = Number(page.url().match(/confirmation\/(\d+)/)![1]);
+  const orderNumber = Number(page.url().match(/confirmation\/(\d+)/)?.[1] ?? 0);
   await expect(
     page.getByRole("heading", { name: new RegExp(`#${orderNumber}`) }),
   ).toBeVisible();
-  await expect(page.getByText("Promo · WELCOME10")).toBeVisible();
+  // Scope to the order summary that carries "Paid" (confirmation-only; the cart
+  // and checkout summaries say "Total"). The same "Promo · WELCOME10" string
+  // can momentarily co-exist on the outgoing checkout DOM during the App Router
+  // redirect, so anchoring the promo row to the confirmation summary keeps the
+  // assertion out of strict-mode races.
+  const confirmationSummary = page.locator("dl").filter({ hasText: "Paid" });
+  await expect(
+    confirmationSummary.getByText("Promo · WELCOME10"),
+  ).toBeVisible();
 
   // Cart is now empty.
   await page.goto("/cart");
@@ -71,7 +81,13 @@ test("buyer browses, applies WELCOME10, checks out, and the seller sees the orde
 });
 
 test("anonymous checkout bounces to Keycloak", async ({ browser }) => {
-  const anonContext = await browser.newContext(); // no storageState
+  // browser.newContext() inherits this project's `use` options — including the
+  // buyer storageState — so an empty storageState is required to get a truly
+  // signed-out context. Without it the buyer session leaks in and the proxy
+  // lets /checkout through.
+  const anonContext = await browser.newContext({
+    storageState: { cookies: [], origins: [] },
+  });
   const anonPage = await anonContext.newPage();
   await anonPage.goto("/checkout");
   await expect(anonPage).toHaveURL(/\/api\/auth\/signin/);

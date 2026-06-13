@@ -17,8 +17,14 @@ test.describe(
         page.getByRole("complementary").getByText("Micro Commerce"),
       ).toBeVisible();
 
-      // Skeleton blocks are present (aria-busy container)
-      const busyContainer = page.locator('[aria-busy="true"]');
+      // Skeleton blocks are present (aria-busy container). Scope to the demo
+      // page's own container (the one holding the data-testid skeletons): the
+      // /seller route-level loading.tsx fallback is *also* aria-busy and can
+      // briefly co-exist in the DOM during navigation, so an unscoped
+      // [aria-busy="true"] locator hits a strict-mode race.
+      const busyContainer = page.locator('[aria-busy="true"]', {
+        has: page.locator('[data-testid="skeleton"]'),
+      });
       await expect(busyContainer).toBeVisible();
 
       // At least enough skeleton elements

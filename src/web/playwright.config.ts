@@ -75,8 +75,16 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         storageState: path.resolve(__dirname, "e2e/.auth/buyer.json"),
       },
-      // "setup" too: the funnel spec opens a seller context from e2e/.auth/seller.json.
-      dependencies: ["setup", "setup-buyer"],
+      // Depends on:
+      // - "setup-buyer": the funnel runs as the authenticated buyer.
+      // - "setup": the funnel opens a seller context from e2e/.auth/seller.json.
+      // - "chromium": the funnel places a REAL order, which (correctly) shifts the
+      //   seller's available-payout / dashboard-pack-count / order aggregates. The
+      //   read-only @seed-dependent seller specs assert the pristine seed, so they
+      //   must all finish before the buyer mutates shared state. Ordering the
+      //   storefront project after chromium keeps both suites deterministic
+      //   regardless of --workers, instead of relying on output-cache timing.
+      dependencies: ["setup", "setup-buyer", "chromium"],
       testMatch: /storefront-.*\.spec\.ts/,
     },
   ],
