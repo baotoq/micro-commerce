@@ -24,4 +24,13 @@ public static class PhotoUploadSas
         var token = sas.ToSasQueryParameters(credential).ToString();
         return new UriBuilder(blobUri) { Query = token }.Uri;
     }
+
+    /// <summary>
+    /// Builds the blob URI by appending the container + blob to the service endpoint. Necessary because
+    /// <c>BlobContainerClient.GetBlobClient(...).Uri</c> DROPS the container segment for custom-host
+    /// path-style Azurite endpoints (the SDK assumes subdomain-style addressing), yielding e.g.
+    /// <c>.../devstoreaccount1/products/x.png</c> instead of <c>.../devstoreaccount1/photos/products/x.png</c>.
+    /// </summary>
+    public static Uri BuildBlobUri(Uri serviceEndpoint, string containerName, string blobName)
+        => new($"{serviceEndpoint.AbsoluteUri.TrimEnd('/')}/{containerName}/{blobName}");
 }

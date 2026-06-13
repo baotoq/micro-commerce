@@ -46,6 +46,19 @@ public class PhotoUploadSasTests
     }
 
     [Fact]
+    public void BuildBlobUri_keeps_container_segment_for_custom_host_path_style_endpoint()
+    {
+        // The SDK's GetBlobClient drops "photos" for a custom host; manual construction must keep it.
+        var endpoint = new Uri("http://azurite.micro-commerce.k8s.orb.local/devstoreaccount1");
+
+        var uri = PhotoUploadSas.BuildBlobUri(endpoint, "photos", "products/abc123.png");
+
+        Assert.Equal(
+            "http://azurite.micro-commerce.k8s.orb.local/devstoreaccount1/photos/products/abc123.png",
+            uri.AbsoluteUri);
+    }
+
+    [Fact]
     public void BuildUploadUri_produces_valid_sas_for_custom_host_path_style_endpoint()
     {
         var credential = new StorageSharedKeyCredential("devstoreaccount1", DevKey);

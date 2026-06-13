@@ -22,7 +22,9 @@ internal sealed class BlobPhotoUploadUrlIssuer(BlobServiceClient serviceClient, 
         await container.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: ct);
 
         var blobName = $"products/{Guid.NewGuid():N}{ExtensionFor(contentType)}";
-        var blobClient = container.GetBlobClient(blobName);
+        // Build the blob URI manually: the SDK drops the container segment for custom-host
+        // path-style Azurite endpoints. See PhotoUploadSas.BuildBlobUri.
+        var blobUri = PhotoUploadSas.BuildBlobUri(serviceClient.Uri, ContainerName, blobName);
 
         var expiresAt = DateTimeOffset.UtcNow.Add(SasTtl);
         // TODO(security): SAS token does not enforce ContentLength on the actual PUT;
@@ -41,11 +43,11 @@ internal sealed class BlobPhotoUploadUrlIssuer(BlobServiceClient serviceClient, 
 
         // Sign with the shared key via PhotoUploadSas rather than blobClient.GenerateSasUri, whose
         // container-name validation fails for custom-host path-style Azurite endpoints. See PhotoUploadSas.
-        var uploadUri = PhotoUploadSas.BuildUploadUri(blobClient.Uri, sas, credential);
+        var uploadUri = PhotoUploadSas.BuildUploadUri(blobUri, sas, credential);
 
         return new PhotoUploadUrlResponse(
             UploadUrl: uploadUri.ToString(),
-            BlobUrl: blobClient.Uri.ToString(),
+            BlobUrl: blobUri.ToString(),
             ExpiresAt: expiresAt);
     }
 
