@@ -41,7 +41,7 @@ public static class ProductSeeder
                 tags: r.Tags ?? [],
                 weight: r.Weight ?? 0.5m,
                 origin: r.Origin ?? "Portland, OR",
-                photoUrls: r.PhotoUrls ?? (ParseStatus(r.Status) == ProductStatus.Active ? ["https://placehold.co/600x600?text=" + r.Sku] : []),
+                photoUrls: r.PhotoUrls ?? (ParseStatus(r.Status) == ProductStatus.Active ? ["https://placehold.co/600x600.png?text=" + r.Sku] : []),
                 views7d: r.Views7d));
             added = true;
         }
