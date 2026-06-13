@@ -60,6 +60,43 @@ public class StorefrontCheckoutTests(CatalogWebApplicationFactory factory)
         Assert.Equal("WELCOME10", dto!.Summary.DiscountCode);
         Assert.Equal(10m, dto.Summary.DiscountAmount);
         Assert.Equal(86m - 10m + 8m + 6.46m, dto.Summary.Paid);
+
+        // Review finding 5: the checkout response DTO is built from the in-memory order entity,
+        // so it can't prove the discount columns actually persisted. Re-read via the confirmation
+        // GET, which loads the order back from Postgres through GetOrderByNumberQuery, and assert
+        // the discount + totals survive the write+reload round trip.
+        var confirmation = await client.GetAsync($"/api/orders/{dto.Number}/confirmation",
+            TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, confirmation.StatusCode);
+        var reloaded = await confirmation.Content.ReadFromJsonAsync<OrderDetailDto>(
+            TestContext.Current.CancellationToken);
+        Assert.NotNull(reloaded);
+        Assert.Equal("WELCOME10", reloaded!.Summary.DiscountCode);
+        Assert.Equal(10m, reloaded.Summary.DiscountAmount);
+        Assert.Equal(86m, reloaded.Summary.Subtotal);
+        Assert.Equal(86m - 10m + 8m + 6.46m, reloaded.Summary.Paid);
+        var line = Assert.Single(reloaded.Lines);
+        Assert.Equal("MC-VS-001", line.Sku);
+        Assert.Equal(1, line.Qty);
+        Assert.Equal(86m, line.UnitPrice);
+    }
+
+    [Fact]
+    public async Task Checkout_RecomputesShippingAndTax_IgnoringClientValues()
+    {
+        // Review finding 4: a buyer POSTing ShippingPaid:0 / Tax:0 must not underpay. The server
+        // recomputes shipping from the method ($8 Standard) and tax at 8.5% of the discounted
+        // subtotal ($86 -> $7.31), regardless of what the request claims.
+        var client = factory.CreateBuyerClient("checkout-money@test.dev");
+        var tampered = Request() with { ShippingPaid = 0m, Tax = 0m };
+        var response = await client.PostAsJsonAsync("/api/orders/checkout", tampered,
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var dto = await response.Content.ReadFromJsonAsync<OrderDetailDto>(TestContext.Current.CancellationToken);
+        Assert.Equal(8m, dto!.Summary.Shipping);
+        Assert.Equal(7.31m, dto.Summary.Tax);
+        Assert.Equal(86m + 8m + 7.31m, dto.Summary.Paid);
     }
 
     [Fact]
@@ -97,6 +134,12 @@ public class StorefrontCheckoutTests(CatalogWebApplicationFactory factory)
         var own = await owner.GetAsync($"/api/orders/{dto!.Number}/confirmation",
             TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, own.StatusCode);
+        // Confirmation must surface lines + totals (spec §4), read back from Postgres.
+        var ownBody = await own.Content.ReadFromJsonAsync<OrderDetailDto>(TestContext.Current.CancellationToken);
+        Assert.NotNull(ownBody);
+        Assert.Equal(dto.Number, ownBody!.Number);
+        Assert.Equal(86m, ownBody.Summary.Subtotal);
+        Assert.Equal("MC-VS-001", Assert.Single(ownBody.Lines).Sku);
 
         var stranger = factory.CreateBuyerClient("someone-else@test.dev");
         var foreign = await stranger.GetAsync($"/api/orders/{dto.Number}/confirmation",

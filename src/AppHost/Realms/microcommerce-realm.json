@@ -4,8 +4,19 @@
   "sslRequired": "none",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
+  "verifyEmail": true,
   "accessTokenLifespan": 900,
   "ssoSessionIdleTimeout": 1800,
+  "requiredActions": [
+    {
+      "alias": "VERIFY_EMAIL",
+      "name": "Verify Email",
+      "providerId": "VERIFY_EMAIL",
+      "enabled": true,
+      "defaultAction": true,
+      "priority": 50
+    }
+  ],
   "roles": {
     "realm": [
       { "name": "seller", "description": "Can manage the shop" }

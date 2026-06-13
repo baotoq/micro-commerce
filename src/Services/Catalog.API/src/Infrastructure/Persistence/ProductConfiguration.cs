@@ -53,5 +53,18 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         // GIN index on tags for fast array-containment queries (PRD §2).
         builder.HasIndex(p => p.Tags).HasMethod("gin");
+
+        // Optimistic concurrency token (review finding 2): bind Postgres' existing `xmin` system
+        // column as the concurrency token so concurrent storefront checkouts that decrement the
+        // same product can't lost-update each other into negative inventory.
+        // PlaceStorefrontOrderHandler catches the resulting DbUpdateConcurrencyException, reloads,
+        // and retries. (EF Core 10 dropped UseXminAsConcurrencyToken; this is the Npgsql idiom — a
+        // uint shadow prop typed `xid` + OnAddOrUpdate + concurrency token binds to the system
+        // column and generates NO migration AddColumn, since xmin already exists on every table.)
+        builder.Property<uint>("xmin")
+            .HasColumnName("xmin")
+            .HasColumnType("xid")
+            .ValueGeneratedOnAddOrUpdate()
+            .IsConcurrencyToken();
     }
 }

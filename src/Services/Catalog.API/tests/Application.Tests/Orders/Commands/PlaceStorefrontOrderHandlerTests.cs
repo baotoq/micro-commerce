@@ -131,6 +131,83 @@ public class PlaceStorefrontOrderHandlerTests
         Assert.Equal("PRODUCT_NOT_FOUND", result.Error!.Value.Code);
     }
 
+    // Review finding 1: a product marked Out is hidden from the shop (Buyable filter excludes
+    // it) but must NOT be purchasable via a direct checkout call even if inventory > 0. Status,
+    // not inventory, is the buyability authority — mirror GetProducts' Active||Low rule.
+    [Fact]
+    public async Task OutProduct_WithStock_IsNotBuyable()
+    {
+        var outWithStock = TestProducts.Create("MC-OUT-001", "Stale pot", "Vessels", 50m, 10, ProductStatus.Out);
+        var (db, handler, publisher) = await ArrangeAsync(Guid.NewGuid().ToString(), outWithStock);
+        var result = await handler.Handle(Cmd(null, ("MC-OUT-001", 1)), TestContext.Current.CancellationToken);
+        Assert.True(result.IsFailure);
+        Assert.Equal("PRODUCT_NOT_FOUND", result.Error!.Value.Code);
+        Assert.Empty(publisher.Published);
+        Assert.Empty(db.Orders);
+    }
+
+    [Fact]
+    public async Task LowProduct_IsBuyable()
+    {
+        var low = TestProducts.Create("MC-LOW-001", "Last few", "Vessels", 50m, 2, ProductStatus.Low);
+        var (db, handler, _) = await ArrangeAsync(Guid.NewGuid().ToString(), low);
+        var result = await handler.Handle(Cmd(null, ("MC-LOW-001", 1)), TestContext.Current.CancellationToken);
+        Assert.True(result.IsSuccess);
+    }
+
+    // Review finding 4: shipping and tax are server-authoritative demo constants, not client
+    // input. Whatever the request claims (here 0/0), the handler must recompute shipping from
+    // the ShippingMethod and tax at 8.5% of the discounted subtotal.
+    [Fact]
+    public async Task RecomputesShippingAndTax_IgnoringClientValues()
+    {
+        var (db, handler, _) = await ArrangeAsync(Guid.NewGuid().ToString(), Vase());
+        var cmd = Cmd(null, ("MC-VS-001", 1)) with { ShippingPaid = 0m, Tax = 0m, ShippingMethod = "Standard" };
+
+        var result = await handler.Handle(cmd, TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(8m, result.Value!.Summary.Shipping);              // Standard, not the client 0
+        Assert.Equal(7.31m, result.Value.Summary.Tax);                 // 8.5% of 86, away-from-zero
+        Assert.Equal(86m + 8m + 7.31m, result.Value.Summary.Paid);
+    }
+
+    [Fact]
+    public async Task ExpressShipping_Is22()
+    {
+        var (db, handler, _) = await ArrangeAsync(Guid.NewGuid().ToString(), Vase());
+        var cmd = Cmd(null, ("MC-VS-001", 1)) with { ShippingPaid = 999m, ShippingMethod = "Express" };
+
+        var result = await handler.Handle(cmd, TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(22m, result.Value!.Summary.Shipping);
+    }
+
+    [Fact]
+    public async Task PickupShipping_IsFree()
+    {
+        var (db, handler, _) = await ArrangeAsync(Guid.NewGuid().ToString(), Vase());
+        var cmd = Cmd(null, ("MC-VS-001", 1)) with { ShippingPaid = 50m, ShippingMethod = "Pickup" };
+
+        var result = await handler.Handle(cmd, TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(0m, result.Value!.Summary.Shipping);
+    }
+
+    [Fact]
+    public async Task TaxComputedOnDiscountedSubtotal()
+    {
+        var (db, handler, _) = await ArrangeAsync(Guid.NewGuid().ToString(), Vase(), Welcome10());
+        var cmd = Cmd("WELCOME10", ("MC-VS-001", 1)) with { Tax = 0m };
+
+        var result = await handler.Handle(cmd, TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(6.46m, result.Value!.Summary.Tax);               // 8.5% of (86 - 10) = 6.46
+    }
+
     [Fact]
     public async Task EmptyLines_ReturnsEmptyCart()
     {
