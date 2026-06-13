@@ -33,8 +33,8 @@
       "secret": "dev-only-web-secret",
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "redirectUris": ["http://localhost:3000/*"],
-      "webOrigins": ["http://localhost:3000"],
+      "redirectUris": ["http://localhost:3000/*", "http://web.micro-commerce.k8s.orb.local/*"],
+      "webOrigins": ["http://localhost:3000", "http://web.micro-commerce.k8s.orb.local"],
       "fullScopeAllowed": true,
       "protocolMappers": [
         {

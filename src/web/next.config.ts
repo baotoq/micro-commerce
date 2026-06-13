@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   /* config options here */
   reactCompiler: true,
   // Cache Components (Next 16) — replaces the v15-era `force-dynamic` +
@@ -21,6 +22,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "placehold.co" },
       { protocol: "https", hostname: "**.blob.core.windows.net" },
       { protocol: "http", hostname: "127.0.0.1", port: "10000" },
+      { protocol: "http", hostname: "azurite.micro-commerce.k8s.orb.local" },
     ],
   },
 };
