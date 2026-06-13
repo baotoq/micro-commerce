@@ -4,6 +4,11 @@ import { PromosTable } from "@/components/seller/promos/promos-table";
 import type { PromoCode } from "@/lib/seller/promos/types";
 
 vi.mock("@/lib/seller/promos/actions", () => ({
+  // The table binds the <form action> wrappers (Promise<void>), not the
+  // ActionResult-returning variants — mock the names the component imports.
+  activatePromoFormAction: vi.fn(),
+  endPromoFormAction: vi.fn(),
+  deletePromoFormAction: vi.fn(),
   activatePromoAction: vi.fn(),
   endPromoAction: vi.fn(),
   deletePromoAction: vi.fn(),

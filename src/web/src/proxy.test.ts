@@ -65,7 +65,11 @@ describe("proxy", () => {
     }
   });
 
-  it("only matches /seller/:path*", () => {
-    expect(config.matcher).toEqual(["/seller/:path*"]);
+  it("matches the seller area and the buyer checkout flow", () => {
+    expect(config.matcher).toEqual([
+      "/seller/:path*",
+      "/checkout/:path*",
+      "/checkout",
+    ]);
   });
 });
