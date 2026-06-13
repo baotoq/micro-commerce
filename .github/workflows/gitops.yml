@@ -40,17 +40,17 @@ jobs:
             file: src/web/Dockerfile
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567   # v3.3.0
+      - uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81   # v5.5.1
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/${{ matrix.name }}
           tags: type=sha,format=long
-      - uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcd730fa81162  # v6.9.0
+      - uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
@@ -75,7 +75,7 @@ jobs:
           kustomize edit set image \
             catalog-api=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/catalog-api:$TAG \
             web=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web:$TAG
-      - uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842  # v5.0.1
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(gitops): bump images to sha-${{ github.sha }} [skip ci]"
           file_pattern: deploy/k8s/app/overlays/local/kustomization.yaml
