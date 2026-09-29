@@ -75,7 +75,7 @@ jobs:
           kustomize edit set image \
             catalog-api=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/catalog-api:$TAG \
             web=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web:$TAG
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore(gitops): bump images to sha-${{ github.sha }} [skip ci]"
           file_pattern: deploy/k8s/app/overlays/local/kustomization.yaml
