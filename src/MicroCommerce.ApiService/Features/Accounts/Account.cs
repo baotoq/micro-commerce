@@ -25,9 +25,9 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
     }
 }
 
-/// <summary>The signed-in Account, as returned by <c>GET /me</c>.</summary>
-public record MeResponse(Guid Id, string? Email, string DisplayName, bool IsPlatformOperator)
+/// <summary>The signed-in Account and the Merchant it owns, if any, as returned by <c>GET /me</c>.</summary>
+public record MeResponse(Guid Id, string? Email, string DisplayName, bool IsPlatformOperator, MerchantResponse? Merchant)
 {
-    public static MeResponse From(Account a, bool isPlatformOperator) =>
-        new(a.Id, a.Email, a.DisplayName, isPlatformOperator);
+    public static MeResponse From(Account a, bool isPlatformOperator, Merchant? merchant) =>
+        new(a.Id, a.Email, a.DisplayName, isPlatformOperator, merchant is null ? null : MerchantResponse.From(merchant));
 }

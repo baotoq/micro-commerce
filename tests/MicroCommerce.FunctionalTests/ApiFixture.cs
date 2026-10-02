@@ -19,6 +19,9 @@ namespace MicroCommerce.FunctionalTests;
 /// </summary>
 public class ApiFixture : AppFixture<Program>
 {
+    // SetupAsync runs once per test class, concurrently, against the one cached app; migrating in parallel races.
+    private static readonly SemaphoreSlim MigrationLock = new(1, 1);
+
     private PostgreSqlContainer _postgres = null!;
     private RedisContainer _redis = null!;
 
@@ -53,9 +56,17 @@ public class ApiFixture : AppFixture<Program>
 
     protected override async ValueTask SetupAsync()
     {
-        await using var scope = Services.CreateAsyncScope();
-        await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
-        await scope.ServiceProvider.GetRequiredService<AccountsDbContext>().Database.MigrateAsync();
+        await MigrationLock.WaitAsync();
+        try
+        {
+            await using var scope = Services.CreateAsyncScope();
+            await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
+            await scope.ServiceProvider.GetRequiredService<AccountsDbContext>().Database.MigrateAsync();
+        }
+        finally
+        {
+            MigrationLock.Release();
+        }
     }
 
     /// <summary>A client whose requests carry a valid token for <paramref name="actor"/>.</summary>

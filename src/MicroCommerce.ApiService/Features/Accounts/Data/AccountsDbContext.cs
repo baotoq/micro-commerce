@@ -13,6 +13,7 @@ public class AccountsDbContext(DbContextOptions<AccountsDbContext> options) : Db
     public const string Schema = "accounts";
 
     public DbSet<Account> Accounts => Set<Account>();
+    public DbSet<Merchant> Merchants => Set<Merchant>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

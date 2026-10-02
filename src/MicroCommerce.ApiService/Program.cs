@@ -26,6 +26,7 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(AuthPolicies.PlatformOperator, p => p.RequireRole(AuthPolicies.PlatformOperatorRole));
 builder.Services.AddScoped<CurrentAccount>();
+builder.Services.AddScoped<CurrentMerchant>();
 
 builder.Services.AddProblemDetails();
 builder.Services

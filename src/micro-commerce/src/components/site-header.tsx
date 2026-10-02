@@ -1,17 +1,10 @@
 import Link from "next/link";
-import { auth, signIn, signOut } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
-import { getMe, type Me } from "@/lib/accounts";
-
-async function currentAccount(): Promise<Me | null> {
-  const session = await auth();
-  if (!session?.accessToken || session.error) return null;
-  // An expired or rejected token just means "not signed in" here; signing in again fixes it.
-  return getMe(session.accessToken).catch(() => null);
-}
+import { getCurrentAccount } from "@/lib/session";
 
 export async function SiteHeader() {
-  const me = await currentAccount();
+  const me = await getCurrentAccount();
 
   return (
     <header className="flex items-center justify-between border-b px-6 py-3">
@@ -19,18 +12,23 @@ export async function SiteHeader() {
         MicroCommerce
       </Link>
       {me ? (
-        <form
-          className="flex items-center gap-3"
-          action={async () => {
-            "use server";
-            await signOut({ redirectTo: "/" });
-          }}
-        >
-          <span className="text-sm">{me.displayName}</span>
-          <Button type="submit" variant="outline" size="sm">
-            Sign out
-          </Button>
-        </form>
+        <div className="flex items-center gap-4">
+          <Link href={me.merchant ? "/merchant" : "/open-shop"} className="text-sm hover:underline">
+            {me.merchant ? "Merchant Centre" : "Open your Shop"}
+          </Link>
+          <form
+            className="flex items-center gap-3"
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/" });
+            }}
+          >
+            <span className="text-sm">{me.displayName}</span>
+            <Button type="submit" variant="outline" size="sm">
+              Sign out
+            </Button>
+          </form>
+        </div>
       ) : (
         <form
           action={async () => {
