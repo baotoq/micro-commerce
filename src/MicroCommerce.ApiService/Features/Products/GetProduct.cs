@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FastEndpoints;
 using MicroCommerce.ApiService.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace MicroCommerce.ApiService.Features.Products;
@@ -33,14 +34,13 @@ public class GetProductEndpoint(AppDbContext db, IDistributedCache cache)
             return;
         }
 
-        var product = await db.Products.FindAsync([req.Id], ct);
-        if (product is null)
+        var response = await db.Products.Where(p => p.Id == req.Id).ProjectToResponse().SingleOrDefaultAsync(ct);
+        if (response is null)
         {
             await Send.NotFoundAsync(ct);
             return;
         }
 
-        var response = ProductResponse.From(product);
         await cache.SetStringAsync(key, JsonSerializer.Serialize(response), CacheOptions, ct);
 
         HttpContext.Response.Headers["X-Cache"] = "MISS";

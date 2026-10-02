@@ -11,5 +11,5 @@ public class GetShopEndpoint(CurrentMerchant currentMerchant) : EndpointWithoutR
     }
 
     public override Task HandleAsync(CancellationToken ct) =>
-        Send.OkAsync(MerchantResponse.From(currentMerchant.Merchant), ct);
+        Send.OkAsync(currentMerchant.Merchant.ToResponse(), ct);
 }

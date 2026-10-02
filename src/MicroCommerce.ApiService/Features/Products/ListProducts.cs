@@ -17,7 +17,7 @@ public class ListProductsEndpoint(AppDbContext db) : EndpointWithoutRequest<List
         var products = await db.Products
             .AsNoTracking()
             .OrderByDescending(p => p.CreatedAt)
-            .Select(p => new ProductResponse(p.Id, p.Name, p.Price, p.CreatedAt))
+            .ProjectToResponse()
             .ToListAsync(ct);
 
         await Send.OkAsync(products, ct);
