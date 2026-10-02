@@ -53,7 +53,7 @@ public class OpenMerchantEndpoint(AccountsDbContext db, CurrentAccount currentAc
             return;
         }
 
-        await Send.CreatedAtAsync<GetShopEndpoint>(responseBody: MerchantResponse.From(merchant), cancellation: ct);
+        await Send.CreatedAtAsync<GetShopEndpoint>(responseBody: merchant.ToResponse(), cancellation: ct);
     }
 
     private Task SendConflictAsync(string violatedIndex, CancellationToken ct)

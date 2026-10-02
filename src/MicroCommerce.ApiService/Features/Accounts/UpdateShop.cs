@@ -41,7 +41,7 @@ public class UpdateShopEndpoint(AccountsDbContext db, CurrentMerchant currentMer
             try
             {
                 await db.SaveChangesAsync(ct);
-                await Send.OkAsync(MerchantResponse.From(merchant), ct);
+                await Send.OkAsync(merchant.ToResponse(), ct);
                 return;
             }
             catch (DbUpdateException e) when (MerchantUniqueness.ViolatedIndex(e) == MerchantConfiguration.ShopNameIndex)

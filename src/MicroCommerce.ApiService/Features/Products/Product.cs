@@ -22,7 +22,4 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
     }
 }
 
-public record ProductResponse(ProductId Id, string Name, decimal Price, DateTimeOffset CreatedAt)
-{
-    public static ProductResponse From(Product p) => new(p.Id, p.Name, p.Price, p.CreatedAt);
-}
+public record ProductResponse(ProductId Id, string Name, decimal Price, DateTimeOffset CreatedAt);

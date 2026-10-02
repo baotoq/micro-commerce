@@ -66,11 +66,7 @@ public class MerchantConfiguration : IEntityTypeConfiguration<Merchant>
 
 /// <summary>A Merchant's Shop profile, as its owner sees it.</summary>
 public record MerchantResponse(
-    MerchantId Id, ShopName ShopName, string? Description, PickupAddress PickupAddress, DateTimeOffset CreatedAt)
-{
-    public static MerchantResponse From(Merchant m) =>
-        new(m.Id, m.ShopName, m.Description, m.PickupAddress, m.CreatedAt);
-}
+    MerchantId Id, ShopName ShopName, string? Description, PickupAddress PickupAddress, DateTimeOffset CreatedAt);
 
 public class PickupAddressValidator : AbstractValidator<PickupAddress>
 {
