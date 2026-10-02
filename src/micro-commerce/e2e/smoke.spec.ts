@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { signInAsBuyer } from "./auth";
+import { signInAsBuyer } from "./sign-in";
 
 // Signs in on its own: signing out ends the Keycloak session, which would break the shared one.
 test.use({ storageState: { cookies: [], origins: [] } });

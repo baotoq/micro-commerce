@@ -1,5 +1,5 @@
 import { test as setup } from "@playwright/test";
-import { buyerStorageState, signInAsBuyer } from "./auth";
+import { buyerStorageState, signInAsBuyer } from "./sign-in";
 
 setup("sign in as the Buyer", async ({ page }) => {
   await signInAsBuyer(page);

@@ -14,6 +14,7 @@ tests/
   MicroCommerce.UnitTests/        Pure unit tests (validators, domain)
   MicroCommerce.FunctionalTests/  In-process API via FastEndpoints.Testing + Testcontainers (Postgres, Redis)
   MicroCommerce.IntegrationTests/ Full AppHost via Aspire.Hosting.Testing
+src/micro-commerce/e2e/          Playwright end-to-end tests through the browser (Keycloak sign-in, /api proxy)
 ```
 
 Package versions are managed centrally in `Directory.Packages.props`.
@@ -47,6 +48,13 @@ dotnet test --project tests/MicroCommerce.UnitTests
 ```
 
 Integration tests start the AppHost with `--EphemeralResources=true`, so they get throwaway containers and never touch your dev data volumes.
+
+The Playwright end-to-end suite (Chromium) runs through the browser against the whole app. It starts `aspire run`, or reuses one that's already running, and runs against your dev data:
+
+```bash
+pnpm --dir src/micro-commerce exec playwright install chromium   # once
+mise run test:e2e
+```
 
 ## Migrations
 
