@@ -24,3 +24,10 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(a => a.DisplayName).HasMaxLength(200).IsRequired();
     }
 }
+
+/// <summary>The signed-in Account, as returned by <c>GET /me</c>.</summary>
+public record MeResponse(Guid Id, string? Email, string DisplayName, bool IsPlatformOperator)
+{
+    public static MeResponse From(Account a, bool isPlatformOperator) =>
+        new(a.Id, a.Email, a.DisplayName, isPlatformOperator);
+}

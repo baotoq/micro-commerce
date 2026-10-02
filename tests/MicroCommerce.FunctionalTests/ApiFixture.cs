@@ -59,6 +59,8 @@ public class ApiFixture : AppFixture<Program>
     }
 
     /// <summary>A client whose requests carry a valid token for <paramref name="actor"/>.</summary>
-    public HttpClient ClientFor(TestActor actor) =>
-        CreateClient(c => c.Authenticate(TestIdentity.TokenFor(actor)));
+    public HttpClient ClientFor(TestActor actor) => ClientFor(TestIdentity.TokenFor(actor));
+
+    /// <summary>A client whose requests carry <paramref name="token"/> as their bearer token.</summary>
+    public HttpClient ClientFor(string token) => CreateClient(c => c.Authenticate(token));
 }

@@ -9,7 +9,8 @@ var ephemeral = builder.Configuration.GetValue<bool>("EphemeralResources");
 var postgres = builder.AddPostgres("postgres");
 var redis = builder.AddRedis("redis");
 
-// The dev realm (clients, Platform Operator role, seeded users) is imported on every start.
+// The dev realm (clients, Platform Operator role, seeded users) is imported when Keycloak doesn't have it yet.
+// The persistent volume keeps an imported realm, so delete the volume after editing the realm file.
 // The stable port keeps the token issuer, and so the browser's OIDC cookies, the same across runs.
 var keycloak = builder.AddKeycloak("keycloak", port: ephemeral ? null : 8080)
     .WithRealmImport("./Realms");

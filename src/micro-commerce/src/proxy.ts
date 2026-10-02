@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 
 // Runs on every page and API request so Auth.js can persist a refreshed session cookie.
 // Forwards /api/* (except Auth.js's own /api/auth/*) to the backend, attaching the signed-in
-// user's access token. Done here rather than in next.config.ts rewrites because those are fixed
+// Account's access token. Done here rather than in next.config.ts rewrites because those are fixed
 // at build time, while API_URL is only known at runtime (Aspire / container env).
 export const proxy = auth((request) => {
   const { pathname, search } = request.nextUrl;

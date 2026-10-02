@@ -12,7 +12,7 @@ public class MeApiTests(AppHostFixture fixture)
     private sealed record TokenResponse([property: JsonPropertyName("access_token")] string AccessToken);
 
     [Fact]
-    public async Task Seeded_user_signs_in_with_keycloak_and_gets_their_account()
+    public async Task Seeded_operator_signs_in_with_keycloak_and_gets_their_account()
     {
         var ct = TestContext.Current.CancellationToken;
         var token = await GetTokenAsync("operator", "operator", ct);

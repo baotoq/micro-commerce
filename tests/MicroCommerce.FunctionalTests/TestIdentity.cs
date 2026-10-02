@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using MicroCommerce.ApiService.Features.Accounts;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
@@ -31,7 +32,6 @@ public static class TestIdentity
 {
     public const string Issuer = "https://identity.micro-commerce.test/realms/micro-commerce";
     public const string Audience = "micro-commerce-api";
-    public const string PlatformOperatorRole = "platform-operator";
 
     public static readonly SecurityKey SigningKey = NewKey();
 
@@ -50,7 +50,7 @@ public static class TestIdentity
             new("name", actor.Name),
             new("preferred_username", actor.Email),
         };
-        if (actor.IsPlatformOperator) claims.Add(new("roles", PlatformOperatorRole));
+        if (actor.IsPlatformOperator) claims.Add(new("roles", AuthPolicies.PlatformOperatorRole));
 
         var expiresAt = expires ?? DateTime.UtcNow.AddMinutes(5);
         var issuedAt = expiresAt.AddMinutes(-5);

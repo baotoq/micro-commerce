@@ -6,7 +6,7 @@ import { getMe, type Me } from "@/lib/accounts";
 async function currentAccount(): Promise<Me | null> {
   const session = await auth();
   if (!session?.accessToken || session.error) return null;
-  // An expired or rejected token just means "not signed in" here; the user can sign in again.
+  // An expired or rejected token just means "not signed in" here; signing in again fixes it.
   return getMe(session.accessToken).catch(() => null);
 }
 

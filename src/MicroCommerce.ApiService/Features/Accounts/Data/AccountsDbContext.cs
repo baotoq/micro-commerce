@@ -24,6 +24,6 @@ public class AccountsDbContext(DbContextOptions<AccountsDbContext> options) : Db
     public static void ConfigureNpgsql(NpgsqlDbContextOptionsBuilder npgsql) =>
         npgsql.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schema);
 
-    internal static bool IsAccountsType(Type type) =>
+    private static bool IsAccountsType(Type type) =>
         type.Namespace?.StartsWith(typeof(Account).Namespace!, StringComparison.Ordinal) == true;
 }

@@ -54,7 +54,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!token.refreshToken) return { ...token, error: "RefreshTokenError" };
       return refreshAccessToken(token);
     },
-    // The access token is exposed so server code and the /api proxy can call the API as the user.
+    // The access token is exposed so server code and the /api proxy can call the API as the signed-in Account.
     async session({ session, token }) {
       session.accessToken = token.accessToken;
       session.error = token.error;

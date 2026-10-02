@@ -74,7 +74,7 @@ public class MeEndpointTests(ApiFixture App) : TestBase<ApiFixture>
     {
         var token = TestIdentity.TokenFor(TestActor.Buyer(), signingKey: TestIdentity.NewKey());
 
-        var (rsp, _) = await App.CreateClient(c => c.Authenticate(token)).GETAsync<GetMeEndpoint, MeResponse>();
+        var (rsp, _) = await App.ClientFor(token).GETAsync<GetMeEndpoint, MeResponse>();
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -87,7 +87,7 @@ public class MeEndpointTests(ApiFixture App) : TestBase<ApiFixture>
         var otherPayload = TestIdentity.TokenFor(TestActor.PlatformOperator()).Split('.')[1];
         var tampered = string.Join('.', parts[0], otherPayload, parts[2]);
 
-        var (rsp, _) = await App.CreateClient(c => c.Authenticate(tampered)).GETAsync<GetMeEndpoint, MeResponse>();
+        var (rsp, _) = await App.ClientFor(tampered).GETAsync<GetMeEndpoint, MeResponse>();
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -98,7 +98,7 @@ public class MeEndpointTests(ApiFixture App) : TestBase<ApiFixture>
         // Well past the default five-minute clock skew.
         var token = TestIdentity.TokenFor(TestActor.Buyer(), expires: DateTime.UtcNow.AddHours(-1));
 
-        var (rsp, _) = await App.CreateClient(c => c.Authenticate(token)).GETAsync<GetMeEndpoint, MeResponse>();
+        var (rsp, _) = await App.ClientFor(token).GETAsync<GetMeEndpoint, MeResponse>();
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -108,7 +108,7 @@ public class MeEndpointTests(ApiFixture App) : TestBase<ApiFixture>
     {
         var token = TestIdentity.TokenFor(TestActor.Buyer(), audience: "some-other-api");
 
-        var (rsp, _) = await App.CreateClient(c => c.Authenticate(token)).GETAsync<GetMeEndpoint, MeResponse>();
+        var (rsp, _) = await App.ClientFor(token).GETAsync<GetMeEndpoint, MeResponse>();
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
