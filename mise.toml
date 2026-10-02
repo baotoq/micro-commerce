@@ -1,0 +1,70 @@
+min_version = "2026.9.0"
+
+[tools]
+# Keep in sync with global.json, which is what the .NET SDK resolver actually reads.
+dotnet = "10.0.400"
+aspire = "13.6.0"
+node = "24"
+# Keep in sync with "packageManager" in src/micro-commerce/package.json.
+pnpm = "12.4.1"
+
+[env]
+DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+DOTNET_NOLOGO = "1"
+
+[tasks.setup]
+description = "Restore .NET tools and packages, install frontend dependencies"
+run = ["dotnet tool restore", "dotnet restore", "pnpm --dir src/micro-commerce install"]
+
+[tasks.build]
+description = "Build the solution"
+run = "dotnet build"
+
+[tasks.dev]
+description = "Run the AppHost (frontend, API, Postgres, Redis) with the Aspire dashboard"
+run = "aspire run"
+
+[tasks.test]
+description = "Run all tests (functional and integration tests need a container runtime)"
+run = "dotnet test --solution MicroCommerce.slnx"
+
+[tasks."test:unit"]
+description = "Run unit tests"
+run = "dotnet test --project tests/MicroCommerce.UnitTests"
+
+[tasks."test:functional"]
+description = "Run functional tests (Testcontainers)"
+run = "dotnet test --project tests/MicroCommerce.FunctionalTests"
+
+[tasks."test:integration"]
+description = "Run integration tests (Aspire AppHost)"
+run = "dotnet test --project tests/MicroCommerce.IntegrationTests"
+
+[tasks."frontend:dev"]
+description = "Run only the Next.js dev server (without Aspire, so API_URL is unset)"
+dir = "src/micro-commerce"
+run = "pnpm dev"
+
+[tasks."frontend:build"]
+description = "Build the Next.js app"
+dir = "src/micro-commerce"
+run = "pnpm build"
+
+[tasks."frontend:lint"]
+description = "Lint the Next.js app"
+dir = "src/micro-commerce"
+run = "pnpm lint"
+
+[tasks.lint]
+description = "Check .NET formatting and lint the frontend"
+depends = ["frontend:lint"]
+run = "dotnet format --verify-no-changes"
+
+[tasks.format]
+description = "Format the solution"
+run = "dotnet format"
+
+[tasks."db:migration:add"]
+description = "Add an EF Core migration"
+usage = 'arg "<name>" help="Migration name, e.g. AddOrders"'
+run = 'dotnet ef migrations add "${usage_name?}" -p src/MicroCommerce.ApiService -o Data/Migrations'

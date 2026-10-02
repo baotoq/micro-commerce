@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MicroCommerce.ApiService/MicroCommerce.ApiService.csproj" />
+    <Project Path="src/MicroCommerce.AppHost/MicroCommerce.AppHost.csproj" />
+    <Project Path="src/MicroCommerce.ServiceDefaults/MicroCommerce.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MicroCommerce.FunctionalTests/MicroCommerce.FunctionalTests.csproj" />
+    <Project Path="tests/MicroCommerce.IntegrationTests/MicroCommerce.IntegrationTests.csproj" />
+    <Project Path="tests/MicroCommerce.UnitTests/MicroCommerce.UnitTests.csproj" />
+  </Folder>
+</Solution>

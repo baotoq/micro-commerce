@@ -1,36 +1,23 @@
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
   "permissions": {
-    "allow": [
-      "Bash(date:*)",
-      "Bash(echo:*)",
-      "Bash(cat:*)",
-      "Bash(ls:*)",
-      "Bash(mkdir:*)",
-      "Bash(wc:*)",
-      "Bash(head:*)",
-      "Bash(tail:*)",
-      "Bash(sort:*)",
-      "Bash(grep:*)",
-      "Bash(tr:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git status:*)",
-      "Bash(git log:*)",
-      "Bash(git diff:*)",
-      "Bash(git tag:*)",
-      "Bash(ln:*)"
-    ]
+    "allow": ["Bash(npm run *)", "Bash(git commit *)"],
+    "deny": ["Bash(git push *)"],
+    "defaultMode": "auto"
   },
   "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true,
-    "oh-my-claudecode@omc": true,
-    "andrej-karpathy-skills@karpathy-skills": true,
-    "testcontainers@testcontainers-claude-skills": true
+    "commit-commands@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "mattpocock-skills@claude-plugins-official": true,
+    "dotnet@baotoq": true,
+    "azure@baotoq": true,
+    "tools@baotoq": true
   },
-  "skipDangerousModePermissionPrompt": true
+  "extraKnownMarketplaces": {
+    "baotoq": {
+      "source": {
+        "source": "github",
+        "repo": "baotoq/agent-skills"
+      }
+    }
+  }
 }

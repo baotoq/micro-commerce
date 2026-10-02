@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="FastEndpoints.Testing" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Testcontainers.Redis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="FastEndpoints" />
+    <Using Include="FastEndpoints.Testing" />
+  </ItemGroup>
+
+</Project>

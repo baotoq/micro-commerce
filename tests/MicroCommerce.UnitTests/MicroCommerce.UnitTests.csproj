@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MicroCommerce.AppHost\MicroCommerce.AppHost.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Aspire.Hosting" />
+    <Using Include="Aspire.Hosting.ApplicationModel" />
+    <Using Include="Aspire.Hosting.Testing" />
+  </ItemGroup>
+
+</Project>
