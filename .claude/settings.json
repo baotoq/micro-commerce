@@ -8,6 +8,7 @@
     "commit-commands@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "mattpocock-skills@claude-plugins-official": true,
+    "andrej-karpathy-skills@karpathy-skills": true,
     "dotnet@baotoq": true,
     "azure@baotoq": true,
     "tools@baotoq": true
