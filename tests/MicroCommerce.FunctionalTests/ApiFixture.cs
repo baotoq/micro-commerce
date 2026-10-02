@@ -1,7 +1,10 @@
 using MicroCommerce.ApiService.Data;
+using MicroCommerce.ApiService.Features.Accounts.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 
@@ -11,6 +14,8 @@ namespace MicroCommerce.FunctionalTests;
 /// Runs the API in-process against real Postgres and Redis containers.
 /// FastEndpoints caches one app instance per fixture type, so the containers start once per test run.
 /// Testcontainers removes them when the run ends.
+/// JWT validation trusts <see cref="TestIdentity.SigningKey"/> instead of Keycloak; everything after
+/// token validation runs for real.
 /// </summary>
 public class ApiFixture : AppFixture<Program>
 {
@@ -31,9 +36,29 @@ public class ApiFixture : AppFixture<Program>
         a.UseSetting("ConnectionStrings:redis", _redis.GetConnectionString());
     }
 
+    protected override void ConfigureServices(IServiceCollection s)
+    {
+        s.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, o =>
+        {
+            // A static configuration stops JwtBearer from fetching Keycloak's discovery document.
+            o.Authority = null;
+            o.MetadataAddress = null!;
+            o.ConfigurationManager = null;
+            o.Configuration = new OpenIdConnectConfiguration { Issuer = TestIdentity.Issuer };
+            o.TokenValidationParameters.ValidIssuer = TestIdentity.Issuer;
+            o.TokenValidationParameters.ValidAudience = TestIdentity.Audience;
+            o.TokenValidationParameters.IssuerSigningKey = TestIdentity.SigningKey;
+        });
+    }
+
     protected override async ValueTask SetupAsync()
     {
         await using var scope = Services.CreateAsyncScope();
         await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
+        await scope.ServiceProvider.GetRequiredService<AccountsDbContext>().Database.MigrateAsync();
     }
+
+    /// <summary>A client whose requests carry a valid token for <paramref name="actor"/>.</summary>
+    public HttpClient ClientFor(TestActor actor) =>
+        CreateClient(c => c.Authenticate(TestIdentity.TokenFor(actor)));
 }

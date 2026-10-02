@@ -24,6 +24,18 @@
         "source": "github",
         "repo": "baotoq/agent-skills"
       }
+    },
+    "karpathy-skills": {
+      "source": {
+        "source": "github",
+        "repo": "forrestchang/andrej-karpathy-skills"
+      }
+    },
+    "testcontainers-claude-skills": {
+      "source": {
+        "source": "github",
+        "repo": "testcontainers/claude-skills"
+      }
     }
   }
 }

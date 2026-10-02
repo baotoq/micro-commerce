@@ -9,6 +9,7 @@
     <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" />
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="FastEndpoints.OpenApi" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

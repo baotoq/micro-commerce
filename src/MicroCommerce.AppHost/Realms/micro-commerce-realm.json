@@ -1,0 +1,133 @@
+{
+  "realm": "micro-commerce",
+  "displayName": "MicroCommerce",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "platform-operator",
+        "description": "Staff running the Marketplace: can suspend Merchants and remove listings."
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "micro-commerce-api",
+      "name": "MicroCommerce API",
+      "description": "Token audience for the API. Never used to sign in.",
+      "enabled": true,
+      "bearerOnly": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    },
+    {
+      "clientId": "micro-commerce-frontend",
+      "name": "MicroCommerce frontend",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "micro-commerce-frontend-dev-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3000/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "micro-commerce-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "realm-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "micro-commerce-tests",
+      "name": "MicroCommerce integration tests",
+      "description": "Public client with direct access grants so integration tests can get a token for a seeded user.",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "micro-commerce-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "realm-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "buyer",
+      "email": "buyer@micro-commerce.test",
+      "emailVerified": true,
+      "firstName": "Bea",
+      "lastName": "Buyer",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "buyer", "temporary": false }]
+    },
+    {
+      "username": "merchant",
+      "email": "merchant@micro-commerce.test",
+      "emailVerified": true,
+      "firstName": "Max",
+      "lastName": "Merchant",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "merchant", "temporary": false }]
+    },
+    {
+      "username": "operator",
+      "email": "operator@micro-commerce.test",
+      "emailVerified": true,
+      "firstName": "Olive",
+      "lastName": "Operator",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "operator", "temporary": false }],
+      "realmRoles": ["platform-operator"]
+    }
+  ]
+}

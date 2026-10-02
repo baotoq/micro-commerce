@@ -5,6 +5,7 @@
 
   <ItemGroup Label="Aspire hosting">
     <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.6.0" />
+    <PackageVersion Include="Aspire.Hosting.Keycloak" Version="13.6.0-preview.1.26479.8" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.6.0" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="13.6.0" />
   </ItemGroup>
@@ -17,6 +18,7 @@
   <ItemGroup Label="API">
     <PackageVersion Include="FastEndpoints" Version="8.3.0" />
     <PackageVersion Include="FastEndpoints.OpenApi" Version="8.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.17.13" />
   </ItemGroup>

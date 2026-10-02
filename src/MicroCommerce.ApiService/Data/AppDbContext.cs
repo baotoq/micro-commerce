@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.Features.Accounts.Data;
 using MicroCommerce.ApiService.Features.Products;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        // Accounts entities belong to AccountsDbContext and its own schema.
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(AppDbContext).Assembly, t => !AccountsDbContext.IsAccountsType(t));
     }
 }

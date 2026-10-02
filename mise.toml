@@ -21,7 +21,7 @@ description = "Build the solution"
 run = "dotnet build"
 
 [tasks.dev]
-description = "Run the AppHost (frontend, API, Postgres, Redis) with the Aspire dashboard"
+description = "Run the AppHost (frontend, API, Postgres, Redis, Keycloak) with the Aspire dashboard"
 run = "aspire run"
 
 [tasks.test]
@@ -65,6 +65,6 @@ description = "Format the solution"
 run = "dotnet format"
 
 [tasks."db:migration:add"]
-description = "Add an EF Core migration"
+description = "Add an EF Core migration to AppDbContext (Accounts has its own context; see CLAUDE.md)"
 usage = 'arg "<name>" help="Migration name, e.g. AddOrders"'
-run = 'dotnet ef migrations add "${usage_name?}" -p src/MicroCommerce.ApiService -o Data/Migrations'
+run = 'dotnet ef migrations add "${usage_name?}" -p src/MicroCommerce.ApiService -c AppDbContext -o Data/Migrations'

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 namespace MicroCommerce.IntegrationTests;
 
 /// <summary>
-/// Starts the whole AppHost (API + Postgres + Redis containers) once for all tests in the assembly.
+/// Starts the whole AppHost (API + Postgres + Redis + Keycloak containers) once for all tests in the assembly.
 /// </summary>
 public class AppHostFixture : IAsyncLifetime
 {
@@ -13,6 +13,8 @@ public class AppHostFixture : IAsyncLifetime
     private DistributedApplication _app = null!;
 
     public HttpClient ApiClient { get; private set; } = null!;
+
+    public HttpClient KeycloakClient { get; private set; } = null!;
 
     public async ValueTask InitializeAsync()
     {
@@ -30,14 +32,18 @@ public class AppHostFixture : IAsyncLifetime
 
         _app = await builder.BuildAsync(cts.Token);
         await _app.StartAsync(cts.Token);
-        await _app.ResourceNotifications.WaitForResourceHealthyAsync("apiservice", cts.Token);
+        await Task.WhenAll(
+            _app.ResourceNotifications.WaitForResourceHealthyAsync("apiservice", cts.Token),
+            _app.ResourceNotifications.WaitForResourceHealthyAsync("keycloak", cts.Token));
 
         ApiClient = _app.CreateHttpClient("apiservice", "http");
+        KeycloakClient = _app.CreateHttpClient("keycloak", "http");
     }
 
     public async ValueTask DisposeAsync()
     {
         ApiClient.Dispose();
+        KeycloakClient.Dispose();
         await _app.DisposeAsync();
     }
 }
