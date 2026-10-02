@@ -46,3 +46,17 @@ Tests are xUnit v3 on **Microsoft.Testing.Platform in native mode** (set in `glo
 - **IntegrationTests** — boot the full AppHost with `Aspire.Hosting.Testing` (assembly-level `AppHostFixture`, ephemeral resources) and hit the API over plain `HttpClient`.
 
 `tests/Directory.Build.props` makes every test project an `Exe` with xUnit v3 + Shouldly and global `using Xunit; using Shouldly;`. Assertions use Shouldly.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues on `baotoq/micro-commerce` (via `gh`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one root `CONTEXT.md` + `docs/adr/` (created lazily). See `docs/agents/domain.md`.
