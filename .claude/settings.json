@@ -1,4 +1,8 @@
 {
+  "attribution": {
+    "commit": "Co-Authored-By: Claude <noreply@anthropic.com>",
+    "pr": ""
+  },
   "permissions": {
     "allow": ["Bash(npm run *)", "Bash(git commit *)"],
     "deny": ["Bash(git push *)"],
@@ -9,6 +13,7 @@
     "superpowers@claude-plugins-official": true,
     "mattpocock-skills@claude-plugins-official": true,
     "andrej-karpathy-skills@karpathy-skills": true,
+    "testcontainers@testcontainers-claude-skills": true,
     "dotnet@baotoq": true,
     "azure@baotoq": true,
     "tools@baotoq": true
