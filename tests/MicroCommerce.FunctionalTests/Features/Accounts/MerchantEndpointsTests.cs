@@ -82,7 +82,7 @@ public class MerchantEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
             .POSTAsync<OpenMerchantEndpoint, OpenMerchantRequest, ProblemDetails>(new(UniqueShopName(), Address));
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.Conflict);
-        problem.Errors.ShouldNotBeEmpty();
+        problem.Errors.ShouldHaveSingleItem().Name.ShouldBe("generalErrors");
     }
 
     [Fact]
@@ -98,6 +98,23 @@ public class MerchantEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
 
         results.Count(r => r.Response.StatusCode == HttpStatusCode.Created).ShouldBe(1);
         results.Count(r => r.Response.StatusCode == HttpStatusCode.Conflict).ShouldBe(4);
+    }
+
+    [Fact]
+    public async Task Concurrent_opens_with_the_same_shop_name_create_one_merchant()
+    {
+        var shopName = UniqueShopName();
+        var clients = Enumerable.Range(0, 5).Select(_ => App.ClientFor(TestActor.Buyer())).ToList();
+        // The Accounts exist first, so the race is on the Shop name, not on creating the Accounts.
+        await Task.WhenAll(clients.Select(c => c.GETAsync<GetMeEndpoint, MeResponse>()));
+
+        var results = await Task.WhenAll(clients.Select(c =>
+            c.POSTAsync<OpenMerchantEndpoint, OpenMerchantRequest, ProblemDetails>(new(shopName, Address))));
+
+        results.Count(r => r.Response.StatusCode == HttpStatusCode.Created).ShouldBe(1);
+        var conflicts = results.Where(r => r.Response.StatusCode == HttpStatusCode.Conflict).ToList();
+        conflicts.Count.ShouldBe(4);
+        conflicts.ShouldAllBe(r => r.Result.Errors.Single().Name == "shopName");
     }
 
     [Fact]
