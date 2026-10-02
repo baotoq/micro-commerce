@@ -40,6 +40,11 @@ run = "dotnet test --project tests/MicroCommerce.FunctionalTests"
 description = "Run integration tests (Aspire AppHost)"
 run = "dotnet test --project tests/MicroCommerce.IntegrationTests"
 
+[tasks."test:e2e"]
+description = "Run the Playwright end-to-end tests (starts `aspire run`, or reuses a running one)"
+dir = "src/micro-commerce"
+run = "pnpm test:e2e"
+
 [tasks."frontend:dev"]
 description = "Run only the Next.js dev server (without Aspire, so API_URL is unset)"
 dir = "src/micro-commerce"
