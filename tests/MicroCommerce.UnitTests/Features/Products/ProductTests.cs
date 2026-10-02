@@ -17,7 +17,7 @@ public class ProductTests
     {
         var product = new Product { Name = "Coffee Mug", Price = 12.5m };
 
-        var response = ProductResponse.From(product);
+        var response = product.ToResponse();
 
         response.ShouldBe(new ProductResponse(product.Id, "Coffee Mug", 12.5m, product.CreatedAt));
     }

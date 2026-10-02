@@ -30,6 +30,6 @@ public class CreateProductEndpoint(AppDbContext db) : Endpoint<CreateProductRequ
         await db.SaveChangesAsync(ct);
 
         await Send.CreatedAtAsync<GetProductEndpoint>(
-            new { id = product.Id }, ProductResponse.From(product), cancellation: ct);
+            new { id = product.Id }, product.ToResponse(), cancellation: ct);
     }
 }
