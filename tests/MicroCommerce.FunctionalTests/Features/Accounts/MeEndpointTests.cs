@@ -13,7 +13,7 @@ public class MeEndpointTests(ApiFixture App) : TestBase<ApiFixture>
         var (rsp, me) = await App.ClientFor(buyer).GETAsync<GetMeEndpoint, MeResponse>();
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-        me.Id.ShouldNotBe(Guid.Empty);
+        me.Id.Value.ShouldNotBe(Guid.Empty);
         me.Email.ShouldBe(buyer.Email);
         me.DisplayName.ShouldBe(buyer.Name);
         me.IsPlatformOperator.ShouldBeFalse();

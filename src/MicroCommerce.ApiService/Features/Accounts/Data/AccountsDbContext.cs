@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
@@ -14,6 +15,13 @@ public class AccountsDbContext(DbContextOptions<AccountsDbContext> options) : Db
 
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Merchant> Merchants => Set<Merchant>();
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<AccountId>().HaveConversion<AccountId.EfCoreValueConverter, AccountId.EfCoreValueComparer>();
+        configurationBuilder.Properties<MerchantId>().HaveConversion<MerchantId.EfCoreValueConverter, MerchantId.EfCoreValueComparer>();
+        configurationBuilder.Properties<ShopName>().HaveConversion<ShopName.EfCoreValueConverter, ShopName.EfCoreValueComparer>();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

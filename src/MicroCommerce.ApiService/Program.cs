@@ -31,7 +31,12 @@ builder.Services.AddScoped<CurrentMerchant>();
 builder.Services.AddProblemDetails();
 builder.Services
     .AddFastEndpoints()
-    .OpenApiDocument(o => o.DocumentName = "v1");
+    .OpenApiDocument(o =>
+    {
+        o.DocumentName = "v1";
+        // Value objects (typed IDs, ShopName) appear in the schema as the primitives they wrap.
+        o.ConfigureOpenApi = openApi => openApi.MapVogenTypesInMicroCommerce_ApiService();
+    });
 
 var app = builder.Build();
 

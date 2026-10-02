@@ -1,11 +1,12 @@
 using System.Text.Json;
 using FastEndpoints;
 using MicroCommerce.ApiService.Data;
+using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace MicroCommerce.ApiService.Features.Products;
 
-public record GetProductRequest(Guid Id);
+public record GetProductRequest(ProductId Id);
 
 public class GetProductEndpoint(AppDbContext db, IDistributedCache cache)
     : Endpoint<GetProductRequest, ProductResponse>
