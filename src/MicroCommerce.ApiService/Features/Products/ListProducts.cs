@@ -15,7 +15,6 @@ public class ListProductsEndpoint(AppDbContext db) : EndpointWithoutRequest<List
     public override async Task HandleAsync(CancellationToken ct)
     {
         var products = await db.Products
-            .AsNoTracking()
             .OrderByDescending(p => p.CreatedAt)
             .ProjectToResponse()
             .ToListAsync(ct);
