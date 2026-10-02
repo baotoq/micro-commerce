@@ -21,11 +21,15 @@ dotnet test --project tests/MicroCommerce.UnitTests
 dotnet test --project tests/MicroCommerce.UnitTests --filter-method "*Negative_price_fails"
 dotnet test --project tests/MicroCommerce.FunctionalTests --filter-class "*ProductEndpointsTests"
 
+pnpm --dir src/micro-commerce exec playwright install chromium   # once, before the first E2E run
+pnpm --dir src/micro-commerce test:e2e        # Playwright E2E (mise run test:e2e); starts or reuses `aspire run`
+pnpm --dir src/micro-commerce test:e2e e2e/products.spec.ts
+
 dotnet ef migrations add <Name> -p src/MicroCommerce.ApiService -c AppDbContext -o Data/Migrations   # needs dotnet tool restore first
 dotnet ef migrations add <Name> -p src/MicroCommerce.ApiService -c AccountsDbContext -o Features/Accounts/Data/Migrations
 ```
 
-Tests are xUnit v3 on **Microsoft.Testing.Platform in native mode** (set in `global.json`): use `--project`/`--solution` (no positional paths), and xUnit v3 filters (`--filter-class`, `--filter-method`, `--filter-trait`, `--filter-query`) passed directly — not VSTest `--filter` and no `--` separator. Functional and integration tests need a running container runtime.
+Tests are xUnit v3 on **Microsoft.Testing.Platform in native mode** (set in `global.json`): use `--project`/`--solution` (no positional paths), and xUnit v3 filters (`--filter-class`, `--filter-method`, `--filter-trait`, `--filter-query`) passed directly — not VSTest `--filter` and no `--` separator. Functional and integration tests need a running container runtime. `mise run test` is .NET-only; the E2E suite runs separately.
 
 `TreatWarningsAsErrors` is on for every project (`Directory.Build.props`). Package versions live only in `Directory.Packages.props` (central package management) — `PackageReference` items have no `Version`.
 
@@ -49,6 +53,7 @@ Tests are xUnit v3 on **Microsoft.Testing.Platform in native mode** (set in `glo
 - **UnitTests** — pure tests of validators/domain types; reference the API project directly.
 - **FunctionalTests** — API in-process via `FastEndpoints.Testing` (`ApiFixture : AppFixture<Program>`) against Testcontainers Postgres and Redis. Tests derive from `TestBase<ApiFixture>` and call endpoints with typed helpers (`App.Client.POSTAsync<TEndpoint, TRequest, TResponse>`). JWT validation trusts a test signing key instead of Keycloak: `App.ClientFor(TestActor.Buyer())` / `TestActor.PlatformOperator()` gives a client for a fresh subject, and `TestIdentity.TokenFor(...)` mints custom (expired, wrongly signed, other-audience) tokens. `App.Client` is anonymous. The app and containers are shared across the run, so tests must not assume an empty database.
 - **IntegrationTests** — boot the full AppHost with `Aspire.Hosting.Testing` (assembly-level `AppHostFixture`, ephemeral resources) and hit the API over plain `HttpClient`. For real tokens, use the password grant against `KeycloakClient` with the `micro-commerce-tests` client and a seeded user.
+- **E2E** (`src/micro-commerce/e2e/`) — Playwright, Chromium only, through the browser against the whole app: real Keycloak sign-in, `proxy.ts` token forwarding and the API round trip. `playwright.config.ts`'s `webServer` runs `aspire run` from the repo root and waits for `http://localhost:3000`, reusing an already-running dev session. It needs the fixed ports (the realm only allows the `localhost:3000` redirect URI), so not `aspire run --isolated` or `--EphemeralResources=true`, and it runs against dev data: make names unique per run. The `setup` project signs in once as the seeded `buyer` and saves `playwright/.auth/buyer.json` as `storageState` for the other tests; a test that signs out must sign in on its own (`test.use({ storageState: { cookies: [], origins: [] } })` + `signInAsBuyer`), since signing out ends that Keycloak session. The Products endpoints are anonymous, so `api-proxy.spec.ts` (`page.request` against `/api/me`) is what pins token forwarding. Locators are role/label based (`getByRole`, `getByLabel`).
 
 `tests/Directory.Build.props` makes every test project an `Exe` with xUnit v3 + Shouldly and global `using Xunit; using Shouldly;`. Assertions use Shouldly.
 
