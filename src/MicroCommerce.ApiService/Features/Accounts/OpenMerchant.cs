@@ -11,7 +11,7 @@ public class OpenMerchantValidator : Validator<OpenMerchantRequest>
 {
     public OpenMerchantValidator()
     {
-        RuleFor(x => x.ShopName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.ShopName).NotEmpty().MaximumLength(ShopName.MaxLength);
         RuleFor(x => x.PickupAddress).NotNull().SetValidator(new PickupAddressValidator());
     }
 }
@@ -28,7 +28,7 @@ public class OpenMerchantEndpoint(AccountsDbContext db, CurrentAccount currentAc
     public override async Task HandleAsync(OpenMerchantRequest req, CancellationToken ct)
     {
         var account = await currentAccount.GetOrCreateAsync(User, ct);
-        var merchant = new Merchant { AccountId = account.Id, ShopName = req.ShopName.Trim(), PickupAddress = req.PickupAddress };
+        var merchant = new Merchant { AccountId = account.Id, ShopName = ShopName.From(req.ShopName), PickupAddress = req.PickupAddress };
 
         if (await db.Merchants.AnyAsync(m => m.AccountId == account.Id, ct))
         {

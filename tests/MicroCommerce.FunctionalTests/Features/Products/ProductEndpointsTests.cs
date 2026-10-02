@@ -1,5 +1,6 @@
 using System.Net;
 using MicroCommerce.ApiService.Features.Products;
+using MicroCommerce.ApiService.SharedKernel;
 
 namespace MicroCommerce.FunctionalTests.Features.Products;
 
@@ -39,7 +40,7 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
     public async Task Get_unknown_product_returns_not_found()
     {
         var (rsp, _) = await App.Client.GETAsync<GetProductEndpoint, GetProductRequest, ProductResponse>(
-            new(Guid.CreateVersion7()));
+            new(ProductId.New()));
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }

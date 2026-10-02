@@ -9,7 +9,7 @@ public class ProductTests
     {
         var product = new Product { Name = "Coffee Mug" };
 
-        product.Id.Version.ShouldBe(7);
+        product.Id.Value.Version.ShouldBe(7);
     }
 
     [Fact]

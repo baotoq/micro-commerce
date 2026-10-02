@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -6,7 +7,7 @@ namespace MicroCommerce.ApiService.Features.Accounts;
 /// <summary>The identity a person signs in with, keyed by the Keycloak token subject.</summary>
 public class Account
 {
-    public Guid Id { get; init; } = Guid.CreateVersion7();
+    public AccountId Id { get; init; } = AccountId.New();
     public required string Subject { get; init; }
     public string? Email { get; set; }
     public required string DisplayName { get; set; }

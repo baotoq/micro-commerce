@@ -23,8 +23,8 @@ public class MerchantEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.Created);
         rsp.Headers.Location!.ToString().ShouldBe("/merchant/shop");
-        merchant.Id.ShouldNotBe(Guid.Empty);
-        merchant.ShopName.ShouldBe(shopName);
+        merchant.Id.Value.ShouldNotBe(Guid.Empty);
+        merchant.ShopName.Value.ShouldBe(shopName);
         merchant.Description.ShouldBeNull();
         merchant.PickupAddress.ShouldBe(Address);
 
@@ -48,7 +48,7 @@ public class MerchantEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
 
         var (_, merchant) = await OpenAsync(App.ClientFor(TestActor.Buyer()), $"  {shopName}  ");
 
-        merchant.ShopName.ShouldBe(shopName);
+        merchant.ShopName.Value.ShouldBe(shopName);
     }
 
     [Fact]
@@ -128,6 +128,16 @@ public class MerchantEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
     }
 
     [Fact]
+    public async Task Opening_with_a_too_long_shop_name_is_a_bad_request()
+    {
+        var (rsp, problem) = await App.ClientFor(TestActor.Buyer())
+            .POSTAsync<OpenMerchantEndpoint, OpenMerchantRequest, ProblemDetails>(new(new string('a', 101), Address));
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        problem.Errors.Select(e => e.Name).ShouldBe(["shopName"]);
+    }
+
+    [Fact]
     public async Task Incomplete_pickup_address_is_a_bad_request()
     {
         var (rsp, problem) = await App.ClientFor(TestActor.Buyer())
@@ -195,7 +205,7 @@ public class MerchantEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
             new(newName, "Mugs and teapots.", newAddress));
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-        updated.ShouldBe(opened with { ShopName = newName, Description = "Mugs and teapots.", PickupAddress = newAddress });
+        updated.ShouldBe(opened with { ShopName = ShopName.From(newName), Description = "Mugs and teapots.", PickupAddress = newAddress });
 
         var (_, shop) = await client.GETAsync<GetShopEndpoint, MerchantResponse>();
         shop.ShouldBe(updated);
@@ -212,7 +222,7 @@ public class MerchantEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
             new(shopName.ToUpperInvariant(), null, Address));
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-        updated.ShopName.ShouldBe(shopName.ToUpperInvariant());
+        updated.ShopName.Value.ShouldBe(shopName.ToUpperInvariant());
     }
 
     [Fact]
@@ -241,6 +251,19 @@ public class MerchantEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         problem.Errors.Select(e => e.Name).ShouldBe(["shopName", "pickupAddress.street"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task Renaming_to_a_too_long_shop_name_is_a_bad_request()
+    {
+        var client = App.ClientFor(TestActor.Buyer());
+        await OpenAsync(client, UniqueShopName());
+
+        var (rsp, problem) = await client.PUTAsync<UpdateShopEndpoint, UpdateShopRequest, ProblemDetails>(
+            new(new string('a', 101), null, Address));
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        problem.Errors.Select(e => e.Name).ShouldBe(["shopName"]);
     }
 
     [Fact]

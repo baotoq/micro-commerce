@@ -11,7 +11,7 @@ public class UpdateShopValidator : Validator<UpdateShopRequest>
 {
     public UpdateShopValidator()
     {
-        RuleFor(x => x.ShopName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.ShopName).NotEmpty().MaximumLength(ShopName.MaxLength);
         RuleFor(x => x.Description).MaximumLength(2000);
         RuleFor(x => x.PickupAddress).NotNull().SetValidator(new PickupAddressValidator());
     }
@@ -30,7 +30,7 @@ public class UpdateShopEndpoint(AccountsDbContext db, CurrentMerchant currentMer
     public override async Task HandleAsync(UpdateShopRequest req, CancellationToken ct)
     {
         var merchant = currentMerchant.Merchant;
-        merchant.ShopName = req.ShopName.Trim();
+        merchant.ShopName = ShopName.From(req.ShopName);
         merchant.Description = string.IsNullOrWhiteSpace(req.Description) ? null : req.Description.Trim();
         merchant.PickupAddress = req.PickupAddress;
 

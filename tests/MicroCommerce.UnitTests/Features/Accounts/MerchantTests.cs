@@ -1,4 +1,5 @@
 using MicroCommerce.ApiService.Features.Accounts;
+using MicroCommerce.ApiService.SharedKernel;
 
 namespace MicroCommerce.UnitTests.Features.Accounts;
 
@@ -6,21 +7,15 @@ public class MerchantTests
 {
     private static Merchant NewMerchant(string shopName) => new()
     {
-        AccountId = Guid.CreateVersion7(),
-        ShopName = shopName,
+        AccountId = AccountId.New(),
+        ShopName = ShopName.From(shopName),
         PickupAddress = new("12 Le Loi", "Ben Nghe", "District 1", "Ho Chi Minh City"),
     };
 
     [Fact]
-    public void Shop_names_differing_only_in_case_normalize_the_same()
+    public void New_merchant_stores_the_normalized_shop_name()
     {
-        NewMerchant("Mug Corner").NormalizedShopName.ShouldBe(NewMerchant("MUG corner").NormalizedShopName);
-    }
-
-    [Fact]
-    public void Vietnamese_shop_names_normalize_ignoring_case()
-    {
-        NewMerchant("Cửa hàng Đà Nẵng").NormalizedShopName.ShouldBe(NewMerchant("CỬA HÀNG đà nẵng").NormalizedShopName);
+        NewMerchant("Mug Corner").NormalizedShopName.ShouldBe(ShopName.From("mug corner").Normalized);
     }
 
     [Fact]
@@ -28,8 +23,8 @@ public class MerchantTests
     {
         var merchant = NewMerchant("Mug Corner");
 
-        merchant.ShopName = "Tea House";
+        merchant.ShopName = ShopName.From("Tea House");
 
-        merchant.NormalizedShopName.ShouldBe(NewMerchant("tea house").NormalizedShopName);
+        merchant.NormalizedShopName.ShouldBe(ShopName.From("tea house").Normalized);
     }
 }

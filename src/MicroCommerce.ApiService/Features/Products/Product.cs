@@ -1,3 +1,4 @@
+using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -5,7 +6,7 @@ namespace MicroCommerce.ApiService.Features.Products;
 
 public class Product
 {
-    public Guid Id { get; init; } = Guid.CreateVersion7();
+    public ProductId Id { get; init; } = ProductId.New();
     public required string Name { get; set; }
     public decimal Price { get; set; }
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
@@ -21,4 +22,4 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
     }
 }
 
-public record ProductResponse(Guid Id, string Name, decimal Price, DateTimeOffset CreatedAt);
+public record ProductResponse(ProductId Id, string Name, decimal Price, DateTimeOffset CreatedAt);

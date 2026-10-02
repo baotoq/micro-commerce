@@ -2,6 +2,7 @@ using System.Security.Claims;
 using FastEndpoints;
 using FluentValidation.Results;
 using MicroCommerce.ApiService.Features.Accounts.Data;
+using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Accounts;
@@ -28,7 +29,7 @@ public class CurrentMerchant(AccountsDbContext db, CurrentAccount currentAccount
     public Merchant Merchant => _merchant
         ?? throw new InvalidOperationException($"No Merchant was resolved; is the endpoint in the {nameof(MerchantCentre)} group?");
 
-    public Guid Id => Merchant.Id;
+    public MerchantId Id => Merchant.Id;
 
     /// <returns>Whether the signed-in Account owns a Merchant.</returns>
     public async Task<bool> ResolveAsync(ClaimsPrincipal user, CancellationToken ct)

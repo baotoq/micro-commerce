@@ -1,4 +1,5 @@
 using FluentValidation;
+using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Npgsql;
@@ -10,27 +11,25 @@ namespace MicroCommerce.ApiService.Features.Accounts;
 /// </summary>
 public class Merchant
 {
-    public Guid Id { get; init; } = Guid.CreateVersion7();
-    public required Guid AccountId { get; init; }
-    private string _shopName = null!;
+    public MerchantId Id { get; init; } = MerchantId.New();
+    public required AccountId AccountId { get; init; }
+    private ShopName _shopName;
 
-    public required string ShopName
+    public required ShopName ShopName
     {
         get => _shopName;
         set
         {
             _shopName = value;
-            NormalizedShopName = NormalizeShopName(value);
+            NormalizedShopName = value.Normalized;
         }
     }
 
-    /// <summary>The Shop name with case folded away; unique, so Shop names are unique ignoring case.</summary>
+    /// <summary>The <see cref="ShopName.Normalized"/> Shop name, stored for its unique index.</summary>
     public string NormalizedShopName { get; private set; } = null!;
     public string? Description { get; set; }
     public required PickupAddress PickupAddress { get; set; }
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
-
-    public static string NormalizeShopName(string shopName) => shopName.ToUpperInvariant();
 }
 
 /// <summary>Where the Merchant's parcels ship from; the province is what the Carrier quotes from.</summary>
@@ -49,8 +48,8 @@ public class MerchantConfiguration : IEntityTypeConfiguration<Merchant>
         builder.HasOne<Account>().WithOne().HasForeignKey<Merchant>(m => m.AccountId);
         builder.HasIndex(m => m.AccountId).IsUnique().HasDatabaseName(AccountIdIndex);
 
-        builder.Property(m => m.ShopName).HasMaxLength(100).IsRequired();
-        builder.Property(m => m.NormalizedShopName).HasMaxLength(100).IsRequired();
+        builder.Property(m => m.ShopName).HasMaxLength(ShopName.MaxLength).IsRequired();
+        builder.Property(m => m.NormalizedShopName).HasMaxLength(ShopName.MaxLength).IsRequired();
         builder.HasIndex(m => m.NormalizedShopName).IsUnique().HasDatabaseName(ShopNameIndex);
 
         builder.Property(m => m.Description).HasMaxLength(2000);
@@ -67,7 +66,7 @@ public class MerchantConfiguration : IEntityTypeConfiguration<Merchant>
 
 /// <summary>A Merchant's Shop profile, as its owner sees it.</summary>
 public record MerchantResponse(
-    Guid Id, string ShopName, string? Description, PickupAddress PickupAddress, DateTimeOffset CreatedAt);
+    MerchantId Id, ShopName ShopName, string? Description, PickupAddress PickupAddress, DateTimeOffset CreatedAt);
 
 public class PickupAddressValidator : AbstractValidator<PickupAddress>
 {
