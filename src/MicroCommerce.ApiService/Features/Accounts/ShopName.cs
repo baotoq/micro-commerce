@@ -4,7 +4,9 @@ namespace MicroCommerce.ApiService.Features.Accounts;
 
 /// <summary>
 /// A Shop's name: trimmed, non-empty, at most <see cref="MaxLength"/> characters, and unique ignoring case.
-/// Requests carry it as a string checked by FluentValidation; <see cref="Validate"/> is the backstop.
+/// Requests carry it as a string checked by FluentValidation; <see cref="Validate"/> is the backstop. Public
+/// only because Accounts' responses carry it; other modules don't use it (ADR-0005). Reading it back from the
+/// database or JSON re-runs the rules, so a stored name that breaks them fails to load.
 /// </summary>
 [ValueObject<string>]
 public readonly partial struct ShopName
