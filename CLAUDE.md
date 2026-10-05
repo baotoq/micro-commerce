@@ -8,12 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-`mise tasks ls` lists all shortcuts. The underlying commands:
+`mise install` installs the pinned toolchain (`mise.toml` holds only tool versions and env, no tasks). Common commands:
 
 ```bash
 aspire run                                    # whole app: Postgres, Redis, Keycloak, API, frontend + Aspire dashboard
 dotnet build
-dotnet format --verify-no-changes             # .NET lint (mise run lint also runs the frontend lint)
+dotnet format --verify-no-changes             # .NET lint
 pnpm --dir src/micro-commerce lint            # frontend lint
 
 dotnet test --solution MicroCommerce.slnx     # all tests
@@ -22,14 +22,14 @@ dotnet test --project tests/MicroCommerce.UnitTests --filter-method "*Negative_p
 dotnet test --project tests/MicroCommerce.FunctionalTests --filter-class "*ProductEndpointsTests"
 
 pnpm --dir src/micro-commerce exec playwright install chromium   # once, before the first E2E run
-pnpm --dir src/micro-commerce test:e2e        # Playwright E2E (mise run test:e2e); starts or reuses `aspire run`
+pnpm --dir src/micro-commerce test:e2e        # Playwright E2E; starts or reuses `aspire run`
 pnpm --dir src/micro-commerce test:e2e e2e/products.spec.ts
 
 dotnet ef migrations add <Name> -p src/MicroCommerce.ApiService -c AppDbContext -o Data/Migrations   # needs dotnet tool restore first
 dotnet ef migrations add <Name> -p src/MicroCommerce.ApiService -c AccountsDbContext -o Features/Accounts/Data/Migrations
 ```
 
-Tests are xUnit v3 on **Microsoft.Testing.Platform in native mode** (set in `global.json`): use `--project`/`--solution` (no positional paths), and xUnit v3 filters (`--filter-class`, `--filter-method`, `--filter-trait`, `--filter-query`) passed directly — not VSTest `--filter` and no `--` separator. Functional and integration tests need a running container runtime. `mise run test` is .NET-only; the E2E suite runs separately.
+Tests are xUnit v3 on **Microsoft.Testing.Platform in native mode** (set in `global.json`): use `--project`/`--solution` (no positional paths), and xUnit v3 filters (`--filter-class`, `--filter-method`, `--filter-trait`, `--filter-query`) passed directly — not VSTest `--filter` and no `--` separator. Functional and integration tests need a running container runtime. `dotnet test` doesn't run the E2E suite; it runs separately.
 
 `TreatWarningsAsErrors` is on for every project (`Directory.Build.props`). Package versions live only in `Directory.Packages.props` (central package management) — `PackageReference` items have no `Version`.
 

@@ -25,10 +25,12 @@ The toolchain (.NET SDK, Aspire CLI, Node, pnpm) is pinned in `mise.toml`. With 
 
 ```bash
 mise trust && mise install
-mise run setup
+dotnet tool restore
+dotnet restore
+pnpm --dir src/micro-commerce install
 ```
 
-`mise tasks ls` lists the shortcuts (`dev`, `test`, `test:unit`, `db:migration:add <name>`, ...). Without mise, install the .NET 10 SDK, the Aspire CLI, Node 24 and pnpm yourself and use the commands below.
+Without mise, install the .NET 10 SDK, the Aspire CLI, Node 24 and pnpm yourself.
 
 ## Run
 
@@ -53,7 +55,7 @@ The Playwright end-to-end suite (Chromium) runs through the browser against the 
 
 ```bash
 pnpm --dir src/micro-commerce exec playwright install chromium   # once
-mise run test:e2e
+pnpm --dir src/micro-commerce test:e2e
 ```
 
 ## Migrations
