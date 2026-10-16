@@ -6,13 +6,17 @@ var builder = DistributedApplication.CreateBuilder(args);
 // instead of reusing the persistent dev containers and their data volumes.
 var ephemeral = builder.Configuration.GetValue<bool>("EphemeralResources");
 
+// Ephemeral runs get random ports unless they also pass --FixedPorts=true, as CI's E2E run does:
+// the browser sign-in needs Keycloak on 8080 and the frontend on 3000 (see below).
+var fixedPorts = builder.Configuration.GetValue("FixedPorts", !ephemeral);
+
 var postgres = builder.AddPostgres("postgres");
 var redis = builder.AddRedis("redis");
 
 // The dev realm (clients, Platform Operator role, seeded users) is imported when Keycloak doesn't have it yet.
 // The persistent volume keeps an imported realm, so delete the volume after editing the realm file.
 // The stable port keeps the token issuer, and so the browser's OIDC cookies, the same across runs.
-var keycloak = builder.AddKeycloak("keycloak", port: ephemeral ? null : 8080)
+var keycloak = builder.AddKeycloak("keycloak", port: fixedPorts ? 8080 : null)
     .WithRealmImport("./Realms");
 var keycloakIssuer = ReferenceExpression.Create($"{keycloak.GetEndpoint("http")}/realms/micro-commerce");
 
@@ -56,7 +60,7 @@ var frontend = builder.AddNextJsApp("frontend", "../micro-commerce", runScriptNa
 frontend.WithEnvironment("AUTH_URL", frontend.GetEndpoint("http"));
 
 // The realm registers http://localhost:3000 as the frontend's only redirect URI.
-if (!ephemeral)
+if (fixedPorts)
 {
     frontend.WithEndpoint("http", e => e.Port = 3000);
 }

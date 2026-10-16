@@ -30,7 +30,7 @@ dotnet restore
 pnpm --dir src/micro-commerce install
 ```
 
-Without mise, install the .NET 10 SDK, the Aspire CLI, Node 24 and pnpm yourself.
+Without mise, install the .NET 10 SDK, the Aspire CLI, Node 26 and pnpm yourself.
 
 ## Run
 
@@ -51,12 +51,16 @@ dotnet test --project tests/MicroCommerce.UnitTests
 
 Integration tests start the AppHost with `--EphemeralResources=true`, so they get throwaway containers and never touch your dev data volumes.
 
-The Playwright end-to-end suite (Chromium) runs through the browser against the whole app. It starts `aspire run`, or reuses one that's already running, and runs against your dev data:
+The Playwright end-to-end suite (Chromium) runs through the browser against the whole app. It starts `aspire run`, or reuses one that's already running, and runs against your dev data (in CI it starts its own with throwaway containers on the same fixed ports):
 
 ```bash
 pnpm --dir src/micro-commerce exec playwright install chromium   # once
 pnpm --dir src/micro-commerce test:e2e
 ```
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on pushes to `master` and on pull requests: build and lint, the unit, functional and integration tests, and the Playwright E2E suite. It installs the same toolchain from `mise.toml`.
 
 ## Migrations
 

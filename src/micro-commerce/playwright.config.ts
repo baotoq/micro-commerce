@@ -4,11 +4,16 @@ import { buyerStorageState } from "./e2e/sign-in";
 // The Keycloak realm only allows the http://localhost:3000 redirect URI.
 const appUrl = "http://localhost:3000";
 
+const ci = !!process.env.CI;
+
 // Runs against the whole app started by Aspire (frontend, API, Keycloak, Postgres, Redis).
-// An already-running `aspire run` is reused; it must be the fixed-port dev session.
+// Locally an already-running `aspire run` is reused; it must be the fixed-port dev session.
+// CI starts its own with throwaway containers, keeping the fixed ports the sign-in needs.
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
+  forbidOnly: ci,
+  reporter: ci ? [["github"], ["html", { open: "never" }]] : "list",
   // `next dev` compiles each page on its first request, which can take a while.
   timeout: 60_000,
   expect: { timeout: 15_000 },
@@ -26,10 +31,14 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "aspire run --non-interactive",
+    command: ci
+      ? "aspire run --non-interactive -- --EphemeralResources=true --FixedPorts=true"
+      : "aspire run --non-interactive",
     cwd: "../..",
     url: appUrl,
-    reuseExistingServer: true,
+    reuseExistingServer: !ci,
+    // Shows the Aspire output in the CI log when a resource fails to start.
+    stdout: ci ? "pipe" : "ignore",
     // A cold start builds the .NET projects and starts the containers.
     timeout: 5 * 60_000,
   },
