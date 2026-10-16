@@ -4,8 +4,6 @@
     "pr": ""
   },
   "permissions": {
-    "allow": ["Bash(npm run *)", "Bash(git commit *)"],
-    "deny": ["Bash(git push *)"],
     "defaultMode": "auto"
   },
   "enabledPlugins": {
