@@ -9,7 +9,7 @@ public class Product
     public ProductId Id { get; init; } = ProductId.New();
     public required string Name { get; set; }
     public decimal Price { get; set; }
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset CreatedAt { get; init; } = DatabaseClock.UtcNow;
 }
 
 public class ProductConfiguration : IEntityTypeConfiguration<Product>

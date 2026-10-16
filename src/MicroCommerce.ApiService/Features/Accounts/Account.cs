@@ -11,7 +11,7 @@ public class Account
     public required string Subject { get; init; }
     public string? Email { get; set; }
     public required string DisplayName { get; set; }
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset CreatedAt { get; init; } = DatabaseClock.UtcNow;
 }
 
 public class AccountConfiguration : IEntityTypeConfiguration<Account>
@@ -27,4 +27,4 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
 }
 
 /// <summary>The signed-in Account and the Merchant it owns, if any, as returned by <c>GET /me</c>.</summary>
-public record MeResponse(Guid Id, string? Email, string DisplayName, bool IsPlatformOperator, MerchantResponse? Merchant);
+public record MeResponse(AccountId Id, string? Email, string DisplayName, bool IsPlatformOperator, MerchantResponse? Merchant);
