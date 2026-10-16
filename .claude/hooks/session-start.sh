@@ -32,7 +32,7 @@ sdk_band=${sdk_version%??}   # 10.0.400 -> 10.0.4
 if ! "$DOTNET_HOME/dotnet" --list-sdks 2>/dev/null | grep -q "^${sdk_band}"; then
   echo "Installing .NET SDK ${sdk_band}xx from packages.microsoft.com..."
   feed=https://packages.microsoft.com/debian/12/prod
-  debs=$(curl -fsSL "$feed/dists/bookworm/main/binary-amd64/Packages.gz" | gunzip | python3 -c '
+  debs=$(curl --proto '=https' --tlsv1.2 -fsSL "$feed/dists/bookworm/main/binary-amd64/Packages.gz" | gunzip | python3 -c '
 import re, sys
 band = sys.argv[1]
 pkgs = {}
@@ -51,7 +51,7 @@ for name in ["dotnet-host", "dotnet-hostfxr-10.0", "dotnet-runtime-10.0", "aspne
 ' "$sdk_band")
   tmp=$(mktemp -d)
   for deb in $debs; do
-    curl -fsSL -o "$tmp/pkg.deb" "$feed/$deb"
+    curl --proto '=https' --tlsv1.2 -fsSL -o "$tmp/pkg.deb" "$feed/$deb"
     dpkg-deb -x "$tmp/pkg.deb" "$tmp/root"
   done
   rm -rf "$DOTNET_HOME" && mkdir -p "$(dirname "$DOTNET_HOME")"
@@ -77,11 +77,11 @@ node_ok() {
   "$1" -e 'const [a,b,c]=process.versions.node.split(".").map(Number),[x,y,z]=process.argv[1].split(".").map(Number);process.exit(a!==x?+(a<x):b!==y?+(b<y):+(c<z))' "$node_min" 2>/dev/null
 }
 if ! node_ok "$NODE_HOME/bin/node"; then
-  node_version=$(curl -fsSL https://nodejs.org/dist/index.json \
+  node_version=$(curl --proto '=https' --tlsv1.2 -fsSL https://nodejs.org/dist/index.json \
     | python3 -c 'import json,sys; print(next(r["version"] for r in json.load(sys.stdin) if r["version"].startswith("v'"$node_major"'.")))')
   echo "Installing Node ${node_version}..."
   rm -rf "$NODE_HOME" && mkdir -p "$NODE_HOME"
-  curl -fsSL "https://nodejs.org/dist/${node_version}/node-${node_version}-linux-x64.tar.xz" \
+  curl --proto '=https' --tlsv1.2 -fsSL "https://nodejs.org/dist/${node_version}/node-${node_version}-linux-x64.tar.xz" \
     | tar -xJ -C "$NODE_HOME" --strip-components=1
 fi
 export PATH="$NODE_HOME/bin:$PATH"
