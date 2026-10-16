@@ -3,6 +3,7 @@ using FastEndpoints.OpenApi;
 using MicroCommerce.ApiService.Data;
 using MicroCommerce.ApiService.Features.Accounts;
 using MicroCommerce.ApiService.Features.Accounts.Data;
+using MicroCommerce.ApiService.Features.Catalog.Data;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -13,6 +14,8 @@ builder.AddServiceDefaults();
 builder.AddNpgsqlDbContext<AppDbContext>("micro-commerce-db");
 builder.AddNpgsqlDbContext<AccountsDbContext>("micro-commerce-db",
     configureDbContextOptions: o => o.UseNpgsql(AccountsDbContext.ConfigureNpgsql));
+builder.AddNpgsqlDbContext<CatalogDbContext>("micro-commerce-db",
+    configureDbContextOptions: o => o.UseNpgsql(CatalogDbContext.ConfigureNpgsql));
 builder.AddRedisDistributedCache("redis");
 
 // Keycloak access tokens. Authority, audience and RequireHttpsMetadata are bound from
@@ -47,6 +50,9 @@ if (app.Environment.IsDevelopment())
     await using var scope = app.Services.CreateAsyncScope();
     await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<AccountsDbContext>().Database.MigrateAsync();
+    var catalog = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+    await catalog.Database.MigrateAsync();
+    await StarterCategories.SeedAsync(catalog);
 }
 
 app.UseAuthentication();

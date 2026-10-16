@@ -13,6 +13,11 @@ export async function SiteHeader() {
       </Link>
       {me ? (
         <div className="flex items-center gap-4">
+          {me.isPlatformOperator && (
+            <Link href="/ops" className="text-sm hover:underline">
+              Operations
+            </Link>
+          )}
           <Link href={me.merchant ? "/merchant" : "/open-shop"} className="text-sm hover:underline">
             {me.merchant ? "Merchant Centre" : "Open your Shop"}
           </Link>

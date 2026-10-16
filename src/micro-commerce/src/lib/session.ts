@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import { auth } from "@/auth";
 import { getMe, type Me, type Merchant } from "@/lib/accounts";
@@ -22,4 +22,13 @@ export async function requireMerchant(): Promise<Merchant> {
   if (!me) redirect(signInUrl("/merchant"));
   if (!me.merchant) redirect("/open-shop");
   return me.merchant;
+}
+
+// Guard for operator pages (/ops): they only render for a Platform Operator; anyone else gets a 404.
+// It's for navigation only; the API refuses /ops/* requests from anyone else regardless.
+export async function requirePlatformOperator(): Promise<Me> {
+  const me = await getCurrentAccount();
+  if (!me) redirect(signInUrl("/ops"));
+  if (!me.isPlatformOperator) notFound();
+  return me;
 }

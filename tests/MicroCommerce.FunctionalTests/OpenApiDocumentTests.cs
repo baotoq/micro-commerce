@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using MicroCommerce.ApiService.Features.Accounts;
+using MicroCommerce.ApiService.Features.Catalog;
 using MicroCommerce.ApiService.Features.Products;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,8 @@ public class OpenApiDocumentTests(ApiFixture App) : TestBase<ApiFixture>
     [InlineData(typeof(ProductResponse))]
     [InlineData(typeof(MerchantResponse))]
     [InlineData(typeof(MeResponse))]
+    [InlineData(typeof(CategoryResponse))]
+    [InlineData(typeof(CategoryNodeResponse))]
     public async Task Typed_ids_are_uuid_strings(Type response)
     {
         var document = await DocumentAsync();
