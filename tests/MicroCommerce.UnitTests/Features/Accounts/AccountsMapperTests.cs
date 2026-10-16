@@ -9,7 +9,7 @@ public class AccountsMapperTests
     private static readonly Merchant Merchant = new()
     {
         AccountId = Account.Id,
-        ShopName = "Mug Corner",
+        ShopName = ShopName.From("Mug Corner"),
         Description = "Mugs, mostly.",
         PickupAddress = new("12 Le Loi", "Ben Nghe", "District 1", "Ho Chi Minh City"),
     };
@@ -20,7 +20,7 @@ public class AccountsMapperTests
         var response = Merchant.ToResponse();
 
         response.ShouldBe(new MerchantResponse(
-            Merchant.Id, "Mug Corner", "Mugs, mostly.", Merchant.PickupAddress, Merchant.CreatedAt));
+            Merchant.Id, ShopName.From("Mug Corner"), "Mugs, mostly.", Merchant.PickupAddress, Merchant.CreatedAt));
     }
 
     [Fact]

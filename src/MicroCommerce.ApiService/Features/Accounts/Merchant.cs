@@ -29,7 +29,7 @@ public class Merchant
     public string NormalizedShopName { get; private set; } = null!;
     public string? Description { get; set; }
     public required PickupAddress PickupAddress { get; set; }
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset CreatedAt { get; init; } = DatabaseClock.UtcNow;
 }
 
 /// <summary>Where the Merchant's parcels ship from; the province is what the Carrier quotes from.</summary>
