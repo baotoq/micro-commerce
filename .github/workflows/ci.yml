@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  FRONTEND_DIR: src/micro-commerce
+
+jobs:
+  build:
+    name: Build and lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      # Installs the toolchain pinned in mise.toml (.NET SDK, Aspire CLI, Node, pnpm).
+      - uses: jdx/mise-action@v5
+
+      - run: dotnet build MicroCommerce.slnx
+      - run: dotnet format MicroCommerce.slnx --verify-no-changes --no-restore
+
+      - run: pnpm --dir "$FRONTEND_DIR" install --frozen-lockfile
+      - run: pnpm --dir "$FRONTEND_DIR" lint
+      - run: pnpm --dir "$FRONTEND_DIR" build
+
+  test:
+    name: ${{ matrix.name }} tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Unit
+            project: tests/MicroCommerce.UnitTests
+          # Testcontainers Postgres and Redis on the runner's Docker.
+          - name: Functional
+            project: tests/MicroCommerce.FunctionalTests
+          # The whole AppHost with ephemeral containers; it also starts the frontend, hence pnpm.
+          - name: Integration
+            project: tests/MicroCommerce.IntegrationTests
+            frontend: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+
+      - if: matrix.frontend
+        run: pnpm --dir "$FRONTEND_DIR" install --frozen-lockfile
+      - run: dotnet test --project ${{ matrix.project }}
+
+  e2e:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+
+      - run: pnpm --dir "$FRONTEND_DIR" install --frozen-lockfile
+      - run: pnpm --dir "$FRONTEND_DIR" exec playwright install --with-deps chromium
+      # CI=true makes playwright.config.ts start its own `aspire run` with ephemeral
+      # containers on the fixed ports (Keycloak 8080, frontend 3000) the realm expects.
+      - run: pnpm --dir "$FRONTEND_DIR" test:e2e
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            ${{ env.FRONTEND_DIR }}/playwright-report/
+            ${{ env.FRONTEND_DIR }}/test-results/
+          retention-days: 14

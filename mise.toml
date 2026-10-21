@@ -4,7 +4,7 @@ min_version = "2026.9.0"
 # Keep in sync with global.json, which is what the .NET SDK resolver actually reads.
 dotnet = "10.0.400"
 aspire = "13.6.0"
-node = "24"
+node = "26"
 # Keep in sync with "packageManager" in src/micro-commerce/package.json.
 pnpm = "12.4.1"
 
