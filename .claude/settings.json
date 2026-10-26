@@ -3,22 +3,14 @@
     "defaultMode": "auto"
   },
   "enabledPlugins": {
-    "commit-commands@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
-    "mattpocock-skills@claude-plugins-official": true,
-    "andrej-karpathy-skills@karpathy-skills": true,
+    "jtl-terminology@jtl-ai-skills": true,
     "testcontainers@testcontainers-claude-skills": true,
-    "dotnet@baotoq": true,
-    "azure@baotoq": true,
-    "tools@baotoq": true
+    "dotnet-aspnetcore@dotnet-agent-skills": true,
+    "dotnet-test@dotnet-agent-skills": true,
+    "dotnet@dotnet-agent-skills": true,
+    "azure@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
-    "baotoq": {
-      "source": {
-        "source": "github",
-        "repo": "baotoq/agent-skills"
-      }
-    },
     "karpathy-skills": {
       "source": {
         "source": "github",
