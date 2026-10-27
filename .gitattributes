@@ -8,3 +8,5 @@
 *.mod text eol=lf
 *.sum text eol=lf
 *.pfx binary
+
+.github/workflows/*.lock.yml linguist-generated=true
