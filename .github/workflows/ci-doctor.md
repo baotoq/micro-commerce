@@ -8,7 +8,7 @@ on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
-    branches: [main]
+    branches: [master]
 
 if: ${{ github.event.workflow_run.conclusion == 'failure' }}
 
