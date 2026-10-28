@@ -22,11 +22,9 @@
     "microsoft-docs@anthropic-plugin-directory": true,
     "azure@claude-plugins-official": true,
     "mattpocock-skills@claude-plugins-official": true,
-    "context7@anthropic-plugin-directory": true,
-    "code-review@anthropic-plugin-directory": true,
-    "chrome-devtools-mcp@claude-plugins-official": true,
     "sonarqube@claude-plugins-official": true,
-    "frontend-design@anthropic-plugin-directory": true
+    "frontend-design@anthropic-plugin-directory": true,
+    "andrej-karpathy-skills@karpathy-skills": true
   },
   "extraKnownMarketplaces": {
     "karpathy-skills": {
