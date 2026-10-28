@@ -3,12 +3,12 @@
     "defaultMode": "auto"
   },
   "enabledPlugins": {
-    "jtl-terminology@jtl-ai-skills": true,
     "testcontainers@testcontainers-claude-skills": true,
     "dotnet-aspnetcore@dotnet-agent-skills": true,
     "dotnet-test@dotnet-agent-skills": true,
     "dotnet@dotnet-agent-skills": true,
-    "azure@claude-plugins-official": true
+    "azure@claude-plugins-official": true,
+    "mattpocock-skills@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "karpathy-skills": {
