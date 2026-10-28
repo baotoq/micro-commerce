@@ -2,7 +2,6 @@ using MicroCommerce.ApiService.Features.Catalog.Data;
 using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Npgsql;
 
 namespace MicroCommerce.ApiService.Features.Catalog;
 
@@ -43,28 +42,68 @@ public record CategoryNodeResponse(CategoryId Id, string Name, IReadOnlyList<Cat
 
 /// <summary>
 /// The tree rules that depend on what a Category holds. Every Product sits in a leaf Category, so a Category
-/// holding Products can't gain children, and a Category with children or Products can't be deleted.
+/// holding Products can't gain children, and a Category with children or Products can't be deleted. Check
+/// them inside <see cref="LockCategoryAsync"/>, so they still hold when the change commits.
 /// </summary>
 internal static class CategoryRules
 {
-    public const string UnknownParent = "No Category has this ID.";
+    public const string UnknownCategory = "No Category has this ID.";
     public const string HasChildren = "This Category has child Categories.";
+    public const string HasProducts = "This Category holds Products.";
+    public const string NotALeaf = "Products can only be listed in a Category without child Categories.";
 
     /// <returns>Why the Category can't gain a child, or null if it can.</returns>
-    public static Task<string?> WhyCannotGainChildAsync(this CatalogDbContext db, CategoryId id, CancellationToken ct) =>
-        // Catalog has no Products yet. Once it does, a Category holding any can't gain children: check it here.
-        Task.FromResult<string?>(null);
+    public static async Task<string?> WhyCannotGainChildAsync(this CatalogDbContext db, CategoryId id, CancellationToken ct) =>
+        await db.Products.AnyAsync(p => p.CategoryId == id, ct) ? HasProducts : null;
+
+    /// <returns>Why the Category can't hold Products, or null if it can.</returns>
+    public static async Task<string?> WhyCannotHoldProductsAsync(this CatalogDbContext db, CategoryId id, CancellationToken ct) =>
+        await db.Categories.AnyAsync(c => c.ParentId == id, ct) ? NotALeaf : null;
 
     /// <returns>Why the Category can't be deleted, or null if it can.</returns>
     public static async Task<string?> WhyCannotBeDeletedAsync(this CatalogDbContext db, CategoryId id, CancellationToken ct)
     {
         if (await db.Categories.AnyAsync(c => c.ParentId == id, ct)) return HasChildren;
-
-        // Catalog has no Products yet. Once it does, a Category holding any can't be deleted either: check it here.
+        if (await db.Products.AnyAsync(p => p.CategoryId == id, ct)) return HasProducts;
         return null;
     }
 
-    /// <summary>Whether saving failed on the parent foreign key: a parent and child changed concurrently.</summary>
-    public static bool IsParentViolation(DbUpdateException e) =>
-        e.InnerException is PostgresException { SqlState: PostgresErrorCodes.ForeignKeyViolation };
+    /// <summary>
+    /// Saves the context's changes if <paramref name="categoryId"/> is a leaf Category, keeping it one until they
+    /// commit.
+    /// </summary>
+    /// <returns>Why the Category can't hold Products, or null once the changes are saved.</returns>
+    public static async Task<string?> SaveInLeafCategoryAsync(this CatalogDbContext db, CategoryId categoryId, CancellationToken ct)
+    {
+        string? reason = null;
+        var found = await db.LockCategoryAsync(categoryId, async () =>
+        {
+            reason = await db.WhyCannotHoldProductsAsync(categoryId, ct);
+            if (reason is null) await db.SaveChangesAsync(ct);
+        }, ct);
+
+        return found ? reason : UnknownCategory;
+    }
+
+    /// <summary>
+    /// Runs <paramref name="work"/> in a transaction holding the Category's row lock. Adding a child, adding a
+    /// Product and deleting all lock the Category they depend on, so they take turns: a Product can't land in
+    /// a Category that is concurrently gaining a child, nor a child under one concurrently gaining a Product,
+    /// nor either under one being deleted. <paramref name="work"/> may run again if the database connection
+    /// fails transiently, so it must only read and stage changes, saving them itself.
+    /// </summary>
+    /// <returns>False, without running <paramref name="work"/>, if no Category has the ID.</returns>
+    public static Task<bool> LockCategoryAsync(this CatalogDbContext db, CategoryId id, Func<Task> work, CancellationToken ct) =>
+        db.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
+        {
+            await using var transaction = await db.Database.BeginTransactionAsync(ct);
+            var locked = await db.Database
+                .SqlQuery<Guid>($"""SELECT "Id" AS "Value" FROM catalog."Categories" WHERE "Id" = {id.Value} FOR UPDATE""")
+                .ToListAsync(ct);
+            if (locked.Count == 0) return false;
+
+            await work();
+            await transaction.CommitAsync(ct);
+            return true;
+        });
 }

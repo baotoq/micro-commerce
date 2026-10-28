@@ -19,37 +19,25 @@ public class DeleteCategoryEndpoint(CatalogDbContext db) : Endpoint<DeleteCatego
 
     public override async Task HandleAsync(DeleteCategoryRequest req, CancellationToken ct)
     {
-        var category = await db.Categories.SingleOrDefaultAsync(c => c.Id == req.Id, ct);
-        if (category is null)
+        string? conflict = null;
+        var found = await db.LockCategoryAsync(req.Id, async () =>
+        {
+            conflict = await db.WhyCannotBeDeletedAsync(req.Id, ct);
+            if (conflict is null) await db.Categories.Where(c => c.Id == req.Id).ExecuteDeleteAsync(ct);
+        }, ct);
+
+        if (!found)
         {
             await Send.NotFoundAsync(ct);
             return;
         }
-
-        if (await db.WhyCannotBeDeletedAsync(category.Id, ct) is { } reason)
+        if (conflict is not null)
         {
-            await SendConflictAsync(reason, ct);
-            return;
-        }
-
-        db.Categories.Remove(category);
-        try
-        {
-            await db.SaveChangesAsync(ct);
-        }
-        catch (DbUpdateException e) when (CategoryRules.IsParentViolation(e))
-        {
-            // A child was added concurrently.
-            await SendConflictAsync(CategoryRules.HasChildren, ct);
+            AddError(conflict);
+            await Send.ErrorsAsync(StatusCodes.Status409Conflict, ct);
             return;
         }
 
         await Send.NoContentAsync(ct);
-    }
-
-    private Task SendConflictAsync(string reason, CancellationToken ct)
-    {
-        AddError(reason);
-        return Send.ErrorsAsync(StatusCodes.Status409Conflict, ct);
     }
 }

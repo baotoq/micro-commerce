@@ -43,12 +43,87 @@ namespace MicroCommerce.ApiService.Features.Catalog.Data.Migrations
                     b.ToTable("Categories", "catalog");
                 });
 
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
+                    b.Property<Guid>("MerchantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("MerchantId");
+
+                    b.ToTable("Products", "catalog");
+                });
+
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Category", b =>
                 {
                     b.HasOne("MicroCommerce.ApiService.Features.Catalog.Category", null)
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Product", b =>
+                {
+                    b.HasOne("MicroCommerce.ApiService.Features.Catalog.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.OwnsMany("MicroCommerce.ApiService.Features.Catalog.Variant", "Variants", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uuid");
+
+                            b1.Property<long>("Price")
+                                .HasColumnType("bigint");
+
+                            b1.Property<Guid>("ProductId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Stock")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("WeightGrams")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ProductId");
+
+                            b1.ToTable("Variants", "catalog");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId");
+                        });
+
+                    b.Navigation("Variants");
                 });
 
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Category", b =>

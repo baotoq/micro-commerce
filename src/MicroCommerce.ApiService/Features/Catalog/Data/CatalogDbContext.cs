@@ -15,9 +15,16 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
 
     public DbSet<Category> Categories => Set<Category>();
 
+    /// <summary>Every Merchant's Products; Merchant Centre endpoints use <see cref="MerchantCatalog"/> instead.</summary>
+    public DbSet<Product> Products => Set<Product>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.Properties<CategoryId>().HaveConversion<CategoryId.EfCoreValueConverter, CategoryId.EfCoreValueComparer>();
+        configurationBuilder.Properties<ProductId>().HaveConversion<ProductId.EfCoreValueConverter, ProductId.EfCoreValueComparer>();
+        configurationBuilder.Properties<VariantId>().HaveConversion<VariantId.EfCoreValueConverter, VariantId.EfCoreValueComparer>();
+        configurationBuilder.Properties<MerchantId>().HaveConversion<MerchantId.EfCoreValueConverter, MerchantId.EfCoreValueComparer>();
+        configurationBuilder.Properties<Money>().HaveConversion<Money.EfCoreValueConverter, Money.EfCoreValueComparer>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
