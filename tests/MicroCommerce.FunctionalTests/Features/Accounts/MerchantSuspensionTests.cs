@@ -1,8 +1,11 @@
 using System.Diagnostics;
 using System.Net;
 using MicroCommerce.ApiService.Features.Accounts;
+using MicroCommerce.ApiService.Features.Accounts.Data;
 using MicroCommerce.ApiService.Features.Catalog;
 using MicroCommerce.ApiService.SharedKernel;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MicroCommerce.FunctionalTests.Features.Accounts;
 
@@ -41,6 +44,13 @@ public class MerchantSuspensionTests(ApiFixture App) : TestBase<ApiFixture>
     }
 
     private Task<HttpStatusCode> ShopStatusAsync(MerchantId id) => ReadShopStatusAsync(id);
+
+    private async Task<int> ProfileVersionAsync(MerchantId id)
+    {
+        await using var scope = App.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
+        return await db.Merchants.Where(m => m.Id == id).Select(m => m.ProfileVersion).SingleAsync();
+    }
 
     private async Task<HttpStatusCode> ReadShopStatusAsync(MerchantId id)
     {
@@ -88,6 +98,14 @@ public class MerchantSuspensionTests(ApiFixture App) : TestBase<ApiFixture>
             .POSTAsync<SuspendMerchantEndpoint, ChangeMerchantStatusRequest, OperatorMerchantResponse>(new(merchant.Id));
         suspendResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         suspended.Status.ShouldBe(MerchantStatus.Suspended);
+        var suspendedVersion = await ProfileVersionAsync(merchant.Id);
+
+        var (repeatSuspendResponse, repeatedSuspension) = await _operator
+            .POSTAsync<SuspendMerchantEndpoint, ChangeMerchantStatusRequest, OperatorMerchantResponse>(new(merchant.Id));
+        repeatSuspendResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        repeatedSuspension.Status.ShouldBe(MerchantStatus.Suspended);
+        (await ProfileVersionAsync(merchant.Id)).ShouldBe(suspendedVersion);
+
         await WaitForShopStatusAsync(merchant.Id, HttpStatusCode.NotFound);
 
         var (listResponse, operatorMerchants) =
@@ -108,6 +126,14 @@ public class MerchantSuspensionTests(ApiFixture App) : TestBase<ApiFixture>
             .POSTAsync<ReinstateMerchantEndpoint, ChangeMerchantStatusRequest, OperatorMerchantResponse>(new(merchant.Id));
         reinstateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         reinstated.Status.ShouldBe(MerchantStatus.Active);
+        var activeVersion = await ProfileVersionAsync(merchant.Id);
+
+        var (repeatReinstateResponse, repeatedReinstatement) = await _operator
+            .POSTAsync<ReinstateMerchantEndpoint, ChangeMerchantStatusRequest, OperatorMerchantResponse>(new(merchant.Id));
+        repeatReinstateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        repeatedReinstatement.Status.ShouldBe(MerchantStatus.Active);
+        (await ProfileVersionAsync(merchant.Id)).ShouldBe(activeVersion);
+
         await WaitForShopStatusAsync(merchant.Id, HttpStatusCode.OK);
 
         var restoredList = await App.Client.GETAsync<ListStorefrontProductsEndpoint, ListStorefrontProductsRequest,

@@ -32,6 +32,7 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddScoped<CurrentAccount>();
 builder.Services.AddScoped<CurrentMerchant>();
 builder.Services.AddScoped<MerchantCatalog>();
+builder.Services.AddScoped<MerchantStatusChanges>();
 builder.Services.AddScoped<IProductSearch, PostgresProductSearch>();
 builder.Services.AddSingleton<StorefrontProductCache>();
 
