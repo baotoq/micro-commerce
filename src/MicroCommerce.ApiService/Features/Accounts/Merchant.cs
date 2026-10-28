@@ -3,6 +3,7 @@ using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Npgsql;
+using System.Text.Json.Serialization;
 
 namespace MicroCommerce.ApiService.Features.Accounts;
 
@@ -30,6 +31,7 @@ public class Merchant
     public string? Description { get; set; }
     public required PickupAddress PickupAddress { get; set; }
     public DateTimeOffset CreatedAt { get; init; } = DatabaseClock.UtcNow;
+    public MerchantStatus Status { get; private set; } = MerchantStatus.Active;
 
     /// <summary>
     /// Counts the Shop profile's versions, starting at 1 when the Merchant opens. Every profile event carries it, so
@@ -46,9 +48,32 @@ public class Merchant
         ProfileVersion++;
     }
 
+    public bool Suspend() => ChangeStatus(MerchantStatus.Suspended);
+
+    public bool Reinstate() => ChangeStatus(MerchantStatus.Active);
+
     public MerchantOpened ToOpenedEvent() => new(Id, ShopName.Value, Description, ProfileVersion);
 
     public MerchantProfileChanged ToProfileChangedEvent() => new(Id, ShopName.Value, Description, ProfileVersion);
+
+    public MerchantSuspended ToSuspendedEvent() => new(Id, ShopName.Value, Description, ProfileVersion);
+
+    public MerchantReinstated ToReinstatedEvent() => new(Id, ShopName.Value, Description, ProfileVersion);
+
+    private bool ChangeStatus(MerchantStatus status)
+    {
+        if (Status == status) return false;
+        Status = status;
+        ProfileVersion++;
+        return true;
+    }
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter<MerchantStatus>))]
+public enum MerchantStatus
+{
+    Active,
+    Suspended,
 }
 
 /// <summary>Where the Merchant's parcels ship from; the province is what the Carrier quotes from.</summary>
@@ -88,7 +113,8 @@ public class MerchantConfiguration : IEntityTypeConfiguration<Merchant>
 
 /// <summary>A Merchant's Shop profile, as its owner sees it.</summary>
 public record MerchantResponse(
-    MerchantId Id, ShopName ShopName, string? Description, PickupAddress PickupAddress, DateTimeOffset CreatedAt);
+    MerchantId Id, ShopName ShopName, string? Description, PickupAddress PickupAddress, DateTimeOffset CreatedAt,
+    MerchantStatus Status);
 
 public class PickupAddressValidator : AbstractValidator<PickupAddress>
 {

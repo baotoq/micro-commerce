@@ -45,11 +45,26 @@ public class RequireMerchant : IGlobalPreProcessor
     public async Task PreProcessAsync(IPreProcessorContext ctx, CancellationToken ct)
     {
         if (ctx.HttpContext.ResponseStarted()) return;
-        if (await ctx.HttpContext.Resolve<CurrentMerchant>().ResolveAsync(ctx.HttpContext.User, ct)) return;
+        var currentMerchant = ctx.HttpContext.Resolve<CurrentMerchant>();
+        if (!await currentMerchant.ResolveAsync(ctx.HttpContext.User, ct))
+        {
+            await RefuseAsync(ctx, "Only an Account that owns a Merchant can use the Merchant Centre.", ct);
+            return;
+        }
 
-        await ctx.HttpContext.Response.SendErrorsAsync(
-            [new ValidationFailure("", "Only an Account that owns a Merchant can use the Merchant Centre.")],
+        var method = ctx.HttpContext.Request.Method;
+        if (currentMerchant.Merchant.Status != MerchantStatus.Suspended
+            || HttpMethods.IsGet(method)
+            || HttpMethods.IsHead(method)
+            || HttpMethods.IsOptions(method))
+            return;
+
+        await RefuseAsync(ctx, "A Suspended Merchant cannot make changes.", ct);
+    }
+
+    private static Task RefuseAsync(IPreProcessorContext ctx, string message, CancellationToken ct) =>
+        ctx.HttpContext.Response.SendErrorsAsync(
+            [new ValidationFailure("", message)],
             StatusCodes.Status403Forbidden,
             cancellation: ct);
-    }
 }

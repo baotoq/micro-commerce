@@ -84,6 +84,9 @@ namespace MicroCommerce.ApiService.Features.Accounts.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.ComplexProperty(typeof(Dictionary<string, object>), "PickupAddress", "MicroCommerce.ApiService.Features.Accounts.Merchant.PickupAddress#PickupAddress", b1 =>
                         {
                             b1.IsRequired();

@@ -116,6 +116,11 @@ namespace MicroCommerce.ApiService.Features.Catalog.Data.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
+                    b.Property<bool>("IsSuspended")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("ProfileVersion")
                         .HasColumnType("integer");
 

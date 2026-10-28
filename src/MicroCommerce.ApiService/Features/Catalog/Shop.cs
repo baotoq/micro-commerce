@@ -18,6 +18,8 @@ public class Shop
     public required string ShopName { get; set; }
     public string? Description { get; set; }
 
+    public bool IsSuspended { get; set; }
+
     /// <summary>The Merchant's profile version this copy reflects; older events are ignored.</summary>
     public int ProfileVersion { get; set; }
 }
@@ -30,6 +32,7 @@ public class ShopConfiguration : IEntityTypeConfiguration<Shop>
         builder.Property(s => s.Id).ValueGeneratedNever();
         builder.Property(s => s.ShopName).HasMaxLength(100).IsRequired();
         builder.Property(s => s.Description).HasMaxLength(2000);
+        builder.Property(s => s.IsSuspended).HasDefaultValue(false);
     }
 }
 
