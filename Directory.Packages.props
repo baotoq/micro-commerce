@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Lets the "Transitive pins" group override versions that dependencies bring in. -->
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
   <ItemGroup Label="Aspire hosting">
@@ -42,5 +44,10 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.17.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Transitive pins">
+    <!-- Aspire hosting brings in 2.5.302, flagged by GHSA-qhrr-8q5h-9q3h. -->
+    <PackageVersion Include="MessagePack" Version="2.5.307" />
   </ItemGroup>
 </Project>
