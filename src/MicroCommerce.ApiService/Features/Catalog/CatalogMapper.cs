@@ -14,10 +14,15 @@ public static partial class CatalogMapper
     public static partial CategoryNodeResponse ToNodeResponse(this Category category);
 
     [MapperIgnoreSource(nameof(Product.MerchantId))]
+    [MapPropertyFromSource(nameof(ProductResponse.Variants), Use = nameof(OrderedVariants))]
     public static partial ProductResponse ToResponse(this Product product);
+
+    [MapperIgnoreSource(nameof(Variant.Position))]
+    private static partial VariantResponse ToResponse(this Variant variant);
 
     [MapperIgnoreSource(nameof(Product.MerchantId))]
     [MapperIgnoreSource(nameof(Product.Description))]
+    [MapperIgnoreSource(nameof(Product.Options))]
     [MapperIgnoreSource(nameof(Product.Variants))]
     [MapPropertyFromSource(nameof(ProductSummaryResponse.VariantCount), Use = nameof(VariantCount))]
     [MapPropertyFromSource(nameof(ProductSummaryResponse.MinPrice), Use = nameof(MinPrice))]
@@ -27,6 +32,9 @@ public static partial class CatalogMapper
 
     /// <summary>Uses <see cref="ToSummaryResponse"/>'s configuration; the database computes the aggregates.</summary>
     public static partial IQueryable<ProductSummaryResponse> ProjectToSummaryResponse(this IQueryable<Product> query);
+
+    private static IReadOnlyList<VariantResponse> OrderedVariants(Product product) =>
+        [.. product.Variants.OrderBy(v => v.Position).Select(v => v.ToResponse())];
 
     // Expression-bodied, so Mapperly inlines them into the projection.
     private static int VariantCount(Product product) => product.Variants.Count;

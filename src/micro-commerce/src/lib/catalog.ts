@@ -63,9 +63,17 @@ export function leafCategories(tree: CategoryNode[], parents: string[] = []): { 
 // Mirrors ProductStatus in the API.
 export type ProductStatus = "Draft" | "Published";
 
-// Mirrors VariantResponse in the API; price is whole VND, weight is in grams.
+// Mirrors ProductOption in the API, e.g. Colour with Red and Blue.
+export type ProductOption = {
+  name: string;
+  values: string[];
+};
+
+// Mirrors VariantResponse in the API: one value of each option, in option order (none for a default
+// Variant); price is whole VND, weight is in grams.
 export type Variant = {
   id: string;
+  optionValues: string[];
   price: number;
   stock: number;
   weightGrams: number;
@@ -78,6 +86,7 @@ export type Product = {
   description: string | null;
   categoryId: string;
   status: ProductStatus;
+  options: ProductOption[];
   variants: Variant[];
   createdAt: string;
 };
@@ -117,7 +126,54 @@ export function getMerchantProduct(accessToken: string, id: string) {
 const wholeNumber = (label: string) =>
   z.number({ error: `${label} is required` }).int(`${label} must be a whole number`);
 
-// Mirrors ProductDetailsValidator in the API; the API stays the source of truth.
+// Option names and values compare ignoring case, as in the API.
+const sameText = (a: string, b: string) => a.toLocaleLowerCase() === b.toLocaleLowerCase();
+const distinct = (values: string[]) =>
+  values.every((value, i) => values.findIndex((other) => sameText(other, value)) === i);
+
+// The form takes an option's values as one comma-separated text ("Red, Blue").
+export function splitOptionValues(text: string) {
+  return text
+    .split(",")
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+}
+
+// Every combination of one value of each option, in option order with the last option varying
+// fastest; a single empty combination without options, as the API orders Variants.
+export function combinations(values: string[][]): string[][] {
+  return values.reduce<string[][]>((combos, option) => combos.flatMap((c) => option.map((v) => [...c, v])), [[]]);
+}
+
+const optionSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Option name is required")
+    .max(50, "Option name must be 50 characters or fewer"),
+  values: z
+    .string()
+    .transform(splitOptionValues)
+    .pipe(
+      z
+        .array(z.string().max(50, "Each value must be 50 characters or fewer"))
+        .min(1, "Give at least one value")
+        .max(20, "An option can have at most 20 values")
+        .refine(distinct, "Each value must be different"),
+    ),
+});
+
+const variantSchema = z.object({
+  optionValues: z.array(z.string()),
+  price: wholeNumber("Price")
+    .positive("Price must be more than 0")
+    .max(Number.MAX_SAFE_INTEGER, "Price is too high"),
+  stock: wholeNumber("Stock").min(0, "Stock can't be negative"),
+  weightGrams: wholeNumber("Weight").positive("Weight must be more than 0"),
+});
+
+// Mirrors ProductDetailsValidator in the API; the API stays the source of truth. The form keeps the
+// Variants in step with the options, so it doesn't re-check the combinations.
 export const productSchema = z.object({
   name: z
     .string()
@@ -126,14 +182,38 @@ export const productSchema = z.object({
     .max(200, "Name must be 200 characters or fewer"),
   description: z.string().trim().max(5000, "Description must be 5000 characters or fewer"),
   categoryId: z.string().min(1, "Category is required"),
-  price: wholeNumber("Price")
-    .positive("Price must be more than 0")
-    .max(Number.MAX_SAFE_INTEGER, "Price is too high"),
-  stock: wholeNumber("Stock").min(0, "Stock can't be negative"),
-  weightGrams: wholeNumber("Weight").positive("Weight must be more than 0"),
+  options: z
+    .array(optionSchema)
+    .max(2, "A Product can have at most 2 options")
+    .superRefine((options, ctx) =>
+      options.forEach((option, i) => {
+        if (options.findIndex((other) => sameText(other.name, option.name)) !== i)
+          ctx.addIssue({ code: "custom", path: [i, "name"], message: "Each option needs a different name" });
+      }),
+    ),
+  variants: z.array(variantSchema).min(1, "Give each option at least one value"),
 });
 
-export type ProductInput = z.infer<typeof productSchema>;
+// What the form edits: option values as comma-separated text.
+export type ProductFormValues = z.input<typeof productSchema>;
+export type VariantFormValues = ProductFormValues["variants"][number];
+// What the API takes.
+export type ProductInput = z.output<typeof productSchema>;
+
+// The Variants for the options' current values: one per combination, keeping what was already entered
+// for a combination that is still there.
+export function variantsFor(options: ProductFormValues["options"], previous: VariantFormValues[]) {
+  const values = options.map((option) =>
+    splitOptionValues(option.values).filter((value, i, all) => all.findIndex((v) => sameText(v, value)) === i),
+  );
+  return combinations(values).map((combo) => {
+    const kept = previous.find(
+      (variant) =>
+        variant.optionValues.length === combo.length && variant.optionValues.every((v, i) => sameText(v, combo[i])),
+    );
+    return { ...(kept ?? { price: Number.NaN, stock: Number.NaN, weightGrams: Number.NaN }), optionValues: combo };
+  });
+}
 
 const productBody = ({ description, ...input }: ProductInput) =>
   JSON.stringify({ ...input, description: description || null });

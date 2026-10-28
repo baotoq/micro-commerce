@@ -47,9 +47,7 @@ public class ProductsApiTests(AppHostFixture fixture)
             Name = "Coffee Mug",
             Description = "Stoneware.",
             CategoryId = kitchen.Id,
-            Price = 120_000,
-            Stock = 5,
-            WeightGrams = 350,
+            Variants = new[] { new { Price = 120_000, Stock = 5, WeightGrams = 350 } },
         }, ct);
         created.StatusCode.ShouldBe(HttpStatusCode.Created);
         var product = (await created.Content.ReadFromJsonAsync<Product>(ct)).ShouldNotBeNull();
