@@ -175,7 +175,8 @@ public record ProductSummaryResponse(
     int VariantCount,
     Money MinPrice,
     Money MaxPrice,
-    int TotalStock,
+    /// <summary>A <c>long</c>: each Variant's stock fits an <c>int</c>, but their sum may not.</summary>
+    long TotalStock,
     DateTimeOffset CreatedAt);
 
 /// <summary>What a Merchant gives when creating or editing a Product.</summary>
@@ -222,13 +223,17 @@ public class ProductOptionValidator : AbstractValidator<ProductOption>
 {
     public ProductOptionValidator()
     {
-        RuleFor(x => x.Name).NotEmpty().MaximumLength(ProductOption.NameMaxLength);
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(ProductOption.NameMaxLength).Must(VariantCombinations.IsOneLine)
+            .WithMessage(NoControlCharactersMessage);
         RuleFor(x => x.Values).Cascade(CascadeMode.Stop)
             .NotEmpty()
             .Must(v => v.Count <= ProductOption.MaxValues).WithMessage($"An option can have at most {ProductOption.MaxValues} values.")
             .Must(VariantCombinations.AllDifferent).WithMessage("Each value of an option must be different.");
-        RuleForEach(x => x.Values).NotEmpty().MaximumLength(ProductOption.ValueMaxLength);
+        RuleForEach(x => x.Values).NotEmpty().MaximumLength(ProductOption.ValueMaxLength).Must(VariantCombinations.IsOneLine)
+            .WithMessage(NoControlCharactersMessage);
     }
+
+    private const string NoControlCharactersMessage = "Can't contain line breaks or other control characters.";
 }
 
 public class VariantRequestValidator : AbstractValidator<VariantRequest>

@@ -131,10 +131,15 @@ const sameText = (a: string, b: string) => a.toLocaleLowerCase() === b.toLocaleL
 const distinct = (values: string[]) =>
   values.every((value, i) => values.findIndex((other) => sameText(other, value)) === i);
 
-// The form takes an option's values as one comma-separated text ("Red, Blue").
+// As in the API, which also keeps line breaks out of names and values.
+const maxOptionValues = 20;
+const oneLine = /^\P{Cc}*$/u;
+const oneLineMessage = "Can't contain control characters";
+
+// The form takes an option's values as one text, one value per line, so any value round-trips.
 export function splitOptionValues(text: string) {
   return text
-    .split(",")
+    .split(/\r?\n/)
     .map((value) => value.trim())
     .filter((value) => value.length > 0);
 }
@@ -150,15 +155,16 @@ const optionSchema = z.object({
     .string()
     .trim()
     .min(1, "Option name is required")
-    .max(50, "Option name must be 50 characters or fewer"),
+    .max(50, "Option name must be 50 characters or fewer")
+    .regex(oneLine, oneLineMessage),
   values: z
     .string()
     .transform(splitOptionValues)
     .pipe(
       z
-        .array(z.string().max(50, "Each value must be 50 characters or fewer"))
+        .array(z.string().max(50, "Each value must be 50 characters or fewer").regex(oneLine, oneLineMessage))
         .min(1, "Give at least one value")
-        .max(20, "An option can have at most 20 values")
+        .max(maxOptionValues, `An option can have at most ${maxOptionValues} values`)
         .refine(distinct, "Each value must be different"),
     ),
 });
@@ -194,25 +200,35 @@ export const productSchema = z.object({
   variants: z.array(variantSchema).min(1, "Give each option at least one value"),
 });
 
-// What the form edits: option values as comma-separated text.
+// What the form edits: option values as text, one per line.
 export type ProductFormValues = z.input<typeof productSchema>;
 export type VariantFormValues = ProductFormValues["variants"][number];
 // What the API takes.
 export type ProductInput = z.output<typeof productSchema>;
 
-// The Variants for the options' current values: one per combination, keeping what was already entered
-// for a combination that is still there.
-export function variantsFor(options: ProductFormValues["options"], previous: VariantFormValues[]) {
+// Values hold no line breaks, so this tells combinations apart; it ignores case, as the API does.
+const combinationKey = (optionValues: string[]) => optionValues.map((v) => v.toLocaleLowerCase()).join("\n");
+
+// The Variants for the options' current values: one per combination. `remembered` keeps what was entered
+// for every combination seen so far (this adds the current Variants to it), so a combination that briefly
+// disappears while its values are typed gets its price, stock and weight back. Only the first values an
+// option may have count, so pasting a long list can't build an enormous grid.
+export function variantsFor(
+  options: ProductFormValues["options"],
+  current: VariantFormValues[],
+  remembered: Map<string, VariantFormValues>,
+) {
+  for (const variant of current) remembered.set(combinationKey(variant.optionValues), variant);
+
   const values = options.map((option) =>
-    splitOptionValues(option.values).filter((value, i, all) => all.findIndex((v) => sameText(v, value)) === i),
+    splitOptionValues(option.values)
+      .filter((value, i, all) => all.findIndex((v) => sameText(v, value)) === i)
+      .slice(0, maxOptionValues),
   );
-  return combinations(values).map((combo) => {
-    const kept = previous.find(
-      (variant) =>
-        variant.optionValues.length === combo.length && variant.optionValues.every((v, i) => sameText(v, combo[i])),
-    );
-    return { ...(kept ?? { price: Number.NaN, stock: Number.NaN, weightGrams: Number.NaN }), optionValues: combo };
-  });
+  return combinations(values).map((combo) => ({
+    ...(remembered.get(combinationKey(combo)) ?? { price: Number.NaN, stock: Number.NaN, weightGrams: Number.NaN }),
+    optionValues: combo,
+  }));
 }
 
 const productBody = ({ description, ...input }: ProductInput) =>

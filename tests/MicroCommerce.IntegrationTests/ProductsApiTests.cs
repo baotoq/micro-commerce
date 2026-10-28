@@ -13,7 +13,7 @@ public class ProductsApiTests(AppHostFixture fixture)
 
     private sealed record Product(Guid Id, string Name, Guid CategoryId, string Status, List<Variant> Variants);
 
-    private sealed record ProductSummary(Guid Id, string Name, string Status, long MinPrice, long MaxPrice, int TotalStock);
+    private sealed record ProductSummary(Guid Id, string Name, string Status, long MinPrice, long MaxPrice, long TotalStock);
 
     private sealed record TokenResponse([property: JsonPropertyName("access_token")] string AccessToken);
 

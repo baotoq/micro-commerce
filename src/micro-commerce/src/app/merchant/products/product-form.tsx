@@ -1,6 +1,7 @@
 "use client";
 
 import { type AnyFieldApi, useForm } from "@tanstack/react-form";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -13,7 +14,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { type ProductFormValues, type ProductInput, productSchema, variantsFor } from "@/lib/catalog";
+import {
+  type ProductFormValues,
+  type ProductInput,
+  productSchema,
+  type VariantFormValues,
+  variantsFor,
+} from "@/lib/catalog";
 import { toSubmitErrors } from "@/lib/form-errors";
 
 export type LeafCategory = { id: string; path: string };
@@ -43,27 +50,45 @@ function invalid(field: AnyFieldApi) {
   return field.state.meta.isTouched && !field.state.meta.isValid;
 }
 
-function TextField({ field, label, placeholder }: { field: AnyFieldApi; label: string; placeholder?: string }) {
+function TextField({
+  field,
+  label,
+  placeholder,
+  multiline = false,
+}: Readonly<{
+  field: AnyFieldApi;
+  label: string;
+  placeholder?: string;
+  multiline?: boolean;
+}>) {
   const isInvalid = invalid(field);
+  const props = {
+    id: field.name,
+    name: field.name,
+    placeholder,
+    value: field.state.value as string,
+    onBlur: field.handleBlur,
+    "aria-invalid": isInvalid,
+  };
 
   return (
     <Field data-invalid={isInvalid}>
       <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
-      <Input
-        id={field.name}
-        name={field.name}
-        placeholder={placeholder}
-        value={field.state.value as string}
-        onBlur={field.handleBlur}
-        onChange={(e) => field.handleChange(e.target.value)}
-        aria-invalid={isInvalid}
-      />
+      {multiline ? (
+        <Textarea {...props} rows={3} onChange={(e) => field.handleChange(e.target.value)} />
+      ) : (
+        <Input {...props} onChange={(e) => field.handleChange(e.target.value)} />
+      )}
       {isInvalid && <FieldError errors={field.state.meta.errors} />}
     </Field>
   );
 }
 
-function NumberField({ field, label, hideLabel = false }: { field: AnyFieldApi; label: string; hideLabel?: boolean }) {
+function NumberField({
+  field,
+  label,
+  hideLabel = false,
+}: Readonly<{ field: AnyFieldApi; label: string; hideLabel?: boolean }>) {
   const isInvalid = invalid(field);
   const value = field.state.value as number;
 
@@ -98,13 +123,13 @@ export function ProductForm({
   submitLabel,
   onSubmit,
   onCancel,
-}: {
+}: Readonly<{
   categories: LeafCategory[];
   defaultValues?: ProductFormValues;
   submitLabel: string;
   onSubmit: (input: ProductInput) => Promise<void>;
   onCancel: () => void;
-}) {
+}>) {
   const form = useForm({
     defaultValues,
     validators: {
@@ -120,9 +145,44 @@ export function ProductForm({
     },
   });
 
-  // The Variant grid follows the options: a row per combination, keeping what was entered for the rest.
+  // What was entered for every combination seen so far, kept while the options' values are being typed.
+  const rememberedVariants = useRef(new Map<string, VariantFormValues>());
+
+  // The Variant grid follows the options: a row per combination, keeping what was entered for it.
   const syncVariants = () =>
-    form.setFieldValue("variants", variantsFor(form.state.values.options, form.state.values.variants));
+    form.setFieldValue(
+      "variants",
+      variantsFor(form.state.values.options, form.state.values.variants, rememberedVariants.current),
+    );
+
+  // A row of the Variant grid: the Variant's option values, then its price, stock and weight.
+  const variantRow = (variant: VariantFormValues, i: number) => {
+    const label = variant.optionValues.join(" / ");
+    return (
+      <tr key={label} className="align-top">
+        {variant.optionValues.map((value, j) => (
+          <td key={j} className="py-2 pr-3 leading-8">
+            {value}
+          </td>
+        ))}
+        <td className="py-2 pr-3">
+          <form.Field name={`variants[${i}].price`}>
+            {(field) => <NumberField field={field} label={`Price (VND) of ${label}`} hideLabel />}
+          </form.Field>
+        </td>
+        <td className="py-2 pr-3">
+          <form.Field name={`variants[${i}].stock`}>
+            {(field) => <NumberField field={field} label={`Stock of ${label}`} hideLabel />}
+          </form.Field>
+        </td>
+        <td className="py-2">
+          <form.Field name={`variants[${i}].weightGrams`}>
+            {(field) => <NumberField field={field} label={`Weight (grams) of ${label}`} hideLabel />}
+          </form.Field>
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <form
@@ -181,8 +241,8 @@ export function ProductForm({
             <FieldSet>
               <FieldLegend>Options</FieldLegend>
               <FieldDescription>
-                Up to two, such as Colour or Size. Every combination of their values is a Variant with its own
-                price, stock and weight.
+                Up to two, such as Colour or Size, with one value per line. Every combination of their values is
+                a Variant with its own price, stock and weight.
               </FieldDescription>
               {optionsField.state.value.map((_, i) => (
                 <div key={i} className="grid gap-3 sm:grid-cols-[1fr_2fr_auto] sm:items-start">
@@ -191,7 +251,12 @@ export function ProductForm({
                   </form.Field>
                   <form.Field name={`options[${i}].values`} listeners={{ onChange: syncVariants }}>
                     {(field) => (
-                      <TextField field={field} label={`Option ${i + 1} values`} placeholder="Red, Blue" />
+                      <TextField
+                        field={field}
+                        label={`Option ${i + 1} values`}
+                        placeholder={"Red\nBlue"}
+                        multiline
+                      />
                     )}
                   </form.Field>
                   <Button
@@ -261,37 +326,7 @@ export function ProductForm({
                             <th className="py-2 font-normal">Weight (grams)</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          {variantsField.state.value.map((variant, i) => {
-                            const label = variant.optionValues.join(" / ");
-                            return (
-                              <tr key={label} className="align-top">
-                                {variant.optionValues.map((value, j) => (
-                                  <td key={j} className="py-2 pr-3 leading-8">
-                                    {value}
-                                  </td>
-                                ))}
-                                <td className="py-2 pr-3">
-                                  <form.Field name={`variants[${i}].price`}>
-                                    {(field) => <NumberField field={field} label={`Price (VND) of ${label}`} hideLabel />}
-                                  </form.Field>
-                                </td>
-                                <td className="py-2 pr-3">
-                                  <form.Field name={`variants[${i}].stock`}>
-                                    {(field) => <NumberField field={field} label={`Stock of ${label}`} hideLabel />}
-                                  </form.Field>
-                                </td>
-                                <td className="py-2">
-                                  <form.Field name={`variants[${i}].weightGrams`}>
-                                    {(field) => (
-                                      <NumberField field={field} label={`Weight (grams) of ${label}`} hideLabel />
-                                    )}
-                                  </form.Field>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
+                        <tbody>{variantsField.state.value.map(variantRow)}</tbody>
                       </table>
                     )}
                   </FieldSet>

@@ -161,6 +161,17 @@ public class ProductValidatorTests
     }
 
     [Fact]
+    public void Option_names_and_values_cannot_contain_control_characters()
+    {
+        var failures = Validate(WithOptions with { Options = [new("Colour\u001e", ["Red", "Blue\nGreen"]), WithOptions.Options![1]] });
+
+        failures.Select(e => (e.PropertyName, e.ErrorMessage)).ShouldBe([
+            ("Options[0].Name", "Can't contain line breaks or other control characters."),
+            ("Options[0].Values[1]", "Can't contain line breaks or other control characters."),
+        ]);
+    }
+
+    [Fact]
     public void Option_values_must_differ_ignoring_case()
     {
         var failure = Validate(WithOptions with { Options = [new("Colour", ["Red", " red"]), WithOptions.Options![1]] })

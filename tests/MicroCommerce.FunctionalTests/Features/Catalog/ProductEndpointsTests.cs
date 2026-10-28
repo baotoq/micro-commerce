@@ -281,6 +281,22 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
     }
 
     [Fact]
+    public async Task List_total_stock_may_exceed_a_single_variants_range()
+    {
+        var merchant = await NewMerchantAsync();
+        ProductOption[] options = [new("Size", ["S", "M"])];
+        var shirt = await CreateAsync(merchant, new(
+            Unique("T-Shirt"), null, (await NewCategoryAsync()).Id, options,
+            [new(["S"], 100_000, int.MaxValue, 200), new(["M"], 100_000, int.MaxValue, 200)]));
+
+        var (rsp, products) = await merchant.GETAsync<ListProductsEndpoint, IReadOnlyList<ProductSummaryResponse>>();
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        products.ShouldHaveSingleItem().TotalStock.ShouldBe(2L * int.MaxValue);
+        shirt.Variants.ShouldAllBe(v => v.Stock == int.MaxValue);
+    }
+
+    [Fact]
     public async Task Merchant_publishes_and_unpublishes_a_product()
     {
         var merchant = await NewMerchantAsync();

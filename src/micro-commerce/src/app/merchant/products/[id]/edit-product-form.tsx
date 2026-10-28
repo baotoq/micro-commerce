@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { type Product, updateProduct } from "@/lib/catalog";
 import { type LeafCategory, ProductForm } from "../product-form";
 
-export function EditProductForm({ product, categories }: { product: Product; categories: LeafCategory[] }) {
+export function EditProductForm({ product, categories }: Readonly<{ product: Product; categories: LeafCategory[] }>) {
   const router = useRouter();
 
   return (
@@ -14,7 +14,7 @@ export function EditProductForm({ product, categories }: { product: Product; cat
         name: product.name,
         description: product.description ?? "",
         categoryId: product.categoryId,
-        options: product.options.map((option) => ({ name: option.name, values: option.values.join(", ") })),
+        options: product.options.map((option) => ({ name: option.name, values: option.values.join("\n") })),
         // The API keeps the Variant IDs of the combinations an edit keeps, so the form doesn't send them.
         variants: product.variants.map(({ optionValues, price, stock, weightGrams }) => ({
           optionValues,

@@ -21,7 +21,7 @@ internal static class VariantCombinations
 
     /// <summary>
     /// Identifies a combination by its option names and values rather than their order, so a Variant keeps its ID when
-    /// the options are reordered.
+    /// the options are reordered. Names and values can't contain control characters, so the separators are unambiguous.
     /// </summary>
     public static string Key(IReadOnlyList<ProductOption> options, IReadOnlyList<string> values) =>
         string.Join('\u001f', options
@@ -31,6 +31,12 @@ internal static class VariantCombinations
     /// <summary>The <paramref name="values"/>, each spelled as its option spells it.</summary>
     public static IReadOnlyList<string> InOptionSpelling(IReadOnlyList<ProductOption> options, IReadOnlyList<string> values) =>
         [.. values.Select((value, i) => options[i].Values.FirstOrDefault(v => Comparer.Equals(v, value.Trim())) ?? value.Trim())];
+
+    /// <summary>
+    /// Whether the option name or value has no line breaks or other control characters, which also keeps the
+    /// separators <see cref="Key"/> uses out of it.
+    /// </summary>
+    public static bool IsOneLine(string? text) => text?.Any(char.IsControl) != true;
 
     /// <summary>Whether no two of the texts are the same, ignoring case and surrounding spaces; blanks aren't compared.</summary>
     public static bool AllDifferent(IEnumerable<string?> texts)
@@ -96,8 +102,9 @@ internal static class VariantCombinations
     {
         if (options.Count > Product.MaxOptions) return null;
         if (options.Any(o => string.IsNullOrWhiteSpace(o?.Name)
+                || !IsOneLine(o.Name)
                 || o.Values is not { Count: > 0 and <= ProductOption.MaxValues }
-                || o.Values.Any(string.IsNullOrWhiteSpace)))
+                || o.Values.Any(v => string.IsNullOrWhiteSpace(v) || !IsOneLine(v))))
             return null;
 
         var distinct = AllDifferent(options.Select(o => o.Name)) && options.All(o => AllDifferent(o.Values));

@@ -76,10 +76,10 @@ test.describe("as a Merchant", () => {
     await page.getByLabel("Category").selectOption({ label: "Home › Kitchen" });
     await page.getByRole("button", { name: "Add option" }).click();
     await page.getByLabel("Option 1 name").fill("Colour");
-    await page.getByLabel("Option 1 values").fill("Red, Blue");
+    await page.getByLabel("Option 1 values").fill("Red\nBlue");
     await page.getByRole("button", { name: "Add option" }).click();
     await page.getByLabel("Option 2 name").fill("Size");
-    await page.getByLabel("Option 2 values").fill("S, M");
+    await page.getByLabel("Option 2 values").fill("S\nM");
     // At most two options.
     await expect(page.getByRole("button", { name: "Add option" })).toHaveCount(0);
 
