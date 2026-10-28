@@ -26,7 +26,8 @@ public class UpdateProductValidator : Validator<UpdateProductRequest>
 /// Replaces a Product's details, options and Variants. The Product keeps its status, and every option-value
 /// combination it already had keeps its Variant ID.
 /// </summary>
-public class UpdateProductEndpoint(CatalogDbContext db, MerchantCatalog catalog) : Endpoint<UpdateProductRequest, ProductResponse>
+public class UpdateProductEndpoint(CatalogDbContext db, MerchantCatalog catalog, StorefrontProductCache storefrontCache)
+    : Endpoint<UpdateProductRequest, ProductResponse>
 {
     public override void Configure()
     {
@@ -53,6 +54,7 @@ public class UpdateProductEndpoint(CatalogDbContext db, MerchantCatalog catalog)
             return;
         }
 
+        await storefrontCache.EvictAsync(product.Id, ct);
         await Send.OkAsync(product.ToResponse(), ct);
     }
 }

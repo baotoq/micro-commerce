@@ -33,12 +33,41 @@ public static partial class CatalogMapper
     /// <summary>Uses <see cref="ToSummaryResponse"/>'s configuration; the database computes the aggregates.</summary>
     public static partial IQueryable<ProductSummaryResponse> ProjectToSummaryResponse(this IQueryable<Product> query);
 
+    [MapNestedProperties(nameof(ShopProduct.Product))]
+    [MapProperty([nameof(ShopProduct.Shop), nameof(Shop.Id)], nameof(StorefrontProductResponse.ShopId))]
+    [MapProperty([nameof(ShopProduct.Shop), nameof(Shop.ShopName)], nameof(StorefrontProductResponse.ShopName))]
+    [MapPropertyFromSource(nameof(StorefrontProductResponse.Variants), Use = nameof(OrderedStorefrontVariants))]
+    public static partial StorefrontProductResponse ToStorefrontResponse(this ShopProduct product);
+
+    [MapperIgnoreSource(nameof(Variant.Position))]
+    [MapperIgnoreSource(nameof(Variant.WeightGrams))]
+    private static partial StorefrontVariantResponse ToStorefrontVariantResponse(this Variant variant);
+
+    [MapNestedProperties(nameof(ShopProduct.Product))]
+    [MapProperty([nameof(ShopProduct.Shop), nameof(Shop.Id)], nameof(StorefrontProductSummaryResponse.ShopId))]
+    [MapProperty([nameof(ShopProduct.Shop), nameof(Shop.ShopName)], nameof(StorefrontProductSummaryResponse.ShopName))]
+    [MapPropertyFromSource(nameof(StorefrontProductSummaryResponse.MinPrice), Use = nameof(StorefrontMinPrice))]
+    [MapPropertyFromSource(nameof(StorefrontProductSummaryResponse.MaxPrice), Use = nameof(StorefrontMaxPrice))]
+    [MapPropertyFromSource(nameof(StorefrontProductSummaryResponse.InStock), Use = nameof(InStock))]
+    public static partial StorefrontProductSummaryResponse ToStorefrontSummaryResponse(this ShopProduct product);
+
+    /// <summary>Uses <see cref="ToStorefrontSummaryResponse"/>'s configuration; the database computes the aggregates.</summary>
+    public static partial IQueryable<StorefrontProductSummaryResponse> ProjectToStorefrontSummaryResponse(this IQueryable<ShopProduct> query);
+
+    public static partial IQueryable<ShopResponse> ProjectToResponse(this IQueryable<Shop> query);
+
     private static IReadOnlyList<VariantResponse> OrderedVariants(Product product) =>
         [.. product.Variants.OrderBy(v => v.Position).Select(v => v.ToVariantResponse())];
+
+    private static IReadOnlyList<StorefrontVariantResponse> OrderedStorefrontVariants(ShopProduct product) =>
+        [.. product.Product.Variants.OrderBy(v => v.Position).Select(v => v.ToStorefrontVariantResponse())];
 
     // Expression-bodied, so Mapperly inlines them into the projection.
     private static int VariantCount(Product product) => product.Variants.Count;
     private static Money MinPrice(Product product) => product.Variants.Min(v => v.Price);
     private static Money MaxPrice(Product product) => product.Variants.Max(v => v.Price);
     private static long TotalStock(Product product) => product.Variants.Sum(v => (long)v.Stock);
+    private static Money StorefrontMinPrice(ShopProduct product) => product.Product.Variants.Min(v => v.Price);
+    private static Money StorefrontMaxPrice(ShopProduct product) => product.Product.Variants.Max(v => v.Price);
+    private static bool InStock(ShopProduct product) => product.Product.Variants.Any(v => v.Stock > 0);
 }

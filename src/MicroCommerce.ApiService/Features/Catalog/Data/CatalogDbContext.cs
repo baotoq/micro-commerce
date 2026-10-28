@@ -18,6 +18,9 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
     /// <summary>Every Merchant's Products; Merchant Centre endpoints use <see cref="MerchantCatalog"/> instead.</summary>
     public DbSet<Product> Products => Set<Product>();
 
+    /// <summary>The Catalog's copy of each Merchant's Shop profile, kept by <see cref="ShopHandler"/>.</summary>
+    public DbSet<Shop> Shops => Set<Shop>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.Properties<CategoryId>().HaveConversion<CategoryId.EfCoreValueConverter, CategoryId.EfCoreValueComparer>();

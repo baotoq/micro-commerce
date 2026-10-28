@@ -27,6 +27,14 @@
     <PackageVersion Include="Vogen" Version="8.0.7" />
   </ItemGroup>
 
+  <ItemGroup Label="Messaging">
+    <PackageVersion Include="WolverineFx" Version="6.56.0" />
+    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="6.56.0" />
+    <PackageVersion Include="WolverineFx.Postgresql" Version="6.56.0" />
+    <!-- Compiles Wolverine's generated handler code at runtime; core WolverineFx no longer ships Roslyn. -->
+    <PackageVersion Include="WolverineFx.RuntimeCompilation" Version="6.56.0" />
+  </ItemGroup>
+
   <ItemGroup Label="Testing">
     <PackageVersion Include="Aspire.Hosting.Testing" Version="13.6.0" />
     <PackageVersion Include="FastEndpoints.Testing" Version="8.3.0" />

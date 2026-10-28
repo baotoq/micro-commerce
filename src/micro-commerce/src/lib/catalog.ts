@@ -60,6 +60,16 @@ export function leafCategories(tree: CategoryNode[], parents: string[] = []): { 
   );
 }
 
+// The Category's path from the top ("Fashion › Men › T-Shirts"), or null if the tree doesn't hold it.
+export function categoryPath(tree: CategoryNode[], id: string): string | null {
+  for (const node of tree) {
+    if (node.id === id) return node.name;
+    const below = categoryPath(node.children, id);
+    if (below) return `${node.name} › ${below}`;
+  }
+  return null;
+}
+
 // Mirrors ProductStatus in the API.
 export type ProductStatus = "Draft" | "Published";
 
@@ -108,6 +118,10 @@ const vnd = new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" 
 
 export function formatPrice(amount: number) {
   return vnd.format(amount);
+}
+
+export function formatPriceRange({ minPrice, maxPrice }: { minPrice: number; maxPrice: number }) {
+  return minPrice === maxPrice ? formatPrice(minPrice) : `${formatPrice(minPrice)} – ${formatPrice(maxPrice)}`;
 }
 
 // Server-side: the caller passes the session's access token.

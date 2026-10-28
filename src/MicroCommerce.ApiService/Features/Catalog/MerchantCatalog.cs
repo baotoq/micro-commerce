@@ -10,7 +10,7 @@ namespace MicroCommerce.ApiService.Features.Catalog;
 /// <see cref="Products"/> are already scoped to the Merchant (ADR-0001), so another Merchant's Product is simply
 /// not found: Merchant Centre endpoints read Products through here, never through <see cref="CatalogDbContext"/>.
 /// </summary>
-public class MerchantCatalog(CatalogDbContext db, CurrentMerchant currentMerchant)
+public class MerchantCatalog(CatalogDbContext db, CurrentMerchant currentMerchant, StorefrontProductCache storefrontCache)
 {
     public MerchantId MerchantId => currentMerchant.Id;
 
@@ -31,6 +31,7 @@ public class MerchantCatalog(CatalogDbContext db, CurrentMerchant currentMerchan
 
         change(product);
         await db.SaveChangesAsync(ct);
+        await storefrontCache.EvictAsync(product.Id, ct);
         return product;
     }
 }
