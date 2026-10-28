@@ -24,7 +24,6 @@
     "mattpocock-skills@claude-plugins-official": true,
     "context7@anthropic-plugin-directory": true,
     "code-review@anthropic-plugin-directory": true,
-    "github@anthropic-plugin-directory": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
     "sonarqube@claude-plugins-official": true,
     "frontend-design@anthropic-plugin-directory": true
