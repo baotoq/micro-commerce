@@ -96,6 +96,28 @@ namespace MicroCommerce.ApiService.Features.Catalog.Data.Migrations
                     b.ToTable("Products", "catalog");
                 });
 
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Shop", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("ProfileVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ShopName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Shops", "catalog");
+                });
+
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Category", b =>
                 {
                     b.HasOne("MicroCommerce.ApiService.Features.Catalog.Category", null)

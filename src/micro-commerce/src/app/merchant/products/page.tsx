@@ -1,12 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { formatPrice, listMerchantProducts, type ProductSummary } from "@/lib/catalog";
+import { formatPriceRange, listMerchantProducts } from "@/lib/catalog";
 import { requireMerchantSession } from "@/lib/session";
 import { ProductStatusButton } from "./product-status-button";
-
-function priceRange({ minPrice, maxPrice }: ProductSummary) {
-  return minPrice === maxPrice ? formatPrice(minPrice) : `${formatPrice(minPrice)} – ${formatPrice(maxPrice)}`;
-}
 
 export default async function ProductsPage() {
   const { accessToken } = await requireMerchantSession();
@@ -42,7 +38,7 @@ export default async function ProductsPage() {
                   </Link>
                 </td>
                 <td className="py-2">{product.status}</td>
-                <td className="py-2 text-right tabular-nums">{priceRange(product)}</td>
+                <td className="py-2 text-right tabular-nums">{formatPriceRange(product)}</td>
                 <td className="py-2 text-right tabular-nums">{product.totalStock}</td>
                 <td className="py-2 text-right">
                   <ProductStatusButton product={product} />

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ApiError } from "@/lib/api";
 import { getCategoryTree, getMerchantProduct, leafCategories } from "@/lib/catalog";
@@ -22,6 +23,11 @@ export default async function EditProductPage({ params }: PageProps<"/merchant/p
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">Edit {product.name}</h1>
         <div className="flex items-center gap-3">
+          {product.status === "Published" && (
+            <Link href={`/products/${product.id}`} className="text-sm hover:underline">
+              View in store
+            </Link>
+          )}
           <span className="text-sm text-muted-foreground">{product.status}</span>
           <ProductStatusButton product={product} />
         </div>

@@ -4,6 +4,7 @@ using MicroCommerce.ApiService.Features.Accounts;
 using MicroCommerce.ApiService.Features.Accounts.Data;
 using MicroCommerce.ApiService.Features.Catalog;
 using MicroCommerce.ApiService.Features.Catalog.Data;
+using MicroCommerce.ApiService;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -16,6 +17,7 @@ builder.AddNpgsqlDbContext<AccountsDbContext>("micro-commerce-db",
 builder.AddNpgsqlDbContext<CatalogDbContext>("micro-commerce-db",
     configureDbContextOptions: o => o.UseNpgsql(CatalogDbContext.ConfigureNpgsql));
 builder.AddRedisDistributedCache("redis");
+builder.AddMessaging();
 
 // Keycloak access tokens. Authority, audience and RequireHttpsMetadata are bound from
 // Authentication:Schemes:Bearer (the AppHost sets the Authority to the dev realm).
@@ -30,6 +32,7 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddScoped<CurrentAccount>();
 builder.Services.AddScoped<CurrentMerchant>();
 builder.Services.AddScoped<MerchantCatalog>();
+builder.Services.AddSingleton<StorefrontProductCache>();
 
 builder.Services.AddProblemDetails();
 builder.Services

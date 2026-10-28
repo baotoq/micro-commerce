@@ -109,6 +109,46 @@ test.describe("as a Merchant", () => {
     await expect(row).toContainText("110.000");
     await expect(row).not.toContainText("130.000");
   });
+
+  test("Buyers find a published Product on the storefront and its Shop page", async ({ page, browser }) => {
+    const name = `E2E Kettle ${crypto.randomUUID().slice(0, 8)}`;
+
+    await signInAsMerchant(page);
+    await goToMerchantCentre(page);
+    // The Merchant Centre opens on the Shop profile, headed by the Shop name.
+    const shopName = await page.getByRole("heading", { level: 1 }).innerText();
+    await page.getByRole("link", { name: "Products" }).click();
+    await page.getByRole("link", { name: "New Product" }).click();
+    await page.getByLabel("Name").fill(name);
+    await page.getByLabel("Description").fill("Whistles when it boils.");
+    await page.getByLabel("Category").selectOption({ label: "Home › Kitchen" });
+    await page.getByLabel("Price (VND)").fill("250000");
+    await page.getByLabel("Stock").fill("3");
+    await page.getByLabel("Weight (grams)").fill("900");
+    await page.getByRole("button", { name: "Create Product" }).click();
+    await page.getByRole("button", { name: `Publish ${name}` }).click();
+    await expect(page.getByRole("row").filter({ hasText: name })).toContainText("Published");
+
+    // A Buyer browses anonymously. The Shop reaches the storefront by event, shortly after the Merchant opens.
+    const buyer = await browser.newPage({ storageState: { cookies: [], origins: [] } });
+    const card = buyer.getByRole("list", { name: "Products" }).getByRole("listitem").filter({ hasText: name });
+    await expect(async () => {
+      await buyer.goto("/");
+      await expect(card).toBeVisible({ timeout: 1_000 });
+    }).toPass();
+    await expect(card).toContainText("250.000");
+    await expect(card.getByRole("link", { name: shopName })).toBeVisible();
+
+    await card.getByRole("link", { name }).click();
+    await expect(buyer.getByRole("heading", { name })).toBeVisible();
+    await expect(buyer.getByText("Home › Kitchen")).toBeVisible();
+    await expect(buyer.getByText("Whistles when it boils.")).toBeVisible();
+
+    await buyer.getByRole("link", { name: shopName }).click();
+    await expect(buyer.getByRole("heading", { name: shopName })).toBeVisible();
+    await expect(buyer.getByRole("link", { name })).toBeVisible();
+    await buyer.close();
+  });
 });
 
 test("the Merchant Centre sends an Account without a Merchant to open a Shop", async ({ page }) => {

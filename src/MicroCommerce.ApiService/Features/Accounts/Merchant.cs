@@ -30,6 +30,25 @@ public class Merchant
     public string? Description { get; set; }
     public required PickupAddress PickupAddress { get; set; }
     public DateTimeOffset CreatedAt { get; init; } = DatabaseClock.UtcNow;
+
+    /// <summary>
+    /// Counts the Shop profile's versions, starting at 1 when the Merchant opens. Every profile event carries it, so
+    /// other modules can ignore an event older than what they already hold, however late it arrives.
+    /// </summary>
+    public int ProfileVersion { get; private set; } = 1;
+
+    /// <summary>Replaces the Shop profile and moves it to its next <see cref="ProfileVersion"/>.</summary>
+    public void ChangeProfile(ShopName shopName, string? description, PickupAddress pickupAddress)
+    {
+        ShopName = shopName;
+        Description = description;
+        PickupAddress = pickupAddress;
+        ProfileVersion++;
+    }
+
+    public MerchantOpened ToOpenedEvent() => new(Id, ShopName.Value, Description, ProfileVersion);
+
+    public MerchantProfileChanged ToProfileChangedEvent() => new(Id, ShopName.Value, Description, ProfileVersion);
 }
 
 /// <summary>Where the Merchant's parcels ship from; the province is what the Carrier quotes from.</summary>
@@ -53,6 +72,9 @@ public class MerchantConfiguration : IEntityTypeConfiguration<Merchant>
         builder.HasIndex(m => m.NormalizedShopName).IsUnique().HasDatabaseName(ShopNameIndex);
 
         builder.Property(m => m.Description).HasMaxLength(2000);
+
+        // Two concurrent profile edits can't both become the same next version.
+        builder.Property(m => m.ProfileVersion).IsConcurrencyToken();
 
         builder.ComplexProperty(m => m.PickupAddress, a =>
         {
@@ -84,6 +106,7 @@ internal static class MerchantUniqueness
 {
     public const string ShopNameTaken = "This Shop name is already taken.";
     public const string AlreadyOwnsMerchant = "This Account already owns a Merchant.";
+    public const string ProfileChangedConcurrently = "The Shop was changed by another request at the same time; try again.";
 
     public static string? ViolatedIndex(DbUpdateException e) =>
         e.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } pg

@@ -17,6 +17,10 @@
     <PackageReference Include="Riok.Mapperly" ExcludeAssets="runtime" PrivateAssets="all" />
     <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="Vogen" />
+    <PackageReference Include="WolverineFx" />
+    <PackageReference Include="WolverineFx.EntityFrameworkCore" />
+    <PackageReference Include="WolverineFx.Postgresql" />
+    <PackageReference Include="WolverineFx.RuntimeCompilation" />
   </ItemGroup>
 
 </Project>

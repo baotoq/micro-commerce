@@ -2,6 +2,7 @@ using FastEndpoints;
 using FluentValidation;
 using MicroCommerce.ApiService.Features.Accounts.Data;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Accounts;
 
@@ -16,8 +17,11 @@ public class OpenMerchantValidator : Validator<OpenMerchantRequest>
     }
 }
 
-/// <summary>Opens a Merchant for the signed-in Account: immediately, without approval, at most one per Account.</summary>
-public class OpenMerchantEndpoint(AccountsDbContext db, CurrentAccount currentAccount)
+/// <summary>
+/// Opens a Merchant for the signed-in Account: immediately, without approval, at most one per Account. Publishes
+/// <see cref="MerchantOpened"/> in the same transaction.
+/// </summary>
+public class OpenMerchantEndpoint(IDbContextOutbox<AccountsDbContext> outbox, CurrentAccount currentAccount)
     : Endpoint<OpenMerchantRequest, MerchantResponse>
 {
     public override void Configure()
@@ -27,6 +31,7 @@ public class OpenMerchantEndpoint(AccountsDbContext db, CurrentAccount currentAc
 
     public override async Task HandleAsync(OpenMerchantRequest req, CancellationToken ct)
     {
+        var db = outbox.DbContext;
         var account = await currentAccount.GetOrCreateAsync(User, ct);
         var merchant = new Merchant { AccountId = account.Id, ShopName = ShopName.From(req.ShopName), PickupAddress = req.PickupAddress };
 
@@ -42,9 +47,10 @@ public class OpenMerchantEndpoint(AccountsDbContext db, CurrentAccount currentAc
         }
 
         db.Merchants.Add(merchant);
+        await outbox.PublishAsync(merchant.ToOpenedEvent());
         try
         {
-            await db.SaveChangesAsync(ct);
+            await outbox.SaveChangesAndFlushMessagesAsync(ct);
         }
         catch (DbUpdateException e) when (MerchantUniqueness.ViolatedIndex(e) is { } index)
         {

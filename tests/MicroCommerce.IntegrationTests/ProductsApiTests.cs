@@ -15,6 +15,12 @@ public class ProductsApiTests(AppHostFixture fixture)
 
     private sealed record ProductSummary(Guid Id, string Name, string Status, long MinPrice, long MaxPrice, long TotalStock);
 
+    private sealed record Merchant(Guid Id);
+
+    private sealed record StorefrontProduct(Guid Id, string Name, long MinPrice, long MaxPrice, bool InStock, Guid ShopId, string ShopName);
+
+    private sealed record StorefrontPage(List<StorefrontProduct> Items, int TotalCount);
+
     private sealed record TokenResponse([property: JsonPropertyName("access_token")] string AccessToken);
 
     private readonly HttpClient _client = fixture.ApiClient;
@@ -28,19 +34,21 @@ public class ProductsApiTests(AppHostFixture fixture)
     }
 
     [Fact]
-    public async Task Seeded_merchant_opens_a_shop_and_lists_and_publishes_a_product()
+    public async Task Seeded_merchant_opens_a_shop_and_publishes_a_product_that_buyers_find()
     {
         var ct = TestContext.Current.CancellationToken;
         var token = await GetTokenAsync("merchant", "merchant", ct);
         var tree = await _client.GetFromJsonAsync<List<CategoryNode>>("/storefront/categories", ct);
         var kitchen = tree!.Single(n => n.Name == "Home").Children.Single(n => n.Name == "Kitchen");
 
+        var shopName = $"Max's Mugs {Guid.NewGuid():N}";
         var opened = await SendAsync(HttpMethod.Post, "/me/merchant", token, new
         {
-            ShopName = $"Max's Mugs {Guid.NewGuid():N}",
+            ShopName = shopName,
             PickupAddress = new { Street = "12 Le Loi", Ward = "Ben Nghe", District = "District 1", Province = "Ho Chi Minh City" },
         }, ct);
         opened.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var merchant = (await opened.Content.ReadFromJsonAsync<Merchant>(ct)).ShouldNotBeNull();
 
         var created = await SendAsync(HttpMethod.Post, "/merchant/products", token, new
         {
@@ -60,6 +68,25 @@ public class ProductsApiTests(AppHostFixture fixture)
         var list = await SendAsync(HttpMethod.Get, "/merchant/products", token, null, ct);
         var summaries = await list.Content.ReadFromJsonAsync<List<ProductSummary>>(ct);
         summaries.ShouldNotBeNull().ShouldContain(new ProductSummary(product.Id, "Coffee Mug", "Published", 120_000, 120_000, 5));
+
+        // Anonymously, once the Shop has reached the Catalog through the outbox.
+        var found = await EventuallyAsync(
+            () => _client.GetFromJsonAsync<StorefrontPage>($"/storefront/products?shopId={merchant.Id}", ct),
+            page => page!.TotalCount > 0,
+            ct);
+        found!.Items.ShouldBe([new StorefrontProduct(product.Id, "Coffee Mug", 120_000, 120_000, true, merchant.Id, shopName)]);
+    }
+
+    private static async Task<T> EventuallyAsync<T>(Func<Task<T>> read, Func<T, bool> until, CancellationToken ct)
+    {
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        timeout.CancelAfter(TimeSpan.FromSeconds(30));
+        while (true)
+        {
+            var value = await read();
+            if (until(value)) return value;
+            await Task.Delay(100, timeout.Token);
+        }
     }
 
     private Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, string token, object? body, CancellationToken ct)

@@ -20,14 +20,14 @@ namespace MicroCommerce.ApiService.Features.Accounts.Data.Migrations
             modelBuilder
                 .HasDefaultSchema("accounts")
                 .HasAnnotation("ProductVersion", "10.0.12")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("WolverineEnabled", "true");
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Accounts.Account", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -58,7 +58,6 @@ namespace MicroCommerce.ApiService.Features.Accounts.Data.Migrations
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Accounts.Merchant", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("AccountId")
@@ -75,6 +74,10 @@ namespace MicroCommerce.ApiService.Features.Accounts.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<int>("ProfileVersion")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
 
                     b.Property<string>("ShopName")
                         .IsRequired()
@@ -117,6 +120,98 @@ namespace MicroCommerce.ApiService.Features.Accounts.Data.Migrations
                         .HasDatabaseName("IX_Merchants_NormalizedShopName");
 
                     b.ToTable("Merchants", "accounts");
+                });
+
+            modelBuilder.Entity("Wolverine.EntityFrameworkCore.Internals.IncomingMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempts");
+
+                    b.Property<byte[]>("Body")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("body");
+
+                    b.Property<DateTimeOffset?>("ExecutionTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("execution_time");
+
+                    b.Property<DateTimeOffset?>("KeepUntil")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("keep_until");
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("message_type");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("owner_id");
+
+                    b.Property<string>("ReceivedAt")
+                        .HasColumnType("text")
+                        .HasColumnName("received_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("wolverine_incoming_envelopes", "wolverine", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("Wolverine.EntityFrameworkCore.Internals.OutgoingMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempts");
+
+                    b.Property<byte[]>("Body")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("body");
+
+                    b.Property<DateTimeOffset?>("DeliverBy")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deliver_by");
+
+                    b.Property<string>("Destination")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("destination");
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("message_type");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("owner_id");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("wolverine_outgoing_envelopes", "wolverine", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Accounts.Merchant", b =>

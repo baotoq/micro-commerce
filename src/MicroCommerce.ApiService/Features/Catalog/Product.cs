@@ -97,7 +97,8 @@ public record ProductOption(string Name, IReadOnlyList<string> Values)
 public record VariantDetails(IReadOnlyList<string> OptionValues, Money Price, int Stock, int WeightGrams);
 
 /// <summary>
-/// <c>Draft</c> → <c>Published</c> → <c>Draft</c>, moved by the Merchant. Buyers only ever see Published Products.
+/// <c>Draft</c> → <c>Published</c> → <c>Draft</c>, moved by the Merchant. Buyers only ever see Published Products
+/// (see <see cref="StorefrontQueries.VisibleProducts"/>).
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter<ProductStatus>))]
 public enum ProductStatus
@@ -178,6 +179,31 @@ public record ProductSummaryResponse(
     /// <summary>A <c>long</c>: each Variant's stock fits an <c>int</c>, but their sum may not.</summary>
     long TotalStock,
     DateTimeOffset CreatedAt);
+
+/// <summary>A Product as Buyers see it on the storefront, with the Shop that sells it.</summary>
+public record StorefrontProductResponse(
+    ProductId Id,
+    string Name,
+    string? Description,
+    CategoryId CategoryId,
+    IReadOnlyList<ProductOption> Options,
+    IReadOnlyList<StorefrontVariantResponse> Variants,
+    MerchantId ShopId,
+    string ShopName);
+
+/// <summary>A Variant as Buyers see it: its option values in the Product's option order, price and available stock.</summary>
+public record StorefrontVariantResponse(VariantId Id, IReadOnlyList<string> OptionValues, Money Price, int Stock);
+
+/// <summary>A storefront list entry: its price range across Variants, whether any is in stock, and its Shop.</summary>
+public record StorefrontProductSummaryResponse(
+    ProductId Id,
+    string Name,
+    CategoryId CategoryId,
+    Money MinPrice,
+    Money MaxPrice,
+    bool InStock,
+    MerchantId ShopId,
+    string ShopName);
 
 /// <summary>What a Merchant gives when creating or editing a Product.</summary>
 public interface IProductDetails
