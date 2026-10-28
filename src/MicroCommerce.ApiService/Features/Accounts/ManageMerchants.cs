@@ -2,7 +2,6 @@ using FastEndpoints;
 using MicroCommerce.ApiService.Features.Accounts.Data;
 using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
-using Wolverine.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Accounts;
 
@@ -30,9 +29,34 @@ public class ListMerchantsEndpoint(AccountsDbContext db) : EndpointWithoutReques
     }
 }
 
+public abstract class MerchantStatusChangeEndpoint : Endpoint<ChangeMerchantStatusRequest, OperatorMerchantResponse>
+{
+    private const string ConcurrencyMessage = "Merchant status changed concurrently; try again.";
+
+    protected abstract Task<MerchantStatusChangeResult> ChangeStatusAsync(MerchantId id, CancellationToken ct);
+
+    public override async Task HandleAsync(ChangeMerchantStatusRequest req, CancellationToken ct)
+    {
+        switch (await ChangeStatusAsync(req.Id, ct))
+        {
+            case MerchantStatusChangeResult.NotFound:
+                await Send.NotFoundAsync(ct);
+                break;
+            case MerchantStatusChangeResult.Conflict:
+                AddError(ConcurrencyMessage);
+                await Send.ErrorsAsync(StatusCodes.Status409Conflict, ct);
+                break;
+            case MerchantStatusChangeResult.Succeeded success:
+                await Send.OkAsync(success.Merchant.ToOperatorResponse(), ct);
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown {nameof(MerchantStatusChangeResult)} result.");
+        }
+    }
+}
+
 /// <summary>Suspends a Merchant and publishes its status through the Accounts outbox.</summary>
-public class SuspendMerchantEndpoint(IDbContextOutbox<AccountsDbContext> outbox)
-    : Endpoint<ChangeMerchantStatusRequest, OperatorMerchantResponse>
+public sealed class SuspendMerchantEndpoint(MerchantStatusChanges changes) : MerchantStatusChangeEndpoint
 {
     public override void Configure()
     {
@@ -40,45 +64,12 @@ public class SuspendMerchantEndpoint(IDbContextOutbox<AccountsDbContext> outbox)
         Group<PlatformOperations>();
     }
 
-    public override async Task HandleAsync(ChangeMerchantStatusRequest req, CancellationToken ct)
-    {
-        var merchant = await outbox.DbContext.Merchants.SingleOrDefaultAsync(m => m.Id == req.Id, ct);
-        if (merchant is null)
-        {
-            await Send.NotFoundAsync(ct);
-            return;
-        }
-
-        if (!merchant.Suspend())
-        {
-            await Send.OkAsync(merchant.ToOperatorResponse(), ct);
-            return;
-        }
-
-        await outbox.PublishAsync(merchant.ToSuspendedEvent());
-        if (!await SaveStatusAsync(ct)) return;
-        await Send.OkAsync(merchant.ToOperatorResponse(), ct);
-    }
-
-    private async Task<bool> SaveStatusAsync(CancellationToken ct)
-    {
-        try
-        {
-            await outbox.SaveChangesAndFlushMessagesAsync(ct);
-            return true;
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            AddError("Merchant status changed concurrently; try again.");
-            await Send.ErrorsAsync(StatusCodes.Status409Conflict, ct);
-            return false;
-        }
-    }
+    protected override Task<MerchantStatusChangeResult> ChangeStatusAsync(MerchantId id, CancellationToken ct) =>
+        changes.SuspendAsync(id, ct);
 }
 
 /// <summary>Reinstates a Merchant and publishes its status through the Accounts outbox.</summary>
-public class ReinstateMerchantEndpoint(IDbContextOutbox<AccountsDbContext> outbox)
-    : Endpoint<ChangeMerchantStatusRequest, OperatorMerchantResponse>
+public sealed class ReinstateMerchantEndpoint(MerchantStatusChanges changes) : MerchantStatusChangeEndpoint
 {
     public override void Configure()
     {
@@ -86,38 +77,6 @@ public class ReinstateMerchantEndpoint(IDbContextOutbox<AccountsDbContext> outbo
         Group<PlatformOperations>();
     }
 
-    public override async Task HandleAsync(ChangeMerchantStatusRequest req, CancellationToken ct)
-    {
-        var merchant = await outbox.DbContext.Merchants.SingleOrDefaultAsync(m => m.Id == req.Id, ct);
-        if (merchant is null)
-        {
-            await Send.NotFoundAsync(ct);
-            return;
-        }
-
-        if (!merchant.Reinstate())
-        {
-            await Send.OkAsync(merchant.ToOperatorResponse(), ct);
-            return;
-        }
-
-        await outbox.PublishAsync(merchant.ToReinstatedEvent());
-        if (!await SaveStatusAsync(ct)) return;
-        await Send.OkAsync(merchant.ToOperatorResponse(), ct);
-    }
-
-    private async Task<bool> SaveStatusAsync(CancellationToken ct)
-    {
-        try
-        {
-            await outbox.SaveChangesAndFlushMessagesAsync(ct);
-            return true;
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            AddError("Merchant status changed concurrently; try again.");
-            await Send.ErrorsAsync(StatusCodes.Status409Conflict, ct);
-            return false;
-        }
-    }
+    protected override Task<MerchantStatusChangeResult> ChangeStatusAsync(MerchantId id, CancellationToken ct) =>
+        changes.ReinstateAsync(id, ct);
 }
