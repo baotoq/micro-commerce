@@ -69,9 +69,9 @@ public class ProductsApiTests(AppHostFixture fixture)
         var summaries = await list.Content.ReadFromJsonAsync<List<ProductSummary>>(ct);
         summaries.ShouldNotBeNull().ShouldContain(new ProductSummary(product.Id, "Coffee Mug", "Published", 120_000, 120_000, 5));
 
-        // Anonymously, once the Shop has reached the Catalog through the outbox.
+        // Anonymously by full-text search, once the Shop has reached the Catalog through the outbox.
         var found = await EventuallyAsync(
-            () => _client.GetFromJsonAsync<StorefrontPage>($"/storefront/products?shopId={merchant.Id}", ct),
+            () => _client.GetFromJsonAsync<StorefrontPage>($"/storefront/products?query=coffee+mugs&shopId={merchant.Id}", ct),
             page => page!.TotalCount > 0,
             ct);
         found!.Items.ShouldBe([new StorefrontProduct(product.Id, "Coffee Mug", 120_000, 120_000, true, merchant.Id, shopName)]);

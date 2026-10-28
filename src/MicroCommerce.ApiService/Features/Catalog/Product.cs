@@ -3,6 +3,7 @@ using FluentValidation;
 using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NpgsqlTypes;
 
 namespace MicroCommerce.ApiService.Features.Catalog;
 
@@ -136,6 +137,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.Name).HasMaxLength(Product.NameMaxLength).IsRequired();
         builder.Property(p => p.Description).HasMaxLength(Product.DescriptionMaxLength);
         builder.Property(p => p.Status).HasConversion<string>().HasMaxLength(20);
+
+        // Generated from the name and description, for PostgresProductSearch.
+        builder.Property<NpgsqlTsVector>(PostgresProductSearch.SearchVector)
+            .IsGeneratedTsVectorColumn(PostgresProductSearch.TextSearchConfig, nameof(Product.Name), nameof(Product.Description));
+        builder.HasIndex(PostgresProductSearch.SearchVector).HasMethod("GIN");
 
         // The database refuses to delete a Category holding Products too.
         builder.HasOne<Category>().WithMany().HasForeignKey(p => p.CategoryId).OnDelete(DeleteBehavior.Restrict);

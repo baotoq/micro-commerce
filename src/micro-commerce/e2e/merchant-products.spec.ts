@@ -149,6 +149,51 @@ test.describe("as a Merchant", () => {
     await expect(buyer.getByRole("link", { name })).toBeVisible();
     await buyer.close();
   });
+
+  test("Buyers search the storefront and filter it by Category", async ({ page, browser }) => {
+    // A made-up word, so only this run's Products match: letters only, so search reads it as one word, and
+    // ending in "kettle", so its plural stems like a real word.
+    const letters = Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) => String.fromCharCode(97 + (b % 26)));
+    const word = `${letters.join("")}kettle`;
+    const name = `E2E Kettle ${word}`;
+
+    await signInAsMerchant(page);
+    await goToMerchantCentre(page);
+    await page.getByRole("link", { name: "Products" }).click();
+    await page.getByRole("link", { name: "New Product" }).click();
+    await page.getByLabel("Name").fill(name);
+    await page.getByLabel("Description").fill("Whistles when it boils.");
+    await page.getByLabel("Category").selectOption({ label: "Home › Kitchen" });
+    await page.getByLabel("Price (VND)").fill("250000");
+    await page.getByLabel("Stock").fill("3");
+    await page.getByLabel("Weight (grams)").fill("900");
+    await page.getByRole("button", { name: "Create Product" }).click();
+    await page.getByRole("button", { name: `Publish ${name}` }).click();
+    await expect(page.getByRole("row").filter({ hasText: name })).toContainText("Published");
+
+    const buyer = await browser.newPage({ storageState: { cookies: [], origins: [] } });
+    const results = buyer.getByRole("list", { name: "Products" }).getByRole("listitem");
+    const search = async (text: string, category: string) => {
+      await buyer.getByRole("searchbox", { name: "Search" }).fill(text);
+      await buyer.getByLabel("Category").selectOption({ label: category });
+      await buyer.getByRole("button", { name: "Search" }).click();
+    };
+
+    // Word variations match, and "Home" includes "Home › Kitchen".
+    await expect(async () => {
+      await buyer.goto("/");
+      await search(`${word}s`, "Home");
+      await expect(results.filter({ hasText: name })).toBeVisible({ timeout: 1_000 });
+    }).toPass();
+    await expect(results).toHaveCount(1);
+    await expect(buyer).toHaveURL(/[?&]q=/);
+
+    // The search stays in the form; another Category finds nothing.
+    await expect(buyer.getByRole("searchbox", { name: "Search" })).toHaveValue(`${word}s`);
+    await search(`${word}s`, "Fashion");
+    await expect(buyer.getByText("No Products match your search.")).toBeVisible();
+    await buyer.close();
+  });
 });
 
 test("the Merchant Centre sends an Account without a Merchant to open a Shop", async ({ page }) => {
