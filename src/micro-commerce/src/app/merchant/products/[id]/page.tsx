@@ -21,7 +21,9 @@ export default async function EditProductPage({ params }: PageProps<"/merchant/p
   return (
     <section>
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold">Edit {product.name}</h1>
+        <h1 className="text-2xl font-semibold">
+          {product.status === "Removed" ? product.name : `Edit ${product.name}`}
+        </h1>
         <div className="flex items-center gap-3">
           {product.status === "Published" && (
             <Link href={`/products/${product.id}`} className="text-sm hover:underline">
@@ -32,7 +34,14 @@ export default async function EditProductPage({ params }: PageProps<"/merchant/p
           <ProductStatusButton product={product} />
         </div>
       </div>
-      <EditProductForm product={product} categories={leafCategories(tree)} />
+      {product.status === "Removed" ? (
+        <p role="status" className="rounded-lg border p-4 text-sm">
+          A Platform Operator removed this Product from the Marketplace. Buyers can no longer find it, and it
+          can&apos;t be edited or published again.
+        </p>
+      ) : (
+        <EditProductForm product={product} categories={leafCategories(tree)} />
+      )}
     </section>
   );
 }

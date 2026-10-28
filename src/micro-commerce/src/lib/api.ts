@@ -26,6 +26,12 @@ function baseUrl() {
   return apiUrl;
 }
 
+// What went wrong, to show the user: the API's reasons when it gives any.
+export function errorMessage(error: unknown) {
+  if (!(error instanceof ApiError)) return "Something went wrong. Please try again.";
+  return error.problem?.errors?.map((e) => e.reason).join(" ") || error.message;
+}
+
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers);
   if (init?.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");

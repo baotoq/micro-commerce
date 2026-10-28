@@ -21,6 +21,7 @@ public class OpenApiDocumentTests(ApiFixture App) : TestBase<ApiFixture>
     [InlineData(typeof(CategoryNodeResponse))]
     [InlineData(typeof(ProductSummaryResponse))]
     [InlineData(typeof(VariantResponse))]
+    [InlineData(typeof(OperatorProductResponse))]
     public async Task Typed_ids_are_uuid_strings(Type response)
     {
         var document = await DocumentAsync();

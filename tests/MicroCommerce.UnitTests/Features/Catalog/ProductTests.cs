@@ -148,4 +148,19 @@ public class ProductTests
         product.Unpublish();
         product.Status.ShouldBe(ProductStatus.Draft);
     }
+
+    [Fact]
+    public void Removed_is_final()
+    {
+        var product = NewProduct();
+        product.Publish();
+
+        product.Remove();
+
+        product.Status.ShouldBe(ProductStatus.Removed);
+        product.IsRemoved.ShouldBeTrue();
+        Should.Throw<InvalidOperationException>(product.Publish).Message.ShouldBe(Product.RemovedMessage);
+        Should.Throw<InvalidOperationException>(product.Unpublish).Message.ShouldBe(Product.RemovedMessage);
+        product.Status.ShouldBe(ProductStatus.Removed);
+    }
 }

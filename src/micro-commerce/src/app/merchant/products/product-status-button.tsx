@@ -3,15 +3,18 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ApiError } from "@/lib/api";
+import { errorMessage } from "@/lib/api";
 import { type ProductStatus, publishProduct, unpublishProduct } from "@/lib/catalog";
 
-// Publishes a Draft Product or moves a Published one back to Draft, then re-reads the page.
+// Publishes a Draft Product or moves a Published one back to Draft, then re-reads the page. A Removed
+// Product can't be changed, so it gets no button.
 export function ProductStatusButton({ product }: { product: { id: string; name: string; status: ProductStatus } }) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string>();
   const action = product.status === "Published" ? "Unpublish" : "Publish";
+
+  if (product.status === "Removed") return null;
 
   async function handleClick() {
     setIsPending(true);
@@ -20,7 +23,7 @@ export function ProductStatusButton({ product }: { product: { id: string; name: 
       await (product.status === "Published" ? unpublishProduct : publishProduct)(product.id);
       router.refresh();
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Something went wrong. Please try again.");
+      setError(errorMessage(e));
     } finally {
       setIsPending(false);
     }
