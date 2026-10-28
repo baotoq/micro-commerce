@@ -6,7 +6,11 @@ using MicroCommerce.ApiService.SharedKernel;
 namespace MicroCommerce.ApiService.Features.Catalog;
 
 public record CreateProductRequest(
-    string Name, string? Description, CategoryId? CategoryId, long Price, int Stock, int WeightGrams) : IProductDetails;
+    string Name,
+    string? Description,
+    CategoryId? CategoryId,
+    IReadOnlyList<ProductOption>? Options,
+    IReadOnlyList<VariantRequest> Variants) : IProductDetails;
 
 public class CreateProductValidator : Validator<CreateProductRequest>
 {
@@ -16,7 +20,10 @@ public class CreateProductValidator : Validator<CreateProductRequest>
     }
 }
 
-/// <summary>Lists a new Product, as Draft, in a leaf Category, with a single default Variant.</summary>
+/// <summary>
+/// Lists a new Product, as Draft, in a leaf Category, with a Variant for every combination of its options' values
+/// (or a single default Variant without options).
+/// </summary>
 public class CreateProductEndpoint(CatalogDbContext db, MerchantCatalog catalog) : Endpoint<CreateProductRequest, ProductResponse>
 {
     public override void Configure()

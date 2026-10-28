@@ -7,8 +7,12 @@ using Microsoft.EntityFrameworkCore;
 namespace MicroCommerce.ApiService.Features.Catalog;
 
 public record UpdateProductRequest(
-    ProductId Id, string Name, string? Description, CategoryId? CategoryId, long Price, int Stock, int WeightGrams)
-    : IProductDetails;
+    ProductId Id,
+    string Name,
+    string? Description,
+    CategoryId? CategoryId,
+    IReadOnlyList<ProductOption>? Options,
+    IReadOnlyList<VariantRequest> Variants) : IProductDetails;
 
 public class UpdateProductValidator : Validator<UpdateProductRequest>
 {
@@ -19,8 +23,8 @@ public class UpdateProductValidator : Validator<UpdateProductRequest>
 }
 
 /// <summary>
-/// Replaces a Product's details and its default Variant's price, stock and weight. The Product keeps its status
-/// and the Variant its ID.
+/// Replaces a Product's details, options and Variants. The Product keeps its status, and every option-value
+/// combination it already had keeps its Variant ID.
 /// </summary>
 public class UpdateProductEndpoint(CatalogDbContext db, MerchantCatalog catalog) : Endpoint<UpdateProductRequest, ProductResponse>
 {

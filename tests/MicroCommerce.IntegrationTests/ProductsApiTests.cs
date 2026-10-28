@@ -13,7 +13,7 @@ public class ProductsApiTests(AppHostFixture fixture)
 
     private sealed record Product(Guid Id, string Name, Guid CategoryId, string Status, List<Variant> Variants);
 
-    private sealed record ProductSummary(Guid Id, string Name, string Status, long MinPrice, long MaxPrice, int TotalStock);
+    private sealed record ProductSummary(Guid Id, string Name, string Status, long MinPrice, long MaxPrice, long TotalStock);
 
     private sealed record TokenResponse([property: JsonPropertyName("access_token")] string AccessToken);
 
@@ -47,9 +47,7 @@ public class ProductsApiTests(AppHostFixture fixture)
             Name = "Coffee Mug",
             Description = "Stoneware.",
             CategoryId = kitchen.Id,
-            Price = 120_000,
-            Stock = 5,
-            WeightGrams = 350,
+            Variants = new[] { new { Price = 120_000, Stock = 5, WeightGrams = 350 } },
         }, ct);
         created.StatusCode.ShouldBe(HttpStatusCode.Created);
         var product = (await created.Content.ReadFromJsonAsync<Product>(ct)).ShouldNotBeNull();

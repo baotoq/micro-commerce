@@ -33,7 +33,25 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
     }
 
     private static CreateProductRequest NewProduct(CategoryId categoryId, long price = 120_000, int stock = 5, int weight = 350) =>
-        new(Unique("Mug"), "A sturdy stoneware mug.", categoryId, price, stock, weight);
+        new(Unique("Mug"), "A sturdy stoneware mug.", categoryId, null, [new(null, price, stock, weight)]);
+
+    private static readonly ProductOption Colour = new("Colour", ["Red", "Blue"]);
+    private static readonly ProductOption Size = new("Size", ["S", "M", "L"]);
+
+    /// <summary>A Colour × Size T-shirt: Variants Red / S, Red / M, …, Blue / L, priced 100_000 to 105_000.</summary>
+    private static CreateProductRequest NewShirt(CategoryId categoryId) =>
+        new(Unique("T-Shirt"), "Cotton.", categoryId, [Colour, Size], VariantsFor([Colour, Size]));
+
+    /// <summary>A Variant per combination of <paramref name="options"/>, in order; the nth costs 100_000 + n × 1_000.</summary>
+    private static List<VariantRequest> VariantsFor(IReadOnlyList<ProductOption> options) =>
+        [.. options
+            .Aggregate<ProductOption, IEnumerable<string[]>>([[]], (combos, o) => combos.SelectMany(c => o.Values.Select(v => (string[])[.. c, v])))
+            .Select((values, n) => new VariantRequest(values, 100_000 + n * 1_000, n, 200 + n))];
+
+    private static string Label(VariantResponse variant) => string.Join(" / ", variant.OptionValues);
+
+    private static IEnumerable<string> Describe(IEnumerable<ProductOption> options) =>
+        options.Select(o => $"{o.Name}: {string.Join(", ", o.Values)}");
 
     private static async Task<ProductResponse> CreateAsync(HttpClient merchant, CreateProductRequest request)
     {
@@ -43,7 +61,7 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
     }
 
     private static UpdateProductRequest UpdateOf(ProductResponse product, CategoryId? categoryId = null) =>
-        new(product.Id, Unique("Mug"), "Now in matte black.", categoryId ?? product.CategoryId, 150_000, 2, 400);
+        new(product.Id, Unique("Mug"), "Now in matte black.", categoryId ?? product.CategoryId, [], [new([], 150_000, 2, 400)]);
 
     [Fact]
     public async Task Merchant_creates_a_draft_product_with_a_single_default_variant()
@@ -60,7 +78,9 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
         product.Description.ShouldBe("Stoneware.");
         product.CategoryId.ShouldBe(category.Id);
         product.Status.ShouldBe(ProductStatus.Draft);
+        product.Options.ShouldBeEmpty();
         var variant = product.Variants.ShouldHaveSingleItem();
+        variant.OptionValues.ShouldBeEmpty();
         variant.Price.ShouldBe(Money.From(120_000));
         variant.Stock.ShouldBe(5);
         variant.WeightGrams.ShouldBe(350);
@@ -86,10 +106,11 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
         var merchant = await NewMerchantAsync();
 
         var (rsp, problem) = await merchant.POSTAsync<CreateProductEndpoint, CreateProductRequest, ProblemDetails>(
-            new(" ", null, null, 0, -1, 0));
+            new(" ", null, null, null, [new(null, 0, -1, 0)]));
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-        problem.Errors.Select(e => e.Name).ShouldBe(["name", "categoryId", "price", "stock", "weightGrams"], ignoreOrder: true);
+        problem.Errors.Select(e => e.Name).ShouldBe(
+            ["name", "categoryId", "variants[0].price", "variants[0].stock", "variants[0].weightGrams"], ignoreOrder: true);
     }
 
     [Fact]
@@ -118,6 +139,161 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
         problem.Errors.Select(e => e.Name).ShouldBe(["categoryId"]);
         var (_, products) = await merchant.GETAsync<ListProductsEndpoint, IReadOnlyList<ProductSummaryResponse>>();
         products.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Merchant_creates_a_product_with_a_variant_per_option_combination()
+    {
+        var merchant = await NewMerchantAsync();
+        var category = await NewCategoryAsync();
+        var request = NewShirt(category.Id) with { Options = [new(" Colour ", ["Red ", " Blue"]), Size] };
+        request.Variants[0].OptionValues![0].ShouldBe("Red");
+
+        var (rsp, product) = await merchant.POSTAsync<CreateProductEndpoint, CreateProductRequest, ProductResponse>(
+            request with { Variants = [.. request.Variants.Select(v => v with { OptionValues = [v.OptionValues![0].ToLowerInvariant(), v.OptionValues[1]] })] });
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Describe(product.Options).ShouldBe(["Colour: Red, Blue", "Size: S, M, L"]);
+        // In option order and spelled as the options spell them, whatever order and case the request used.
+        product.Variants.Select(Label).ShouldBe(["Red / S", "Red / M", "Red / L", "Blue / S", "Blue / M", "Blue / L"]);
+        product.Variants.Select(v => (v.Price.Value, v.Stock, v.WeightGrams)).ShouldBe(
+            Enumerable.Range(0, 6).Select(n => (100_000L + n * 1_000, n, 200 + n)));
+        product.Variants.Select(v => v.Id).Distinct().Count().ShouldBe(6);
+
+        var (_, read) = await merchant.GETAsync<GetProductEndpoint, GetProductRequest, ProductResponse>(new(product.Id));
+        read.ShouldBeEquivalentTo(product);
+    }
+
+    [Fact]
+    public async Task Variants_given_in_any_order_come_back_in_option_order()
+    {
+        var merchant = await NewMerchantAsync();
+        var request = NewShirt((await NewCategoryAsync()).Id);
+
+        var product = await CreateAsync(merchant, request with { Variants = [.. request.Variants.AsEnumerable().Reverse()] });
+
+        product.Variants.Select(Label).ShouldBe(["Red / S", "Red / M", "Red / L", "Blue / S", "Blue / M", "Blue / L"]);
+        product.Variants[0].Price.ShouldBe(Money.From(100_000));
+    }
+
+    [Fact]
+    public async Task Variants_that_are_not_exactly_the_combinations_are_a_bad_request()
+    {
+        var merchant = await NewMerchantAsync();
+        var request = NewShirt((await NewCategoryAsync()).Id);
+        List<VariantRequest> variants = [.. request.Variants.SkipLast(2), new(["Green", "S"], 1, 1, 1), new(["Red", "S"], 1, 1, 1)];
+
+        var (rsp, problem) = await merchant.POSTAsync<CreateProductEndpoint, CreateProductRequest, ProblemDetails>(
+            request with { Variants = variants });
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        problem.Errors.Select(e => (e.Name, e.Reason)).ShouldBe([
+            ("variants[4].optionValues", "'Green' is not a value of Colour."),
+            ("variants[5].optionValues", "Another Variant has the same option values."),
+            ("variants", "Missing a Variant for Blue / M, Blue / L."),
+        ], ignoreOrder: true);
+        var (_, products) = await merchant.GETAsync<ListProductsEndpoint, IReadOnlyList<ProductSummaryResponse>>();
+        products.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Invalid_options_are_a_bad_request()
+    {
+        var merchant = await NewMerchantAsync();
+        var category = await NewCategoryAsync();
+
+        var (tooManyRsp, tooMany) = await merchant.POSTAsync<CreateProductEndpoint, CreateProductRequest, ProblemDetails>(
+            NewShirt(category.Id) with { Options = [Colour, Size, new("Material", ["Cotton"])] });
+        var (badValuesRsp, badValues) = await merchant.POSTAsync<CreateProductEndpoint, CreateProductRequest, ProblemDetails>(
+            NewShirt(category.Id) with { Options = [new("Colour", ["Red", "red"]), new("Size", [])] });
+
+        tooManyRsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        tooMany.Errors.Select(e => e.Name).ShouldBe(["options"]);
+        badValuesRsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        badValues.Errors.Select(e => e.Name).ShouldBe(["options[0].values", "options[1].values"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task Editing_options_keeps_the_variant_ids_of_surviving_combinations()
+    {
+        var merchant = await NewMerchantAsync();
+        var product = await CreateAsync(merchant, NewShirt((await NewCategoryAsync()).Id));
+        var before = product.Variants.ToDictionary(Label, v => v.Id);
+        // Blue is gone, Green is new, L is gone, and the options swap places.
+        ProductOption[] options = [new("Size", ["S", "M"]), new("Colour", ["Red", "Green"])];
+
+        var (rsp, updated) = await merchant.PUTAsync<UpdateProductEndpoint, UpdateProductRequest, ProductResponse>(
+            new(product.Id, product.Name, product.Description, product.CategoryId, options, VariantsFor(options)));
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        Describe(updated.Options).ShouldBe(["Size: S, M", "Colour: Red, Green"]);
+        updated.Variants.Select(Label).ShouldBe(["S / Red", "S / Green", "M / Red", "M / Green"]);
+        var after = updated.Variants.ToDictionary(Label, v => v.Id);
+        after["S / Red"].ShouldBe(before["Red / S"]);
+        after["M / Red"].ShouldBe(before["Red / M"]);
+        after["S / Green"].ShouldNotBeOneOf([.. before.Values]);
+        after["M / Green"].ShouldNotBeOneOf([.. before.Values]);
+        updated.Variants.Select(v => v.Price.Value).ShouldBe([100_000L, 101_000, 102_000, 103_000]);
+
+        var (_, read) = await merchant.GETAsync<GetProductEndpoint, GetProductRequest, ProductResponse>(new(product.Id));
+        read.ShouldBeEquivalentTo(updated);
+    }
+
+    [Fact]
+    public async Task Editing_only_prices_and_stock_keeps_every_variant_id()
+    {
+        var merchant = await NewMerchantAsync();
+        var product = await CreateAsync(merchant, NewShirt((await NewCategoryAsync()).Id));
+        var variants = product.Variants.Select(v => new VariantRequest(v.OptionValues, 99_000, 0, v.WeightGrams)).ToList();
+
+        var (_, updated) = await merchant.PUTAsync<UpdateProductEndpoint, UpdateProductRequest, ProductResponse>(
+            new(product.Id, product.Name, product.Description, product.CategoryId, product.Options, variants));
+
+        updated.Variants.Select(v => v.Id).ShouldBe(product.Variants.Select(v => v.Id));
+        updated.Variants.ShouldAllBe(v => v.Price == Money.From(99_000) && v.Stock == 0);
+    }
+
+    [Fact]
+    public async Task Removing_all_options_leaves_a_single_default_variant()
+    {
+        var merchant = await NewMerchantAsync();
+        var product = await CreateAsync(merchant, NewShirt((await NewCategoryAsync()).Id));
+
+        var (_, updated) = await merchant.PUTAsync<UpdateProductEndpoint, UpdateProductRequest, ProductResponse>(UpdateOf(product));
+
+        updated.Options.ShouldBeEmpty();
+        var variant = updated.Variants.ShouldHaveSingleItem();
+        variant.OptionValues.ShouldBeEmpty();
+        variant.Id.ShouldNotBeOneOf([.. product.Variants.Select(v => v.Id)]);
+    }
+
+    [Fact]
+    public async Task List_price_range_and_total_stock_cover_every_variant()
+    {
+        var merchant = await NewMerchantAsync();
+        var shirt = await CreateAsync(merchant, NewShirt((await NewCategoryAsync()).Id));
+
+        var (_, products) = await merchant.GETAsync<ListProductsEndpoint, IReadOnlyList<ProductSummaryResponse>>();
+
+        products.ShouldBe([new(
+            shirt.Id, shirt.Name, shirt.CategoryId, ProductStatus.Draft, 6,
+            Money.From(100_000), Money.From(105_000), 0 + 1 + 2 + 3 + 4 + 5, shirt.CreatedAt)]);
+    }
+
+    [Fact]
+    public async Task List_total_stock_may_exceed_a_single_variants_range()
+    {
+        var merchant = await NewMerchantAsync();
+        ProductOption[] options = [new("Size", ["S", "M"])];
+        var shirt = await CreateAsync(merchant, new(
+            Unique("T-Shirt"), null, (await NewCategoryAsync()).Id, options,
+            [new(["S"], 100_000, int.MaxValue, 200), new(["M"], 100_000, int.MaxValue, 200)]));
+
+        var (rsp, products) = await merchant.GETAsync<ListProductsEndpoint, IReadOnlyList<ProductSummaryResponse>>();
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        products.ShouldHaveSingleItem().TotalStock.ShouldBe(2L * int.MaxValue);
+        shirt.Variants.ShouldAllBe(v => v.Stock == int.MaxValue);
     }
 
     [Fact]
@@ -161,7 +337,7 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
             Description = update.Description,
             CategoryId = otherCategory.Id,
             Status = ProductStatus.Published,
-            Variants = new List<VariantResponse> { new(product.Variants.Single().Id, Money.From(150_000), 2, 400) },
+            Variants = new List<VariantResponse> { new(product.Variants.Single().Id, new List<string>(), Money.From(150_000), 2, 400) },
         });
         var (_, read) = await merchant.GETAsync<GetProductEndpoint, GetProductRequest, ProductResponse>(new(product.Id));
         read.ShouldBeEquivalentTo(updated);
@@ -174,10 +350,10 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
         var product = await CreateAsync(merchant, NewProduct((await NewCategoryAsync()).Id));
 
         var (rsp, problem) = await merchant.PUTAsync<UpdateProductEndpoint, UpdateProductRequest, ProblemDetails>(
-            UpdateOf(product) with { Name = "", Price = -5 });
+            UpdateOf(product) with { Name = "", Variants = [new([], -5, 2, 400)] });
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-        problem.Errors.Select(e => e.Name).ShouldBe(["name", "price"], ignoreOrder: true);
+        problem.Errors.Select(e => e.Name).ShouldBe(["name", "variants[0].price"], ignoreOrder: true);
     }
 
     [Fact]
@@ -239,7 +415,7 @@ public class ProductEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
         var category = await NewCategoryAsync();
 
         var statuses = await StatusesAsync(merchant, new ProductResponse(
-            ProductId.New(), "Mug", null, category.Id, ProductStatus.Draft, [], DateTimeOffset.UtcNow));
+            ProductId.New(), "Mug", null, category.Id, ProductStatus.Draft, [], [], DateTimeOffset.UtcNow));
 
         statuses.ShouldAllBe(s => s == HttpStatusCode.NotFound);
     }

@@ -19,6 +19,8 @@ async function goToMerchantCentre(page: Page) {
 test.describe("as a Merchant", () => {
   // The shared session is the Buyer's; this test signs in as the seeded merchant on its own.
   test.use({ storageState: { cookies: [], origins: [] } });
+  // Both tests sign in as the one seeded merchant, which can only open its Shop once.
+  test.describe.configure({ mode: "serial" });
 
   test("a Merchant lists, edits, publishes and unpublishes a Product", async ({ page }) => {
     // Runs against dev data, so the names must be unique to this run.
@@ -60,6 +62,52 @@ test.describe("as a Merchant", () => {
 
     await page.getByRole("button", { name: `Unpublish ${renamed}` }).click();
     await expect(renamedRow).toContainText("Draft");
+  });
+
+  test("a Merchant sells a Product's option combinations as Variants", async ({ page }) => {
+    const name = `E2E T-Shirt ${crypto.randomUUID().slice(0, 8)}`;
+
+    await signInAsMerchant(page);
+    await goToMerchantCentre(page);
+    await page.getByRole("link", { name: "Products" }).click();
+    await page.getByRole("link", { name: "New Product" }).click();
+
+    await page.getByLabel("Name").fill(name);
+    await page.getByLabel("Category").selectOption({ label: "Home › Kitchen" });
+    await page.getByRole("button", { name: "Add option" }).click();
+    await page.getByLabel("Option 1 name").fill("Colour");
+    await page.getByLabel("Option 1 values").fill("Red\nBlue");
+    await page.getByRole("button", { name: "Add option" }).click();
+    await page.getByLabel("Option 2 name").fill("Size");
+    await page.getByLabel("Option 2 values").fill("S\nM");
+    // At most two options.
+    await expect(page.getByRole("button", { name: "Add option" })).toHaveCount(0);
+
+    // The grid has a row per combination.
+    const combinations = ["Red / S", "Red / M", "Blue / S", "Blue / M"];
+    for (const [i, combination] of combinations.entries()) {
+      await page.getByLabel(`Price (VND) of ${combination}`).fill(String(100_000 + i * 10_000));
+      await page.getByLabel(`Stock of ${combination}`).fill(String(i + 1));
+      await page.getByLabel(`Weight (grams) of ${combination}`).fill("200");
+    }
+    await page.getByRole("button", { name: "Create Product" }).click();
+
+    // The list covers every Variant: its price range and total stock.
+    const row = page.getByRole("row").filter({ hasText: name });
+    await expect(row).toContainText("100.000");
+    await expect(row).toContainText("130.000");
+    await expect(row.getByRole("cell").nth(3)).toHaveText("10");
+
+    // Dropping Blue keeps what was entered for the Red Variants.
+    await row.getByRole("link", { name }).click();
+    await page.getByLabel("Option 1 values").fill("Red");
+    await expect(page.getByLabel(/^Price \(VND\) of /)).toHaveCount(2);
+    await expect(page.getByLabel("Price (VND) of Red / M")).toHaveValue("110000");
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(row.getByRole("cell").nth(3)).toHaveText("3");
+    await expect(row).toContainText("110.000");
+    await expect(row).not.toContainText("130.000");
   });
 });
 
