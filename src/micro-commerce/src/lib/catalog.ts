@@ -60,6 +60,14 @@ export function leafCategories(tree: CategoryNode[], parents: string[] = []): { 
   );
 }
 
+// Every Category with its path from the top ("Fashion › Men"), in tree order, for filtering by any of them.
+export function allCategories(tree: CategoryNode[], parents: string[] = []): { id: string; path: string }[] {
+  return tree.flatMap((node) => {
+    const path = [...parents, node.name];
+    return [{ id: node.id, path: path.join(" › ") }, ...allCategories(node.children, path)];
+  });
+}
+
 // The Category's path from the top ("Fashion › Men › T-Shirts"), or null if the tree doesn't hold it.
 export function categoryPath(tree: CategoryNode[], id: string): string | null {
   for (const node of tree) {

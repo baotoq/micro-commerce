@@ -44,16 +44,25 @@ public class StorefrontEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
         return new(client, merchant);
     }
 
-    private async Task<CategoryId> NewCategoryAsync()
+    /// <summary>
+    /// A word no other test uses, for searching: letters only, since the text search parser splits mixed letters and
+    /// digits into several words.
+    /// </summary>
+    private static string UniqueWord() => string.Concat(Guid.NewGuid().ToString("N").Select(c => (char)('a' + Convert.ToInt32($"{c}", 16))));
+
+    private async Task<CategoryId> NewCategoryAsync(CategoryId? parentId = null)
     {
         var (rsp, category) = await _operator.POSTAsync<CreateCategoryEndpoint, CreateCategoryRequest, CategoryResponse>(
-            new(Unique("Category"), null));
+            new(Unique("Category"), parentId));
         rsp.StatusCode.ShouldBe(HttpStatusCode.Created);
         return category.Id;
     }
 
     private static CreateProductRequest NewMug(CategoryId categoryId, int stock = 5) =>
-        new(Unique("Mug"), "A sturdy stoneware mug.", categoryId, null, [new(null, 120_000, stock, 350)]);
+        NewProduct(categoryId, Unique("Mug"), "A sturdy stoneware mug.", stock);
+
+    private static CreateProductRequest NewProduct(CategoryId categoryId, string name, string? description, int stock = 5) =>
+        new(name, description, categoryId, null, [new(null, 120_000, stock, 350)]);
 
     /// <summary>A Colour × Size T-shirt: Red / S, Red / M, Blue / S, Blue / M, priced 100_000 to 103_000; Red / S is out of stock.</summary>
     private static CreateProductRequest NewShirt(CategoryId categoryId) =>
@@ -328,5 +337,129 @@ public class StorefrontEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
         var detail = await EventuallyAsync(async () => (await GetAsync(product.Id)).Result, p => p.ShopName == newName);
         detail.ShopId.ShouldBe(merchant.Id);
         (await ListAsync(new() { ShopId = merchant.Id })).Items.ShouldHaveSingleItem().ShopName.ShouldBe(newName);
+    }
+
+    [Fact]
+    public async Task Search_matches_word_variations()
+    {
+        var merchant = await NewMerchantAsync();
+        var category = await NewCategoryAsync();
+        var word = UniqueWord();
+        var mug = await CreatePublishedAsync(merchant, NewProduct(category, $"Mug {word}", null));
+        var teapots = await CreatePublishedAsync(merchant, NewProduct(category, $"Teapots {word}", null));
+
+        var mugs = await ListAsync(new() { Query = $"mugs {word}" });
+        var teapot = await ListAsync(new() { Query = $"Teapot {word}" });
+
+        mugs.Items.Select(p => p.Id).ShouldBe([mug.Id]);
+        teapot.Items.Select(p => p.Id).ShouldBe([teapots.Id]);
+    }
+
+    [Fact]
+    public async Task Search_matches_name_or_description_of_visible_products_only()
+    {
+        var merchant = await NewMerchantAsync();
+        var category = await NewCategoryAsync();
+        var word = UniqueWord();
+        var inName = await CreatePublishedAsync(merchant, NewProduct(category, $"Mug {word}", "Stoneware."));
+        var inDescription = await CreatePublishedAsync(merchant, NewProduct(category, Unique("Mug"), $"Glazed in {word} blue."));
+        await CreatePublishedAsync(merchant, NewProduct(category, Unique("Mug"), "Stoneware."));
+        await CreateAsync(merchant, NewProduct(category, $"Draft {word}", null));
+
+        var page = await ListAsync(new() { Query = word });
+
+        page.Items.Select(p => p.Id).ShouldBe([inName.Id, inDescription.Id], ignoreOrder: true);
+        page.TotalCount.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task Every_search_word_must_match()
+    {
+        var merchant = await NewMerchantAsync();
+        var category = await NewCategoryAsync();
+        var word = UniqueWord();
+        var mug = await CreatePublishedAsync(merchant, NewProduct(category, $"Mug {word}", null));
+        await CreatePublishedAsync(merchant, NewProduct(category, $"Teapot {word}", null));
+
+        var page = await ListAsync(new() { Query = $"{word} mug" });
+
+        page.Items.Select(p => p.Id).ShouldBe([mug.Id]);
+    }
+
+    [Fact]
+    public async Task Category_filter_includes_descendants()
+    {
+        var merchant = await NewMerchantAsync();
+        var top = await NewCategoryAsync();
+        var middle = await NewCategoryAsync(top);
+        var leafBelowMiddle = await NewCategoryAsync(middle);
+        var leafBelowTop = await NewCategoryAsync(top);
+        var elsewhere = await NewCategoryAsync();
+        var deep = await CreatePublishedAsync(merchant, NewMug(leafBelowMiddle));
+        var shallow = await CreatePublishedAsync(merchant, NewMug(leafBelowTop));
+        await CreatePublishedAsync(merchant, NewMug(elsewhere));
+
+        var underTop = await ListAsync(new() { CategoryId = top });
+        var underMiddle = await ListAsync(new() { CategoryId = middle });
+        var inLeaf = await ListAsync(new() { CategoryId = leafBelowTop });
+
+        underTop.Items.Select(p => p.Id).ShouldBe([shallow.Id, deep.Id]);
+        underMiddle.Items.Select(p => p.Id).ShouldBe([deep.Id]);
+        inLeaf.Items.Select(p => p.Id).ShouldBe([shallow.Id]);
+    }
+
+    [Fact]
+    public async Task Unknown_category_lists_nothing()
+    {
+        var page = await ListAsync(new() { CategoryId = CategoryId.New() });
+
+        page.Items.ShouldBeEmpty();
+        page.TotalCount.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task Query_category_and_paging_combine()
+    {
+        var merchant = await NewMerchantAsync();
+        var top = await NewCategoryAsync();
+        var left = await NewCategoryAsync(top);
+        var right = await NewCategoryAsync(top);
+        var elsewhere = await NewCategoryAsync();
+        var word = UniqueWord();
+        List<ProductId> matching =
+        [
+            (await CreatePublishedAsync(merchant, NewProduct(left, $"Mug {word}", null))).Id,
+            (await CreatePublishedAsync(merchant, NewProduct(left, $"Mug {word}", null))).Id,
+            (await CreatePublishedAsync(merchant, NewProduct(right, $"Mug {word}", null))).Id,
+        ];
+        await CreatePublishedAsync(merchant, NewMug(right));
+        await CreatePublishedAsync(merchant, NewProduct(elsewhere, $"Mug {word}", null));
+
+        var first = await ListAsync(new() { Query = word, CategoryId = top, Page = 1, PageSize = 2 });
+        var second = await ListAsync(new() { Query = word, CategoryId = top, Page = 2, PageSize = 2 });
+
+        (first.TotalCount, second.TotalCount).ShouldBe((3, 3));
+        first.Items.Count.ShouldBe(2);
+        second.Items.Count.ShouldBe(1);
+        // Equally good matches come newest first.
+        first.Items.Concat(second.Items).Select(p => p.Id).ShouldBe(matching.AsEnumerable().Reverse());
+    }
+
+    [Fact]
+    public async Task Search_takes_any_text()
+    {
+        var page = await ListAsync(new() { Query = $"\"{UniqueWord()} & | ! :* ( -" });
+
+        page.Items.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Overlong_query_is_a_bad_request()
+    {
+        var (rsp, problem) = await Buyer.GETAsync<ListStorefrontProductsEndpoint, ListStorefrontProductsRequest, ProblemDetails>(
+            new() { Query = new string('a', ListStorefrontProductsRequest.QueryMaxLength + 1) });
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        problem.Errors.Select(e => e.Name).ShouldBe(["query"]);
     }
 }

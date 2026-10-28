@@ -8,10 +8,13 @@ export function ProductGrid({
   products,
   href,
   showShop = true,
+  empty = "No Products yet.",
 }: {
   products: Page<StorefrontProductSummary>;
   href: (page: number) => string;
   showShop?: boolean;
+  // What to say when there are no Products at all.
+  empty?: string;
 }) {
   const { items, page, pageSize, totalCount } = products;
   const pageCount = Math.max(1, Math.ceil(totalCount / pageSize));
@@ -19,7 +22,7 @@ export function ProductGrid({
   if (items.length === 0) {
     return (
       <p className="text-muted-foreground">
-        {totalCount === 0 ? "No Products yet." : "No Products on this page."}{" "}
+        {totalCount === 0 ? empty : "No Products on this page."}{" "}
         {page > 1 && (
           <Link href={href(1)} className="underline">
             Back to the first page
