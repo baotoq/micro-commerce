@@ -65,6 +65,10 @@ Tests are xUnit v3 on **Microsoft.Testing.Platform in native mode** (set in `glo
 
 `tests/Directory.Build.props` makes every test project an `Exe` with xUnit v3 + Shouldly and global `using Xunit; using Shouldly;`. Assertions use Shouldly.
 
+## Pull requests
+
+When a PR changes the UI, capture screenshots of every new or changed page and state, and show them in the PR description. Take them with Playwright against the running app (`aspire run`), signed in as the seeded user the page needs. The GitHub API can't upload attachments, so push the PNGs to the `pr-screenshots` branch (never merged) under `<PR number>/` and embed each as `![what it shows](https://github.com/baotoq/micro-commerce/blob/pr-screenshots/<PR number>/<file>.png?raw=true)`.
+
 ## Agent skills
 
 ### Issue tracker
