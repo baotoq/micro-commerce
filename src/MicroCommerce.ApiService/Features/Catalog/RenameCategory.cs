@@ -17,7 +17,7 @@ public class RenameCategoryValidator : Validator<RenameCategoryRequest>
     }
 }
 
-/// <summary>Renames a Category; it keeps its place in the tree, its children and (later) its Products.</summary>
+/// <summary>Renames a Category; it keeps its place in the tree, its children and its Products.</summary>
 public class RenameCategoryEndpoint(CatalogDbContext db) : Endpoint<RenameCategoryRequest, CategoryResponse>
 {
     public override void Configure()

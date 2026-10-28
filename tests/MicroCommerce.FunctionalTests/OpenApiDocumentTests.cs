@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using MicroCommerce.ApiService.Features.Accounts;
 using MicroCommerce.ApiService.Features.Catalog;
-using MicroCommerce.ApiService.Features.Products;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
@@ -20,6 +19,8 @@ public class OpenApiDocumentTests(ApiFixture App) : TestBase<ApiFixture>
     [InlineData(typeof(MeResponse))]
     [InlineData(typeof(CategoryResponse))]
     [InlineData(typeof(CategoryNodeResponse))]
+    [InlineData(typeof(ProductSummaryResponse))]
+    [InlineData(typeof(VariantResponse))]
     public async Task Typed_ids_are_uuid_strings(Type response)
     {
         var document = await DocumentAsync();
@@ -40,12 +41,35 @@ public class OpenApiDocumentTests(ApiFixture App) : TestBase<ApiFixture>
         resolved["type"]!.GetValue<string>().ShouldBe("string");
     }
 
+    [Theory]
+    [InlineData(typeof(VariantResponse), "price")]
+    [InlineData(typeof(ProductSummaryResponse), "minPrice")]
+    public async Task Money_is_a_whole_number(Type response, string property)
+    {
+        var document = await DocumentAsync();
+
+        var resolved = Resolve(document, Schema(document, response)["properties"]![property]!);
+
+        resolved["type"]!.GetValue<string>().ShouldBe("number");
+        resolved["format"]!.GetValue<string>().ShouldBe("int64");
+    }
+
+    [Fact]
+    public async Task Product_status_is_a_string()
+    {
+        var document = await DocumentAsync();
+
+        var resolved = Resolve(document, Schema(document, typeof(ProductResponse))["properties"]!["status"]!);
+
+        resolved["type"]!.GetValue<string>().ShouldBe("string");
+    }
+
     [Fact]
     public async Task Product_id_route_parameter_is_a_uuid_string()
     {
         var document = await DocumentAsync();
 
-        var parameter = document["paths"]!["/products/{id}"]!["get"]!["parameters"]!.AsArray()
+        var parameter = document["paths"]!["/merchant/products/{id}"]!["get"]!["parameters"]!.AsArray()
             .Single(p => p!["name"]!.GetValue<string>() == "id")!;
         var resolved = Resolve(document, parameter["schema"]!);
 

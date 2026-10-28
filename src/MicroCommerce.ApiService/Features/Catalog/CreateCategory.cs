@@ -3,7 +3,6 @@ using FluentValidation;
 using MicroCommerce.ApiService.Features.Accounts;
 using MicroCommerce.ApiService.Features.Catalog.Data;
 using MicroCommerce.ApiService.SharedKernel;
-using Microsoft.EntityFrameworkCore;
 
 namespace MicroCommerce.ApiService.Features.Catalog;
 
@@ -18,7 +17,7 @@ public class CreateCategoryValidator : Validator<CreateCategoryRequest>
     }
 }
 
-/// <summary>Creates a top-level Category, or a child of an existing one.</summary>
+/// <summary>Creates a top-level Category, or a child of an existing one that holds no Products.</summary>
 public class CreateCategoryEndpoint(CatalogDbContext db) : Endpoint<CreateCategoryRequest, CategoryResponse>
 {
     public override void Configure()
@@ -29,40 +28,32 @@ public class CreateCategoryEndpoint(CatalogDbContext db) : Endpoint<CreateCatego
 
     public override async Task HandleAsync(CreateCategoryRequest req, CancellationToken ct)
     {
+        var category = new Category { Name = req.Name.Trim(), ParentId = req.ParentId };
+        db.Categories.Add(category);
+
         if (req.ParentId is { } parentId)
         {
-            if (!await db.Categories.AnyAsync(c => c.Id == parentId, ct))
+            var (parentFound, conflict) = await db.SaveWithCategoryLockedAsync(
+                parentId, () => db.WhyCannotGainChildAsync(parentId, ct), ct);
+
+            if (!parentFound)
             {
-                await SendUnknownParentAsync(ct);
+                AddError(r => r.ParentId, CategoryRules.UnknownCategory);
+                await Send.ErrorsAsync(cancellation: ct);
                 return;
             }
-            if (await db.WhyCannotGainChildAsync(parentId, ct) is { } reason)
+            if (conflict is not null)
             {
-                AddError(r => r.ParentId, reason);
+                AddError(r => r.ParentId, conflict);
                 await Send.ErrorsAsync(StatusCodes.Status409Conflict, ct);
                 return;
             }
         }
-
-        var category = new Category { Name = req.Name.Trim(), ParentId = req.ParentId };
-        db.Categories.Add(category);
-        try
+        else
         {
             await db.SaveChangesAsync(ct);
         }
-        catch (DbUpdateException e) when (CategoryRules.IsParentViolation(e))
-        {
-            // The parent was deleted concurrently.
-            await SendUnknownParentAsync(ct);
-            return;
-        }
 
         await Send.CreatedAtAsync<GetCategoryEndpoint>(new { id = category.Id }, category.ToResponse(), cancellation: ct);
-    }
-
-    private Task SendUnknownParentAsync(CancellationToken ct)
-    {
-        AddError(r => r.ParentId, CategoryRules.UnknownParent);
-        return Send.ErrorsAsync(cancellation: ct);
     }
 }

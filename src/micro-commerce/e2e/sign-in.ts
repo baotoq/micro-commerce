@@ -6,6 +6,7 @@ type SeededUser = { username: string; password: string; displayName: string };
 
 // Seeded users from the Keycloak dev realm (src/MicroCommerce.AppHost/Realms/).
 export const buyer: SeededUser = { username: "buyer", password: "buyer", displayName: "Bea Buyer" };
+export const merchant: SeededUser = { username: "merchant", password: "merchant", displayName: "Max Merchant" };
 export const operator: SeededUser = { username: "operator", password: "operator", displayName: "Olive Operator" };
 
 // Signs in through the real Keycloak login page and waits until the app shows the signed-in header.
@@ -22,5 +23,7 @@ async function signIn(page: Page, user: SeededUser) {
 }
 
 export const signInAsBuyer = (page: Page) => signIn(page, buyer);
+
+export const signInAsMerchant = (page: Page) => signIn(page, merchant);
 
 export const signInAsOperator = (page: Page) => signIn(page, operator);
