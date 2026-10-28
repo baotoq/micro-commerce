@@ -17,6 +17,9 @@ public static partial class CatalogMapper
     [MapPropertyFromSource(nameof(ProductResponse.Variants), Use = nameof(OrderedVariants))]
     public static partial ProductResponse ToResponse(this Product product);
 
+    [MapPropertyFromSource(nameof(OperatorProductResponse.Variants), Use = nameof(OrderedVariants))]
+    public static partial OperatorProductResponse ToOperatorResponse(this Product product, string? shopName);
+
     [MapperIgnoreSource(nameof(Variant.Position))]
     private static partial VariantResponse ToVariantResponse(this Variant variant);
 

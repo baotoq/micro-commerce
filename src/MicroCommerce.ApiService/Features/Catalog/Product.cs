@@ -21,6 +21,9 @@ public class Product
 
     public const int MaxOptions = 2;
 
+    /// <summary>Why a Merchant can't edit, publish or unpublish a Removed Product.</summary>
+    public const string RemovedMessage = "A Platform Operator removed this Product, so it can't be changed.";
+
     public ProductId Id { get; init; } = ProductId.New();
 
     /// <summary>The Merchant that owns the Product; every Merchant Centre query is scoped by it (ADR-0001).</summary>
@@ -30,8 +33,10 @@ public class Product
     public string? Description { get; set; }
     public required CategoryId CategoryId { get; set; }
 
-    /// <summary>New Products start as Draft; edits keep the current status.</summary>
+    /// <summary>New Products start as Draft; edits keep the current status. Removed is final.</summary>
     public ProductStatus Status { get; private set; } = ProductStatus.Draft;
+
+    public bool IsRemoved => Status == ProductStatus.Removed;
 
     /// <summary>Up to <see cref="MaxOptions"/> options (e.g. Colour, Size), whose value combinations are the Variants.</summary>
     public List<ProductOption> Options { get; private set; } = [];
@@ -41,9 +46,18 @@ public class Product
 
     public DateTimeOffset CreatedAt { get; init; } = DatabaseClock.UtcNow;
 
-    public void Publish() => Status = ProductStatus.Published;
+    public void Publish() => MoveTo(ProductStatus.Published);
 
-    public void Unpublish() => Status = ProductStatus.Draft;
+    public void Unpublish() => MoveTo(ProductStatus.Draft);
+
+    /// <summary>Takes the Product off the Marketplace for good: a Platform Operator's call, which the Merchant can't undo.</summary>
+    public void Remove() => Status = ProductStatus.Removed;
+
+    private void MoveTo(ProductStatus status)
+    {
+        if (IsRemoved) throw new InvalidOperationException(RemovedMessage);
+        Status = status;
+    }
 
     /// <summary>
     /// Replaces the options and Variants. <paramref name="variants"/> must hold every combination of the options'
@@ -98,7 +112,8 @@ public record ProductOption(string Name, IReadOnlyList<string> Values)
 public record VariantDetails(IReadOnlyList<string> OptionValues, Money Price, int Stock, int WeightGrams);
 
 /// <summary>
-/// <c>Draft</c> → <c>Published</c> → <c>Draft</c>, moved by the Merchant. Buyers only ever see Published Products
+/// <c>Draft</c> → <c>Published</c> → <c>Draft</c>, moved by the Merchant; a Platform Operator can mark any Product
+/// <c>Removed</c>, which is final. Buyers only ever see Published Products
 /// (see <see cref="StorefrontQueries.VisibleProducts"/>).
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter<ProductStatus>))]
@@ -106,6 +121,7 @@ public enum ProductStatus
 {
     Draft,
     Published,
+    Removed,
 }
 
 /// <summary>One purchasable combination of a Product's options, with its own price, stock and weight.</summary>
@@ -162,6 +178,22 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 /// <summary>A Product as its Merchant sees it, in any status.</summary>
 public record ProductResponse(
     ProductId Id,
+    string Name,
+    string? Description,
+    CategoryId CategoryId,
+    ProductStatus Status,
+    IReadOnlyList<ProductOption> Options,
+    IReadOnlyList<VariantResponse> Variants,
+    DateTimeOffset CreatedAt);
+
+/// <summary>
+/// A Product as a Platform Operator reviews it: in any status, with its Merchant and that Merchant's Shop name
+/// (null until the Shop reaches the Catalog).
+/// </summary>
+public record OperatorProductResponse(
+    ProductId Id,
+    MerchantId MerchantId,
+    string? ShopName,
     string Name,
     string? Description,
     CategoryId CategoryId,

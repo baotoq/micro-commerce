@@ -17,9 +17,19 @@ public class PublishProductEndpoint(MerchantCatalog catalog) : Endpoint<ChangePr
 
     public override async Task HandleAsync(ChangeProductStatusRequest req, CancellationToken ct)
     {
-        if (await catalog.ChangeStatusAsync(req.Id, p => p.Publish(), ct) is { } product)
-            await Send.OkAsync(product.ToResponse(), ct);
-        else
+        var (product, refusal) = await catalog.ChangeStatusAsync(req.Id, p => p.Publish(), ct);
+        if (product is null)
+        {
             await Send.NotFoundAsync(ct);
+            return;
+        }
+        if (refusal is not null)
+        {
+            AddError(refusal);
+            await Send.ErrorsAsync(StatusCodes.Status409Conflict, ct);
+            return;
+        }
+
+        await Send.OkAsync(product.ToResponse(), ct);
     }
 }

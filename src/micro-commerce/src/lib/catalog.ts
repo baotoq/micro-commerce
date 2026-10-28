@@ -78,8 +78,8 @@ export function categoryPath(tree: CategoryNode[], id: string): string | null {
   return null;
 }
 
-// Mirrors ProductStatus in the API.
-export type ProductStatus = "Draft" | "Published";
+// Mirrors ProductStatus in the API. Only a Platform Operator moves a Product to Removed, which is final.
+export type ProductStatus = "Draft" | "Published" | "Removed";
 
 // Mirrors ProductOption in the API, e.g. Colour with Red and Blue.
 export type ProductOption = {
@@ -107,6 +107,13 @@ export type Product = {
   options: ProductOption[];
   variants: Variant[];
   createdAt: string;
+};
+
+// Mirrors OperatorProductResponse in the API: any Product, as a Platform Operator reviews it. The Shop
+// name is null until the Shop reaches the Catalog.
+export type OperatorProduct = Product & {
+  merchantId: string;
+  shopName: string | null;
 };
 
 // Mirrors ProductSummaryResponse in the API: a row of the Merchant's Product list.
@@ -263,6 +270,18 @@ export function createProduct(input: ProductInput) {
 
 export function updateProduct(id: string, input: ProductInput) {
   return apiFetch<Product>(`/merchant/products/${id}`, { method: "PUT", body: productBody(input) });
+}
+
+// Server-side, as the signed-in Platform Operator.
+export function getOperatorProduct(accessToken: string, id: string) {
+  return apiFetch<OperatorProduct>(`/ops/products/${encodeURIComponent(id)}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+}
+
+// Browser-side, through the /api proxy, as the signed-in Platform Operator.
+export function removeProduct(id: string) {
+  return apiFetch<OperatorProduct>(`/ops/products/${id}/remove`, { method: "POST" });
 }
 
 export function publishProduct(id: string) {

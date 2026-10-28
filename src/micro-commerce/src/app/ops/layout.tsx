@@ -8,6 +8,9 @@ export default function OperationsLayout({ children }: LayoutProps<"/ops">) {
         <Link href="/ops/categories" className="text-sm text-muted-foreground hover:text-foreground">
           Categories
         </Link>
+        <Link href="/ops/products" className="text-sm text-muted-foreground hover:text-foreground">
+          Products
+        </Link>
       </nav>
       <main className="min-w-0 flex-1">{children}</main>
     </div>

@@ -1,5 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
-import { signInAsMerchant } from "./sign-in";
+import { signInAsMerchant, signInAsOperator } from "./sign-in";
 
 // The seeded merchant user owns no Merchant until it opens one; against dev data it may already have.
 async function goToMerchantCentre(page: Page) {
@@ -193,6 +193,55 @@ test.describe("as a Merchant", () => {
     await search(`${word}s`, "Fashion");
     await expect(buyer.getByText("No Products match your search.")).toBeVisible();
     await buyer.close();
+  });
+
+  test("a Platform Operator removes a Product for good", async ({ page, browser }) => {
+    const name = `E2E Lamp ${crypto.randomUUID().slice(0, 8)}`;
+
+    await signInAsMerchant(page);
+    await goToMerchantCentre(page);
+    await page.getByRole("link", { name: "Products" }).click();
+    await page.getByRole("link", { name: "New Product" }).click();
+    await page.getByLabel("Name").fill(name);
+    await page.getByLabel("Category").selectOption({ label: "Home › Kitchen" });
+    await page.getByLabel("Price (VND)").fill("90000");
+    await page.getByLabel("Stock").fill("4");
+    await page.getByLabel("Weight (grams)").fill("500");
+    await page.getByRole("button", { name: "Create Product" }).click();
+    await page.getByRole("button", { name: `Publish ${name}` }).click();
+    const row = page.getByRole("row").filter({ hasText: name });
+    await expect(row).toContainText("Published");
+    await row.getByRole("link", { name }).click();
+    // The operator finds the Product from its storefront link.
+    const storefrontLink = new URL(await page.getByRole("link", { name: "View in store" }).getAttribute("href") ?? "", page.url());
+
+    const operator = await browser.newPage({ storageState: { cookies: [], origins: [] } });
+    await signInAsOperator(operator);
+    await operator.goto("/ops");
+    await operator.getByRole("link", { name: "Products" }).click();
+    await operator.getByLabel("Product ID or link").fill(storefrontLink.href);
+    await operator.getByRole("button", { name: "Find Product" }).click();
+    await expect(operator.getByRole("heading", { name })).toBeVisible();
+    await expect(operator.getByText("Published", { exact: true })).toBeVisible();
+    await operator.getByRole("button", { name: "Remove", exact: true }).click();
+    await operator.getByRole("button", { name: `Remove ${name} for good` }).click();
+    await expect(operator.getByText("Removed", { exact: true })).toBeVisible();
+    await expect(operator.getByRole("button", { name: "Remove", exact: true })).toHaveCount(0);
+    await operator.close();
+
+    // Buyers no longer find it.
+    const buyer = await browser.newPage({ storageState: { cookies: [], origins: [] } });
+    await buyer.goto(storefrontLink.pathname);
+    await expect(buyer.getByText("This page could not be found.")).toBeVisible();
+    await buyer.close();
+
+    // The Merchant sees it marked Removed, with nothing left to change.
+    await page.goto("/merchant/products");
+    await expect(row).toContainText("Removed");
+    await expect(row.getByRole("button")).toHaveCount(0);
+    await row.getByRole("link", { name }).click();
+    await expect(page.getByText("A Platform Operator removed this Product")).toBeVisible();
+    await expect(page.getByLabel("Name")).toHaveCount(0);
   });
 });
 

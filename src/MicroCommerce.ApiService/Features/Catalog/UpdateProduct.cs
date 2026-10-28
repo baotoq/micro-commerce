@@ -24,7 +24,7 @@ public class UpdateProductValidator : Validator<UpdateProductRequest>
 
 /// <summary>
 /// Replaces a Product's details, options and Variants. The Product keeps its status, and every option-value
-/// combination it already had keeps its Variant ID.
+/// combination it already had keeps its Variant ID. A Removed Product can't be edited.
 /// </summary>
 public class UpdateProductEndpoint(CatalogDbContext db, MerchantCatalog catalog, StorefrontProductCache storefrontCache)
     : Endpoint<UpdateProductRequest, ProductResponse>
@@ -41,6 +41,12 @@ public class UpdateProductEndpoint(CatalogDbContext db, MerchantCatalog catalog,
         if (product is null)
         {
             await Send.NotFoundAsync(ct);
+            return;
+        }
+        if (product.IsRemoved)
+        {
+            AddError(Product.RemovedMessage);
+            await Send.ErrorsAsync(StatusCodes.Status409Conflict, ct);
             return;
         }
 
