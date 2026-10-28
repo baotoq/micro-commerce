@@ -11,7 +11,7 @@ on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
-    branches: [master]
+    branches: ["feature/**", "fix/**", "copilot/**", "dependabot/**"]
 
 if: >-
   ${{ github.event_name == 'pull_request' ||
@@ -52,10 +52,11 @@ maintainers specific, evidence-backed next steps.
 For a pull_request event, find the latest CI run associated with this pull request
 and head SHA. If CI has not started, is still running, or has not failed, report
 the observed status with the noop safe output and stop without creating an issue
-or comment. Do not wait or poll. The workflow_run trigger is restricted to CI runs
-on the master branch; it does not catch subsequent failures on feature branches.
+or comment. Do not wait or poll.
 
-For a workflow_run event, investigate the triggering run directly.
+For a workflow_run event, investigate the triggering run directly. It only fires
+for failed CI runs of pull requests targeting master; runs on the master branch
+itself are not checked.
 
 ## Investigation protocol
 

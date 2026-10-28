@@ -2,13 +2,32 @@
   "permissions": {
     "defaultMode": "auto"
   },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "testcontainers@testcontainers-claude-skills": true,
     "dotnet-aspnetcore@dotnet-agent-skills": true,
     "dotnet-test@dotnet-agent-skills": true,
     "dotnet@dotnet-agent-skills": true,
     "azure@claude-plugins-official": true,
-    "mattpocock-skills@claude-plugins-official": true
+    "mattpocock-skills@claude-plugins-official": true,
+    "context7@anthropic-plugin-directory": true,
+    "code-review@anthropic-plugin-directory": true,
+    "github@anthropic-plugin-directory": true,
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "microsoft-docs@anthropic-plugin-directory": true,
+    "sonarqube@claude-plugins-official": true,
+    "frontend-design@anthropic-plugin-directory": true
   },
   "extraKnownMarketplaces": {
     "karpathy-skills": {
@@ -23,17 +42,5 @@
         "repo": "testcontainers/claude-skills"
       }
     }
-  },
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
-          }
-        ]
-      }
-    ]
   }
 }
