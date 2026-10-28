@@ -29,6 +29,7 @@ internal static class StorefrontQueries
         from product in db.Products
         where product.Status == ProductStatus.Published
         join shop in db.Shops on product.MerchantId equals shop.Id
+        where !shop.IsSuspended
         select new ShopProduct { Product = product, Shop = shop };
 }
 

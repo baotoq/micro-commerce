@@ -8,5 +8,9 @@ public static partial class AccountsMapper
 {
     public static partial MerchantResponse ToResponse(this Merchant merchant);
 
+    public static partial IQueryable<OperatorMerchantResponse> ProjectToOperatorResponse(this IQueryable<Merchant> query);
+
+    public static partial OperatorMerchantResponse ToOperatorResponse(this Merchant merchant);
+
     public static partial MeResponse ToMeResponse(this Account account, bool isPlatformOperator, Merchant? merchant);
 }

@@ -12,3 +12,9 @@ public record MerchantOpened(MerchantId MerchantId, string ShopName, string? Des
 
 /// <summary>A Merchant's Shop profile changed to the given <see cref="ProfileVersion"/>.</summary>
 public record MerchantProfileChanged(MerchantId MerchantId, string ShopName, string? Description, int ProfileVersion);
+
+/// <summary>A Merchant was suspended, with its Shop profile at the given <see cref="ProfileVersion"/>.</summary>
+public record MerchantSuspended(MerchantId MerchantId, string ShopName, string? Description, int ProfileVersion);
+
+/// <summary>A Merchant was reinstated, with its Shop profile at the given <see cref="ProfileVersion"/>.</summary>
+public record MerchantReinstated(MerchantId MerchantId, string ShopName, string? Description, int ProfileVersion);

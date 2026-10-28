@@ -21,7 +21,7 @@ public class GetShopPageEndpoint(CatalogDbContext db) : Endpoint<GetShopPageRequ
 
     public override async Task HandleAsync(GetShopPageRequest req, CancellationToken ct)
     {
-        var shop = await db.Shops.Where(s => s.Id == req.Id).ProjectToResponse().SingleOrDefaultAsync(ct);
+        var shop = await db.Shops.Where(s => s.Id == req.Id && !s.IsSuspended).ProjectToResponse().SingleOrDefaultAsync(ct);
         if (shop is null)
         {
             await Send.NotFoundAsync(ct);

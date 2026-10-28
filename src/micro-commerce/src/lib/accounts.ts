@@ -9,12 +9,22 @@ export type PickupAddress = {
   province: string;
 };
 
+export type MerchantStatus = "Active" | "Suspended";
+
 // Mirrors MerchantResponse in the API.
 export type Merchant = {
   id: string;
   shopName: string;
   description: string | null;
   pickupAddress: PickupAddress;
+  createdAt: string;
+  status: MerchantStatus;
+};
+
+export type OperatorMerchant = {
+  id: string;
+  shopName: string;
+  status: MerchantStatus;
   createdAt: string;
 };
 
@@ -66,4 +76,20 @@ export function updateShop({ shopName, description, pickupAddress }: ShopInput) 
     method: "PUT",
     body: JSON.stringify({ shopName, description: description || null, pickupAddress }),
   });
+}
+
+// Server-side: the caller passes the Platform Operator's access token.
+export function listOperatorMerchants(accessToken: string) {
+  return apiFetch<OperatorMerchant[]>("/ops/merchants", {
+    headers: { Authorization: "Bearer " + accessToken },
+  });
+}
+
+// Browser-side, through the /api proxy, as the signed-in Platform Operator.
+export function suspendMerchant(id: string) {
+  return apiFetch<OperatorMerchant>(`/ops/merchants/${encodeURIComponent(id)}/suspend`, { method: "POST" });
+}
+
+export function reinstateMerchant(id: string) {
+  return apiFetch<OperatorMerchant>(`/ops/merchants/${encodeURIComponent(id)}/reinstate`, { method: "POST" });
 }

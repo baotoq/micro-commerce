@@ -20,7 +20,7 @@ public class AccountsMapperTests
         var response = Merchant.ToResponse();
 
         response.ShouldBe(new MerchantResponse(
-            Merchant.Id, ShopName.From("Mug Corner"), "Mugs, mostly.", Merchant.PickupAddress, Merchant.CreatedAt));
+            Merchant.Id, ShopName.From("Mug Corner"), "Mugs, mostly.", Merchant.PickupAddress, Merchant.CreatedAt, Merchant.Status));
     }
 
     [Fact]

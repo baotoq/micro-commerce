@@ -34,11 +34,18 @@ export function ShopProfile({ merchant }: { merchant: Merchant }) {
 
   return (
     <section>
+      {merchant.status === "Suspended" && (
+        <p role="alert" className="mb-6 rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm">
+          Your Merchant is suspended. You can still view your Merchant Centre data, but you can&apos;t make changes.
+        </p>
+      )}
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">{merchant.shopName}</h1>
-        <Button variant="outline" onClick={() => setIsEditing(true)}>
-          Edit
-        </Button>
+        {merchant.status === "Active" && (
+          <Button variant="outline" onClick={() => setIsEditing(true)}>
+            Edit
+          </Button>
+        )}
       </div>
       <dl className="grid gap-4 sm:grid-cols-[10rem_1fr]">
         <dt className="text-muted-foreground">Description</dt>

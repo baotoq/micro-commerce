@@ -17,6 +17,12 @@ public static class ShopHandler
     public static Task Handle(MerchantProfileChanged e, CatalogDbContext db, StorefrontProductCache cache, CancellationToken ct) =>
         ApplyAsync(db, cache, e.MerchantId, e.ShopName, e.Description, e.ProfileVersion, ct);
 
+    public static Task Handle(MerchantSuspended e, CatalogDbContext db, StorefrontProductCache cache, CancellationToken ct) =>
+        ApplyStatusAsync(db, cache, e.MerchantId, e.ShopName, e.Description, e.ProfileVersion, true, ct);
+
+    public static Task Handle(MerchantReinstated e, CatalogDbContext db, StorefrontProductCache cache, CancellationToken ct) =>
+        ApplyStatusAsync(db, cache, e.MerchantId, e.ShopName, e.Description, e.ProfileVersion, false, ct);
+
     private static async Task ApplyAsync(
         CatalogDbContext db,
         StorefrontProductCache cache,
@@ -39,6 +45,33 @@ public static class ShopHandler
         if (applied == 0) return;
 
         // Cached Product details show the Shop name.
+        var productIds = await db.Products.Where(p => p.MerchantId == merchantId).Select(p => p.Id).ToListAsync(ct);
+        await cache.EvictAsync(productIds, ct);
+    }
+
+    private static async Task ApplyStatusAsync(
+        CatalogDbContext db,
+        StorefrontProductCache cache,
+        MerchantId merchantId,
+        string shopName,
+        string? description,
+        int profileVersion,
+        bool isSuspended,
+        CancellationToken ct)
+    {
+        // Upsert the full snapshot so a status event remains correct even if it arrives before MerchantOpened.
+        var applied = await db.Database.ExecuteSqlAsync(
+            $"""
+            INSERT INTO catalog."Shops" ("Id", "ShopName", "Description", "ProfileVersion", "IsSuspended")
+            VALUES ({merchantId.Value}, {shopName}, {description}, {profileVersion}, {isSuspended})
+            ON CONFLICT ("Id") DO UPDATE
+            SET "ShopName" = EXCLUDED."ShopName", "Description" = EXCLUDED."Description",
+                "ProfileVersion" = EXCLUDED."ProfileVersion", "IsSuspended" = EXCLUDED."IsSuspended"
+            WHERE "Shops"."ProfileVersion" < EXCLUDED."ProfileVersion"
+            """,
+            ct);
+        if (applied == 0) return;
+
         var productIds = await db.Products.Where(p => p.MerchantId == merchantId).Select(p => p.Id).ToListAsync(ct);
         await cache.EvictAsync(productIds, ct);
     }
