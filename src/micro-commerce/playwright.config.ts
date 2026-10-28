@@ -20,6 +20,10 @@ export default defineConfig({
   use: {
     baseURL: appUrl,
     trace: "retain-on-failure",
+    // Under `aspire run`, Keycloak serves https://localhost:8080 with the ASP.NET dev certificate. Aspire can
+    // only partly trust it on Linux and Chromium doesn't (on a CI runner, at least), so sign-in would hang on
+    // the certificate error. The suite only ever talks to this local app, so accept that certificate.
+    ignoreHTTPSErrors: true,
   },
   projects: [
     // Signs in once through the real Keycloak page and saves the session for the other tests.
