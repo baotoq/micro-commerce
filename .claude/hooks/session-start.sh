@@ -68,6 +68,15 @@ export DOTNET_ROOT="$DOTNET_HOME" DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
 dotnet tool restore
 dotnet restore MicroCommerce.slnx
 
+# --- Aspire CLI -----------------------------------------------------------------
+# `aspire run` starts the whole app, and the E2E suite runs it. mise pins the version;
+# install that one as a global .NET tool (on the PATH persisted above).
+aspire_version=$(python3 -c 'import tomllib; print(tomllib.load(open("mise.toml", "rb"))["tools"]["aspire"])')
+if [ "$("$HOME/.dotnet/tools/aspire" --version 2>/dev/null | cut -d+ -f1)" != "$aspire_version" ]; then
+  echo "Installing Aspire CLI ${aspire_version}..."
+  dotnet tool update -g aspire.cli --version "$aspire_version"
+fi
+
 # --- Node + pnpm ----------------------------------------------------------------
 # package.json's devEngines asks for a newer Node than the image ships.
 node_range=$(python3 -c 'import json; print(json.load(open("'"$FRONTEND_DIR"'/package.json"))["devEngines"]["runtime"]["version"])')
