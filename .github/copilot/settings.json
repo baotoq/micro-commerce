@@ -1,0 +1,24 @@
+{
+  "enabledPlugins": {
+    "testcontainers@testcontainers-claude-skills": true,
+    "dotnet-aspnetcore@dotnet-agent-skills": true,
+    "dotnet-test@dotnet-agent-skills": true,
+    "dotnet@dotnet-agent-skills": true,
+    "azure@claude-plugins-official": true,
+    "mattpocock-skills@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "karpathy-skills": {
+      "source": {
+        "source": "github",
+        "repo": "forrestchang/andrej-karpathy-skills"
+      }
+    },
+    "testcontainers-claude-skills": {
+      "source": {
+        "source": "github",
+        "repo": "testcontainers/claude-skills"
+      }
+    }
+  }
+}
