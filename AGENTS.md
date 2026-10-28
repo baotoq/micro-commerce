@@ -59,7 +59,7 @@ Tests are xUnit v3 on **Microsoft.Testing.Platform in native mode** (set in `glo
 
 ## CI
 
-`.github/workflows/ci.yml` (GitHub Actions, on pushes to `master` and on pull requests) installs the toolchain from `mise.toml` with `jdx/mise-action`, so a version bump there is a CI bump too. Jobs: build and lint (`dotnet build`, `dotnet format --verify-no-changes`, frontend `lint` and `build`); unit, functional and integration tests as a matrix (one `dotnet test --project` each, on the runner's Docker; the integration job first trusts the ASP.NET dev certificate, since the AppHost health-checks the API over HTTPS); and E2E (`playwright install --with-deps chromium`, then `test:e2e`, uploading the report and traces on failure).
+`.github/workflows/ci.yml` (GitHub Actions, on pushes to `master` and on pull requests) installs the toolchain from `mise.toml` with `jdx/mise-action`, so a version bump there is a CI bump too. Jobs: build and lint (`dotnet build`, `dotnet format --verify-no-changes`, frontend `lint` and `build`); unit, functional and integration tests as a matrix (one `dotnet test --project` each, on the runner's Docker); and E2E (`playwright install --with-deps chromium`, then `test:e2e`, uploading the report and traces on failure).
 
 `tests/Directory.Build.props` makes every test project an `Exe` with xUnit v3 + Shouldly and global `using Xunit; using Shouldly;`. Assertions use Shouldly.
 

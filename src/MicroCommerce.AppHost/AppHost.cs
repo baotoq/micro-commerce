@@ -31,7 +31,9 @@ var db = postgres.AddDatabase("micro-commerce-db");
 
 var api = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
     .WithExternalHttpEndpoints()
-    .WithHttpHealthCheck("/health")
+    // Over plain HTTP, so the check doesn't depend on the machine trusting the ASP.NET dev certificate
+    // (a CI runner doesn't).
+    .WithHttpHealthCheck("/health", endpointName: "http")
     .WithReference(db)
     .WaitFor(db)
     .WithReference(redis)

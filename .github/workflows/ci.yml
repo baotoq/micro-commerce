@@ -50,18 +50,12 @@ jobs:
           - name: Integration
             project: tests/MicroCommerce.IntegrationTests
             frontend: true
-            dev-cert: true
     steps:
       - uses: actions/checkout@v7
       - uses: jdx/mise-action@v5
 
       - if: matrix.frontend
         run: pnpm --dir "$FRONTEND_DIR" install --frozen-lockfile
-      # The AppHost health-checks the API over HTTPS with the ASP.NET dev certificate, which .NET
-      # must trust or the API never turns healthy. On Linux it ends up in .NET's own root store, which
-      # is enough, but not in OpenSSL's; that partial trust exits 4, so accept 4 and fail on anything else.
-      - if: matrix.dev-cert
-        run: dotnet dev-certs https --trust || [ $? -eq 4 ]
       - run: dotnet test --project ${{ matrix.project }}
 
   e2e:
