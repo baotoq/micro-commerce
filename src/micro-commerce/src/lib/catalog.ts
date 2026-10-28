@@ -126,7 +126,9 @@ export const productSchema = z.object({
     .max(200, "Name must be 200 characters or fewer"),
   description: z.string().trim().max(5000, "Description must be 5000 characters or fewer"),
   categoryId: z.string().min(1, "Category is required"),
-  price: wholeNumber("Price").positive("Price must be more than 0"),
+  price: wholeNumber("Price")
+    .positive("Price must be more than 0")
+    .max(Number.MAX_SAFE_INTEGER, "Price is too high"),
   stock: wholeNumber("Stock").min(0, "Stock can't be negative"),
   weightGrams: wholeNumber("Weight").positive("Weight must be more than 0"),
 });

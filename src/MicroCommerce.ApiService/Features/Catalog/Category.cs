@@ -43,7 +43,7 @@ public record CategoryNodeResponse(CategoryId Id, string Name, IReadOnlyList<Cat
 /// <summary>
 /// The tree rules that depend on what a Category holds. Every Product sits in a leaf Category, so a Category
 /// holding Products can't gain children, and a Category with children or Products can't be deleted. Check
-/// them inside <see cref="LockCategoryAsync"/>, so they still hold when the change commits.
+/// them inside <see cref="SaveWithCategoryLockedAsync"/>, so they still hold when the change commits.
 /// </summary>
 internal static class CategoryRules
 {
@@ -75,35 +75,45 @@ internal static class CategoryRules
     /// <returns>Why the Category can't hold Products, or null once the changes are saved.</returns>
     public static async Task<string?> SaveInLeafCategoryAsync(this CatalogDbContext db, CategoryId categoryId, CancellationToken ct)
     {
-        string? reason = null;
-        var found = await db.LockCategoryAsync(categoryId, async () =>
-        {
-            reason = await db.WhyCannotHoldProductsAsync(categoryId, ct);
-            if (reason is null) await db.SaveChangesAsync(ct);
-        }, ct);
-
+        var (found, reason) = await db.SaveWithCategoryLockedAsync(
+            categoryId, () => db.WhyCannotHoldProductsAsync(categoryId, ct), ct);
         return found ? reason : UnknownCategory;
     }
 
     /// <summary>
-    /// Runs <paramref name="work"/> in a transaction holding the Category's row lock. Adding a child, adding a
-    /// Product and deleting all lock the Category they depend on, so they take turns: a Product can't land in
-    /// a Category that is concurrently gaining a child, nor a child under one concurrently gaining a Product,
-    /// nor either under one being deleted. <paramref name="work"/> may run again if the database connection
-    /// fails transiently, so it must only read and stage changes, saving them itself.
+    /// Saves the context's changes in a transaction holding the Category's row lock, if <paramref name="check"/>
+    /// finds no reason not to. Adding a child, adding a Product and deleting all lock the Category they depend
+    /// on, so they take turns: a Product can't land in a Category that is concurrently gaining a child, nor a
+    /// child under one concurrently gaining a Product, nor either under one being deleted.
     /// </summary>
-    /// <returns>False, without running <paramref name="work"/>, if no Category has the ID.</returns>
-    public static Task<bool> LockCategoryAsync(this CatalogDbContext db, CategoryId id, Func<Task> work, CancellationToken ct) =>
-        db.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
+    /// <param name="check">
+    /// Returns why the change is refused, or null to save it; it may also stage more changes. It runs again if
+    /// the database connection fails transiently, so it must only read and stage.
+    /// </param>
+    /// <returns>
+    /// Whether the Category exists (nothing is checked or saved if not), and <paramref name="check"/>'s reason
+    /// for refusing, which is null once the changes are saved.
+    /// </returns>
+    public static async Task<(bool Found, string? Reason)> SaveWithCategoryLockedAsync(
+        this CatalogDbContext db, CategoryId id, Func<Task<string?>> check, CancellationToken ct)
+    {
+        var result = await db.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
         {
             await using var transaction = await db.Database.BeginTransactionAsync(ct);
             var locked = await db.Database
                 .SqlQuery<Guid>($"""SELECT "Id" AS "Value" FROM catalog."Categories" WHERE "Id" = {id.Value} FOR UPDATE""")
                 .ToListAsync(ct);
-            if (locked.Count == 0) return false;
+            if (locked.Count == 0) return (false, null);
 
-            await work();
+            if (await check() is { } reason) return (true, reason);
+
+            // Keep the changes pending until the commit succeeds, so a retry after a failed commit saves them again.
+            await db.SaveChangesAsync(acceptAllChangesOnSuccess: false, ct);
             await transaction.CommitAsync(ct);
-            return true;
+            return (true, (string?)null);
         });
+
+        if (result is (true, null)) db.ChangeTracker.AcceptAllChanges();
+        return result;
+    }
 }

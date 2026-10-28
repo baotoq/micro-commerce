@@ -33,12 +33,8 @@ public class CreateCategoryEndpoint(CatalogDbContext db) : Endpoint<CreateCatego
 
         if (req.ParentId is { } parentId)
         {
-            string? conflict = null;
-            var parentFound = await db.LockCategoryAsync(parentId, async () =>
-            {
-                conflict = await db.WhyCannotGainChildAsync(parentId, ct);
-                if (conflict is null) await db.SaveChangesAsync(ct);
-            }, ct);
+            var (parentFound, conflict) = await db.SaveWithCategoryLockedAsync(
+                parentId, () => db.WhyCannotGainChildAsync(parentId, ct), ct);
 
             if (!parentFound)
             {

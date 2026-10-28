@@ -15,6 +15,9 @@ public class Product
     public const int NameMaxLength = 200;
     public const int DescriptionMaxLength = 5000;
 
+    /// <summary>JavaScript's <c>Number.MAX_SAFE_INTEGER</c>: a higher price would lose precision in the frontend.</summary>
+    public const long MaxPrice = 9_007_199_254_740_991;
+
     public ProductId Id { get; init; } = ProductId.New();
 
     /// <summary>The Merchant that owns the Product; every Merchant Centre query is scoped by it (ADR-0001).</summary>
@@ -146,7 +149,7 @@ public class ProductDetailsValidator : AbstractValidator<IProductDetails>
         RuleFor(x => x.Name).NotEmpty().MaximumLength(Product.NameMaxLength);
         RuleFor(x => x.Description).MaximumLength(Product.DescriptionMaxLength);
         RuleFor(x => x.CategoryId).NotNull();
-        RuleFor(x => x.Price).GreaterThan(0);
+        RuleFor(x => x.Price).GreaterThan(0).LessThanOrEqualTo(Product.MaxPrice);
         RuleFor(x => x.Stock).GreaterThanOrEqualTo(0);
         RuleFor(x => x.WeightGrams).GreaterThan(0);
     }

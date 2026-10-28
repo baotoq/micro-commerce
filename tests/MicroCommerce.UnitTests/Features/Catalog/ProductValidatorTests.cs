@@ -69,6 +69,13 @@ public class ProductValidatorTests
     }
 
     [Fact]
+    public void Price_up_to_javascripts_max_safe_integer_passes_and_above_fails()
+    {
+        Failures(Valid with { Price = 9_007_199_254_740_991 }).ShouldBeEmpty();
+        Failures(Valid with { Price = 9_007_199_254_740_992 }).ShouldBe([nameof(CreateProductRequest.Price)]);
+    }
+
+    [Fact]
     public void Negative_stock_fails()
     {
         Failures(Valid with { Stock = -1 }).ShouldBe([nameof(CreateProductRequest.Stock)]);

@@ -19,11 +19,11 @@ public class DeleteCategoryEndpoint(CatalogDbContext db) : Endpoint<DeleteCatego
 
     public override async Task HandleAsync(DeleteCategoryRequest req, CancellationToken ct)
     {
-        string? conflict = null;
-        var found = await db.LockCategoryAsync(req.Id, async () =>
+        var (found, conflict) = await db.SaveWithCategoryLockedAsync(req.Id, async () =>
         {
-            conflict = await db.WhyCannotBeDeletedAsync(req.Id, ct);
-            if (conflict is null) await db.Categories.Where(c => c.Id == req.Id).ExecuteDeleteAsync(ct);
+            var reason = await db.WhyCannotBeDeletedAsync(req.Id, ct);
+            if (reason is null) db.Categories.Remove(await db.Categories.SingleAsync(c => c.Id == req.Id, ct));
+            return reason;
         }, ct);
 
         if (!found)
