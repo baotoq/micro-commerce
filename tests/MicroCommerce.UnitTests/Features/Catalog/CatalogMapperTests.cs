@@ -52,18 +52,19 @@ public class CatalogMapperTests
     }
 
     [Fact]
-    public void Storefront_response_carries_the_shop_and_variants_in_position_order_without_weight()
+    public void Storefront_response_carries_the_shop_and_variants_in_position_order_with_available_stock_and_no_weight()
     {
         var product = NewProduct();
         var shop = new Shop { Id = product.MerchantId, ShopName = "Mug Corner", Description = "Mugs.", ProfileVersion = 2 };
         var (small, medium) = (product.Variants[0], product.Variants[1]);
         product.Variants.Reverse();
 
-        var response = new ShopProduct { Product = product, Shop = shop }.ToStorefrontResponse();
+        var response = new ShopProduct { Product = product, Shop = shop }.ToStorefrontResponse(
+            new Dictionary<VariantId, int> { [small.Id] = 2 });
 
         response.Options.ShouldBe([Size]);
         response.Variants.Select(v => (v.Id, string.Join(",", v.OptionValues), v.Price, v.Stock)).ShouldBe([
-            (small.Id, "S", Money.From(120_000), 5),
+            (small.Id, "S", Money.From(120_000), 3),
             (medium.Id, "M", Money.From(150_000), 2),
         ]);
         (response with { Options = [], Variants = [] }).ShouldBeEquivalentTo(new StorefrontProductResponse(

@@ -59,14 +59,6 @@ internal static class StorefrontQueries
             .GroupBy(r => r.VariantId)
             .Select(g => new { VariantId = g.Key, Quantity = g.Sum(r => r.Quantity) })
             .ToDictionaryAsync(x => x.VariantId, x => x.Quantity, ct);
-
-    /// <summary>The Product detail with each Variant's stock as what is available to buy.</summary>
-    public static StorefrontProductResponse WithAvailableStock(
-        this StorefrontProductResponse product, IReadOnlyDictionary<VariantId, int> reserved) =>
-        product with
-        {
-            Variants = [.. product.Variants.Select(v => v with { Stock = Availability.Of(v.Stock, reserved.GetValueOrDefault(v.Id)) })],
-        };
 }
 
 /// <summary>One page of a list, and how many items the whole list holds.</summary>

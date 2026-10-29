@@ -13,10 +13,10 @@ namespace MicroCommerce.ApiService.Features.Catalog;
 public class Reservation
 {
     /// <summary>The states <see cref="Commit"/> moves from; a Held one is already committed.</summary>
-    public static readonly ReservationState[] CommittableStates = [ReservationState.Reserved];
+    private static readonly ReservationState[] CommittableStates = [ReservationState.Reserved];
 
     /// <summary>The states <see cref="Release"/> moves from.</summary>
-    public static readonly ReservationState[] ReleasableStates = [ReservationState.Reserved, ReservationState.Held];
+    private static readonly ReservationState[] ReleasableStates = [ReservationState.Reserved, ReservationState.Held];
 
     public required CheckoutId CheckoutId { get; init; }
     public required VariantId VariantId { get; init; }
@@ -102,7 +102,8 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.HasKey(r => new { r.CheckoutId, r.VariantId });
         builder.Property(r => r.CheckoutId).ValueGeneratedNever();
         builder.Property(r => r.VariantId).ValueGeneratedNever();
-        builder.Property(r => r.State).HasConversion<string>().HasMaxLength(20);
+        // A concurrent Commit and Release can't both apply to what each read.
+        builder.Property(r => r.State).HasConversion<string>().HasMaxLength(20).IsConcurrencyToken();
         builder.HasIndex(r => r.VariantId);
         builder.HasIndex(r => r.ProductId);
     }

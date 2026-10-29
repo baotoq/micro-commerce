@@ -346,15 +346,7 @@ public class CartEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
 
         var edits = new[] { 2, 3 }.Select(quantity =>
             buyer.PUTAsync<UpdateCartLineEndpoint, UpdateCartLineRequest, CartResponse>(new(Red(mug), quantity))).ToList();
-        // Polled outside the locking transaction, which would keep reading the activity snapshot it first took.
-        await EventuallyAsync(async () =>
-        {
-            await using var probe = new NpgsqlConnection(connectionString);
-            await probe.OpenAsync(ct);
-            await using var waiting = new NpgsqlCommand(
-                """SELECT count(*) FROM pg_stat_activity WHERE wait_event_type = 'Lock' AND query LIKE '%"Cart%'""", probe);
-            return (long)(await waiting.ExecuteScalarAsync(ct))!;
-        }, count => count >= 2);
+        await EventuallyAsync(() => LockWaits.CountBlockedByAsync(connectionString!, connection, ct), count => count >= 2);
         await transaction.RollbackAsync(ct);
 
         var statuses = (await Task.WhenAll(edits)).Select(r => r.Response.StatusCode).ToList();

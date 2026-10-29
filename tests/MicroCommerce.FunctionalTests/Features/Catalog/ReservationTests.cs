@@ -242,21 +242,43 @@ public class ReservationTests(ApiFixture App) : TestBase<ApiFixture>
         var reserves = new[] { CheckoutId.New(), CheckoutId.New() }
             .Select(id => ReserveAsync(id, InAnHour, Line(mug.Blue, 1)))
             .ToList();
-        // Polled outside the locking transaction, which would keep reading the activity snapshot it first took.
-        await EventuallyAsync(async () =>
-        {
-            await using var probe = new NpgsqlConnection(connectionString);
-            await probe.OpenAsync(ct);
-            await using var waiting = new NpgsqlCommand(
-                """SELECT count(*) FROM pg_stat_activity WHERE wait_event_type = 'Lock' AND query LIKE '%"Variants"%FOR UPDATE%'""", probe);
-            return (long)(await waiting.ExecuteScalarAsync(ct))!;
-        }, count => count >= 2);
+        await EventuallyAsync(() => LockWaits.CountBlockedByAsync(connectionString!, connection, ct), count => count >= 2);
         await transaction.RollbackAsync(ct);
 
         var results = await Task.WhenAll(reserves);
         results.Count(r => r.Succeeded).ShouldBe(1);
         results.Single(r => !r.Succeeded).Failures.ShouldBe([new(mug.Blue, ReservationFailureReason.NotEnoughAvailable, 0)]);
         (await AvailableAsync(mug.Blue)).ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task Simultaneous_repeats_of_one_checkout_reserve_only_one_of_them()
+    {
+        var mug = await NewMugAsync();
+        var checkoutId = CheckoutId.New();
+        var ct = TestContext.Current.CancellationToken;
+
+        // Hold the Checkout's own lock, so both repeats are waiting for it at once, each with different lines.
+        var connectionString = App.Services.GetRequiredService<IConfiguration>().GetConnectionString("micro-commerce-db");
+        await using var connection = new NpgsqlConnection(connectionString);
+        await connection.OpenAsync(ct);
+        await using var transaction = await connection.BeginTransactionAsync(ct);
+        await using (var lockCheckout = new NpgsqlCommand(
+            "SELECT pg_advisory_xact_lock(hashtextextended(@key, 0))", connection, transaction))
+        {
+            lockCheckout.Parameters.AddWithValue("key", checkoutId.Value.ToString());
+            await lockCheckout.ExecuteNonQueryAsync(ct);
+        }
+
+        var repeats = new[] { Line(mug.Red, 1), Line(mug.Blue, 1) }
+            .Select(line => ReserveAsync(checkoutId, InAnHour, line))
+            .ToList();
+        await EventuallyAsync(() => LockWaits.CountBlockedByAsync(connectionString!, connection, ct), count => count >= 2);
+        await transaction.RollbackAsync(ct);
+
+        (await Task.WhenAll(repeats)).ShouldAllBe(r => r.Succeeded);
+        var reserved = (5 - await AvailableAsync(mug.Red)) + (2 - await AvailableAsync(mug.Blue));
+        reserved.ShouldBe(1, "the second repeat found the first and reserved nothing more");
     }
 
     [Fact]

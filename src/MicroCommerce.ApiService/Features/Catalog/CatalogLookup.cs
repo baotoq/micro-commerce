@@ -55,24 +55,25 @@ public class CatalogLookup(CatalogDbContext db) : ICatalogLookup
             from shop in shops.DefaultIfEmpty()
             select new
             {
-                Lookup = new VariantLookup(
-                    variant.Id,
-                    product.Id,
-                    product.Name,
-                    variant.OptionValues,
-                    product.MerchantId,
-                    shop == null ? null : shop.ShopName,
-                    variant.Price,
-                    variant.WeightGrams,
-                    variant.Stock,
-                    visibleProductIds.Contains(product.Id)),
+                variant.Id,
+                ProductId = product.Id,
+                product.Name,
+                variant.OptionValues,
+                product.MerchantId,
+                ShopName = shop == null ? null : shop.ShopName,
+                variant.Price,
+                variant.WeightGrams,
+                variant.Stock,
                 Reserved = activeReservations.Where(r => r.VariantId == variant.Id).Sum(r => r.Quantity),
+                IsBuyable = visibleProductIds.Contains(product.Id),
             })
             .AsNoTracking()
             .ToListAsync(ct);
 
         return variants.ToDictionary(
-            v => v.Lookup.VariantId,
-            v => v.Lookup with { Available = Availability.Of(v.Lookup.Available, v.Reserved) });
+            v => v.Id,
+            v => new VariantLookup(
+                v.Id, v.ProductId, v.Name, v.OptionValues, v.MerchantId, v.ShopName, v.Price, v.WeightGrams,
+                Availability.Of(v.Stock, v.Reserved), v.IsBuyable));
     }
 }
