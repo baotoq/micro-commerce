@@ -69,7 +69,7 @@ Tests are xUnit v3 on **Microsoft.Testing.Platform in native mode** (set in `glo
 
 ## Pull requests
 
-Fill in `.github/pull_request_template.md`. When a PR changes the UI, capture screenshots of every new or changed page and state, and show them in the PR description. Take them with Playwright against the running app (`aspire run`), signed in as the seeded user the page needs. The GitHub API can't upload attachments, so push the PNGs to the `pr-screenshots` branch (never merged) under `<PR number>/` and embed each as `![what it shows](https://github.com/baotoq/micro-commerce/blob/pr-screenshots/<PR number>/<file>.png?raw=true)`.
+Fill in `.github/pull_request_template.md`. When a PR changes the UI, capture screenshots of every new or changed page and state, and show them in the PR description. Take them with Playwright against the running app (`aspire run`), signed in as the seeded user the page needs. The GitHub API can't upload attachments, so the PNGs go in the PR itself: commit them to the PR branch under `.github/pr-screenshots/<PR number>/`, push, and embed each at that commit's SHA, `![what it shows](https://github.com/baotoq/micro-commerce/blob/<commit SHA>/.github/pr-screenshots/<PR number>/<file>.png?raw=true)`. Then delete them in a following commit, so the squash merge leaves them out of `master`; the SHA links keep working, because GitHub keeps every PR commit under `refs/pull/<PR number>/head`. No separate branch.
 
 ## Agent skills
 
