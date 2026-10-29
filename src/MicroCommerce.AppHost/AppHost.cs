@@ -12,6 +12,9 @@ var fixedPorts = builder.Configuration.GetValue("FixedPorts", !ephemeral);
 
 var postgres = builder.AddPostgres("postgres");
 var redis = builder.AddRedis("redis");
+var temporal = builder.AddContainer("temporal", "temporalio/temporal", "1.5.1")
+    .WithArgs("server", "start-dev", "--ip", "0.0.0.0")
+    .WithEndpoint(targetPort: 7233, name: "grpc");
 
 // The dev realm (clients, Platform Operator role, seeded users) is imported when Keycloak doesn't have it yet.
 // The persistent volume keeps an imported realm, so delete the volume after editing the realm file.
@@ -25,6 +28,8 @@ if (!ephemeral)
     postgres.WithDataVolume().WithPgAdmin().WithLifetime(ContainerLifetime.Persistent);
     redis.WithDataVolume().WithRedisInsight().WithLifetime(ContainerLifetime.Persistent);
     keycloak.WithDataVolume().WithLifetime(ContainerLifetime.Persistent);
+    temporal.WithArgs("--db-filename", "/temporal-data/temporal.db")
+        .WithVolume("temporal-data", "/temporal-data").WithLifetime(ContainerLifetime.Persistent);
 }
 
 var db = postgres.AddDatabase("micro-commerce-db");
@@ -38,6 +43,12 @@ var api = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
     .WaitFor(db)
     .WithReference(redis)
     .WaitFor(redis)
+    .WithEnvironment("Temporal__Address", temporal.GetEndpoint("grpc").Property(EndpointProperty.HostAndPort))
+    .WithEnvironment("Temporal__Namespace", builder.Configuration["Temporal:Namespace"] ?? "default")
+    .WithEnvironment("Ordering__PaymentWindow", builder.Configuration["Ordering:PaymentWindow"] ?? "00:15:00")
+    .WithEnvironment("Ordering__ReservationGrace", builder.Configuration["Ordering:ReservationGrace"] ?? "00:05:00")
+    .WithEnvironment("Ordering__ShippingFee", builder.Configuration["Ordering:ShippingFee"] ?? "30000")
+    .WaitFor(temporal)
     .WithEnvironment("Authentication__Schemes__Bearer__Authority", keycloakIssuer)
     .WaitFor(keycloak);
 

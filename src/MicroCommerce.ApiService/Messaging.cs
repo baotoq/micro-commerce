@@ -1,5 +1,6 @@
 using JasperFx.Core;
 using MicroCommerce.ApiService.Features.Catalog.Data;
+using MicroCommerce.ApiService.Features.Ordering.Data;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
 using Wolverine.ErrorHandling;
@@ -30,6 +31,7 @@ public static class Messaging
 
             // Aspire registers each DbContext through a pooling factory, which generated handler code can't construct.
             opts.CodeGeneration.AlwaysUseServiceLocationFor<CatalogDbContext>();
+            opts.CodeGeneration.AlwaysUseServiceLocationFor<OrderingDbContext>();
 
             // Handlers are idempotent, so a message that failed (a database or Redis blip) is safe to retry.
             opts.Policies.OnAnyException().RetryWithCooldown(100.Milliseconds(), 1.Seconds(), 5.Seconds());

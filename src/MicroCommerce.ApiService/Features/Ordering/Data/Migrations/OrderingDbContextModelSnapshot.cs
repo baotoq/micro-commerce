@@ -37,6 +37,96 @@ namespace MicroCommerce.ApiService.Features.Ordering.Data.Migrations
                     b.ToTable("Carts", "ordering");
                 });
 
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.Checkout", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("ItemsTotal")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("PlacedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("ShippingTotal")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<long>("Total")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique()
+                        .HasFilter("\"Status\" = 'AwaitingPayment'");
+
+                    b.ToTable("Checkouts", "ordering");
+                });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.CheckoutMerchant", b =>
+                {
+                    b.Property<Guid>("CheckoutId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MerchantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("ShippingFee")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Subtotal")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("CheckoutId", "MerchantId");
+
+                    b.ToTable("CheckoutMerchants", "ordering");
+                });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.OrderLine", b =>
+                {
+                    b.Property<Guid>("CheckoutId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VariantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MerchantId")
+                        .HasColumnType("uuid");
+
+                    b.PrimitiveCollection<string[]>("OptionValues")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("UnitPrice")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("CheckoutId", "VariantId");
+
+                    b.ToTable("OrderLines", "ordering");
+                });
+
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.Cart", b =>
                 {
                     b.OwnsMany("MicroCommerce.ApiService.Features.Ordering.CartLine", "Lines", b1 =>
@@ -62,6 +152,75 @@ namespace MicroCommerce.ApiService.Features.Ordering.Data.Migrations
                         });
 
                     b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.Checkout", b =>
+                {
+                    b.OwnsOne("MicroCommerce.ApiService.Features.Ordering.DeliveryAddress", "DeliveryAddress", b1 =>
+                        {
+                            b1.Property<Guid>("CheckoutId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Phone")
+                                .IsRequired()
+                                .HasMaxLength(30)
+                                .HasColumnType("character varying(30)");
+
+                            b1.Property<string>("Province")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+
+                            b1.Property<string>("RecipientName")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)");
+
+                            b1.Property<string>("Ward")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+
+                            b1.HasKey("CheckoutId");
+
+                            b1.ToTable("Checkouts", "ordering");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CheckoutId");
+                        });
+
+                    b.Navigation("DeliveryAddress")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.CheckoutMerchant", b =>
+                {
+                    b.HasOne("MicroCommerce.ApiService.Features.Ordering.Checkout", null)
+                        .WithMany("Merchants")
+                        .HasForeignKey("CheckoutId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.OrderLine", b =>
+                {
+                    b.HasOne("MicroCommerce.ApiService.Features.Ordering.Checkout", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("CheckoutId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.Checkout", b =>
+                {
+                    b.Navigation("Lines");
+
+                    b.Navigation("Merchants");
                 });
 #pragma warning restore 612, 618
         }

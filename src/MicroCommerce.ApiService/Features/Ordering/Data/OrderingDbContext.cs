@@ -1,4 +1,5 @@
 using MicroCommerce.ApiService.SharedKernel;
+using MicroCommerce.ApiService.Features.Catalog;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
@@ -15,11 +16,18 @@ public class OrderingDbContext(DbContextOptions<OrderingDbContext> options) : Db
     public const string Schema = "ordering";
 
     public DbSet<Cart> Carts => Set<Cart>();
+    public DbSet<Checkout> Checkouts => Set<Checkout>();
+    public DbSet<CheckoutMerchant> CheckoutMerchants => Set<CheckoutMerchant>();
+    public DbSet<OrderLine> OrderLines => Set<OrderLine>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.Properties<AccountId>().HaveConversion<AccountId.EfCoreValueConverter, AccountId.EfCoreValueComparer>();
+        configurationBuilder.Properties<MerchantId>().HaveConversion<MerchantId.EfCoreValueConverter, MerchantId.EfCoreValueComparer>();
+        configurationBuilder.Properties<ProductId>().HaveConversion<ProductId.EfCoreValueConverter, ProductId.EfCoreValueComparer>();
         configurationBuilder.Properties<VariantId>().HaveConversion<VariantId.EfCoreValueConverter, VariantId.EfCoreValueComparer>();
+        configurationBuilder.Properties<CheckoutId>().HaveConversion<CheckoutId.EfCoreValueConverter, CheckoutId.EfCoreValueComparer>();
+        configurationBuilder.Properties<Money>().HaveConversion<Money.EfCoreValueConverter, Money.EfCoreValueComparer>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

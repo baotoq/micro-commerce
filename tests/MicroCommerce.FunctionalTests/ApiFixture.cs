@@ -6,13 +6,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 
 namespace MicroCommerce.FunctionalTests;
 
 /// <summary>
-/// Runs the API in-process against real Postgres and Redis containers.
+/// Runs the API in-process against real Postgres, Redis and Temporal containers.
 /// FastEndpoints caches one app instance per fixture type, so the containers start once per test run.
 /// Testcontainers removes them when the run ends.
 /// JWT validation trusts <see cref="TestIdentity.SigningKey"/> instead of Keycloak; everything after
@@ -25,19 +27,26 @@ public class ApiFixture : AppFixture<Program>
 
     private PostgreSqlContainer _postgres = null!;
     private RedisContainer _redis = null!;
+    private IContainer _temporal = null!;
 
     protected override async ValueTask PreSetupAsync()
     {
         _postgres = new PostgreSqlBuilder("postgres:17-alpine").Build();
         _redis = new RedisBuilder("redis:7-alpine").Build();
+        _temporal = new ContainerBuilder("temporalio/temporal:1.5.1")
+            .WithCommand(["server", "start-dev", "--ip", "0.0.0.0"])
+            .WithPortBinding(7233, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilExternalTcpPortIsAvailable(7233))
+            .Build();
 
-        await Task.WhenAll(_postgres.StartAsync(), _redis.StartAsync());
+        await Task.WhenAll(_postgres.StartAsync(), _redis.StartAsync(), _temporal.StartAsync());
     }
 
     protected override void ConfigureApp(IWebHostBuilder a)
     {
         a.UseSetting("ConnectionStrings:micro-commerce-db", _postgres.GetConnectionString());
         a.UseSetting("ConnectionStrings:redis", _redis.GetConnectionString());
+        a.UseSetting("Temporal:Address", $"127.0.0.1:{_temporal.GetMappedPublicPort(7233)}");
     }
 
     protected override void ConfigureServices(IServiceCollection s)
@@ -76,4 +85,13 @@ public class ApiFixture : AppFixture<Program>
 
     /// <summary>A client whose requests carry <paramref name="token"/> as their bearer token.</summary>
     public HttpClient ClientFor(string token) => CreateClient(c => c.Authenticate(token));
+}
+
+public class DevelopmentApiFixture : ApiFixture
+{
+    protected override void ConfigureApp(IWebHostBuilder a)
+    {
+        base.ConfigureApp(a);
+        a.UseEnvironment("Development");
+    }
 }

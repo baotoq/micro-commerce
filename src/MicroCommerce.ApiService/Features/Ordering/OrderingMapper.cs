@@ -7,6 +7,12 @@ namespace MicroCommerce.ApiService.Features.Ordering;
 [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Target)]
 public static partial class OrderingMapper
 {
+    public static partial CheckoutResponse ToCheckoutResponse(this Checkout checkout);
+
+    public static partial CheckoutMerchantResponse ToCheckoutMerchantResponse(this CheckoutMerchant merchant);
+
+    public static partial OrderLineResponse ToOrderLineResponse(this OrderLine line);
+
     /// <summary>A line whose Variant the Catalog still has; <see cref="CartView"/> works out its total and flags.</summary>
     [MapperIgnoreSource(nameof(VariantLookup.WeightGrams))]
     [MapperIgnoreSource(nameof(VariantLookup.IsBuyable))]

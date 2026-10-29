@@ -4,6 +4,7 @@ import { formatPrice } from "@/lib/catalog";
 import { flagReason, getCart } from "@/lib/cart";
 import { getAccessToken, signInUrl } from "@/lib/session";
 import { CartLineControls } from "./cart-line-controls";
+import { Button } from "@/components/ui/button";
 
 export default async function CartPage() {
   const accessToken = await getAccessToken();
@@ -61,6 +62,11 @@ export default async function CartPage() {
               {formatPrice(cart.itemsTotal)}
             </span>
           </p>
+          <div className="mt-6 flex justify-end">
+            <Button asChild disabled={cart.lines.some((line) => line.flags.length > 0)}>
+              <Link href="/checkout">Continue to Checkout</Link>
+            </Button>
+          </div>
         </>
       )}
     </main>

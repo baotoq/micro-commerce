@@ -25,7 +25,7 @@ async function kitchenCategoryId(page: Page) {
   return kitchen!.id;
 }
 
-test("a Buyer adds a published Product's Variant to the Cart", async ({ page, browser }) => {
+test("a Buyer manages the Cart and places a Checkout", async ({ page, browser }) => {
   // Runs against dev data, so the name must be unique to this run.
   const name = `E2E Cup ${crypto.randomUUID().slice(0, 8)}`;
 
@@ -75,6 +75,22 @@ test("a Buyer adds a published Product's Variant to the Cart", async ({ page, br
 
   await line.getByRole("button", { name: `Remove ${name} Blue` }).click();
   await expect(line).toHaveCount(0);
+
+  const addedAgain = await page.request.post("/api/cart/lines", {
+    data: { variantId: product.variants[1].id, quantity: 1 },
+  });
+  expect(addedAgain.status()).toBe(200);
+  await page.goto("/checkout");
+  await page.getByLabel("Recipient name").fill("Buyer");
+  await page.getByLabel("Phone").fill("+84901234567");
+  await page.getByLabel("Street address").fill("12 Le Loi");
+  await page.getByLabel("Ward").fill("Ben Nghe");
+  await page.getByLabel("Province / city").selectOption("Hồ Chí Minh");
+  await page.getByRole("button", { name: "Place Checkout" }).click();
+  await expect(page).toHaveURL(/\/orders$/);
+  const checkout = page.getByRole("list", { name: "Checkouts" }).getByRole("listitem").filter({ hasText: name });
+  await expect(checkout).toContainText("Awaiting Payment");
+  await expect(checkout).toContainText("Expires");
 });
 
 test.describe("signed out", () => {

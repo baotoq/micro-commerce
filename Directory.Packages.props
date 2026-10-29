@@ -24,6 +24,8 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
     <PackageVersion Include="Riok.Mapperly" Version="4.3.1" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.17.13" />
+    <PackageVersion Include="Temporalio" Version="1.21.0" />
+    <PackageVersion Include="Temporalio.Extensions.Hosting" Version="1.21.0" />
     <PackageVersion Include="Vogen" Version="8.0.7" />
   </ItemGroup>
 

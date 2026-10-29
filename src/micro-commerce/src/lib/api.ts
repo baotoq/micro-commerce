@@ -5,6 +5,8 @@ export type ProblemDetails = {
   detail?: string;
   // FastEndpoints validation failures; `name` is the camelCased request property.
   errors?: { name: string; reason: string; code?: string }[];
+  lines?: { variantId: string; reason: string; available: number | null }[];
+  existingCheckoutId?: string | null;
 };
 
 export class ApiError extends Error {
@@ -29,7 +31,7 @@ function baseUrl() {
 // What went wrong, to show the user: the API's reasons when it gives any.
 export function errorMessage(error: unknown) {
   if (!(error instanceof ApiError)) return "Something went wrong. Please try again.";
-  return error.problem?.errors?.map((e) => e.reason).join(" ") || error.message;
+  return error.problem?.detail || error.problem?.errors?.map((e) => e.reason).join(" ") || error.message;
 }
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
