@@ -38,3 +38,7 @@ jobs:
           dotnet restore
       - name: Install frontend dependencies
         run: pnpm --dir src/micro-commerce install --frozen-lockfile
+      - name: Install gh-aw extension
+        uses: github/gh-aw-actions/setup-cli@de9d416cac8ccea1a2d582cb07c4b7db96946792 # v0.93.5
+        with:
+          version: v0.93.5
