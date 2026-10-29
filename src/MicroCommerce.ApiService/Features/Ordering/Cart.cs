@@ -1,4 +1,6 @@
+using System.Text.Json.Serialization;
 using FluentValidation;
+using MicroCommerce.ApiService.Features.Catalog;
 using MicroCommerce.ApiService.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -98,4 +100,48 @@ public class CartValidator : AbstractValidator<Cart>
             .Must(l => l.Quantity <= Cart.MaxQuantity)
             .WithMessage($"A Cart can hold at most {Cart.MaxQuantity} of one Variant.");
     }
+}
+
+/// <summary>
+/// A Cart read live from the Catalog.
+/// </summary>
+/// <param name="ItemsTotal">
+/// The sum of every line's <see cref="CartLineResponse.LineTotal"/>: lines that are Unavailable or
+/// TotalTooLarge don't count; lines short of stock or from the Account's own Merchant still do.
+/// </param>
+public record CartResponse(IReadOnlyList<CartLineResponse> Lines, Money ItemsTotal);
+
+/// <summary>
+/// One Cart line with the Variant's live details. The Product, Shop and price are null when the Variant no longer
+/// exists; a line that can't be checked out as it is has <see cref="Flags"/>.
+/// </summary>
+/// <param name="LineTotal">Unit price × quantity; null for an Unavailable or TotalTooLarge line.</param>
+public record CartLineResponse(
+    VariantId VariantId,
+    int Quantity,
+    ProductId? ProductId,
+    string? ProductName,
+    IReadOnlyList<string> OptionValues,
+    MerchantId? ShopId,
+    string? ShopName,
+    Money? UnitPrice,
+    Money? LineTotal,
+    int? Available,
+    IReadOnlyList<CartLineFlag> Flags);
+
+/// <summary>Why a Cart line can't be checked out as it is.</summary>
+[JsonConverter(typeof(JsonStringEnumConverter<CartLineFlag>))]
+public enum CartLineFlag
+{
+    /// <summary>The Variant is gone, its Product is not Published, or its Merchant is suspended.</summary>
+    Unavailable,
+
+    /// <summary>The quantity is more than is available.</summary>
+    InsufficientStock,
+
+    /// <summary>The Variant belongs to the Account's own Merchant, which it can't buy from.</summary>
+    OwnMerchant,
+
+    /// <summary>Counting this line would take the Cart's total beyond the largest amount that can be paid.</summary>
+    TotalTooLarge,
 }
