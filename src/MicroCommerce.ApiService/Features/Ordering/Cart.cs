@@ -56,6 +56,12 @@ public class Cart
         return true;
     }
 
+    public void Clear()
+    {
+        Lines.Clear();
+        Version++;
+    }
+
     private CartLine? Find(VariantId variantId) => Lines.Find(l => l.VariantId == variantId);
 }
 

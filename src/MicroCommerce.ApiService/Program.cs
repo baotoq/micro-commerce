@@ -9,6 +9,7 @@ using MicroCommerce.ApiService.Features.Ordering.Data;
 using MicroCommerce.ApiService;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Temporalio.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,10 +43,26 @@ builder.Services.AddSingleton<StorefrontProductCache>();
 builder.Services.AddScoped<ICatalogLookup, CatalogLookup>();
 builder.Services.AddScoped<ICatalogReservations, CatalogReservations>();
 builder.Services.AddScoped<BuyerCart>();
+builder.Services.AddScoped<IShippingFeeQuote, FlatShippingFeeQuote>();
+builder.Services.AddOptions<OrderingOptions>()
+    .Bind(builder.Configuration.GetSection("Ordering"))
+    .Validate(o => o.PaymentWindow > TimeSpan.Zero && o.ReservationGrace >= TimeSpan.Zero && o.ShippingFee >= 0)
+    .ValidateOnStart();
+builder.Services.AddTemporalClient(options =>
+{
+    options.TargetHost = builder.Configuration["Temporal:Address"] ?? "localhost:7233";
+    options.Namespace = builder.Configuration["Temporal:Namespace"] ?? "default";
+});
+builder.Services.AddHostedTemporalWorker(CheckoutTemporal.TaskQueue)
+    .AddScopedActivities<CheckoutActivities>()
+    .AddWorkflow<CheckoutWorkflow>();
 
 builder.Services.AddProblemDetails();
 builder.Services
-    .AddFastEndpoints()
+    .AddFastEndpoints(o =>
+    {
+        o.Filter = endpoint => builder.Environment.IsDevelopment() || endpoint != typeof(ExpireCheckoutEndpoint);
+    })
     .OpenApiDocument(o =>
     {
         o.DocumentName = "v1";
@@ -79,4 +96,4 @@ if (app.Environment.IsDevelopment())
 
 app.MapDefaultEndpoints();
 
-app.Run();
+await app.RunAsync();
