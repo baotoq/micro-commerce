@@ -19,7 +19,7 @@ A selling business on the Marketplace, owned by exactly one Account. Products, O
 _Avoid_: Seller, vendor, tenant
 
 **Suspended Merchant**:
-A Merchant a Platform Operator has barred from selling: its Products are hidden and it cannot receive new Orders, but its in-flight Orders continue normally.
+A Merchant a Platform Operator has barred from selling: its Products are hidden and cannot be included in a newly placed Checkout, but anything already placed (a Checkout awaiting Payment, in-flight Orders) carries on normally.
 _Avoid_: Banned, disabled, deactivated
 
 **Shop**:
@@ -57,12 +57,24 @@ _Avoid_: Tag, collection, department
 
 ### Buying
 
+**Cart**:
+An Account's working list of Variants it may buy, across any number of Merchants; one per Account, kept until a Checkout is placed. A Cart holds no stock and no price.
+_Avoid_: Basket, wishlist, bag
+
+**Cart line**:
+One Variant in a Cart with the quantity wanted. It is read live: if the Variant is no longer buyable (its Product is unpublished or removed, its Merchant is suspended, or stock is short), the line stays in the Cart but cannot be checked out until the Buyer fixes it.
+_Avoid_: Cart item, entry
+
 **Checkout**:
-A Buyer's single act of purchasing a cart that may span several Merchants, to one Delivery Address. One Checkout produces one Payment and one Order per Merchant.
+A Buyer's single act of purchasing a Cart that may span several Merchants, to one Delivery Address. Placing it is all-or-nothing: if any Cart line cannot be bought, no Checkout is placed. A placed Checkout empties the Cart and freezes the Order lines; one Checkout produces one Payment and, once Paid, one Order per Merchant.
 _Avoid_: Cart order, master order, transaction
 
+**Order line**:
+One Variant bought in a Checkout, with the name, options and unit price it had when the Checkout was placed. A Checkout holds its Order lines grouped by Merchant; once Paid, each Merchant's group becomes that Merchant's Order.
+_Avoid_: Line item, checkout line
+
 **Order**:
-The part of a Checkout belonging to exactly one Merchant, shipped, tracked and cancelled independently of the other Orders.
+The part of a paid Checkout belonging to exactly one Merchant, shipped, tracked and cancelled independently of the other Orders. An Order exists only after its Checkout is Paid; an Expired Checkout never has Orders.
 _Avoid_: Sub-order, purchase, shipment
 
 **Payment**:
@@ -74,7 +86,7 @@ One try at collecting a Checkout's Payment. A Buyer may retry after a failed att
 _Avoid_: Retry, transaction
 
 **Reservation**:
-Stock of a Variant held for a placed Checkout during its payment window. Released if the Checkout expires or the Order is cancelled before shipping; a cart never holds stock.
+Stock of a Variant held for a placed Checkout. It outlives payment: it is consumed when the Order containing it ships, and released if the Checkout expires or that Order is cancelled before shipping. A Cart never holds stock.
 _Avoid_: Hold, lock, allocation
 
 **Return Request**:
@@ -103,7 +115,7 @@ How long a Merchant has to answer a Return Request before it is accepted automat
 _Awaiting Payment_ → _Paid_, or _Expired_ if no Payment Attempt succeeds within the payment window.
 
 **Order status**:
-_To Ship_ → _Shipped_ → _Delivered_ → _Completed_; also _Cancelled_ (before shipping) and _Return Requested_ → _Refunded_ or back to the Delivered path if the request is rejected. An Order still To Ship can be cancelled by the Buyer or the Merchant, and is cancelled automatically when the ship-by deadline passes. An Order becomes Completed when the Buyer confirms receipt or the confirmation period lapses, and that is when its money leaves Escrow. While Return Requested, the Order stays in Escrow and does not Complete. Cancelled and Refunded Orders are paid back from Escrow, never from a Merchant Balance.
+Starts at _To Ship_, when its Checkout is Paid. _To Ship_ → _Shipped_ → _Delivered_ → _Completed_; also _Cancelled_ (before shipping) and _Return Requested_ → _Refunded_ or back to the Delivered path if the request is rejected. An Order still To Ship can be cancelled by the Buyer or the Merchant, and is cancelled automatically when the ship-by deadline passes. An Order becomes Completed when the Buyer confirms receipt or the confirmation period lapses, and that is when its money leaves Escrow. While Return Requested, the Order stays in Escrow and does not Complete. Cancelled and Refunded Orders are paid back from Escrow, never from a Merchant Balance.
 
 ### Shipping
 
