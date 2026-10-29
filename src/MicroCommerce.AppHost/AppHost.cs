@@ -13,7 +13,7 @@ var fixedPorts = builder.Configuration.GetValue("FixedPorts", !ephemeral);
 var postgres = builder.AddPostgres("postgres");
 var redis = builder.AddRedis("redis");
 var temporal = builder.AddContainer("temporal", "temporalio/temporal", "1.5.1")
-    .WithArgs("server", "start-dev", "--ip", "0.0.0.0", "--db-filename", "/temporal-data/temporal.db")
+    .WithArgs("server", "start-dev", "--ip", "0.0.0.0")
     .WithEndpoint(targetPort: 7233, name: "grpc");
 
 // The dev realm (clients, Platform Operator role, seeded users) is imported when Keycloak doesn't have it yet.
@@ -28,7 +28,8 @@ if (!ephemeral)
     postgres.WithDataVolume().WithPgAdmin().WithLifetime(ContainerLifetime.Persistent);
     redis.WithDataVolume().WithRedisInsight().WithLifetime(ContainerLifetime.Persistent);
     keycloak.WithDataVolume().WithLifetime(ContainerLifetime.Persistent);
-    temporal.WithVolume("temporal-data", "/temporal-data").WithLifetime(ContainerLifetime.Persistent);
+    temporal.WithArgs("--db-filename", "/temporal-data/temporal.db")
+        .WithVolume("temporal-data", "/temporal-data").WithLifetime(ContainerLifetime.Persistent);
 }
 
 var db = postgres.AddDatabase("micro-commerce-db");

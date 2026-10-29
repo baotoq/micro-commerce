@@ -11,7 +11,7 @@ using Npgsql;
 
 namespace MicroCommerce.FunctionalTests.Features.Ordering;
 
-public class CheckoutEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
+public class CheckoutEndpointsTests(DevelopmentApiFixture App) : TestBase<DevelopmentApiFixture>
 {
     private static readonly DeliveryAddress Address = new()
     {

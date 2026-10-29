@@ -47,7 +47,6 @@ public class ApiFixture : AppFixture<Program>
         a.UseSetting("ConnectionStrings:micro-commerce-db", _postgres.GetConnectionString());
         a.UseSetting("ConnectionStrings:redis", _redis.GetConnectionString());
         a.UseSetting("Temporal:Address", $"127.0.0.1:{_temporal.GetMappedPublicPort(7233)}");
-        a.UseEnvironment("Development");
     }
 
     protected override void ConfigureServices(IServiceCollection s)
@@ -86,4 +85,13 @@ public class ApiFixture : AppFixture<Program>
 
     /// <summary>A client whose requests carry <paramref name="token"/> as their bearer token.</summary>
     public HttpClient ClientFor(string token) => CreateClient(c => c.Authenticate(token));
+}
+
+public class DevelopmentApiFixture : ApiFixture
+{
+    protected override void ConfigureApp(IWebHostBuilder a)
+    {
+        base.ConfigureApp(a);
+        a.UseEnvironment("Development");
+    }
 }
