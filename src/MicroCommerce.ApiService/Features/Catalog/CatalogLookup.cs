@@ -20,7 +20,7 @@ public interface ICatalogLookup
 /// A Variant as another module sees it: enough to show it in a Cart, plus its price, weight, owner and availability.
 /// </summary>
 /// <param name="ShopName">Null until the Merchant's Shop reaches the Catalog.</param>
-/// <param name="Available">What can be bought now. Until Reservations exist, that is the Variant's stock.</param>
+/// <param name="Available">What can be bought now: the Variant's stock less its active Reservations (<see cref="Availability"/>).</param>
 /// <param name="IsBuyable">
 /// Whether a Buyer can see it: its Product is Published and its Shop is in the Catalog and not suspended
 /// (<see cref="StorefrontQueries.VisibleProducts"/>). Says nothing about stock.
@@ -46,26 +46,33 @@ public class CatalogLookup(CatalogDbContext db) : ICatalogLookup
 
         var ids = variantIds.Distinct().ToList();
         var visibleProductIds = db.VisibleProducts().Select(x => x.Product.Id);
+        var activeReservations = db.ActiveReservations();
         var variants = await (
             from product in db.Products
             from variant in product.Variants
             where ids.Contains(variant.Id)
             join shop in db.Shops on product.MerchantId equals shop.Id into shops
             from shop in shops.DefaultIfEmpty()
-            select new VariantLookup(
-                variant.Id,
-                product.Id,
-                product.Name,
-                variant.OptionValues,
-                product.MerchantId,
-                shop == null ? null : shop.ShopName,
-                variant.Price,
-                variant.WeightGrams,
-                variant.Stock,
-                visibleProductIds.Contains(product.Id)))
+            select new
+            {
+                Lookup = new VariantLookup(
+                    variant.Id,
+                    product.Id,
+                    product.Name,
+                    variant.OptionValues,
+                    product.MerchantId,
+                    shop == null ? null : shop.ShopName,
+                    variant.Price,
+                    variant.WeightGrams,
+                    variant.Stock,
+                    visibleProductIds.Contains(product.Id)),
+                Reserved = activeReservations.Where(r => r.VariantId == variant.Id).Sum(r => r.Quantity),
+            })
             .AsNoTracking()
             .ToListAsync(ct);
 
-        return variants.ToDictionary(v => v.VariantId);
+        return variants.ToDictionary(
+            v => v.Lookup.VariantId,
+            v => v.Lookup with { Available = Availability.Of(v.Lookup.Available, v.Reserved) });
     }
 }

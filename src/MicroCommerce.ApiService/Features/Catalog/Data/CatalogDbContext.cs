@@ -21,12 +21,16 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
     /// <summary>The Catalog's copy of each Merchant's Shop profile, kept by <see cref="ShopHandler"/>.</summary>
     public DbSet<Shop> Shops => Set<Shop>();
 
+    /// <summary>Stock held for placed Checkouts; read and changed only through <see cref="CatalogReservations"/>.</summary>
+    public DbSet<Reservation> Reservations => Set<Reservation>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.Properties<CategoryId>().HaveConversion<CategoryId.EfCoreValueConverter, CategoryId.EfCoreValueComparer>();
         configurationBuilder.Properties<ProductId>().HaveConversion<ProductId.EfCoreValueConverter, ProductId.EfCoreValueComparer>();
         configurationBuilder.Properties<VariantId>().HaveConversion<VariantId.EfCoreValueConverter, VariantId.EfCoreValueComparer>();
         configurationBuilder.Properties<MerchantId>().HaveConversion<MerchantId.EfCoreValueConverter, MerchantId.EfCoreValueComparer>();
+        configurationBuilder.Properties<CheckoutId>().HaveConversion<CheckoutId.EfCoreValueConverter, CheckoutId.EfCoreValueComparer>();
         configurationBuilder.Properties<Money>().HaveConversion<Money.EfCoreValueConverter, Money.EfCoreValueComparer>();
     }
 

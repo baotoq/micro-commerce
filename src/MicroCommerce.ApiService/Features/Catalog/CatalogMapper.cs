@@ -51,7 +51,6 @@ public static partial class CatalogMapper
     [MapProperty([nameof(ShopProduct.Shop), nameof(Shop.ShopName)], nameof(StorefrontProductSummaryResponse.ShopName))]
     [MapPropertyFromSource(nameof(StorefrontProductSummaryResponse.MinPrice), Use = nameof(StorefrontMinPrice))]
     [MapPropertyFromSource(nameof(StorefrontProductSummaryResponse.MaxPrice), Use = nameof(StorefrontMaxPrice))]
-    [MapPropertyFromSource(nameof(StorefrontProductSummaryResponse.InStock), Use = nameof(InStock))]
     public static partial StorefrontProductSummaryResponse ToStorefrontSummaryResponse(this ShopProduct product);
 
     /// <summary>Uses <see cref="ToStorefrontSummaryResponse"/>'s configuration; the database computes the aggregates.</summary>
@@ -72,5 +71,4 @@ public static partial class CatalogMapper
     private static long TotalStock(Product product) => product.Variants.Sum(v => (long)v.Stock);
     private static Money StorefrontMinPrice(ShopProduct product) => product.Product.Variants.Min(v => v.Price);
     private static Money StorefrontMaxPrice(ShopProduct product) => product.Product.Variants.Max(v => v.Price);
-    private static bool InStock(ShopProduct product) => product.Product.Variants.Any(v => v.Stock > 0);
 }

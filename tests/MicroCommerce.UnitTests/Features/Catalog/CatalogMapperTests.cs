@@ -71,15 +71,16 @@ public class CatalogMapperTests
     }
 
     [Fact]
-    public void Storefront_summary_projection_computes_price_range_and_stock_and_carries_the_shop()
+    public void Storefront_summary_projection_computes_price_range_and_carries_stock_and_the_shop()
     {
         var inStock = NewProduct();
         var soldOut = NewProduct();
         soldOut.SetVariants([], [new([], Money.From(90_000), 0, 100)]);
         var shop = new Shop { Id = inStock.MerchantId, ShopName = "Mug Corner" };
 
+        // InStock depends on Reservations, so VisibleProducts works it out in the query; the mapper carries it.
         var responses = new[] { inStock, soldOut }
-            .Select(p => new ShopProduct { Product = p, Shop = shop })
+            .Select(p => new ShopProduct { Product = p, Shop = shop, InStock = p == inStock })
             .AsQueryable()
             .ProjectToStorefrontSummaryResponse()
             .ToList();

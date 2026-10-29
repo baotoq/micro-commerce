@@ -107,6 +107,40 @@ namespace MicroCommerce.ApiService.Features.Catalog.Data.Migrations
                     b.ToTable("Products", "catalog");
                 });
 
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Reservation", b =>
+                {
+                    b.Property<Guid>("CheckoutId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VariantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("HoldUntil")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("CheckoutId", "VariantId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("VariantId");
+
+                    b.ToTable("Reservations", "catalog");
+                });
+
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Catalog.Shop", b =>
                 {
                     b.Property<Guid>("Id")
