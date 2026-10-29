@@ -1,6 +1,6 @@
 name: "Copilot Setup Steps"
 
-# This workflow configures the environment for GitHub Copilot Agent with gh-aw MCP server
+# This workflow configures the development environment for GitHub Copilot Agent.
 on:
   workflow_dispatch:
   push:
@@ -30,6 +30,14 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Install the pinned toolchain
+        uses: jdx/mise-action@v5
+      - name: Restore .NET tools and dependencies
+        run: |
+          dotnet tool restore
+          dotnet restore
+      - name: Install frontend dependencies
+        run: pnpm --dir src/micro-commerce install --frozen-lockfile
       - name: Install gh-aw extension
         uses: github/gh-aw-actions/setup-cli@de9d416cac8ccea1a2d582cb07c4b7db96946792 # v0.93.5
         with:
