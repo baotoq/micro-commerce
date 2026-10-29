@@ -51,6 +51,10 @@ _Draft_ → _Published_; a Platform Operator can mark any Product _Removed_. Buy
 One purchasable combination of a Product's options (e.g. Red / M), with its own price, stock and weight. A Product without options has a single default Variant.
 _Avoid_: SKU, option, model
 
+**Availability**:
+How many units of a Variant a Buyer can buy right now: its stock less what active Reservations hold. Buyers see Availability, never stock; Merchants see stock.
+_Avoid_: Available stock, inventory
+
 **Category**:
 A node in the Marketplace-wide category tree maintained by Platform Operators. Every Product sits in exactly one leaf Category.
 _Avoid_: Tag, collection, department
