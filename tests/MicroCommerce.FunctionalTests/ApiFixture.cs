@@ -1,5 +1,6 @@
 using MicroCommerce.ApiService.Features.Accounts.Data;
 using MicroCommerce.ApiService.Features.Catalog.Data;
+using MicroCommerce.ApiService.Features.Ordering.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +63,7 @@ public class ApiFixture : AppFixture<Program>
             await using var scope = Services.CreateAsyncScope();
             await scope.ServiceProvider.GetRequiredService<AccountsDbContext>().Database.MigrateAsync();
             await scope.ServiceProvider.GetRequiredService<CatalogDbContext>().Database.MigrateAsync();
+            await scope.ServiceProvider.GetRequiredService<OrderingDbContext>().Database.MigrateAsync();
         }
         finally
         {

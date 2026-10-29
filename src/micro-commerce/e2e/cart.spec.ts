@@ -1,0 +1,88 @@
+import { expect, type Page, test } from "@playwright/test";
+import { signInAsMerchant } from "./sign-in";
+
+type CategoryNode = { id: string; name: string; children: CategoryNode[] };
+
+// The seeded merchant owns no Merchant until it opens one; against dev data, or with another spec running at the
+// same time, it may already have (a 409).
+async function ensureMerchant(page: Page) {
+  const me = await (await page.request.get("/api/me")).json();
+  if (me.merchant) return;
+  const response = await page.request.post("/api/me/merchant", {
+    data: {
+      shopName: `E2E Shop ${crypto.randomUUID()}`,
+      pickupAddress: { street: "12 Le Loi", ward: "Ben Nghe", district: "District 1", province: "Ho Chi Minh City" },
+    },
+  });
+  expect([201, 409]).toContain(response.status());
+}
+
+// The starter tree's "Home › Kitchen", a leaf Category.
+async function kitchenCategoryId(page: Page) {
+  const tree: CategoryNode[] = await (await page.request.get("/api/storefront/categories")).json();
+  const kitchen = tree.find((c) => c.name === "Home")?.children.find((c) => c.name === "Kitchen");
+  expect(kitchen).toBeDefined();
+  return kitchen!.id;
+}
+
+test("a Buyer adds a published Product's Variant to the Cart", async ({ page, browser }) => {
+  // Runs against dev data, so the name must be unique to this run.
+  const name = `E2E Cup ${crypto.randomUUID().slice(0, 8)}`;
+
+  // A Merchant creates and publishes a two-Variant Product through the API.
+  const merchant = await browser.newPage({ storageState: { cookies: [], origins: [] } });
+  await signInAsMerchant(merchant);
+  await ensureMerchant(merchant);
+  const created = await merchant.request.post("/api/merchant/products", {
+    data: {
+      name,
+      description: null,
+      categoryId: await kitchenCategoryId(merchant),
+      options: [{ name: "Colour", values: ["Red", "Blue"] }],
+      variants: [
+        { optionValues: ["Red"], price: 80_000, stock: 5, weightGrams: 300 },
+        { optionValues: ["Blue"], price: 90_000, stock: 1, weightGrams: 300 },
+      ],
+    },
+  });
+  expect(created.status()).toBe(201);
+  const product = await created.json();
+  expect((await merchant.request.post(`/api/merchant/products/${product.id}/publish`)).status()).toBe(200);
+  await merchant.close();
+
+  // The Buyer (the shared signed-in session) picks Blue. The Shop reaches the storefront by event.
+  await expect(async () => {
+    await page.goto(`/products/${product.id}`);
+    await expect(page.getByRole("heading", { name })).toBeVisible({ timeout: 1_000 });
+  }).toPass();
+  await page.getByLabel("Colour").selectOption("Blue");
+  await page.getByLabel("Quantity").fill("2");
+  await page.getByRole("button", { name: "Add to cart" }).click();
+  await expect(page.getByRole("status")).toContainText("Added to your Cart");
+
+  await page.getByRole("link", { name: "View Cart" }).click();
+  await expect(page).toHaveURL(/\/cart$/);
+  const line = page.getByRole("list", { name: "Cart lines" }).getByRole("listitem").filter({ hasText: name });
+  await expect(line).toContainText("Blue");
+  await expect(line.getByLabel(`Quantity of ${name} Blue`)).toHaveValue("2");
+  // Two wanted, one in stock: the line stays, flagged.
+  await expect(line).toContainText("Only 1 available.");
+
+  await line.getByLabel(`Quantity of ${name} Blue`).fill("1");
+  await line.getByLabel(`Quantity of ${name} Blue`).blur();
+  await expect(line).not.toContainText("Only 1 available.");
+  await expect(line).toContainText("90.000");
+
+  await line.getByRole("button", { name: `Remove ${name} Blue` }).click();
+  await expect(line).toHaveCount(0);
+});
+
+test.describe("signed out", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test("the Cart sends a signed-out visitor to sign in", async ({ page }) => {
+    await page.goto("/cart");
+
+    await expect(page).not.toHaveURL(/\/cart$/);
+  });
+});
