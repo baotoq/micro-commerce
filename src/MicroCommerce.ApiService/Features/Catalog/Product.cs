@@ -137,7 +137,10 @@ public class Variant
 
     public required Money Price { get; set; }
 
-    /// <summary>Units available to sell; never negative.</summary>
+    /// <summary>
+    /// The on-hand count the Merchant sets; never negative. What Buyers can buy is less whatever is reserved
+    /// (<see cref="Availability"/>).
+    /// </summary>
     public required int Stock { get; set; }
 
     /// <summary>Parcel weight in grams, which the Carrier quotes Shipping Fees from; always positive.</summary>

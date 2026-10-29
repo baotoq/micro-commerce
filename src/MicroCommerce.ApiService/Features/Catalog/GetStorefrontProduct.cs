@@ -37,7 +37,7 @@ public class GetStorefrontProductEndpoint(CatalogDbContext db, StorefrontProduct
             return;
         }
 
-        var response = product.ToStorefrontResponse();
+        var response = product.ToStorefrontResponse(await db.ReservedQuantitiesAsync(product.Product.Id, ct));
         await cache.SetAsync(response, ct);
 
         HttpContext.Response.Headers["X-Cache"] = "MISS";

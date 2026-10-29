@@ -6,8 +6,9 @@ namespace MicroCommerce.ApiService.Features.Catalog;
 
 /// <summary>
 /// Storefront Product details in Redis. Whatever changes what a Buyer sees of a Product evicts it: editing,
-/// publishing or unpublishing the Product, or a change to its Shop. Entries also expire, which bounds how long a
-/// read that raced an eviction can serve what it read before the change.
+/// publishing or unpublishing the Product, a change to its Shop, or a Reserve, Commit or Release of its stock. Entries
+/// also expire, which bounds how long a read that raced an eviction can serve what it read before the change, and how
+/// long a hold that lapses by its deadline (which raises nothing) can lag.
 /// </summary>
 public class StorefrontProductCache(IDistributedCache cache)
 {

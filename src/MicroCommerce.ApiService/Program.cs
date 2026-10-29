@@ -40,6 +40,7 @@ builder.Services.AddScoped<MerchantStatusChanges>();
 builder.Services.AddScoped<IProductSearch, PostgresProductSearch>();
 builder.Services.AddSingleton<StorefrontProductCache>();
 builder.Services.AddScoped<ICatalogLookup, CatalogLookup>();
+builder.Services.AddScoped<ICatalogReservations, CatalogReservations>();
 builder.Services.AddScoped<BuyerCart>();
 
 builder.Services.AddProblemDetails();
