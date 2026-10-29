@@ -13,7 +13,8 @@ test.describe("as the Platform Operator", () => {
     const renamed = `E2E Gardening ${run}`;
 
     await signInAsOperator(page);
-    await page.getByRole("link", { name: "Operations" }).click();
+    await page.getByRole("button", { name: /^Account menu for / }).click();
+    await page.getByRole("menuitem", { name: "Operations" }).click();
     await expect(page.getByRole("heading", { name: "Categories" })).toBeVisible();
 
     await page.getByLabel("New top-level Category").fill(top);
@@ -46,7 +47,7 @@ test.describe("as the Platform Operator", () => {
 test("the operations area is not found for a Buyer", async ({ page }) => {
   await page.goto("/ops/categories");
 
-  await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Account menu for / })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Categories" })).toBeHidden();
   await expect(page.getByText("This page could not be found.")).toBeVisible();
 });

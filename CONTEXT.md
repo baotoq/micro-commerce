@@ -25,6 +25,7 @@ _Avoid_: Banned, disabled, deactivated
 **Shop**:
 A Merchant's public page on the Marketplace. Each Merchant has exactly one Shop; it is a view of the Merchant, not a separate thing.
 _Avoid_: Store, storefront
+Buyer-facing copy calls this public page a Shop, never a Merchant.
 
 **Buyer**:
 The role an Account plays when purchasing on the Marketplace. An Account cannot buy from its own Merchant.
@@ -64,6 +65,7 @@ _Avoid_: Tag, collection, department
 **Cart**:
 An Account's working list of Variants it may buy, across any number of Merchants; one per Account, kept until a Checkout is placed. A Cart holds no stock and no price.
 _Avoid_: Basket, wishlist, bag
+The shared Marketplace header shows the number of Cart lines, not the total quantity.
 
 **Cart line**:
 One Variant in a Cart with the quantity wanted. It is read live: if the Variant is no longer buyable (its Product is unpublished or removed, its Merchant is suspended, or stock is short), the line stays in the Cart but cannot be checked out until the Buyer fixes it.

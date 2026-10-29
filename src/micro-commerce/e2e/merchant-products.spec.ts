@@ -1,9 +1,11 @@
 import { expect, type Page, test } from "@playwright/test";
+import { expectNoSeriousA11yViolations } from "./accessibility";
 import { signInAsMerchant, signInAsOperator } from "./sign-in";
 
 // The seeded merchant user owns no Merchant until it opens one; against dev data it may already have.
 async function goToMerchantCentre(page: Page) {
-  await page.getByRole("link", { name: /^(Merchant Centre|Open your Shop)$/ }).click();
+  await page.getByRole("button", { name: /^Account menu for / }).click();
+  await page.getByRole("menuitem", { name: /^(Merchant Centre|Open your Shop)$/ }).click();
   await expect(page).toHaveURL(/\/(merchant|open-shop)$/);
   if (page.url().endsWith("/open-shop")) {
     await page.getByLabel("Shop name").fill(`E2E Shop ${crypto.randomUUID()}`);
@@ -136,17 +138,20 @@ test.describe("as a Merchant", () => {
       await buyer.goto("/");
       await expect(card).toBeVisible({ timeout: 1_000 });
     }).toPass();
+    await expectNoSeriousA11yViolations(buyer);
     await expect(card).toContainText("250.000");
     await expect(card.getByRole("link", { name: shopName })).toBeVisible();
 
     await card.getByRole("link", { name }).click();
     await expect(buyer.getByRole("heading", { name })).toBeVisible();
+    await expectNoSeriousA11yViolations(buyer);
     await expect(buyer.getByText("Home › Kitchen")).toBeVisible();
     await expect(buyer.getByText("Whistles when it boils.")).toBeVisible();
 
     await buyer.getByRole("link", { name: shopName }).click();
     await expect(buyer.getByRole("heading", { name: shopName })).toBeVisible();
     await expect(buyer.getByRole("link", { name })).toBeVisible();
+    await expectNoSeriousA11yViolations(buyer);
     await buyer.close();
   });
 
@@ -185,6 +190,7 @@ test.describe("as a Merchant", () => {
       await search(`${word}s`, "Home");
       await expect(results.filter({ hasText: name })).toBeVisible({ timeout: 1_000 });
     }).toPass();
+    await expectNoSeriousA11yViolations(buyer);
     await expect(results).toHaveCount(1);
     await expect(buyer).toHaveURL(/[?&]q=/);
 
@@ -192,6 +198,7 @@ test.describe("as a Merchant", () => {
     await expect(buyer.getByRole("searchbox", { name: "Search" })).toHaveValue(`${word}s`);
     await search(`${word}s`, "Fashion");
     await expect(buyer.getByText("No Products match your search.")).toBeVisible();
+    await expectNoSeriousA11yViolations(buyer);
     await buyer.close();
   });
 
@@ -233,6 +240,7 @@ test.describe("as a Merchant", () => {
     const buyer = await browser.newPage({ storageState: { cookies: [], origins: [] } });
     await buyer.goto(storefrontLink.pathname);
     await expect(buyer.getByText("This page could not be found.")).toBeVisible();
+    await expectNoSeriousA11yViolations(buyer);
     await buyer.close();
 
     // The Merchant sees it marked Removed, with nothing left to change.

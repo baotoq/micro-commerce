@@ -10,7 +10,8 @@ test("a Buyer signs in through Keycloak and signs out", async ({ page }) => {
 
   await signInAsBuyer(page);
 
-  await page.getByRole("button", { name: "Sign out" }).click();
+  await page.getByRole("button", { name: /^Account menu for / }).click();
+  await page.getByRole("menuitem", { name: "Sign out" }).click();
   await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Sign out" })).toBeHidden();
+  await expect(page.getByRole("button", { name: /^Account menu for / })).toBeHidden();
 });

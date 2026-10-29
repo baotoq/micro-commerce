@@ -1,7 +1,12 @@
 import { expect, type Page, test } from "@playwright/test";
+import { expectNoSeriousA11yViolations } from "./accessibility";
 import { signInAsMerchant } from "./sign-in";
 
 type CategoryNode = { id: string; name: string; children: CategoryNode[] };
+
+async function expectNoHorizontalScroll(page: Page) {
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+}
 
 // The seeded merchant owns no Merchant until it opens one; against dev data, or with another spec running at the
 // same time, it may already have (a 409).
@@ -25,7 +30,7 @@ async function kitchenCategoryId(page: Page) {
   return kitchen!.id;
 }
 
-test("a Buyer manages the Cart and places a Checkout", async ({ page, browser }) => {
+test("a Buyer manages the Cart and places a Checkout", { tag: "@storefront" }, async ({ page, browser }) => {
   // Runs against dev data, so the name must be unique to this run.
   const name = `E2E Cup ${crypto.randomUUID().slice(0, 8)}`;
 
@@ -55,13 +60,23 @@ test("a Buyer manages the Cart and places a Checkout", async ({ page, browser })
     await page.goto(`/products/${product.id}`);
     await expect(page.getByRole("heading", { name })).toBeVisible({ timeout: 1_000 });
   }).toPass();
+  await page.setViewportSize({ width: 375, height: 812 });
+  await expectNoHorizontalScroll(page);
+  await expectNoSeriousA11yViolations(page);
   await page.getByLabel("Colour").selectOption("Blue");
   await page.getByLabel("Quantity").fill("2");
+  const cartLink = page.getByRole("link", { name: /^Cart \d+ lines?$/ });
+  const cartCount = cartLink.locator("span[aria-hidden='true']");
+  const initialCartCount = Number(await cartCount.innerText());
   await page.getByRole("button", { name: "Add to cart" }).click();
-  await expect(page.getByRole("status")).toContainText("Added to your Cart");
+  await expect(page.getByText("Added to your Cart.", { exact: true })).toBeVisible({ timeout: 2_000 });
+  await expect(cartCount).toHaveText(String(initialCartCount + 1));
 
-  await page.getByRole("link", { name: "View Cart" }).click();
+  await cartLink.click();
   await expect(page).toHaveURL(/\/cart$/);
+  await expect(cartLink).toHaveAttribute("aria-current", "page");
+  await expectNoHorizontalScroll(page);
+  await expectNoSeriousA11yViolations(page);
   const line = page.getByRole("list", { name: "Cart lines" }).getByRole("listitem").filter({ hasText: name });
   await expect(line).toContainText("Blue");
   await expect(line.getByLabel(`Quantity of ${name} Blue`)).toHaveValue("2");
@@ -72,6 +87,7 @@ test("a Buyer manages the Cart and places a Checkout", async ({ page, browser })
   await line.getByLabel(`Quantity of ${name} Blue`).blur();
   await expect(line).not.toContainText("Only 1 available.");
   await expect(line).toContainText("90.000");
+  await expectNoSeriousA11yViolations(page);
 
   await line.getByRole("button", { name: `Remove ${name} Blue` }).click();
   await expect(line).toHaveCount(0);
@@ -81,6 +97,8 @@ test("a Buyer manages the Cart and places a Checkout", async ({ page, browser })
   });
   expect(addedAgain.status()).toBe(200);
   await page.goto("/checkout");
+  await expectNoHorizontalScroll(page);
+  await expectNoSeriousA11yViolations(page);
   await page.getByLabel("Recipient name").fill("Buyer");
   await page.getByLabel("Phone").fill("+84901234567");
   await page.getByLabel("Street address").fill("12 Le Loi");
@@ -96,7 +114,7 @@ test("a Buyer manages the Cart and places a Checkout", async ({ page, browser })
 test.describe("signed out", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test("the Cart sends a signed-out visitor to sign in", async ({ page }) => {
+  test("the Cart sends a signed-out visitor to sign in", { tag: "@storefront" }, async ({ page }) => {
     await page.goto("/cart");
 
     await expect(page).not.toHaveURL(/\/cart$/);

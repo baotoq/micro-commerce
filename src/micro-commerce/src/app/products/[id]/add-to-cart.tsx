@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,10 +12,10 @@ import type { StorefrontProduct } from "@/lib/storefront";
 
 // Picks a Variant by its option values and adds it to the signed-in Account's Cart.
 export function AddToCart({ product }: { product: StorefrontProduct }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<string[]>(() => product.variants[0]?.optionValues ?? []);
   const [quantity, setQuantity] = useState(1);
   const [isPending, setIsPending] = useState(false);
-  const [added, setAdded] = useState(false);
   const [error, setError] = useState<string>();
 
   const variant = product.variants.find((v) => v.optionValues.every((value, i) => value === selected[i]));
@@ -23,11 +24,11 @@ export function AddToCart({ product }: { product: StorefrontProduct }) {
     event.preventDefault();
     if (!variant) return;
     setIsPending(true);
-    setAdded(false);
     setError(undefined);
     try {
       await addToCart(variant.id, quantity);
-      setAdded(true);
+      toast.success("Added to your Cart.");
+      router.refresh();
     } catch (e) {
       setError(errorMessage(e));
     } finally {
@@ -45,7 +46,6 @@ export function AddToCart({ product }: { product: StorefrontProduct }) {
             className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm"
             value={selected[i]}
             onChange={(e) => {
-              setAdded(false);
               setSelected((current) => current.map((value, j) => (j === i ? e.target.value : value)));
             }}
           >
@@ -69,14 +69,6 @@ export function AddToCart({ product }: { product: StorefrontProduct }) {
       <Button type="submit" disabled={!variant || isPending}>
         Add to cart
       </Button>
-      {added && (
-        <p role="status" className="text-sm">
-          Added to your Cart.{" "}
-          <Link href="/cart" className="underline">
-            View Cart
-          </Link>
-        </p>
-      )}
       {error && (
         <p role="alert" className="text-sm text-destructive">
           {error}

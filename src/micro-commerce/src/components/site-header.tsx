@@ -1,57 +1,16 @@
-import Link from "next/link";
-import { signIn, signOut } from "@/auth";
-import { Button } from "@/components/ui/button";
-import { getCurrentAccount } from "@/lib/session";
+import { getCart } from "@/lib/cart";
+import { getAccessToken, getCurrentAccount } from "@/lib/session";
+import { SiteHeaderNavigation } from "./site-header-navigation";
 
 export async function SiteHeader() {
-  const me = await getCurrentAccount();
+  const [me, accessToken] = await Promise.all([getCurrentAccount(), getAccessToken()]);
+  const cart = me && accessToken ? await getCart(accessToken).catch(() => null) : null;
 
   return (
-    <header className="flex items-center justify-between border-b px-6 py-3">
-      <Link href="/" className="font-semibold">
-        MicroCommerce
-      </Link>
-      {me ? (
-        <div className="flex items-center gap-4">
-          {me.isPlatformOperator && (
-            <Link href="/ops" className="text-sm hover:underline">
-              Operations
-            </Link>
-          )}
-          <Link href="/cart" className="text-sm hover:underline">
-            Cart
-          </Link>
-          <Link href="/orders" className="text-sm hover:underline">
-            Orders
-          </Link>
-          <Link href={me.merchant ? "/merchant" : "/open-shop"} className="text-sm hover:underline">
-            {me.merchant ? "Merchant Centre" : "Open your Shop"}
-          </Link>
-          <form
-            className="flex items-center gap-3"
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/" });
-            }}
-          >
-            <span className="text-sm">{me.displayName}</span>
-            <Button type="submit" variant="outline" size="sm">
-              Sign out
-            </Button>
-          </form>
-        </div>
-      ) : (
-        <form
-          action={async () => {
-            "use server";
-            await signIn("keycloak");
-          }}
-        >
-          <Button type="submit" size="sm">
-            Sign in
-          </Button>
-        </form>
-      )}
+    <header className="border-b px-3 py-3 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center gap-2">
+        <SiteHeaderNavigation me={me} cartLineCount={cart?.lines.length ?? 0} />
+      </div>
     </header>
   );
 }

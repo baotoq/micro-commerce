@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { errorMessage } from "@/lib/api";
@@ -15,11 +16,12 @@ export function CartLineControls({ line }: { line: CartLine }) {
   const [error, setError] = useState<string>();
   const name = [line.productName ?? "item", ...line.optionValues].join(" ");
 
-  async function run(change: () => Promise<unknown>) {
+  async function run(change: () => Promise<unknown>, message: string) {
     setIsPending(true);
     setError(undefined);
     try {
       await change();
+      toast.success(message);
       router.refresh();
     } catch (e) {
       setError(errorMessage(e));
@@ -41,7 +43,7 @@ export function CartLineControls({ line }: { line: CartLine }) {
           disabled={isPending}
           onChange={(e) => setQuantity(Number(e.target.value))}
           onBlur={() => {
-            if (quantity !== line.quantity) void run(() => updateCartLine(line.variantId, quantity));
+            if (quantity !== line.quantity) void run(() => updateCartLine(line.variantId, quantity), "Cart updated.");
           }}
         />
         <Button
@@ -49,7 +51,7 @@ export function CartLineControls({ line }: { line: CartLine }) {
           size="sm"
           aria-label={`Remove ${name}`}
           disabled={isPending}
-          onClick={() => void run(() => removeCartLine(line.variantId))}
+          onClick={() => void run(() => removeCartLine(line.variantId), "Removed from your Cart.")}
         >
           Remove
         </Button>

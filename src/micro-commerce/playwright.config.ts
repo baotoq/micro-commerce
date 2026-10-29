@@ -1,5 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
-import { buyerStorageState } from "./e2e/sign-in";
+import { buyer2StorageState, buyerStorageState } from "./e2e/sign-in";
 
 // The Keycloak realm only allows the http://localhost:3000 redirect URI.
 const appUrl = "http://localhost:3000";
@@ -32,6 +32,12 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"], storageState: buyerStorageState },
       dependencies: ["setup"],
+    },
+    {
+      name: "mobile",
+      use: { ...devices["Pixel 7"], storageState: buyer2StorageState },
+      dependencies: ["setup"],
+      grep: /@storefront/,
     },
   ],
   webServer: {

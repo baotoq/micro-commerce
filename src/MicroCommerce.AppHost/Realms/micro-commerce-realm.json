@@ -111,6 +111,15 @@
       "credentials": [{ "type": "password", "value": "buyer", "temporary": false }]
     },
     {
+      "username": "buyer2",
+      "email": "buyer2@micro-commerce.test",
+      "emailVerified": true,
+      "firstName": "Bryn",
+      "lastName": "Buyer",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "buyer2", "temporary": false }]
+    },
+    {
       "username": "merchant",
       "email": "merchant@micro-commerce.test",
       "emailVerified": true,
@@ -118,6 +127,15 @@
       "lastName": "Merchant",
       "enabled": true,
       "credentials": [{ "type": "password", "value": "merchant", "temporary": false }]
+    },
+    {
+      "username": "merchant2",
+      "email": "merchant2@micro-commerce.test",
+      "emailVerified": true,
+      "firstName": "Mina",
+      "lastName": "Merchant",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "merchant2", "temporary": false }]
     },
     {
       "username": "operator",
