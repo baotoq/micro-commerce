@@ -4,6 +4,8 @@ using MicroCommerce.ApiService.Features.Accounts;
 using MicroCommerce.ApiService.Features.Accounts.Data;
 using MicroCommerce.ApiService.Features.Catalog;
 using MicroCommerce.ApiService.Features.Catalog.Data;
+using MicroCommerce.ApiService.Features.Ordering;
+using MicroCommerce.ApiService.Features.Ordering.Data;
 using MicroCommerce.ApiService;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -16,6 +18,8 @@ builder.AddNpgsqlDbContext<AccountsDbContext>("micro-commerce-db",
     configureDbContextOptions: o => o.UseNpgsql(AccountsDbContext.ConfigureNpgsql));
 builder.AddNpgsqlDbContext<CatalogDbContext>("micro-commerce-db",
     configureDbContextOptions: o => o.UseNpgsql(CatalogDbContext.ConfigureNpgsql));
+builder.AddNpgsqlDbContext<OrderingDbContext>("micro-commerce-db",
+    configureDbContextOptions: o => o.UseNpgsql(OrderingDbContext.ConfigureNpgsql));
 builder.AddRedisDistributedCache("redis");
 builder.AddMessaging();
 
@@ -35,6 +39,8 @@ builder.Services.AddScoped<MerchantCatalog>();
 builder.Services.AddScoped<MerchantStatusChanges>();
 builder.Services.AddScoped<IProductSearch, PostgresProductSearch>();
 builder.Services.AddSingleton<StorefrontProductCache>();
+builder.Services.AddScoped<ICatalogLookup, CatalogLookup>();
+builder.Services.AddScoped<BuyerCart>();
 
 builder.Services.AddProblemDetails();
 builder.Services
@@ -57,6 +63,7 @@ if (app.Environment.IsDevelopment())
     var catalog = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
     await catalog.Database.MigrateAsync();
     await StarterCategories.SeedAsync(catalog);
+    await scope.ServiceProvider.GetRequiredService<OrderingDbContext>().Database.MigrateAsync();
 }
 
 app.UseAuthentication();

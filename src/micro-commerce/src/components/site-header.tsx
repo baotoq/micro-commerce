@@ -18,6 +18,9 @@ export async function SiteHeader() {
               Operations
             </Link>
           )}
+          <Link href="/cart" className="text-sm hover:underline">
+            Cart
+          </Link>
           <Link href={me.merchant ? "/merchant" : "/open-shop"} className="text-sm hover:underline">
             {me.merchant ? "Merchant Centre" : "Open your Shop"}
           </Link>
