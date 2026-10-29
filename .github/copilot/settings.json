@@ -6,7 +6,7 @@
     "dotnet@dotnet-agent-skills": true,
     "microsoft-docs@microsoft-docs-marketplace": true,
     "azure@claude-plugins-official": true,
-    "mattpocock-skills@claude-plugins-official": true,
+    "mattpocock-skills@mattpocock": true,
     "sonarqube@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "andrej-karpathy-skills@karpathy-skills": true
@@ -41,6 +41,10 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
       }
+    },
+    "mattpocock": {
+      "source": { "source": "github", "repo": "mattpocock/skills" },
+      "autoUpdate": true
     }
   }
 }
