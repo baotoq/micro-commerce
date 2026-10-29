@@ -7,6 +7,7 @@ namespace MicroCommerce.ApiService.Features.Ordering;
 [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Target)]
 public static partial class OrderingMapper
 {
+    [MapperIgnoreTarget(nameof(CheckoutResponse.Orders))]
     public static partial CheckoutResponse ToCheckoutResponse(this Checkout checkout);
 
     public static partial CheckoutMerchantResponse ToCheckoutMerchantResponse(this CheckoutMerchant merchant);

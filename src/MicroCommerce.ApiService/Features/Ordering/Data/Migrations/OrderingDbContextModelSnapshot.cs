@@ -93,6 +93,33 @@ namespace MicroCommerce.ApiService.Features.Ordering.Data.Migrations
                     b.ToTable("CheckoutMerchants", "ordering");
                 });
 
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CheckoutId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("MerchantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CheckoutId", "MerchantId")
+                        .IsUnique();
+
+                    b.ToTable("Orders", "ordering");
+                });
+
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.OrderLine", b =>
                 {
                     b.Property<Guid>("CheckoutId")
@@ -205,6 +232,17 @@ namespace MicroCommerce.ApiService.Features.Ordering.Data.Migrations
                         .HasForeignKey("CheckoutId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.Order", b =>
+                {
+                    b.HasOne("MicroCommerce.ApiService.Features.Ordering.Checkout", "Checkout")
+                        .WithMany()
+                        .HasForeignKey("CheckoutId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Checkout");
                 });
 
             modelBuilder.Entity("MicroCommerce.ApiService.Features.Ordering.OrderLine", b =>

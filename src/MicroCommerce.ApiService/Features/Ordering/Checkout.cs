@@ -28,12 +28,20 @@ public class Checkout
         Status = CheckoutStatus.Expired;
         return true;
     }
+
+    public bool MarkPaid()
+    {
+        if (Status != CheckoutStatus.AwaitingPayment) return false;
+        Status = CheckoutStatus.Paid;
+        return true;
+    }
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter<CheckoutStatus>))]
 public enum CheckoutStatus
 {
     AwaitingPayment,
+    Paid,
     Expired,
 }
 
@@ -164,7 +172,10 @@ public record CheckoutResponse(
     Money ShippingTotal,
     Money Total,
     IReadOnlyList<CheckoutMerchantResponse> Merchants,
-    IReadOnlyList<OrderLineResponse> Lines);
+    IReadOnlyList<OrderLineResponse> Lines)
+{
+    public IReadOnlyList<OrderResponse> Orders { get; init; } = [];
+}
 
 public record CheckoutListResponse(IReadOnlyList<CheckoutResponse> Items, int Page, int PageSize, int TotalCount);
 

@@ -28,6 +28,7 @@ public class GetCheckoutEndpoint(OrderingDbContext db, CurrentAccount currentAcc
             return;
         }
 
-        await Send.OkAsync(checkout.ToCheckoutResponse(), ct);
+        var orders = await OrderResponses.LoadAsync(db, [checkout.Id], null, ct);
+        await Send.OkAsync(checkout.ToCheckoutResponse() with { Orders = orders }, ct);
     }
 }
