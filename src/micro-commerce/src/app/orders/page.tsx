@@ -24,12 +24,36 @@ export default async function OrdersPage() {
                 <h2 className="font-medium">
                   {checkout.lines.map((line) => line.productName).join(", ")}
                 </h2>
-                <p>{checkout.status === "AwaitingPayment" ? "Awaiting Payment" : "Expired"}</p>
+                <p>{checkout.status === "AwaitingPayment" ? "Awaiting Payment" : checkout.status}</p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Expires {new Date(checkout.expiresAt).toLocaleString()}
-              </p>
+              {checkout.status === "AwaitingPayment" && (
+                <p className="text-sm text-muted-foreground">
+                  Expires {new Date(checkout.expiresAt).toLocaleString()}
+                </p>
+              )}
               <p className="text-sm tabular-nums">Total: {formatPrice(checkout.total)}</p>
+              {checkout.orders.length > 0 && (
+                <ul aria-label="Orders" className="mt-2 divide-y border-t">
+                  {checkout.orders.map((order) => (
+                    <li key={order.id} className="grid gap-2 py-4">
+                      <div className="flex flex-wrap justify-between gap-2">
+                        <h3 className="font-medium">Order {order.id.slice(0, 8)}</h3>
+                        <p>{order.status === "ToShip" ? "To Ship" : order.status}</p>
+                      </div>
+                      <ul className="text-sm text-muted-foreground">
+                        {order.lines.map((line) => (
+                          <li key={line.variantId}>
+                            {line.productName} · {line.optionValues.join(" / ")} · Qty {line.quantity}
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="text-sm tabular-nums">
+                        Items: {formatPrice(order.subtotal)} · Shipping: {formatPrice(order.shippingFee)}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>

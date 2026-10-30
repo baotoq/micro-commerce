@@ -50,6 +50,37 @@ public class CheckoutTests
         checkout.Status.ShouldBe(CheckoutStatus.Expired);
     }
 
+    [Fact]
+    public void An_awaiting_checkout_becomes_paid_once()
+    {
+        var checkout = CreateCheckout();
+
+        checkout.MarkPaid().ShouldBeTrue();
+        checkout.Status.ShouldBe(CheckoutStatus.Paid);
+        checkout.MarkPaid().ShouldBeFalse();
+        checkout.Expire().ShouldBeFalse();
+        checkout.Status.ShouldBe(CheckoutStatus.Paid);
+    }
+
+    [Fact]
+    public void An_order_is_created_for_a_checkout_merchant_group()
+    {
+        var group = new CheckoutMerchant
+        {
+            CheckoutId = CheckoutId.New(),
+            MerchantId = MerchantId.New(),
+            Subtotal = Money.From(120_000),
+            ShippingFee = Money.From(30_000),
+        };
+
+        var order = Order.FromGroup(group);
+
+        order.Id.Value.ShouldNotBe(Guid.Empty);
+        order.CheckoutId.ShouldBe(group.CheckoutId);
+        order.MerchantId.ShouldBe(group.MerchantId);
+        order.Status.ShouldBe(OrderStatus.ToShip);
+    }
+
     private static DeliveryAddress Address(string province) => new()
     {
         RecipientName = "Buyer",

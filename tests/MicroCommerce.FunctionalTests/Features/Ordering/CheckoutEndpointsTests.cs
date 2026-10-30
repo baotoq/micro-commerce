@@ -3,8 +3,10 @@ using System.Net;
 using System.Net.Http.Json;
 using MicroCommerce.ApiService.Features.Accounts;
 using MicroCommerce.ApiService.Features.Catalog;
+using MicroCommerce.ApiService.Features.Catalog.Data;
 using MicroCommerce.ApiService.Features.Ordering;
 using MicroCommerce.ApiService.SharedKernel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -67,6 +69,7 @@ public class CheckoutEndpointsTests(DevelopmentApiFixture App) : TestBase<Develo
     }
 
     private static VariantId Red(ProductResponse product) => product.Variants.Single(v => v.OptionValues[0] == "Red").Id;
+    private static VariantId Blue(ProductResponse product) => product.Variants.Single(v => v.OptionValues[0] == "Blue").Id;
 
     private static async Task<CartResponse> AddAsync(HttpClient buyer, VariantId id, int quantity = 1)
     {
@@ -184,6 +187,85 @@ public class CheckoutEndpointsTests(DevelopmentApiFixture App) : TestBase<Develo
         await Task.Delay(200, TestContext.Current.CancellationToken);
         var (_, expiredAgain) = await buyer.GETAsync<GetCheckoutEndpoint, GetCheckoutRequest, CheckoutResponse>(new(checkout.Id));
         expiredAgain.Status.ShouldBe(CheckoutStatus.Expired);
+        using var payExpired = await buyer.PostAsJsonAsync(
+            $"/dev/checkouts/{checkout.Id}/pay", new { }, TestContext.Current.CancellationToken);
+        payExpired.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task Payment_creates_one_scoped_order_per_merchant_from_the_frozen_checkout()
+    {
+        var firstMerchant = await NewMerchantAsync();
+        var secondMerchant = await NewMerchantAsync();
+        var firstProduct = await NewPublishedProductAsync(firstMerchant);
+        var secondProduct = await NewPublishedProductAsync(secondMerchant);
+        var buyer = App.ClientFor(TestActor.Buyer());
+        await AddAsync(buyer, Red(firstProduct));
+        await AddAsync(buyer, Blue(secondProduct));
+        var (placed, checkout) = await PlaceAsync(buyer, 250_000);
+        placed.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        var (suspended, _) = await _operator.POSTAsync<SuspendMerchantEndpoint, ChangeMerchantStatusRequest, OperatorMerchantResponse>(
+            new(firstMerchant.Id));
+        suspended.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        using var pay = await buyer.PostAsJsonAsync(
+            $"/dev/checkouts/{checkout.Id}/pay", new { }, TestContext.Current.CancellationToken);
+        pay.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+
+        var paid = await EventuallyAsync(async () =>
+        {
+            var (response, current) = await buyer.GETAsync<GetCheckoutEndpoint, GetCheckoutRequest, CheckoutResponse>(new(checkout.Id));
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            return current;
+        }, current => current.Status == CheckoutStatus.Paid && current.Orders.Count == 2);
+        paid.Orders.Select(order => order.MerchantId).ShouldBe([firstMerchant.Id, secondMerchant.Id], ignoreOrder: true);
+        paid.Orders.Select(order => order.Status).ShouldAllBe(status => status == OrderStatus.ToShip);
+        paid.Orders.Single(order => order.MerchantId == firstMerchant.Id).Subtotal.ShouldBe(Money.From(120_000));
+        paid.Orders.Single(order => order.MerchantId == firstMerchant.Id).ShippingFee.ShouldBe(Money.From(30_000));
+        paid.Orders.Single(order => order.MerchantId == firstMerchant.Id).Lines
+            .Select(line => line.VariantId).ShouldHaveSingleItem().ShouldBe(Red(firstProduct));
+        paid.Orders.Single(order => order.MerchantId == secondMerchant.Id).Subtotal.ShouldBe(Money.From(130_000));
+        paid.Orders.Single(order => order.MerchantId == secondMerchant.Id).ShippingFee.ShouldBe(Money.From(30_000));
+        paid.Orders.Single(order => order.MerchantId == secondMerchant.Id).Lines
+            .Select(line => line.VariantId).ShouldHaveSingleItem().ShouldBe(Blue(secondProduct));
+        paid.Orders.ShouldAllBe(order => order.DeliveryAddress == Address);
+        var (checkoutListResponse, checkoutList) =
+            await buyer.GETAsync<ListCheckoutsEndpoint, ListCheckoutsRequest, CheckoutListResponse>(new());
+        checkoutListResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        checkoutList.Items.Single(item => item.Id == checkout.Id).Orders.Count.ShouldBe(2);
+
+        using var duplicatePay = await buyer.PostAsJsonAsync(
+            $"/dev/checkouts/{checkout.Id}/pay", new { }, TestContext.Current.CancellationToken);
+        duplicatePay.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+        var firstOrders = await firstMerchant.Client.GETAsync<ListMerchantOrdersEndpoint, ListMerchantOrdersRequest, OrderListResponse>(new());
+        var secondOrders = await secondMerchant.Client.GETAsync<ListMerchantOrdersEndpoint, ListMerchantOrdersRequest, OrderListResponse>(new());
+        firstOrders.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        secondOrders.Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        firstOrders.Result.TotalCount.ShouldBe(1);
+        secondOrders.Result.TotalCount.ShouldBe(1);
+        var firstOrder = firstOrders.Result.Items.ShouldHaveSingleItem();
+        firstOrder.MerchantId.ShouldBe(firstMerchant.Id);
+        firstOrder.DeliveryAddress.ShouldBe(Address);
+        firstOrder.Lines.Select(line => line.VariantId).ShouldHaveSingleItem().ShouldBe(Red(firstProduct));
+        var secondOrder = secondOrders.Result.Items.ShouldHaveSingleItem();
+        secondOrder.MerchantId.ShouldBe(secondMerchant.Id);
+        secondOrder.DeliveryAddress.ShouldBe(Address);
+        secondOrder.Lines.Select(line => line.VariantId).ShouldHaveSingleItem().ShouldBe(Blue(secondProduct));
+
+        var otherBuyer = App.ClientFor(TestActor.Buyer());
+        var (otherGet, _) = await otherBuyer.GETAsync<GetCheckoutEndpoint, GetCheckoutRequest, CheckoutResponse>(new(checkout.Id));
+        otherGet.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        using var otherPay = await otherBuyer.PostAsJsonAsync(
+            $"/dev/checkouts/{checkout.Id}/pay", new { }, TestContext.Current.CancellationToken);
+        otherPay.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+
+        await using var scope = App.Services.CreateAsyncScope();
+        var reservations = await scope.ServiceProvider.GetRequiredService<CatalogDbContext>().Reservations.AsNoTracking()
+            .Where(reservation => reservation.CheckoutId == checkout.Id)
+            .ToListAsync(TestContext.Current.CancellationToken);
+        reservations.Count.ShouldBe(2);
+        reservations.ShouldAllBe(reservation => reservation.State == ReservationState.Held && reservation.HoldUntil == null);
     }
 
     [Fact]

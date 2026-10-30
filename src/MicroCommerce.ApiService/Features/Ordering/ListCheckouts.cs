@@ -39,8 +39,14 @@ public class ListCheckoutsEndpoint(OrderingDbContext db, CurrentAccount currentA
             .Include(c => c.Merchants)
             .Include(c => c.Lines)
             .ToListAsync(ct);
+        var orders = await OrderResponses.LoadAsync(db, items.Select(checkout => checkout.Id).ToArray(), null, ct);
+        var ordersByCheckout = orders.GroupBy(order => order.CheckoutId)
+            .ToDictionary(group => group.Key, group => (IReadOnlyList<OrderResponse>)group.ToArray());
         await Send.OkAsync(new CheckoutListResponse(
-            items.Select(checkout => checkout.ToCheckoutResponse()).ToList(),
+            items.Select(checkout => checkout.ToCheckoutResponse() with
+            {
+                Orders = ordersByCheckout.GetValueOrDefault(checkout.Id, []),
+            }).ToList(),
             request.Page,
             request.PageSize,
             totalCount), ct);

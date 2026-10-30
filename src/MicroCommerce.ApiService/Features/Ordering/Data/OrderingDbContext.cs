@@ -19,6 +19,7 @@ public class OrderingDbContext(DbContextOptions<OrderingDbContext> options) : Db
     public DbSet<Checkout> Checkouts => Set<Checkout>();
     public DbSet<CheckoutMerchant> CheckoutMerchants => Set<CheckoutMerchant>();
     public DbSet<OrderLine> OrderLines => Set<OrderLine>();
+    public DbSet<Order> Orders => Set<Order>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -27,6 +28,7 @@ public class OrderingDbContext(DbContextOptions<OrderingDbContext> options) : Db
         configurationBuilder.Properties<ProductId>().HaveConversion<ProductId.EfCoreValueConverter, ProductId.EfCoreValueComparer>();
         configurationBuilder.Properties<VariantId>().HaveConversion<VariantId.EfCoreValueConverter, VariantId.EfCoreValueComparer>();
         configurationBuilder.Properties<CheckoutId>().HaveConversion<CheckoutId.EfCoreValueConverter, CheckoutId.EfCoreValueComparer>();
+        configurationBuilder.Properties<OrderId>().HaveConversion<OrderId.EfCoreValueConverter, OrderId.EfCoreValueComparer>();
         configurationBuilder.Properties<Money>().HaveConversion<Money.EfCoreValueConverter, Money.EfCoreValueComparer>();
     }
 

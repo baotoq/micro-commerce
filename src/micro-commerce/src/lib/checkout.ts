@@ -16,7 +16,7 @@ export type CheckoutLineProblem = {
 
 export type Checkout = {
   id: string;
-  status: "AwaitingPayment" | "Expired";
+  status: "AwaitingPayment" | "Paid" | "Expired";
   placedAt: string;
   expiresAt: string;
   deliveryAddress: DeliveryAddress;
@@ -33,6 +33,19 @@ export type Checkout = {
     unitPrice: number;
     quantity: number;
   }[];
+  orders: Order[];
+};
+
+export type Order = {
+  id: string;
+  checkoutId: string;
+  merchantId: string;
+  status: "ToShip";
+  createdAt: string;
+  subtotal: number;
+  shippingFee: number;
+  deliveryAddress: DeliveryAddress;
+  lines: Checkout["lines"];
 };
 
 export type CheckoutConflict = {
@@ -43,6 +56,13 @@ export type CheckoutConflict = {
 
 export type CheckoutPage = {
   items: Checkout[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+};
+
+export type OrderPage = {
+  items: Order[];
   page: number;
   pageSize: number;
   totalCount: number;
@@ -95,6 +115,12 @@ export function placeCheckout(deliveryAddress: DeliveryAddress, itemsTotal: numb
 
 export function getCheckouts(accessToken: string) {
   return apiFetch<CheckoutPage>("/checkouts?page=1&pageSize=20", {
+    headers: { Authorization: "Bearer " + accessToken },
+  });
+}
+
+export function getMerchantOrders(accessToken: string) {
+  return apiFetch<OrderPage>("/merchant/orders?page=1&pageSize=20", {
     headers: { Authorization: "Bearer " + accessToken },
   });
 }

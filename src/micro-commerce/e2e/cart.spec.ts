@@ -25,7 +25,7 @@ async function kitchenCategoryId(page: Page) {
   return kitchen!.id;
 }
 
-test("a Buyer manages the Cart and places a Checkout", async ({ page, browser }) => {
+test("a Buyer pays for a Checkout and both parties see their Order", async ({ page, browser }) => {
   // Runs against dev data, so the name must be unique to this run.
   const name = `E2E Cup ${crypto.randomUUID().slice(0, 8)}`;
 
@@ -88,9 +88,36 @@ test("a Buyer manages the Cart and places a Checkout", async ({ page, browser })
   await page.getByLabel("Province / city").selectOption("Hồ Chí Minh");
   await page.getByRole("button", { name: "Place Checkout" }).click();
   await expect(page).toHaveURL(/\/orders$/);
-  const checkout = page.getByRole("list", { name: "Checkouts" }).getByRole("listitem").filter({ hasText: name });
+  const checkouts = page.getByRole("list", { name: "Checkouts" });
+  const checkout = checkouts.getByRole("listitem").filter({
+    has: page.getByRole("heading", { name, exact: true }),
+  });
   await expect(checkout).toContainText("Awaiting Payment");
   await expect(checkout).toContainText("Expires");
+
+  const checkoutsResponse = await page.request.get("/api/checkouts?page=1&pageSize=20");
+  expect(checkoutsResponse.ok()).toBeTruthy();
+  const placedCheckout = (await checkoutsResponse.json()).items.find((item: {
+    lines: { productName: string }[];
+  }) => item.lines.some((line) => line.productName === name));
+  expect(placedCheckout).toBeDefined();
+  const payment = await page.request.post(`/api/dev/checkouts/${placedCheckout.id}/pay`);
+  expect(payment.status()).toBe(202);
+  await expect(async () => {
+    await page.reload();
+    const paidCheckout = checkouts.getByRole("listitem").filter({
+      has: page.getByRole("heading", { name, exact: true }),
+    });
+    await expect(paidCheckout).toContainText("Paid");
+    await expect(paidCheckout.getByRole("list", { name: "Orders" })).toContainText("To Ship");
+  }).toPass();
+
+  const merchantOrders = await browser.newPage({ storageState: { cookies: [], origins: [] } });
+  await signInAsMerchant(merchantOrders);
+  await merchantOrders.goto("/merchant/orders");
+  await expect(merchantOrders.getByRole("list", { name: "Orders" })).toContainText(name);
+  await expect(merchantOrders.getByRole("list", { name: "Orders" })).toContainText("To Ship");
+  await merchantOrders.close();
 });
 
 test.describe("signed out", () => {

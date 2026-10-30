@@ -61,7 +61,8 @@ builder.Services.AddProblemDetails();
 builder.Services
     .AddFastEndpoints(o =>
     {
-        o.Filter = endpoint => builder.Environment.IsDevelopment() || endpoint != typeof(ExpireCheckoutEndpoint);
+        o.Filter = endpoint => builder.Environment.IsDevelopment()
+            || endpoint != typeof(ExpireCheckoutEndpoint) && endpoint != typeof(PayCheckoutEndpoint);
     })
     .OpenApiDocument(o =>
     {

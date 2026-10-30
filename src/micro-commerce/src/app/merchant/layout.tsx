@@ -11,6 +11,9 @@ export default function MerchantCentreLayout({ children }: LayoutProps<"/merchan
         <Link href="/merchant/products" className="text-sm text-muted-foreground hover:text-foreground">
           Products
         </Link>
+        <Link href="/merchant/orders" className="text-sm text-muted-foreground hover:text-foreground">
+          Orders
+        </Link>
       </nav>
       <main className="min-w-0 flex-1">{children}</main>
     </div>
