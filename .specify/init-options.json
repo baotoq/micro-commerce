@@ -1,0 +1,10 @@
+{
+  "ai": "copilot",
+  "ai_skills": true,
+  "allow_symlinks": false,
+  "feature_numbering": "sequential",
+  "here": false,
+  "integration": "copilot",
+  "script": "py",
+  "speckit_version": "1.2.5"
+}
