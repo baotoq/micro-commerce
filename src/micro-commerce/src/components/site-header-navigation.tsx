@@ -93,7 +93,7 @@ export function SiteHeaderNavigation({
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator className="my-1 h-px bg-border" />
                 <form action={signOutAction}>
-                  <DropdownMenu.Item asChild className={menuItemClass}>
+                  <DropdownMenu.Item asChild className={menuItemClass} onSelect={(event) => event.preventDefault()}>
                     <button type="submit">Sign out</button>
                   </DropdownMenu.Item>
                 </form>

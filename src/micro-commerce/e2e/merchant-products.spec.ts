@@ -132,7 +132,8 @@ test.describe("as a Merchant", () => {
     await expect(page.getByRole("row").filter({ hasText: name })).toContainText("Published");
 
     // A Buyer browses anonymously. The Shop reaches the storefront by event, shortly after the Merchant opens.
-    const buyer = await browser.newPage({ storageState: { cookies: [], origins: [] } });
+    const buyerContext = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+    const buyer = await buyerContext.newPage();
     const card = buyer.getByRole("list", { name: "Products" }).getByRole("listitem").filter({ hasText: name });
     await expect(async () => {
       await buyer.goto("/");
@@ -152,7 +153,7 @@ test.describe("as a Merchant", () => {
     await expect(buyer.getByRole("heading", { name: shopName })).toBeVisible();
     await expect(buyer.getByRole("link", { name })).toBeVisible();
     await expectNoSeriousA11yViolations(buyer);
-    await buyer.close();
+    await buyerContext.close();
   });
 
   test("Buyers search the storefront and filter it by Category", async ({ page, browser }) => {
@@ -176,7 +177,8 @@ test.describe("as a Merchant", () => {
     await page.getByRole("button", { name: `Publish ${name}` }).click();
     await expect(page.getByRole("row").filter({ hasText: name })).toContainText("Published");
 
-    const buyer = await browser.newPage({ storageState: { cookies: [], origins: [] } });
+    const buyerContext = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+    const buyer = await buyerContext.newPage();
     const results = buyer.getByRole("list", { name: "Products" }).getByRole("listitem");
     const search = async (text: string, category: string) => {
       await buyer.getByRole("searchbox", { name: "Search" }).fill(text);
@@ -199,7 +201,7 @@ test.describe("as a Merchant", () => {
     await search(`${word}s`, "Fashion");
     await expect(buyer.getByText("No Products match your search.")).toBeVisible();
     await expectNoSeriousA11yViolations(buyer);
-    await buyer.close();
+    await buyerContext.close();
   });
 
   test("a Platform Operator removes a Product for good", async ({ page, browser }) => {
@@ -237,11 +239,12 @@ test.describe("as a Merchant", () => {
     await operator.close();
 
     // Buyers no longer find it.
-    const buyer = await browser.newPage({ storageState: { cookies: [], origins: [] } });
+    const buyerContext = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+    const buyer = await buyerContext.newPage();
     await buyer.goto(storefrontLink.pathname);
     await expect(buyer.getByText("This page could not be found.")).toBeVisible();
     await expectNoSeriousA11yViolations(buyer);
-    await buyer.close();
+    await buyerContext.close();
 
     // The Merchant sees it marked Removed, with nothing left to change.
     await page.goto("/merchant/products");
