@@ -5,8 +5,8 @@ using MicroCommerce.ApiService.Infrastructure.Data;
 using MicroCommerce.ApiService.Infrastructure.Messaging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Testcontainers.PostgreSql;
 
@@ -22,9 +22,6 @@ namespace MicroCommerce.FunctionalTests;
 /// </summary>
 public class ApiFixture : AppFixture<Program>
 {
-    // SetupAsync runs once per test class, concurrently, against the one cached app; migrating in parallel races.
-    private static readonly SemaphoreSlim MigrationLock = new(1, 1);
-
     private PostgreSqlContainer _postgres = null!;
     private IContainer _temporal = null!;
 
@@ -34,10 +31,20 @@ public class ApiFixture : AppFixture<Program>
     /// <summary>What the sidecar sends as <c>dapr-api-token</c>; random per test run.</summary>
     public string DaprApiToken => AppApiToken;
 
+    private static readonly InboxFaults SharedInboxFaults = new();
+
+    private static readonly CapturedLogs SharedLogs = new();
+
     private static readonly IIntegrationEventPublisher SharedPublisher = Substitute.For<IIntegrationEventPublisher>();
 
     /// <summary>Receives the integration events the app publishes; shared by every test class, like the app.</summary>
     public IIntegrationEventPublisher Publisher => SharedPublisher;
+
+    /// <summary>The app's warning-and-above log entries; shared like the app.</summary>
+    public CapturedLogs Logs => SharedLogs;
+
+    /// <summary>Makes the inbox fail once for a chosen message; shared like the app.</summary>
+    public InboxFaults InboxFaults => SharedInboxFaults;
 
     protected override async ValueTask PreSetupAsync()
     {
@@ -62,6 +69,9 @@ public class ApiFixture : AppFixture<Program>
     protected override void ConfigureServices(IServiceCollection s)
     {
         s.AddSingleton(Publisher);
+        s.AddSingleton<ILoggerProvider>(SharedLogs);
+        s.AddScoped<Inbox>();
+        s.AddScoped<IInbox>(sp => new FaultInjectingInbox(sp.GetRequiredService<Inbox>(), SharedInboxFaults));
 
         s.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, o =>
         {
@@ -76,19 +86,9 @@ public class ApiFixture : AppFixture<Program>
         });
     }
 
-    protected override async ValueTask SetupAsync()
-    {
-        await MigrationLock.WaitAsync();
-        try
-        {
-            await using var scope = Services.CreateAsyncScope();
-            await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
-        }
-        finally
-        {
-            MigrationLock.Release();
-        }
-    }
+    // The app migrates itself on startup in Development; wait for it rather than racing it.
+    protected override async ValueTask SetupAsync() =>
+        await Services.GetRequiredService<DatabaseMigrationStatus>().Applied.WaitAsync(TimeSpan.FromSeconds(60));
 
     /// <summary>A client whose requests carry a valid token for <paramref name="actor"/>.</summary>
     public HttpClient ClientFor(TestActor actor) => ClientFor(TestIdentity.TokenFor(actor));

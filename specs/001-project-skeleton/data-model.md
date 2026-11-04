@@ -97,6 +97,8 @@ inbox drops the duplicate.
 
 `CurrentAccount { AccountId Id, string DisplayName, string? Email, bool IsPlatformOperator }` is
 built for each request by `ICurrentAccount` from the validated token. The display name comes from
-`name`, falling back to `preferred_username`. `IsPlatformOperator` is true when the `roles` claim
+`name`, falling back to `preferred_username`. If a token has neither, the display name is the
+Account's identifier, so the web app always has something to show; Keycloak's dev realm always
+sends both. `IsPlatformOperator` is true when the `roles` claim
 contains `platform-operator`. No commands or queries take an `AccountId` from the request body
 (FR-009, ADR-50).

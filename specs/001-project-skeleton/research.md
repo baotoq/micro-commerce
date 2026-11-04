@@ -267,6 +267,9 @@ in the plan phase.
 | Add (npm) | `react-oidc-context`, `oidc-client-ts` | 3.3.1, 3.5.0 | **Pending approval** |
 | Add (npm) | `vitest`, `@testing-library/react`, `jsdom` | latest stable | **Pending approval** |
 | Add (npm) | `react`, `react-dom`, `vite`, `@vitejs/plugin-react`, `typescript` | latest stable | Approved (React and Vite) |
+| Add (npm, dev) | `@types/react`, `@types/react-dom`, `@types/node`, `@testing-library/dom` | 19.3.0, 19.3.0, 26.6.6, 10.4.2 | Approved during implementation (type packages for `tsc`, and the Testing Library peer) |
+| Restore (tool) | `dotnet-ef` in `dotnet-tools.json` | 10.0.12 | Restored from the repository before the re-init. Microsoft's EF Core CLI, matching the pinned EF Core, needed for the README's `dotnet ef migrations add` command. Not a runtime dependency. |
+| New reference | `Temporalio` from `MicroCommerce.IntegrationTests` | 1.21.0 (already pinned) | Already approved and pinned. The restart test reads the workflow history to prove `CompleteSampleProcess` ran once (SC-007). |
 
 ## Spike results (T011)
 

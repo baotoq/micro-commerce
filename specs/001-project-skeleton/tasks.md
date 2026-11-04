@@ -698,3 +698,13 @@ if you prefer smaller reviews. The squash-merge workflow is in the constitution.
 - Commit after each task or logical group, and only when the user asks.
 - The domain never reads the clock. Pass `now` from `TimeProvider` or `Workflow.UtcNow`.
 - Don't add packages beyond research R12. Anything else needs user approval first.
+
+## Phase 8: Convergence
+
+- [X] T074 Apply Development migrations with retry instead of an unguarded `MigrateAsync()` at startup in `src/MicroCommerce.ApiService/Program.cs`, so the API stays up, `/health` reports unhealthy while PostgreSQL is unreachable, and it recovers without a restart; add a test per Spec Edge Cases (database unreachable) / FR-004 (partial)
+- [X] T075 Add a functional test in `tests/MicroCommerce.FunctionalTests/Features/Diagnostics/SampleProcessCompletedSubscriberTests.cs` that forces the subscriber to fail once (expect `500`, so Dapr retries), then redelivers the same event (expect `200` and exactly one `processed_events` row) per FR-012b (partial)
+- [X] T076 Return ProblemDetails for `404` in `GetSampleProcess.cs` and for the missing-`data` `400` in `SampleProcessCompletedSubscriber.cs`, and state the 404 body in `contracts/http-api.md`, per FR-016 (partial)
+- [X] T077 Add a `Validator<SampleProcessCompletedCloudEvent>` that requires `data`, a non-empty `eventId` and a non-empty `sampleProcessId`, with unit tests, per Constitution IV / FR-015 (partial)
+- [X] T078 Stop expected duplicate deliveries in `Infrastructure/Messaging/Inbox.cs` from producing EF Core error-level logs (the `23505` `DbUpdateException`), keeping one inbox row per message, per Constitution VI / FR-012b (partial)
+- [X] T079 Review the subject-UUID display-name fallback in `Features/Accounts/CurrentAccount.cs`: document it in `data-model.md` or remove it so the display name follows `name` then `preferred_username`, per data-model.md Account (unrequested)
+- [X] T080 Record `dotnet-tools.json` (dotnet-ef 10.0.12) and the `Temporalio` reference in `tests/MicroCommerce.IntegrationTests` in research R12, or remove them, per Constitution VII (unrequested)

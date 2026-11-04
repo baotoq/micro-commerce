@@ -110,9 +110,13 @@ public class SampleProcessEndpointsTests(ApiFixture App) : TestBase<ApiFixture>
     [Fact]
     public async Task Unknown_process_is_not_found()
     {
-        var response = await App.ClientFor(TestActor.PlatformOperator()).GetAsync($"{Route}/{Guid.NewGuid()}", TestContext.Current.CancellationToken);
+        var ct = TestContext.Current.CancellationToken;
+
+        var response = await App.ClientFor(TestActor.PlatformOperator()).GetAsync($"{Route}/{Guid.NewGuid()}", ct);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType!.MediaType.ShouldBe("application/problem+json");
+        JsonNode.Parse(await response.Content.ReadAsStringAsync(ct))!["status"]!.GetValue<int>().ShouldBe(404);
     }
 
     [Fact]

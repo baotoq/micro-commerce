@@ -8,6 +8,7 @@ only (FR-017).
 
 - Errors use RFC 9457 ProblemDetails (`application/problem+json`, FR-016). Validation errors list
   each field in `errors` (FR-015).
+- `404` responses are ProblemDetails too, with `status` and a `detail` naming what wasn't found.
 - Endpoints require a valid Keycloak bearer token unless they are marked otherwise (FR-007). With
   no token, or an expired, tampered or wrong-audience token, the response is
   `401 Unauthorized` with an empty body.
@@ -90,7 +91,7 @@ OpenAPI document.
 | Method and path | Purpose |
 |-----------------|---------|
 | `GET /dapr/subscribe` | Programmatic subscription list: `[{ "pubsubname": "pubsub", "topic": "sample-process-completed", "route": "/dapr/events/sample-process-completed" }]` |
-| `POST /dapr/events/sample-process-completed` | Receives a CloudEvent whose `data` is `SampleProcessCompletedV1` (see [events.md](./events.md)). Returns `200` when the event is handled or is a duplicate, and `500` on failure so that Dapr retries. |
+| `POST /dapr/events/sample-process-completed` | Receives a CloudEvent whose `data` is `SampleProcessCompletedV1` (see [events.md](./events.md)). Returns `200` when the event is handled or is a duplicate, `400` (validation ProblemDetails) when `data`, `data.eventId` or `data.sampleProcessId` is missing, and `500` on failure so that Dapr retries. |
 
 ## Infrastructure endpoints (ServiceDefaults; anonymous)
 

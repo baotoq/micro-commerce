@@ -33,7 +33,10 @@ public sealed class GetSampleProcessEndpoint(AppDbContext db, TypeAdapterConfig 
         var process = await db.SampleProcesses.AsNoTracking().SingleOrDefaultAsync(p => p.Id == id, ct);
         if (process is null)
         {
-            await Send.NotFoundAsync(ct);
+            await Send.ResultAsync(TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Sample process not found.",
+                detail: "No sample process has this ID, or its workflow hasn't created it yet."));
             return;
         }
 

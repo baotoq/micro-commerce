@@ -12,7 +12,6 @@ using MicroCommerce.ApiService.Infrastructure.Messaging;
 using MicroCommerce.ApiService.Infrastructure.OpenApi;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Temporalio.Extensions.Hosting;
 
@@ -21,6 +20,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<AppDbContext>("micro-commerce-db");
+
+// Development brings the schema up to date itself, retrying until PostgreSQL is reachable (FR-004).
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<DatabaseMigrationStatus>();
+    builder.Services.AddHostedService<DatabaseMigrator>();
+    builder.Services.AddHealthChecks().AddCheck<DatabaseMigrationHealthCheck>("database-migrations");
+}
 
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<DomainRuleViolationHandler>();
@@ -51,7 +58,7 @@ builder.Services.AddScoped<ICurrentAccount, HttpCurrentAccount>();
 // Messaging through the Dapr sidecar (research R6).
 builder.Services.AddDaprClient();
 builder.Services.AddSingleton<IIntegrationEventPublisher, DaprIntegrationEventPublisher>();
-builder.Services.AddScoped<Inbox>();
+builder.Services.AddScoped<IInbox, Inbox>();
 
 // Durable workflows: a hosted Temporal worker inside the API (research R5).
 builder.Services.AddTemporalClient(options =>
@@ -75,12 +82,6 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-if (app.Environment.IsDevelopment())
-{
-    await using var scope = app.Services.CreateAsyncScope();
-    await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
-}
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseFastEndpoints(c =>
@@ -91,7 +92,7 @@ app.UseFastEndpoints(c =>
     c.Errors.ProducesMetadataType = typeof(HttpValidationProblemDetails);
     c.Errors.ResponseBuilder = (failures, _, statusCode) => new HttpValidationProblemDetails(
         failures
-            .GroupBy(f => JsonNamingPolicy.CamelCase.ConvertName(f.PropertyName))
+            .GroupBy(f => string.Join('.', f.PropertyName.Split('.').Select(JsonNamingPolicy.CamelCase.ConvertName)))
             .ToDictionary(g => g.Key, g => g.Select(f => f.ErrorMessage).ToArray()))
     {
         Status = statusCode,
