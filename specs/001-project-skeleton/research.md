@@ -267,3 +267,40 @@ in the plan phase.
 | Add (npm) | `react-oidc-context`, `oidc-client-ts` | 3.3.1, 3.5.0 | **Pending approval** |
 | Add (npm) | `vitest`, `@testing-library/react`, `jsdom` | latest stable | **Pending approval** |
 | Add (npm) | `react`, `react-dom`, `vite`, `@vitejs/plugin-react`, `typescript` | latest stable | Approved (React and Vite) |
+
+## Spike results (T011)
+
+Run on 2026-11-05.
+
+- **(a) Keycloak `${ENV}` placeholders in imported user credentials: confirmed, primary path.**
+  A throwaway `quay.io/keycloak/keycloak:26.6` container (the image the Aspire Keycloak integration
+  ran on this machine) imported a realm whose user credential was `"${MC_BUYER_PASSWORD}"`, with
+  `MC_BUYER_PASSWORD` set on the container. A password grant with the environment value returned
+  `200`, and one with the literal placeholder text returned `400`. The realm file commits no passwords.
+- **(b) CommunityToolkit.Aspire.Hosting.Dapr 13.0.0: primary path, API surface confirmed; runtime check pending.**
+  - `WithMetadata(IResourceBuilder<IDaprComponentResource>, string, string | IValueProvider | ParameterResource)`
+    exists, so the `pubsub` component gets `redisHost` and `redisPassword` from the Aspire Redis
+    resource. No component YAML is needed.
+  - Correction found during T025: `AddDaprPubSub("pubsub")` makes the toolkit write a
+    `pubsub.in-memory` component and ignore its metadata (it logs "Using in-memory provider for dapr
+    component 'pubsub'"). The AppHost therefore uses `AddDaprComponent("pubsub", "pubsub.redis")`,
+    whose generated YAML carries the metadata. A secret parameter or a value provider becomes a
+    `secretKeyRef` into the toolkit's `secretstores.local.env` store, fed through the sidecar's
+    environment, so the Redis password is never written to a file.
+  - `IDaprSidecarResource` is not `IResourceWithEnvironment`, so `WithEnvironment` doesn't compile on
+    it. However, the toolkit's lifecycle hook copies every `EnvironmentCallbackAnnotation` from the
+    sidecar resource onto the `dapr run` executable it creates
+    (`daprCli.Annotations.AddRange(daprSidecar.Annotations.OfType<EnvironmentCallbackAnnotation>())`).
+    The AppHost therefore sets `APP_API_TOKEN` for the sidecar with
+    `WithDaprSidecar(sidecar => sidecar.WithAnnotation(new EnvironmentCallbackAnnotation(...)))`,
+    and for the app with `WithEnvironment`. No beta toolkit, no hand-configured `daprd`, and no
+    anonymous `/dapr/*` endpoints.
+  - The runtime half (the sidecar really sends `dapr-api-token`) wasn't run, because the Dapr CLI
+    isn't installed on this machine yet. `SampleProcessLifecycleTests` covers it once `daprd` is
+    available.
+- **(c) Restarting a resource from `Aspire.Hosting.Testing` 13.6: primary path, API confirmed.**
+  `DistributedApplication.ResourceCommands` exposes `ResourceCommandService.ExecuteCommandAsync(resourceId,
+  commandName, ct)`, and `KnownResourceCommands.RestartCommand` names the restart command. The
+  restart test calls `app.ResourceCommands.ExecuteCommandAsync("apiservice", KnownResourceCommands.RestartCommand)`.
+
+No fallback was taken, so plan.md Complexity Tracking gets no new rows.

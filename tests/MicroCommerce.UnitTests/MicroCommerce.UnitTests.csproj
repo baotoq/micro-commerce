@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- No Testcontainers, Aspire.Hosting or FastEndpoints.Testing: unit tests need no infrastructure (SC-005). -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MicroCommerce.Domain\MicroCommerce.Domain.csproj" />
+    <ProjectReference Include="..\..\src\MicroCommerce.ApiService\MicroCommerce.ApiService.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The domain references only Vogen, so the build keeps infrastructure out of it (FR-013). -->
+  <ItemGroup>
+    <PackageReference Include="Vogen" />
+  </ItemGroup>
+
+</Project>

@@ -10,19 +10,19 @@
     <PackageVersion Include="Aspire.Hosting.Keycloak" Version="13.6.0-preview.1.26479.8" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.6.0" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="13.6.0" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Dapr" Version="13.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="Aspire client integrations">
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.6.0" />
-    <PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.6.0" />
   </ItemGroup>
 
   <ItemGroup Label="API">
     <PackageVersion Include="FastEndpoints" Version="8.3.0" />
     <PackageVersion Include="FastEndpoints.OpenApi" Version="8.3.0" />
+    <PackageVersion Include="Mapster" Version="10.0.14" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
-    <PackageVersion Include="Riok.Mapperly" Version="4.3.1" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.17.13" />
     <PackageVersion Include="Temporalio" Version="1.21.0" />
     <PackageVersion Include="Temporalio.Extensions.Hosting" Version="1.21.0" />
@@ -30,19 +30,15 @@
   </ItemGroup>
 
   <ItemGroup Label="Messaging">
-    <PackageVersion Include="WolverineFx" Version="6.56.0" />
-    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="6.56.0" />
-    <PackageVersion Include="WolverineFx.Postgresql" Version="6.56.0" />
-    <!-- Compiles Wolverine's generated handler code at runtime; core WolverineFx no longer ships Roslyn. -->
-    <PackageVersion Include="WolverineFx.RuntimeCompilation" Version="6.56.0" />
+    <PackageVersion Include="Dapr.AspNetCore" Version="1.19.0" />
   </ItemGroup>
 
   <ItemGroup Label="Testing">
     <PackageVersion Include="Aspire.Hosting.Testing" Version="13.6.0" />
     <PackageVersion Include="FastEndpoints.Testing" Version="8.3.0" />
+    <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.15.0" />
-    <PackageVersion Include="Testcontainers.Redis" Version="4.15.0" />
     <PackageVersion Include="xunit.v3" Version="4.0.1" />
   </ItemGroup>
 
