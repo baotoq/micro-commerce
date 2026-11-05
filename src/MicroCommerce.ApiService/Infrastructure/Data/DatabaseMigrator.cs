@@ -1,3 +1,5 @@
+using MicroCommerce.ApiService.Features.Accounts.Data;
+using MicroCommerce.ApiService.Features.Catalog.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -14,7 +16,7 @@ public sealed class DatabaseMigrationStatus
 }
 
 /// <summary>
-/// Development only: applies migrations in the background and keeps retrying while the database is
+/// Development only: applies every context's migrations, then seeds the starter Category tree, in the background and keeps retrying while the database is
 /// unreachable, so the API stays up and reports unhealthy instead of exiting (spec edge case, FR-004).
 /// </summary>
 public sealed class DatabaseMigrator(
@@ -31,7 +33,14 @@ public sealed class DatabaseMigrator(
             try
             {
                 await using var scope = scopes.CreateAsyncScope();
-                await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync(stoppingToken);
+                var services = scope.ServiceProvider;
+                await services.GetRequiredService<AppDbContext>().Database.MigrateAsync(stoppingToken);
+                await services.GetRequiredService<AccountsDbContext>().Database.MigrateAsync(stoppingToken);
+                var catalog = services.GetRequiredService<CatalogDbContext>();
+                await catalog.Database.MigrateAsync(stoppingToken);
+
+                // Seeded before MarkApplied, so nothing that waits for it can race the seed (002 research R4).
+                await CatalogSeeder.SeedAsync(catalog, stoppingToken);
                 status.MarkApplied();
                 logger.LogInformation("Database migrations applied");
                 return;

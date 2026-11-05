@@ -8,12 +8,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Testcontainers.Azurite;
 using Testcontainers.PostgreSql;
 
 namespace MicroCommerce.FunctionalTests;
 
 /// <summary>
-/// Runs the API in process against real PostgreSQL and Temporal containers, in the Development environment so
+/// Runs the API in process against real PostgreSQL, Temporal and Azurite containers, in the Development environment so
 /// the OpenAPI document is served. FastEndpoints caches one app per fixture type, so the container
 /// starts once per test run, and Testcontainers removes it afterwards.
 /// JWT validation trusts <see cref="TestIdentity.SigningKey"/> instead of Keycloak; everything after
@@ -24,6 +25,7 @@ public class ApiFixture : AppFixture<Program>
 {
     private PostgreSqlContainer _postgres = null!;
     private IContainer _temporal = null!;
+    private AzuriteContainer _azurite = null!;
 
     // Static: FastEndpoints makes a fixture instance per test class but caches one app.
     private static readonly string AppApiToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(16));
@@ -54,14 +56,17 @@ public class ApiFixture : AppFixture<Program>
             .WithPortBinding(7233, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilExternalTcpPortIsAvailable(7233))
             .Build();
+        // Product images (002 research R8). Only the blob service is used.
+        _azurite = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:3.37.0").Build();
 
-        await Task.WhenAll(_postgres.StartAsync(), _temporal.StartAsync());
+        await Task.WhenAll(_postgres.StartAsync(), _temporal.StartAsync(), _azurite.StartAsync());
     }
 
     protected override void ConfigureApp(IWebHostBuilder a)
     {
         a.UseEnvironment("Development");
         a.UseSetting("ConnectionStrings:micro-commerce-db", _postgres.GetConnectionString());
+        a.UseSetting("ConnectionStrings:blobs", _azurite.GetConnectionString());
         a.UseSetting("Temporal:Address", $"127.0.0.1:{_temporal.GetMappedPublicPort(7233)}");
         a.UseSetting("APP_API_TOKEN", DaprApiToken);
     }

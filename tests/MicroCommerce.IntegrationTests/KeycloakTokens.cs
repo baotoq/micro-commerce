@@ -12,6 +12,9 @@ public static class KeycloakTokens
     public static Task<string> BuyerTokenAsync(this AppHostFixture fixture, CancellationToken ct) =>
         GetAsync(fixture, "buyer", fixture.BuyerPassword, ct);
 
+    public static Task<string> MerchantTokenAsync(this AppHostFixture fixture, CancellationToken ct) =>
+        GetAsync(fixture, "merchant", fixture.MerchantPassword, ct);
+
     public static Task<string> OperatorTokenAsync(this AppHostFixture fixture, CancellationToken ct) =>
         GetAsync(fixture, "operator", fixture.OperatorPassword, ct);
 

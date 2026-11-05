@@ -244,6 +244,10 @@ dependency is needed, and stemming meets SC-007.
 - **Store**: Azure Blob Storage, approved by the user on 2026-11-05.
   - In the AppHost: `builder.AddAzureStorage("storage").RunAsEmulator(...)`, which runs Azurite,
     then `.AddBlobs("blobs")`.
+  - **Azurite is pinned to 3.37.0** with `emulator.WithImageTag("3.37.0")` inside the
+    `RunAsEmulator` callback. Aspire 13.6.0 defaults to Azurite 3.35.0, which rejects the Blob SDK's
+    API version `2026-06-06` with a 400. That breaks every blob call and the blob health check.
+    Found during implementation on 2026-11-05.
   - Outside ephemeral runs, the emulator gets a data volume and a persistent lifetime, matching the
     other resources.
   - The ApiService calls `builder.AddAzureBlobServiceClient("blobs")` (Aspire client integration).
@@ -307,15 +311,17 @@ dependency is needed, and stemming meets SC-007.
 - `ApiFixture` starts an Azurite container next to Postgres and Temporal, and sets
   `ConnectionStrings:blobs` to its connection string, the same way it sets the database connection
   string.
-- The **recommended** way to start it is `Testcontainers.Azurite` 4.15.0. It matches the existing
+- It is started with `Testcontainers.Azurite` 4.15.0. It matches the existing
   `Testcontainers.PostgreSql` 4.15.0, and its `GetConnectionString()` keeps the emulator's
   well-known account key out of our code.
-- This package is **pending approval**.
+- The user approved this package on 2026-11-05.
+- The image is pinned to `mcr.microsoft.com/azure-storage/azurite:3.37.0`, the same tag as the
+  AppHost (R7). With 3.35.0, uploads returned 500 and `/health` returned 503, because that version
+  rejects the Blob SDK's API version.
 
-**Fallback** if it is not approved: a generic `ContainerBuilder`, like the Temporal container
-today, that reads the account key from the Azurite image's documented default. That needs a
-constant in test code. It is a public emulator value, not a secret, but the security rule says not
-to put key-shaped literals in code, so the package is preferred.
+**Alternative considered**: a generic `ContainerBuilder`, like the Temporal container today. It
+would need the Azurite account key as a constant in test code. That key is a public emulator value,
+not a secret, but the security rule says not to put key-shaped literals in code.
 
 ## R9. Merchant Centre scoping and authorisation
 
@@ -342,8 +348,8 @@ to put key-shaped literals in code, so the package is preferred.
 
 **Decision**:
 
-- Add `react-router` 8.4.0, released 2026-09-15, in library ("declarative") mode. It is **pending
-  approval**. The 001 plan chose no router, and this reverses that: see Complexity Tracking.
+- Add `react-router` 8.4.0, released 2026-09-15, in library ("declarative") mode. The user approved
+  it on 2026-11-05. The 001 plan chose no router, and this reverses that: see Complexity Tracking.
 - Pages:
   - Marketplace home: search box, Category filter and Product grid
   - Product page and Shop page
@@ -361,8 +367,8 @@ to put key-shaped literals in code, so the package is preferred.
 - Vitest covers the pure helpers: the Variant grid builder (cartesian product), the price-range
   format, the image reorder logic, and `authImage` (with `fetch` stubbed).
 
-**Fallback** if `react-router` is not approved: a hand-written router of about 60 lines on the
-History API (`pathname` matching plus `popstate`), in `src/router.tsx`.
+**Alternative considered**: a hand-written router of about 60 lines on the History API
+(`pathname` matching plus `popstate`). Rejected once `react-router` was approved.
 
 ## R11. Seeding and identity
 
@@ -379,6 +385,11 @@ History API (`pathname` matching plus `popstate`), in `src/router.tsx`.
 
 ## R12. Mapping and projections
 
+**Implementation note (2026-11-05)**: the Accounts and Catalog responses are built by static `From`
+factories on the response records, not by Mapster. Mapster still maps 001's `MeResponse` and
+`SampleProcessResponse`. The factories need the Product's ID to build image URLs, and they keep
+each mapping next to its response, which made Mapster configuration add nothing here.
+
 **Decision**:
 
 - Mapster maps aggregates to responses outward, as in 001 R3.
@@ -393,8 +404,8 @@ History API (`pathname` matching plus `popstate`), in `src/router.tsx`.
 |------|--------|
 | `Aspire.Hosting.Azure.Storage` 13.6.0 (AppHost) | Approved 2026-11-05 (user chose Azure Blob through Azurite) |
 | `Aspire.Azure.Storage.Blobs` 13.6.0 (ApiService) | Approved 2026-11-05 |
-| `Testcontainers.Azurite` 4.15.0 (FunctionalTests) | **Pending approval** (R8 fallback exists) |
-| `react-router` 8.4.0 (web) | **Pending approval** (R10 fallback exists) |
+| `Testcontainers.Azurite` 4.15.0 (FunctionalTests) | Approved 2026-11-05 |
+| `react-router` 8.4.0 (web) | Approved 2026-11-05 |
 | Constitution 1.0.0 → **1.1.0** (MINOR): Technology Constraints gains "Object storage: Azure Blob Storage, with Azurite locally through Aspire" | Done in its own task, in the same pull request |
 | `CONTEXT.md`: add **Option**, **Option value** and **Product image**; mark **Pickup Address** as a term (street, district, province); remove "option" from **Variant**'s _Avoid_ list, which would otherwise clash with Option | Done in the same change (Principle I) |
 

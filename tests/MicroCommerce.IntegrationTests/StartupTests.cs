@@ -11,6 +11,8 @@ public class StartupTests(AppHostFixture fixture)
     [InlineData("redis")]
     [InlineData("temporal")]
     [InlineData("keycloak")]
+    [InlineData("storage")]
+    [InlineData("blobs")]
     [InlineData("apiservice")]
     [InlineData("web")]
     public async Task Resource_becomes_healthy(string resource)

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup Label="Aspire hosting">
+    <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="13.6.0" />
     <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.6.0" />
     <PackageVersion Include="Aspire.Hosting.Keycloak" Version="13.6.0-preview.1.26479.8" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.6.0" />
@@ -14,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Aspire client integrations">
+    <PackageVersion Include="Aspire.Azure.Storage.Blobs" Version="13.6.0" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.6.0" />
   </ItemGroup>
 
@@ -38,6 +40,7 @@
     <PackageVersion Include="FastEndpoints.Testing" Version="8.3.0" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
+    <PackageVersion Include="Testcontainers.Azurite" Version="4.15.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.15.0" />
     <PackageVersion Include="xunit.v3" Version="4.0.1" />
   </ItemGroup>

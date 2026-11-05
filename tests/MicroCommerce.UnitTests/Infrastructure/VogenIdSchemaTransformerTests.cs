@@ -1,5 +1,6 @@
 using System.Text.Json;
 using MicroCommerce.ApiService.Infrastructure.OpenApi;
+using MicroCommerce.Domain.Catalog;
 using MicroCommerce.Domain.SharedKernel;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
@@ -15,6 +16,12 @@ public class VogenIdSchemaTransformerTests
     [Theory]
     [InlineData(typeof(AccountId))]
     [InlineData(typeof(AccountId?))]
+    [InlineData(typeof(MerchantId))]
+    [InlineData(typeof(CategoryId))]
+    [InlineData(typeof(CategoryId?))]
+    [InlineData(typeof(ProductId))]
+    [InlineData(typeof(VariantId))]
+    [InlineData(typeof(ProductImageId))]
     public async Task Typed_id_schema_becomes_a_uuid_string(Type type)
     {
         var schema = new OpenApiSchema { Type = JsonSchemaType.Object };

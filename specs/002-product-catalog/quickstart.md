@@ -8,7 +8,7 @@ This guide shows how to check that the Catalog meets [spec.md](./spec.md). Endpo
 ## One-time setup for this feature
 
 ```bash
-pnpm --dir src/MicroCommerce.Web install          # picks up react-router, if approved (research R10)
+pnpm --dir src/MicroCommerce.Web install          # picks up react-router (research R10)
 ```
 
 The dev realm gains a `merchant` user (research R11). Keycloak imports a realm only when it doesn't
@@ -111,7 +111,7 @@ The SC-003 performance check is opt-in: it is an xUnit v3 explicit test. It inse
 Published Products and reports the p95 latency:
 
 ```bash
-dotnet test --project tests/MicroCommerce.FunctionalTests --explicit only   # exact flag confirmed in the first test task
+dotnet test --project tests/MicroCommerce.FunctionalTests --explicit only
 ```
 
 Expected: every suite passes, the performance test reports a p95 under 1 second, and `docker ps`

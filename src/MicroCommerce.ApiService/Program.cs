@@ -4,6 +4,8 @@ using FastEndpoints;
 using FastEndpoints.OpenApi;
 using Mapster;
 using MicroCommerce.ApiService.Features.Accounts;
+using MicroCommerce.ApiService.Features.Accounts.Data;
+using MicroCommerce.ApiService.Features.Catalog.Data;
 using MicroCommerce.ApiService.Features.Diagnostics;
 using MicroCommerce.ApiService.Infrastructure;
 using MicroCommerce.ApiService.Infrastructure.Data;
@@ -12,6 +14,7 @@ using MicroCommerce.ApiService.Infrastructure.Messaging;
 using MicroCommerce.ApiService.Infrastructure.OpenApi;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Temporalio.Extensions.Hosting;
 
@@ -20,6 +23,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<AppDbContext>("micro-commerce-db");
+// One database, one schema per area (002 research R2).
+builder.AddNpgsqlDbContext<AccountsDbContext>("micro-commerce-db",
+    configureDbContextOptions: o => o.UseNpgsql(AccountsDbContext.ConfigureNpgsql));
+builder.AddNpgsqlDbContext<CatalogDbContext>("micro-commerce-db",
+    configureDbContextOptions: o => o.UseNpgsql(CatalogDbContext.ConfigureNpgsql));
+
+// Product images in Azure Blob Storage, Azurite locally (constitution 1.1.0, research R7).
+builder.AddAzureBlobServiceClient("blobs");
+builder.Services.AddSingleton<MicroCommerce.ApiService.Features.Catalog.ProductImages.IProductImageStore,
+    MicroCommerce.ApiService.Features.Catalog.ProductImages.BlobProductImageStore>();
 
 // Development brings the schema up to date itself, retrying until PostgreSQL is reachable (FR-004).
 if (builder.Environment.IsDevelopment())
@@ -54,6 +67,11 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(AuthPolicies.PlatformOperator, p => p.RequireRole(AuthPolicies.PlatformOperatorRole));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentAccount, HttpCurrentAccount>();
+builder.Services.AddScoped<IMerchantDirectory, EfMerchantDirectory>();
+builder.Services.AddScoped<CurrentMerchant>();
+builder.Services.AddScoped<ICurrentMerchant>(sp => sp.GetRequiredService<CurrentMerchant>());
+builder.Services.AddScoped<MicroCommerce.ApiService.Features.Catalog.MerchantProducts.MerchantCatalog>();
+builder.Services.AddScoped<MicroCommerce.ApiService.Features.Catalog.Marketplace.IProductSearch, MicroCommerce.ApiService.Features.Catalog.Marketplace.PostgresProductSearch>();
 
 // Messaging through the Dapr sidecar (research R6).
 builder.Services.AddDaprClient();

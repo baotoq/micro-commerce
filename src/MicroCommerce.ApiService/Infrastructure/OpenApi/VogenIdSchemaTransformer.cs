@@ -1,3 +1,4 @@
+using MicroCommerce.Domain.Catalog;
 using MicroCommerce.Domain.Diagnostics;
 using MicroCommerce.Domain.SharedKernel;
 using Microsoft.AspNetCore.OpenApi;
@@ -16,6 +17,11 @@ public sealed class VogenIdSchemaTransformer : IOpenApiSchemaTransformer
     {
         typeof(AccountId),
         typeof(SampleProcessId),
+        typeof(MerchantId),
+        typeof(CategoryId),
+        typeof(ProductId),
+        typeof(VariantId),
+        typeof(ProductImageId),
     };
 
     public Task TransformAsync(OpenApiSchema schema, OpenApiSchemaTransformerContext context, CancellationToken cancellationToken)

@@ -14,6 +14,7 @@ var fixedPorts = builder.Configuration.GetValue("FixedPorts", !ephemeral);
 // Generated once and kept in user secrets; shown in the dashboard's Parameters view. Never committed.
 var buyerPassword = AddSecret("dev-buyer-password");
 var operatorPassword = AddSecret("dev-operator-password");
+var merchantPassword = AddSecret("dev-merchant-password");
 var daprAppApiToken = AddSecret("dapr-app-api-token");
 
 var postgres = builder.AddPostgres("postgres");
@@ -33,7 +34,8 @@ var temporal = builder.AddContainer("temporal", "temporalio/temporal", "1.5.1")
 var keycloak = builder.AddKeycloak("keycloak", port: fixedPorts ? 8080 : null)
     .WithRealmImport("./Realms")
     .WithEnvironment("MC_BUYER_PASSWORD", buyerPassword)
-    .WithEnvironment("MC_OPERATOR_PASSWORD", operatorPassword);
+    .WithEnvironment("MC_OPERATOR_PASSWORD", operatorPassword)
+    .WithEnvironment("MC_MERCHANT_PASSWORD", merchantPassword);
 var keycloakIssuer = ReferenceExpression.Create($"{keycloak.GetEndpoint("http")}/realms/micro-commerce");
 
 if (!ephemeral)
@@ -46,6 +48,19 @@ if (!ephemeral)
 }
 
 var db = postgres.AddDatabase("micro-commerce-db");
+
+// Product images (constitution 1.1.0): Azure Blob Storage, run locally as the Azurite emulator.
+// Persistent like the other resources, unless this is an ephemeral (test) run.
+var storage = builder.AddAzureStorage("storage").RunAsEmulator(emulator =>
+{
+    // Aspire 13.6.0 defaults to Azurite 3.35.0, which rejects the Blob SDK's API version (2026-06-06).
+    emulator.WithImageTag("3.37.0");
+    if (!ephemeral)
+    {
+        emulator.WithDataVolume().WithLifetime(ContainerLifetime.Persistent);
+    }
+});
+var blobs = storage.AddBlobs("blobs");
 
 // Registers the lifecycle hook that starts each sidecar with the Dapr CLI (`dapr init --slim`).
 builder.AddDapr();
@@ -72,6 +87,8 @@ var api = builder.AddProject<Projects.MicroCommerce_ApiService>("apiservice")
     .WithHttpHealthCheck("/health", endpointName: "http")
     .WithReference(db)
     .WaitFor(db)
+    .WithReference(blobs)
+    .WaitFor(blobs)
     .WaitFor(redis)
     .WithEnvironment("Temporal__Address", temporal.GetEndpoint("grpc").Property(EndpointProperty.HostAndPort))
     .WithEnvironment("Temporal__Namespace", "default")

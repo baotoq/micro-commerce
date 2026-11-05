@@ -26,6 +26,10 @@ _Avoid_: Banned, disabled, deactivated
 A Merchant's public page on the Marketplace. Each Merchant has exactly one Shop; it is a view of the Merchant, not a separate thing.
 _Avoid_: Store, storefront
 
+**Pickup Address**:
+Where a Merchant's parcels ship from: street, district and province.
+_Avoid_: Warehouse address, origin
+
 **Buyer**:
 The role an Account plays when purchasing on the Marketplace. An Account cannot buy from its own Merchant.
 _Avoid_: Customer, shopper, user
@@ -48,8 +52,19 @@ _Avoid_: Item, listing (as a separate concept)
 _Draft_ → _Published_; a Platform Operator can mark any Product _Removed_. Buyers only see Published Products of Merchants that are not suspended.
 
 **Variant**:
-One purchasable combination of a Product's options (e.g. Red / M), with its own price, stock and weight. A Product without options has a single default Variant.
-_Avoid_: SKU, option, model
+One purchasable combination of a Product's Option values (e.g. Red / M), with its own price, stock and weight. A Product without Options has a single default Variant.
+_Avoid_: SKU, model. A Variant is one combination of Option values, not an Option.
+
+**Option**:
+A named way a Product varies (e.g. Colour), with a list of Option values. A Product has at most two.
+_Avoid_: Attribute, variation
+
+**Option value**:
+One allowed value of an Option (e.g. Red). A Variant picks one value per Option.
+
+**Product image**:
+A picture of a Product at a position in its ordered images; the first is the cover. Images belong to the Product, not to a Variant.
+_Avoid_: Photo, thumbnail (as a separate concept)
 
 **Availability**:
 How many units of a Variant a Buyer can buy right now: its stock less what active Reservations hold. Buyers see Availability, never stock; Merchants see stock.

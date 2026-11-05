@@ -21,6 +21,8 @@ public class AppHostFixture : IAsyncLifetime
 
     public string OperatorPassword { get; } = NewSecret();
 
+    public string MerchantPassword { get; } = NewSecret();
+
     public HttpClient ApiClient { get; private set; } = null!;
 
     public HttpClient KeycloakClient { get; private set; } = null!;
@@ -36,6 +38,7 @@ public class AppHostFixture : IAsyncLifetime
                 "--EphemeralResources=true",
                 $"--Parameters:dev-buyer-password={BuyerPassword}",
                 $"--Parameters:dev-operator-password={OperatorPassword}",
+                $"--Parameters:dev-merchant-password={MerchantPassword}",
                 $"--Parameters:dapr-app-api-token={NewSecret()}",
             ],
             cts.Token);

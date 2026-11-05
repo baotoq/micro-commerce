@@ -43,6 +43,9 @@ public class DatabaseStartupTests : IAsyncLifetime
             b.UseSetting("Temporal:Address", $"127.0.0.1:{_temporal.GetMappedPublicPort(7233)}");
             // Let the migrator's own loop do the retrying, so recovery is quick.
             b.UseSetting("Aspire:Npgsql:EntityFrameworkCore:PostgreSQL:DisableRetry", "true");
+            // This test is about the database: no blob storage, and no blob health check either.
+            b.UseSetting("ConnectionStrings:blobs", "UseDevelopmentStorage=true");
+            b.UseSetting("Aspire:Azure:Storage:Blobs:DisableHealthChecks", "true");
         });
     }
 

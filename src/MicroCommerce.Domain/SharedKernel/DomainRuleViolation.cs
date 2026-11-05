@@ -4,4 +4,4 @@ namespace MicroCommerce.Domain.SharedKernel;
 /// Thrown when an aggregate's invariant would be broken. The message is written in domain terms,
 /// because the API returns it to the client as the problem detail.
 /// </summary>
-public sealed class DomainRuleViolation(string message) : Exception(message);
+public class DomainRuleViolation(string message) : Exception(message);

@@ -20,6 +20,24 @@ public class MeEndpointTests(ApiFixture App) : TestBase<ApiFixture>
     }
 
     [Fact]
+    public async Task A_fresh_account_owns_no_merchant()
+    {
+        var (_, me) = await App.ClientFor(TestActor.Buyer()).GETAsync<GetMeEndpoint, MeResponse>();
+
+        me.Merchant.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task The_merchant_shows_once_opened()
+    {
+        var (client, shop, _) = await App.NewMerchantAsync();
+
+        var (_, me) = await client.GETAsync<GetMeEndpoint, MeResponse>();
+
+        me.Merchant.ShouldBe(new MerchantSummary(shop.MerchantId, shop.ShopName));
+    }
+
+    [Fact]
     public async Task Platform_operator_role_is_reported()
     {
         var (rsp, me) = await App.ClientFor(TestActor.PlatformOperator()).GETAsync<GetMeEndpoint, MeResponse>();

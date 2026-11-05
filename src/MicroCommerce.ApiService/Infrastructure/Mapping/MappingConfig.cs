@@ -27,7 +27,9 @@ public static class MappingConfig
 
         // Features register their mappings here.
         config.NewConfig<CurrentAccount, MeResponse>()
-            .Map(d => d.AccountId, s => s.Id.Value);
+            .Map(d => d.AccountId, s => s.Id.Value)
+            // Not part of the token: GetMe reads it from the Merchant directory.
+            .Ignore(d => d.Merchant!);
         config.NewConfig<SampleProcess, SampleProcessResponse>()
             .Map(d => d.Id, s => s.Id.Value)
             .Map(d => d.Status, s => s.Status.ToString())

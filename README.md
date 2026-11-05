@@ -36,21 +36,28 @@ export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
 aspire run
 ```
 
-This starts PostgreSQL, Redis, Temporal, Keycloak (with the `micro-commerce` realm imported), the
-ApiService with its Dapr sidecar, and the web app. Then:
+This starts PostgreSQL, Redis, Temporal, Keycloak (with the `micro-commerce` realm imported), Azure
+Blob Storage as the Azurite emulator (`storage` and `blobs`, for Product images), the ApiService
+with its Dapr sidecar, and the web app. In Development the API also seeds a starter Category tree.
+Then:
 
 - **Dashboard**: the URL that `aspire run` prints. Every resource should become Running or Healthy.
 - **Web app**: <http://localhost:5173>.
 - **API reference (Scalar)**: `<apiservice-url>/scalar/v1`, in Development only. The OpenAPI
   document is at `<apiservice-url>/openapi/v1.json`.
 - **Temporal UI**: the `ui` endpoint of the `temporal` resource.
-- **Dev sign-in**: the seeded Accounts are `buyer` and `operator` (a Platform Operator). Their
-  passwords are generated on the first run and kept in user secrets. Find them in the dashboard
-  under **Parameters**: `dev-buyer-password` and `dev-operator-password`.
+- **Dev sign-in**: the seeded Accounts are `buyer`, `merchant` (no Merchant yet: open one with
+  **Open your Shop**) and `operator` (a Platform Operator). Their passwords are generated on the
+  first run and kept in user secrets. Find them in the dashboard under **Parameters**:
+  `dev-buyer-password`, `dev-merchant-password` and `dev-operator-password`.
 
 Dev runs keep their containers and data volumes between runs. Keycloak imports the realm only when
 it doesn't have it yet, so after editing `src/MicroCommerce.AppHost/Realms/micro-commerce-realm.json`,
-delete the Keycloak volume.
+delete the Keycloak volume. **Coming from the 001 skeleton?** The realm gained the `merchant` user, so
+delete the Keycloak volume once.
+
+The Catalog (open a Merchant, list Products, browse, Categories, moderation) is walked through in
+[specs/002-product-catalog/quickstart.md](specs/002-product-catalog/quickstart.md).
 
 ## Layout
 
@@ -61,12 +68,14 @@ Directory.Build.props                # nullable, warnings as errors
 Directory.Packages.props             # every package version, pinned centrally
 
 src/
-├── MicroCommerce.AppHost/           # Aspire: postgres, redis, temporal, keycloak, dapr pubsub, apiservice + sidecar, web
+├── MicroCommerce.AppHost/           # Aspire: postgres, redis, temporal, keycloak, azurite, dapr pubsub, apiservice + sidecar, web
 │   └── Realms/                      # Keycloak dev realm; passwords are ${ENV} placeholders
 ├── MicroCommerce.ServiceDefaults/   # OpenTelemetry, health checks, service discovery, resilience
 ├── MicroCommerce.Domain/            # aggregates, value objects and typed IDs; references only Vogen
 ├── MicroCommerce.ApiService/
 │   ├── Features/                    # vertical slices: endpoints, validators, workflows, handlers
+│   │   ├── Accounts/                # Merchants (own DbContext, schema accounts)
+│   │   └── Catalog/                 # Categories, Products, images, Marketplace (own DbContext, schema catalog)
 │   └── Infrastructure/              # Data (EF Core), Messaging (Dapr), Mapping (Mapster), OpenApi
 └── MicroCommerce.Web/               # React + Vite + TypeScript (pnpm)
 
@@ -78,10 +87,14 @@ tests/
 
 ## Migrations
 
-Migrations are applied at startup in Development. To add one:
+Migrations are applied at startup in Development. Each area has its own DbContext, schema and
+migrations. To add one:
 
 ```bash
-dotnet ef migrations add <Name> -p src/MicroCommerce.ApiService -o Infrastructure/Data/Migrations
+cd src/MicroCommerce.ApiService
+dotnet ef migrations add <Name> --context AppDbContext      -o Infrastructure/Data/Migrations
+dotnet ef migrations add <Name> --context AccountsDbContext -o Features/Accounts/Data/Migrations
+dotnet ef migrations add <Name> --context CatalogDbContext  -o Features/Catalog/Data/Migrations
 ```
 
 ## Tests
@@ -89,9 +102,9 @@ dotnet ef migrations add <Name> -p src/MicroCommerce.ApiService -o Infrastructur
 | Suite | Covers | Needs |
 |-------|--------|-------|
 | `tests/MicroCommerce.UnitTests` | Domain rules, validators, the Mapster configuration (`Compile()`), request context, exception handling, activities with NSubstitute doubles, and the workflow on Temporal's time-skipping test server | No database, container or running service. The Temporal test server binary is downloaded on first use and cached. |
-| `tests/MicroCommerce.FunctionalTests` | Every endpoint in process (FastEndpoints.Testing) with signed test tokens: success, validation, 401 and 403. Also the inbox de-duplication, and the workflow against a real Temporal server | A container runtime (Testcontainers: PostgreSQL and Temporal) |
+| `tests/MicroCommerce.FunctionalTests` | Every endpoint in process (FastEndpoints.Testing) with signed test tokens: success, validation, 401 and 403. Also the inbox de-duplication, and the workflow against a real Temporal server | A container runtime (Testcontainers: PostgreSQL, Temporal and Azurite) |
 | `tests/MicroCommerce.IntegrationTests` | The whole AppHost (Aspire.Hosting.Testing): every resource healthy, real Keycloak tokens against `/api/me`, the sample process end to end through the real Dapr sidecar, and an API restart while a process waits | A container runtime and the Dapr CLI (`dapr init --slim`) |
-| `src/MicroCommerce.Web` (Vitest) | The home page signed out, signed in, and with the API unreachable | Nothing |
+| `src/MicroCommerce.Web` (Vitest) | The home page signed out, signed in, and with the API unreachable; the Variant grid, price, image order and authenticated image helpers | Nothing |
 
 ```bash
 dotnet test --solution MicroCommerce.slnx             # every .NET suite
@@ -102,6 +115,13 @@ pnpm --dir src/MicroCommerce.Web test                 # web app unit tests
 Integration tests start the AppHost with `--EphemeralResources=true`: they use throwaway containers
 on random ports and random seeded passwords, and remove everything when the run ends. They never
 touch your dev containers or data.
+
+The Marketplace performance check (10,000 Products, p95 under 1 s) is an explicit test, so it only
+runs when asked for:
+
+```bash
+dotnet test --project tests/MicroCommerce.FunctionalTests --explicit only
+```
 
 The restart test (`Category=Restart`) also runs on its own for the 10-run reliability check:
 

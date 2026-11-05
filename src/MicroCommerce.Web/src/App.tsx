@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
-import { getMe, type Me } from './api'
+import { Link } from 'react-router'
+import { AppRoutes } from './router'
+import { SessionProvider, useSession } from './session'
 
 type ApiStatus = 'checking' | 'reachable' | 'unreachable'
 
@@ -20,31 +22,9 @@ function useApiStatus(): ApiStatus {
   return status
 }
 
-function useMe(token: string | undefined) {
-  const [me, setMe] = useState<Me | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!token) {
-      setMe(null)
-      return
-    }
-    let cancelled = false
-    setError(null)
-    getMe(token)
-      .then((result) => !cancelled && setMe(result))
-      .catch((e: unknown) => !cancelled && setError(e instanceof Error ? e.message : String(e)))
-    return () => {
-      cancelled = true
-    }
-  }, [token])
-
-  return { me, error }
-}
-
 function Account() {
   const auth = useAuth()
-  const { me, error } = useMe(auth.isAuthenticated ? auth.user?.access_token : undefined)
+  const { me, meError } = useSession()
 
   if (auth.isLoading) return <p>Checking your session…</p>
 
@@ -64,7 +44,7 @@ function Account() {
 
   return (
     <div>
-      {error && <p role="alert">Couldn't load your Account: {error}</p>}
+      {meError && <p role="alert">Couldn't load your Account: {meError}</p>}
       {me && (
         <>
           <dl>
@@ -74,6 +54,15 @@ function Account() {
             <dd>{me.accountId}</dd>
           </dl>
           <p>Platform Operator: {me.isPlatformOperator ? 'yes' : 'no'}</p>
+          <nav>
+            {me.merchant ? <Link to="/merchant">Merchant Centre</Link> : <Link to="/open-shop">Open your Shop</Link>}
+            {me.isPlatformOperator && (
+              <>
+                {' · '}
+                <Link to="/ops">Platform operations</Link>
+              </>
+            )}
+          </nav>
         </>
       )}
       <button onClick={() => void auth.signoutRedirect()}>Sign out</button>
@@ -85,10 +74,17 @@ export function App() {
   const apiStatus = useApiStatus()
 
   return (
-    <main>
-      <h1>MicroCommerce</h1>
-      <p>API: {apiStatus}</p>
-      <Account />
-    </main>
+    <SessionProvider>
+      <header>
+        <h1>
+          <Link to="/">MicroCommerce</Link>
+        </h1>
+        <p>API: {apiStatus}</p>
+        <Account />
+      </header>
+      <main>
+        <AppRoutes />
+      </main>
+    </SessionProvider>
   )
 }

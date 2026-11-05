@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="FastEndpoints.Testing" />
+    <PackageReference Include="Testcontainers.Azurite" />
     <PackageReference Include="Testcontainers.PostgreSql" />
   </ItemGroup>
 

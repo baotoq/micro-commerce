@@ -120,6 +120,21 @@
       ]
     },
     {
+      "username": "merchant",
+      "email": "merchant@micro-commerce.test",
+      "emailVerified": true,
+      "firstName": "Mia",
+      "lastName": "Merchant",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${MC_MERCHANT_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
       "username": "operator",
       "email": "operator@micro-commerce.test",
       "emailVerified": true,

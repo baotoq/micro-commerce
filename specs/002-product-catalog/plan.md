@@ -35,10 +35,8 @@ errors. TypeScript 5.9 for the web app.
 
 - Existing: FastEndpoints 8.3, EF Core 10 with Npgsql (full-text search included), Vogen 8.0.7,
   Mapster 10.0.14 and Aspire 13.6.
-- **New, approved 2026-11-05**: `Aspire.Hosting.Azure.Storage` 13.6.0 and
-  `Aspire.Azure.Storage.Blobs` 13.6.0.
-- **New, pending approval**: `Testcontainers.Azurite` 4.15.0 and `react-router` 8.4.0. Each has a
-  fallback (R8, R10).
+- **New, approved 2026-11-05**: `Aspire.Hosting.Azure.Storage` 13.6.0,
+  `Aspire.Azure.Storage.Blobs` 13.6.0, `Testcontainers.Azurite` 4.15.0 and `react-router` 8.4.0.
 
 **Storage**:
 
@@ -86,7 +84,7 @@ All unknowns are resolved in [research.md](./research.md) (R1–R14). No NEEDS C
 | IV. Secure by Default | Only `/marketplace/*` is public, and it is marked so explicitly. The Merchant is resolved from the token through `ICurrentMerchant` (ADR-50), and no request carries `merchantId`. Validators sit at the boundary. Uploaded image content is checked. Images of hidden Products are never served. The seeded password is a generated Aspire secret (R11). | ✅ | ✅ |
 | V. Durable and Idempotent | This feature has no time-based rules and no events (R1). Idempotent operations: publishing twice, unpublishing twice, and removal. Blob cleanup is best effort, and orphans are never referenced. | ✅ | ✅ |
 | VI. Observable | Logging is through `ILogger<T>` with templates. Logs carry IDs only, never Pickup Addresses or emails. ProblemDetails `type` values are documented in the contract. Azurite appears in the dashboard. | ✅ | ✅ |
-| VII. Simplicity and Dependencies | Reuses the old module patterns. No outbox, read model, cache, search engine or image library. The two approved Aspire packages are pinned in `Directory.Packages.props`. The two pending packages have fallbacks. The deviations are listed below. | ⚠️ justified | ⚠️ justified |
+| VII. Simplicity and Dependencies | Reuses the old module patterns. No outbox, read model, cache, search engine or image library. All four new packages were approved by the user on 2026-11-05. The NuGet packages are pinned in `Directory.Packages.props`, and `react-router` is pinned in `package.json`. The deviations are listed below. | ⚠️ justified | ⚠️ justified |
 | Technology Constraints | Object storage is not in the approved stack, so the constitution is amended to **1.1.0** (MINOR) in this pull request (R13). | ⚠️ amendment | ⚠️ amendment |
 
 **Items to verify in the first implementation tasks**: if one fails, use its fallback and add a row
@@ -122,7 +120,7 @@ specs/002-product-catalog/
 ```text
 CONTEXT.md                                   # + Option, Option value, Product image; Pickup Address as its own term; Variant's Avoid list
 .specify/memory/constitution.md              # 1.1.0: object storage in Technology Constraints
-Directory.Packages.props                     # + Aspire Azure Storage (hosting and client); + Testcontainers.Azurite (pending)
+Directory.Packages.props                     # + Aspire Azure Storage (hosting and client); + Testcontainers.Azurite
 
 src/
 ├── MicroCommerce.AppHost/
@@ -157,7 +155,7 @@ src/
 │       ├── Data/VogenEfCoreConverters.cs    # + 5 ID converters
 │       └── OpenApi/VogenIdSchemaTransformer.cs   # + 5 ID types
 └── MicroCommerce.Web/src/
-    ├── router.tsx                           # routes (react-router, or the R10 fallback)
+    ├── router.tsx                           # routes (react-router)
     ├── marketplace/                         # Home (grid, search, Category filter), ProductPage, ShopPage
     ├── merchant/                            # OpenShop, ShopProfile, ProductList, ProductForm (option
     │                                        # editor, Variant grid), ImageManager
@@ -191,8 +189,8 @@ tests/
 
 ## Phase 0 and 1 Outputs
 
-- [research.md](./research.md): R1–R14. Every technical unknown is resolved. Two packages are
-  pending approval, each with a fallback.
+- [research.md](./research.md): R1–R14. Every technical unknown is resolved, and every new
+  dependency is approved.
 - [data-model.md](./data-model.md), [contracts/http-api.md](./contracts/http-api.md) and
   [quickstart.md](./quickstart.md).
 - Agent context: there is no agent-context file with plan markers. `CLAUDE.md` does not exist and
@@ -206,6 +204,7 @@ tests/
 | Orphaned blobs build up after failed saves or removals | Orphans are never referenced and are logged with IDs. A cleanup job is out of scope and would be a durable workflow (Principle V). |
 | Serving images through the API adds load to the API | Browsers revalidate with an ETag, so a visible image costs a cheap 304 and a hidden one returns 404 at once. This is acceptable for local scope. A CDN or SAS URLs can be revisited before production. |
 | Persistent Keycloak volumes from 001 lack the `merchant` user | Quickstart documents the one-time volume deletion. The integration tests use ephemeral resources and are unaffected. |
+| Aspire's default Azurite image (3.35.0 in Aspire 13.6.0) is older than the Blob SDK's API version, so the emulator rejects every call | The AppHost and `ApiFixture` both pin Azurite 3.37.0 (research R7, R8). When Aspire or the Blob SDK is upgraded, re-check the pin, and drop it once Aspire's default is new enough. The AppHost pin hasn't been run yet (T094, T095) |
 | The 001 branch is not merged into `master` yet | This branch is stacked. Its pull request targets `master` after 001 merges, or targets `001-project-skeleton` until then. |
 
 ## Complexity Tracking
@@ -214,6 +213,7 @@ tests/
 |-----------|------------|-------------------------------------|
 | New object storage, Azure Blob through Azurite, with a constitution amendment to 1.1.0 (Technology Constraints, Principle VII) | FR-020–FR-023: the user asked for Merchant image uploads, and chose this store on 2026-11-05 | Postgres `bytea` and MinIO were offered, and the user rejected both |
 | Two more DbContexts and schemas (Principle VII: no speculative layers) | Principle II: each bounded area owns its data, and a shared context can't enforce that | One context with several schemas lets any slice query any table |
-| `react-router` reverses 001's "no router" decision (pending approval) | The feature has about 9 pages, with deep links to Products and Shops | A hand-written router is the documented fallback (R10) if approval is declined |
-| `Testcontainers.Azurite` test dependency (pending approval) | `ApiFixture` must provision its own isolated Azurite (Principle III), without putting the emulator key in code | A generic container plus the well-known key constant is the fallback (R8) |
+| `react-router` reverses 001's "no router" decision (approved 2026-11-05) | The feature has about 9 pages, with deep links to Products and Shops | A hand-written router would be more code to maintain for no gain |
+| `Testcontainers.Azurite` test dependency (approved 2026-11-05) | `ApiFixture` must provision its own isolated Azurite (Principle III), without putting the emulator key in code | A generic container would need the emulator's well-known key as a constant in code |
+| Public `/marketplace/*` operations have no authorisation-refusal test (Principle III: every backend operation tests its success path and its authorisation refusal) | Principle IV explicitly allows public operations, such as browsing the Marketplace (FR-024). They have no authorisation to refuse. Their refusal test is the visibility test instead: a Draft or Removed Product returns 404 or is left out of lists, and its images return 404 (T058, T073, T086) | Adding sign-in to browsing would break FR-024. A constitution PATCH could clarify that the refusal clause applies to protected operations |
 | Opt-in (explicit) performance test, outside the default run (it stretches Principle III's fast-test intent and SC-006's 5-minute budget the other way: it would breach that budget if it ran every time) | SC-003 needs 10,000 rows and repeated timing | Leaving SC-003 unverified is worse. It is documented in quickstart Scenario 6 |
