@@ -6,6 +6,7 @@
     <Project Path="src/MicroCommerce.ServiceDefaults/MicroCommerce.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/MicroCommerce.E2ETests/MicroCommerce.E2ETests.csproj" />
     <Project Path="tests/MicroCommerce.FunctionalTests/MicroCommerce.FunctionalTests.csproj" />
     <Project Path="tests/MicroCommerce.IntegrationTests/MicroCommerce.IntegrationTests.csproj" />
     <Project Path="tests/MicroCommerce.UnitTests/MicroCommerce.UnitTests.csproj" />

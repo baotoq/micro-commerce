@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report
-- Version: 1.0.0 → 1.1.0 (MINOR: Technology Constraints gains object storage)
-- Why: feature 002-product-catalog lets Merchants upload Product images; the user approved
-  Azure Blob Storage, with the Azurite emulator locally, on 2026-11-05.
+- Version: 1.1.0 → 1.2.0 (MINOR: Technology Constraints gains a browser end-to-end test tool)
+- Why: feature 003-e2e-playwright adds browser end-to-end tests; the user approved Playwright for
+  .NET (Microsoft.Playwright) on 2026-11-05.
 - Templates: none affected.
 -->
 # MicroCommerce Constitution
@@ -134,7 +134,7 @@ The approved stack. Changing an item here is a constitution amendment.
 - **Identity**: Keycloak (OpenID Connect). Backends validate JWT bearer tokens.
 - **Web app**: React with Vite.
 - **Testing**: xUnit v3, NSubstitute for test doubles, Shouldly for assertions and Testcontainers for
-  integration infrastructure.
+  integration infrastructure. Browser end-to-end tests use Playwright for .NET.
 
 ## Development Workflow
 
@@ -161,4 +161,4 @@ The approved stack. Changing an item here is a constitution amendment.
 - **Compliance**: `/speckit-plan` runs the Constitution Check gate. `/speckit-analyze` flags
   violations in spec, plan and tasks. Code review confirms them before merge.
 
-**Version**: 1.1.0 | **Ratified**: 2026-11-04 | **Last Amended**: 2026-11-05
+**Version**: 1.2.0 | **Ratified**: 2026-11-04 | **Last Amended**: 2026-11-05

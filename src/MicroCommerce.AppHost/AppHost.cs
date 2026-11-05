@@ -11,6 +11,10 @@ var ephemeral = builder.Configuration.GetValue<bool>("EphemeralResources");
 // the browser sign-in needs Keycloak on 8080 and the web app on 5173 (see the realm file).
 var fixedPorts = builder.Configuration.GetValue("FixedPorts", !ephemeral);
 
+// --WebPort pins only the web app's port. The browser e2e suite passes 5174, the realm's second
+// redirect URI, so it can run next to a dev Marketplace on 5173 and 8080; Keycloak keeps a random port.
+var webPort = builder.Configuration.GetValue<int?>("WebPort");
+
 // Generated once and kept in user secrets; shown in the dashboard's Parameters view. Never committed.
 var buyerPassword = AddSecret("dev-buyer-password");
 var operatorPassword = AddSecret("dev-operator-password");
@@ -102,11 +106,25 @@ var web = builder.AddViteApp("web", "../MicroCommerce.Web")
     .WithEnvironment("VITE_OIDC_AUTHORITY", keycloakIssuer)
     .WithEnvironment("VITE_OIDC_CLIENT_ID", "micro-commerce-web")
     .WithExternalHttpEndpoints()
+    // Healthy only once Vite serves the page, not as soon as its process starts.
+    .WithHttpHealthCheck("/")
     .WaitFor(api)
     .WaitFor(keycloak);
 
-// The realm registers http://localhost:5173 as the web app's only redirect URI.
-if (fixedPorts)
+// The realm registers http://localhost:5173 (development) and http://localhost:5174 (e2e suite)
+// as the web app's redirect URIs.
+if (webPort is { } port)
+{
+    // Not proxied: Aspire's testing builder randomizes the host port of proxied endpoints, and the
+    // realm only accepts this exact port. Vite listens on it directly (PORT, strictPort).
+    web.WithEndpoint("http", e =>
+    {
+        e.Port = port;
+        e.TargetPort = port;
+        e.IsProxied = false;
+    });
+}
+else if (fixedPorts)
 {
     web.WithEndpoint("http", e => e.Port = 5173);
 }
