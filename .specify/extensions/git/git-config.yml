@@ -22,7 +22,7 @@ init_commit_message: "[Spec Kit] Initial commit"
 # "conventional" - ask the agent to inspect the diff and generate a
 #                  Conventional Commit message (e.g. "feat: add OAuth spec")
 #                  instead of using the messages configured below.
-commit_style: fixed
+commit_style: conventional
 
 # Auto-commit before/after core commands.
 # Set "default" to enable for all commands, then override per-command.

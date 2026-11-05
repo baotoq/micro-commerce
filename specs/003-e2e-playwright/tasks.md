@@ -241,7 +241,7 @@ in through Keycloak's real page and cleans up.
 - [X] T017 [US1] In the same file, add `A_platform_operator_signs_in_and_sees_the_platform_operator_role` (US1 #2):
   sign in as `TestAccounts.Operator`, then expect `Platform Operator: yes` and a
   `Platform operations` link.
-- [ ] T018 [US1] Run the US1 checks from quickstart Scenarios 1, 2, 5 and 6. Record pass or fail, with
+- [X] T018 [US1] Run the US1 checks from quickstart Scenarios 1, 2, 5 and 6. Record pass or fail, with
   one line each, on this task's line:
   - Whole run passes.
   - Runs while `aspire run` is up, and the dev data is unchanged.
@@ -260,8 +260,10 @@ in through Keycloak's real page and cleans up.
     - Port 5174 taken: both tests fail at once with the port message, and nothing starts.
     - Clean-up: after a passed run, and within 1 s of a Ctrl+C mid-run, there are no containers,
       volumes, `daprd` or Vite processes left from the run.
-    - **Not yet run**: alongside `aspire run` (FR-002, quickstart Scenario 2). It needs the dev
-      Marketplace started.
+    - Alongside `aspire run` (FR-002, quickstart Scenario 2): passes, 2/2 in 45 s, while the dev
+      Marketplace served 5173 and Keycloak 8080. Afterwards the dev Product count, Category tree,
+      containers and volumes were unchanged, the dev web app still answered, and no e2e containers
+      were left. The dev database itself was not inspected, because that needs its secret password.
 
 **Checkpoint**: The MVP is in place. The suite starts, signs in through the browser and cleans up, and
 SC-001 and SC-007 can be shown.
@@ -275,12 +277,12 @@ SC-001 and SC-007 can be shown.
 **Independent Test**: `-- --filter-trait "Journey=Buyer"` passes, and each test fails when its expected
 text is changed.
 
-- [ ] T019 [US2] Create `tests/MicroCommerce.E2ETests/Journeys/BuyerBrowsingTests.cs`,
+- [X] T019 [US2] Create `tests/MicroCommerce.E2ETests/Journeys/BuyerBrowsingTests.cs`,
   `[Trait("Journey", "Buyer")]`, with a shared private arrange method. Create two fresh Accounts
   (`TestAccounts.CreateAsync("merchant")`), open a Merchant for each, and create for each one Published
   Product in `Home › Kitchen`, with names from `TestRun.Unique("Mug")`. Each test arranges its own data
   (FR-014); no class fixture.
-- [ ] T020 [US2] Add `A_visitor_sees_published_products_from_two_merchants` (US2 #1). Arrange as T019,
+- [X] T020 [US2] Add `A_visitor_sees_published_products_from_two_merchants` (US2 #1). Arrange as T019,
   then `VisitAsync("/")` with no search or filter, because the scenario is about the home listing.
   Expect both Product names to be visible on the first page, and each card's Shop link to show its own
   Shop name.
@@ -288,10 +290,10 @@ text is changed.
     creating fewer than 20 Products (about 14 today).
   - Add a comment saying so. If the suite grows past that, change the arrange step to put the two
     Products in a Category created for the test, and filter the home page by it.
-- [ ] T021 [US2] Add `A_visitor_finds_a_product_by_a_distinctive_word` (US2 #2). Arrange one Published
+- [X] T021 [US2] Add `A_visitor_finds_a_product_by_a_distinctive_word` (US2 #2). Arrange one Published
   Product named `TestRun.Unique("Zephyrine teapot")`. Fill `Search Products` with `Zephyrine`, click
   `Search`, and expect exactly that Product name among the results.
-- [ ] T022 [US2] Add `A_visitor_sees_a_products_variants_availability_and_cover_image_but_never_stock` (US2 #3):
+- [X] T022 [US2] Add `A_visitor_sees_a_products_variants_availability_and_cover_image_but_never_stock` (US2 #3):
   - Arrange a Product with one Option `Colour` = `Red`, `Blue`. Red: price 120000, stock 5. Blue: price
     150000, stock 2. Upload one image, then publish.
   - Open `/products/{id}`. Expect: the heading is the Product name; `Sold by` links to the Shop name; an
@@ -299,10 +301,10 @@ text is changed.
   - The Variant table has an `Availability` column header and no `Stock` header, and shows 5 and 2.
   - Prices are formatted as the web app formats them. Check `src/MicroCommerce.Web/src/marketplace/ProductPage.tsx`.
   - `GetByText("Stock")` has count 0.
-- [ ] T023 [US2] Add `A_visitor_follows_a_product_to_its_shop_page` (US2 #4). Arrange one Merchant with
+- [X] T023 [US2] Add `A_visitor_follows_a_product_to_its_shop_page` (US2 #4). Arrange one Merchant with
   two Published Products. Open one Product page, click the Shop name link in `Sold by`, then expect the
   Shop heading (`h2`) to be the Shop name and both Product names to be listed.
-- [ ] T024 [US2] Add `A_visitor_never_sees_draft_or_removed_products` (US2 #5):
+- [X] T024 [US2] Add `A_visitor_never_sees_draft_or_removed_products` (US2 #5):
   - Arrange one Draft Product and one Product that is Published, then removed with
     `CatalogArrange.RemoveAsync` and an Operator token. Both names contain a shared distinctive word.
   - **Search**: searching for the word shows neither name, and shows the web app's empty-result text.
@@ -310,6 +312,16 @@ text is changed.
   - **Shop page**: shows neither name.
   - **Direct address**: `/products/{id}` for each shows the not-found state that `ProductPage.tsx`
     renders, never the Product name.
+
+- **US2 outcome (2026-11-05)**:
+  - `Journey=Buyer` passes 5/5 in about 42 s. The whole suite passes 7/7 in about 41 s, twice in a
+    row, with no leftovers.
+  - Each test was broken once on purpose and failed: wrong Shop link (#1), wrong result count (#2),
+    wrong Availability (#3), missing Product (#4), and the removal skipped (#5).
+  - **Fix found by that check**: T021 and T024 first passed against the home listing shown *before*
+    the search applied. Both now wait for a known Product to appear first, and then for the
+    non-matching Product to disappear. T024 also arranges a Published "control" Product, so an empty
+    page can't pass for "not shown".
 
 **Checkpoint**: Buyer browsing is covered in the browser.
 
